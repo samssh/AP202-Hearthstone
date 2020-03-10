@@ -7,8 +7,7 @@ import org.hibernate.boot.MetadataSources;
 import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
 import org.hibernate.service.ServiceRegistry;
 
-import javax.script.ScriptEngine;
-import java.util.ArrayList;
+import java.io.Serializable;
 import java.util.List;
 
 public class Connector{
@@ -45,8 +44,8 @@ public class Connector{
             hasTransaction = false;
         }
     }
-    public Integer save(Object o){
-        return (Integer) session.save(o.getClass().getName(),o);
+    public Serializable save(Object o){
+        return session.save(o.getClass().getName(),o);
     }
     public void update(Object o){
         session.update(o.getClass().getName(),o);
@@ -61,4 +60,5 @@ public class Connector{
         Criteria criteria=session.createCriteria(c.getName());
         return criteria.list();
     }
+
 }
