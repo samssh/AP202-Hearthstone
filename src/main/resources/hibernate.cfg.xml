@@ -12,7 +12,9 @@
         <!-- Show the queries prepared by Hibernate -->
         <!--        <property name="show_sql">true</property>-->
         <!-- Names the annotated entity classes -->
-<!--        <mapping class="com.sam.test.model.Contact" />-->
-<!--        <mapping class="com.sam.test.model.PhoneNumber" />-->
+        <mapping class="model.Deck" />
+        <mapping class="model.Spell" />
+        <mapping class="model.Hero" />
+        <mapping class="model.Minion" />
     </session-factory>
 </hibernate-configuration>
