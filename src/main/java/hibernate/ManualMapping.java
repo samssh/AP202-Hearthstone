@@ -22,12 +22,12 @@ public class ManualMapping {
         }
     }
 
-    public static List fetchList(Class c, List listId, String fetchName) {
+    public static List fetchList(Class c, List listId, String fetchName,Class Id) {
         List objectList = new ArrayList();
         try {
-            Method fetch = c.getDeclaredMethod(fetchName, Serializable.class);
+            Method fetch = c.getDeclaredMethod(fetchName, Id);
             for (Object s : listId) {
-                objectList.add(c.cast(fetch.invoke(null, (Serializable) s)));
+                objectList.add(c.cast(fetch.invoke(null, Id.cast(s))));
             }
         } catch (NoSuchMethodException | InvocationTargetException | IllegalAccessException e) {
             e.printStackTrace();
