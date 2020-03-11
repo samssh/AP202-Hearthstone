@@ -27,4 +27,9 @@ public class Hero extends Unit {
     public void saveOrUpdate() {
 
     }
+
+    @Override
+    public void load() {
+
+    }
 }

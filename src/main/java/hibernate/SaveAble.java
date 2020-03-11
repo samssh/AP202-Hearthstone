@@ -5,4 +5,5 @@ public interface SaveAble {
     public void update();
     public void delete();
     public void saveOrUpdate();
+    public void load();
 }
