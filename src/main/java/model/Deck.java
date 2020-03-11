@@ -1,11 +1,17 @@
 package model;
 
 
+import hibernate.Connector;
+import hibernate.ManualMapping;
+import hibernate.SaveAble;
+
 import javax.persistence.*;
+import java.util.ArrayList;
 import java.util.List;
 @Entity
-public class Deck {
+public class Deck implements SaveAble {
     @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
     private Long Id;
     @Column
     @ManyToOne
@@ -14,6 +20,10 @@ public class Deck {
     private List<Cart> cartList;
     @ElementCollection
     private List<String> cartListId;
+    {
+        cartListId=new ArrayList<>();
+        cartList=new ArrayList<>();
+    }
 
     public Hero getHero() {
         return hero;
@@ -37,5 +47,31 @@ public class Deck {
 
     public void setId(Long id) {
         Id = id;
+    }
+
+    @Override
+    public void update() {
+        Connector connector=Connector.getConnector();
+        ManualMapping.saveOrUpdateList(cartListId,cartList);
+        connector.update(this);
+    }
+
+    @Override
+    public void delete() {
+        Connector connector=Connector.getConnector();
+        connector.delete(this);
+    }
+
+    @Override
+    public void saveOrUpdate() {
+        Connector connector=Connector.getConnector();
+        ManualMapping.saveOrUpdateList(cartListId,cartList);
+        connector.saveOrUpdate(this);
+
+    }
+
+    @Override
+    public void load() {
+        setCartList(ManualMapping.fetchList(Cart.class,cartListId,String.class));
     }
 }

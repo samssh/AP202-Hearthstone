@@ -12,9 +12,14 @@
         <!-- Show the queries prepared by Hibernate -->
         <!--        <property name="show_sql">true</property>-->
         <!-- Names the annotated entity classes -->
+        <!--  here we define mapping class :\ -->
         <mapping class="model.Deck" />
         <mapping class="model.Spell" />
         <mapping class="model.Hero" />
         <mapping class="model.Minion" />
+        <mapping class="model.Deck" />
+        <mapping class="model.ClassOfCart"/>
+
+
     </session-factory>
 </hibernate-configuration>

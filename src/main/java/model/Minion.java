@@ -1,6 +1,7 @@
 package model;
 
 import javax.persistence.*;
+import java.io.Serializable;
 
 @Entity
 public class Minion extends Cart {
@@ -31,11 +32,6 @@ public class Minion extends Cart {
     }
 
     @Override
-    public Integer save() {
-        return null;
-    }
-
-    @Override
     public void update() {
 
     }
@@ -53,5 +49,10 @@ public class Minion extends Cart {
     @Override
     public void load() {
 
+    }
+
+    @Override
+    public Serializable getId() {
+        return null;
     }
 }
