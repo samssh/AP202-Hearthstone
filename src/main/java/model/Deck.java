@@ -12,6 +12,8 @@ public class Deck {
     private Hero hero;
     @Transient
     private List<Cart> cartList;
+    @ElementCollection
+    private List<String> cartListId;
 
     public Hero getHero() {
         return hero;

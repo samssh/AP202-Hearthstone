@@ -9,6 +9,8 @@ public class Minion extends Cart {
     @Column
     private int hpFrz;
 
+
+
     // only hibernate use this constructor
     public Minion(){}
 
@@ -45,6 +47,11 @@ public class Minion extends Cart {
 
     @Override
     public void saveOrUpdate() {
+
+    }
+
+    @Override
+    public void load() {
 
     }
 }

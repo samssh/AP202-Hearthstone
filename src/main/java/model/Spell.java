@@ -29,4 +29,9 @@ public class Spell extends Cart {
     public void saveOrUpdate() {
 
     }
+
+    @Override
+    public void load() {
+
+    }
 }

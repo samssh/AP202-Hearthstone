@@ -4,16 +4,24 @@ import javax.persistence.*;
 
 @Entity
 abstract public class Cart extends Unit {
-    @Column
-    String heroName;
+
+
+
     // only hibernate use this constructor
-    public Cart(){}
+    public Cart() {
+    }
+    @Column
+    @ManyToOne
+    private ClassOfCart classOfCart;
 
-    public String getHeroName() {
-        return heroName;
+    public ClassOfCart getClassOfCart() {
+        return classOfCart;
     }
 
-    public void setHeroName(String heroName) {
-        this.heroName = heroName;
+    public void setClassOfCart(ClassOfCart classOfCart) {
+        this.classOfCart = classOfCart;
     }
+
+
+
 }
