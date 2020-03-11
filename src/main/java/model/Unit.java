@@ -7,9 +7,9 @@ import javax.persistence.*;
 @Entity
 abstract public class Unit implements SaveAble {
     @Id
-    String name;
+    private String name;
     @Column
-    String description;
+    private String description;
     // only hibernate use this constructor
     public Unit(){}
 

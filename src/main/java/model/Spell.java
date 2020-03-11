@@ -2,6 +2,7 @@ package model;
 
 
 import javax.persistence.*;
+import java.io.Serializable;
 
 @Entity
 public class Spell extends Cart {
@@ -10,10 +11,6 @@ public class Spell extends Cart {
     public Spell() {
     }
 
-    @Override
-    public Integer save() {
-        return null;
-    }
 
     @Override
     public void update() {
@@ -33,5 +30,10 @@ public class Spell extends Cart {
     @Override
     public void load() {
 
+    }
+
+    @Override
+    public Serializable getId() {
+        return null;
     }
 }

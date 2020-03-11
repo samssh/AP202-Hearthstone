@@ -1,6 +1,7 @@
 package model;
 
 import javax.persistence.*;
+import java.io.Serializable;
 
 @Entity
 public class Hero extends Unit {
@@ -8,10 +9,6 @@ public class Hero extends Unit {
 
     // only hibernate use this constructor
     public Hero(){}
-    @Override
-    public Integer save() {
-        return null;
-    }
 
     @Override
     public void update() {
@@ -31,5 +28,10 @@ public class Hero extends Unit {
     @Override
     public void load() {
 
+    }
+
+    @Override
+    public Serializable getId() {
+        return null;
     }
 }

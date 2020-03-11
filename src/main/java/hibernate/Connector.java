@@ -44,8 +44,8 @@ public class Connector{
             hasTransaction = false;
         }
     }
-    public Serializable save(Object o){
-        return session.save(o.getClass().getName(),o);
+    public void saveOrUpdate(Object o){
+        session.saveOrUpdate(o.getClass().getName(),o);
     }
     public void update(Object o){
         session.update(o.getClass().getName(),o);
