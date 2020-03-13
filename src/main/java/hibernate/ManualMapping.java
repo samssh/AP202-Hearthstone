@@ -1,7 +1,6 @@
 package hibernate;
 
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -15,17 +14,34 @@ public class ManualMapping {
 
     }
 
-    public static List fetchList(Class c, List listId, Class Id) {
+    public static void deleteList(List list){
+        for (Object o : list) ((SaveAble)o).delete();
+    }
+
+    public static List fetchList(Class target, List listId) {
         List objectList = new ArrayList();
-        try {
-            Method fetch = c.getDeclaredMethod("fetch",Id);
-            for (Object s : listId) {
-                objectList.add(fetch.invoke(null, Id.cast(s)));
-            }
-        } catch (NoSuchMethodException | InvocationTargetException | IllegalAccessException e) {
-            e.printStackTrace();
+        for (Object s : listId) {
+            objectList.add(fetch(target, (Serializable) s));
         }
         return objectList;
+    }
+
+    public static Object fetch(Class c, Serializable Id) {
+        Connector connector = Connector.getConnector();
+        Object o = connector.fetchById(c, Id);
+        if (o == null)
+            return null;
+        ((SaveAble) o).load();
+        return o;
+    }
+
+    public static List fetchALL(Class c) {
+        Connector connector = Connector.getConnector();
+        List list = connector.fetchAll(c);
+        for (Object o : list) {
+            ((SaveAble) o).load();
+        }
+        return list;
     }
 
 }

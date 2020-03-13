@@ -1,37 +1,42 @@
 package model;
 
+import hibernate.Connector;
+
 import javax.persistence.*;
-import java.io.Serializable;
 
 @Entity
 public class Hero extends Unit {
-
-
+    @Column
+    private int hpFrz;
     // only hibernate use this constructor
     public Hero(){}
 
-    @Override
-    public void update() {
+    public int getHpFrz() {
+        return hpFrz;
+    }
 
+    public void setHpFrz(int hpFrz) {
+        this.hpFrz = hpFrz;
     }
 
     @Override
     public void delete() {
-
+        Connector connector=Connector.getConnector();
+        connector.delete(this);
     }
 
     @Override
     public void saveOrUpdate() {
-
+        Connector connector=Connector.getConnector();
+        connector.saveOrUpdate(this);
     }
 
     @Override
     public void load() {
-
     }
 
     @Override
-    public Serializable getId() {
-        return null;
+    public String getId() {
+        return getName();
     }
 }

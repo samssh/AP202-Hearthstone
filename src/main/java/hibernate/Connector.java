@@ -47,13 +47,13 @@ public class Connector{
     public void saveOrUpdate(Object o){
         session.saveOrUpdate(o.getClass().getName(),o);
     }
-    public void update(Object o){
-        session.update(o.getClass().getName(),o);
-    }
+//    public void update(Object o){
+//        session.update(o.getClass().getName(),o);
+//    }
     public void delete(Object o){
         session.delete(o.getClass().getName(),o);
     }
-    public Object fetchById(Class c,int id){
+    public Object fetchById(Class c,Serializable id){
         return session.get(c.getName(),id);
     }
     public List fetchAll(Class c){
