@@ -39,4 +39,18 @@ abstract public class Cart extends Unit {
     public void setManaFrz(int manaFrz) {
         this.manaFrz = manaFrz;
     }
+
+    @Override
+    public boolean equals(Object o){
+        if (o instanceof Cart){
+            try {
+                if (this.getName().equals(((Cart) o).getName()))
+                    return true;
+            }catch (NullPointerException e){
+                e.printStackTrace();
+                return false;
+            }
+        }
+        return false;
+    }
 }

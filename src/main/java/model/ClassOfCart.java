@@ -4,7 +4,6 @@ import hibernate.Connector;
 import hibernate.SaveAble;
 
 import javax.persistence.*;
-import java.io.Serializable;
 
 @Entity
 public class ClassOfCart implements SaveAble {
@@ -12,7 +11,8 @@ public class ClassOfCart implements SaveAble {
     private String heroName;
 
 
-    public ClassOfCart(){}
+    public ClassOfCart() {
+    }
 
     public String getHeroName() {
         return heroName;
@@ -21,21 +21,16 @@ public class ClassOfCart implements SaveAble {
     public void setHeroName(String heroName) {
         this.heroName = heroName;
     }
-    @Override
-    public void update() {
-        Connector connector=Connector.getConnector();
-        connector.update(this);
-    }
 
     @Override
     public void delete() {
-        Connector connector=Connector.getConnector();
+        Connector connector = Connector.getConnector();
         connector.delete(this);
     }
 
     @Override
     public void saveOrUpdate() {
-        Connector connector=Connector.getConnector();
+        Connector connector = Connector.getConnector();
         connector.delete(this);
     }
 
@@ -44,7 +39,7 @@ public class ClassOfCart implements SaveAble {
     }
 
     @Override
-    public Serializable getId() {
+    public String getId() {
         return heroName;
     }
 }
