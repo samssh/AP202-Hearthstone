@@ -4,7 +4,6 @@ package model;
 import hibernate.Connector;
 import hibernate.ManualMapping;
 import hibernate.SaveAble;
-import org.omg.CORBA.CODESET_INCOMPATIBLE;
 
 import javax.persistence.*;
 import java.util.ArrayList;
@@ -15,17 +14,16 @@ public class Deck implements SaveAble {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long Id;
-    @Column
     @ManyToOne
     private Hero hero;
     @Transient
-    private List<Cart> cartList;
+    private List<Card> cardList;
     @ElementCollection
-    private List<String> cartListId;
+    private List<String> cardListId;
 
     {
-        cartListId = new ArrayList<>();
-        cartList = new ArrayList<>();
+        cardListId = new ArrayList<>();
+        cardList = new ArrayList<>();
     }
 
     public Hero getHero() {
@@ -36,14 +34,13 @@ public class Deck implements SaveAble {
         this.hero = hero;
     }
 
-    public List<Cart> getCartList() {
-        return cartList;
+    public List<Card> getCardList() {
+        return cardList;
     }
 
-    public void setCartList(List<Cart> cartList) {
-        this.cartList = cartList;
+    public void setCardList(List<Card> cardList) {
+        this.cardList = cardList;
     }
-
 
     public void setId(Long id) {
         Id = id;
@@ -63,13 +60,13 @@ public class Deck implements SaveAble {
     @Override
     public void saveOrUpdate() {
         Connector connector = Connector.getConnector();
-        ManualMapping.saveOrUpdateList(cartListId, cartList);
+        ManualMapping.saveOrUpdateList(cardListId, cardList);
         connector.saveOrUpdate(this);
 
     }
 
     @Override
     public void load() {
-        setCartList(ManualMapping.fetchList(Cart.class, cartListId));
+        setCardList(ManualMapping.fetchList(Card.class, cardListId));
     }
 }

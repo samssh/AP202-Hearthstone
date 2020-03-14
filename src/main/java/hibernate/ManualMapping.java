@@ -35,7 +35,7 @@ public class ManualMapping {
         return o;
     }
 
-    public static List fetchALL(Class c) {
+    public static List fetchAll(Class c) {
         Connector connector = Connector.getConnector();
         List list = connector.fetchAll(c);
         for (Object o : list) {

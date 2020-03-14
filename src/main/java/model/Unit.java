@@ -13,6 +13,12 @@ abstract public class Unit implements SaveAble {
     // only hibernate use this constructor
     public Unit(){}
 
+    public Unit(String name,String description){
+        this.name=name;
+        this.description=description;
+    }
+
+
     public String getName() {
         return name;
     }
@@ -27,5 +33,12 @@ abstract public class Unit implements SaveAble {
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    @Override
+    public String toString() {
+        return "card{" +
+                "name=" + name;
+//                ", description=" + description;
     }
 }

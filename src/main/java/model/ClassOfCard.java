@@ -6,13 +6,23 @@ import hibernate.SaveAble;
 import javax.persistence.*;
 
 @Entity
-public class ClassOfCart implements SaveAble {
+public class ClassOfCard implements SaveAble {
+//    @Id
+//    @GeneratedValue(strategy = GenerationType.IDENTITY)
+//    private Long id;
     @Id
     private String heroName;
 
-
-    public ClassOfCart() {
+    public ClassOfCard() {
     }
+
+    public ClassOfCard(String heroName) {
+        this.heroName = heroName;
+    }
+
+//    public void setId(Long id) {
+//        this.id = id;
+//    }
 
     public String getHeroName() {
         return heroName;
@@ -31,7 +41,7 @@ public class ClassOfCart implements SaveAble {
     @Override
     public void saveOrUpdate() {
         Connector connector = Connector.getConnector();
-        connector.delete(this);
+        connector.saveOrUpdate(this);
     }
 
     @Override
@@ -41,5 +51,12 @@ public class ClassOfCart implements SaveAble {
     @Override
     public String getId() {
         return heroName;
+    }
+
+    @Override
+    public String toString() {
+        return "ClassOfCard{" +
+                "heroName='" + heroName + '\'' +
+                '}';
     }
 }
