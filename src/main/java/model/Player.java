@@ -20,7 +20,7 @@ public class Player implements SaveAble {
     @ElementCollection
     private List<String> cartsId;
     @Transient
-    private List<Cart> carts;
+    private List<Card> cards;
     @ElementCollection
     private List<String> heroesId;
     @Transient
@@ -31,7 +31,7 @@ public class Player implements SaveAble {
     private List<Deck> decks;
     {
         cartsId=new ArrayList<>();
-        carts=new ArrayList<>();
+        cards =new ArrayList<>();
         heroes=new ArrayList<>();
         heroesId=new ArrayList<>();
         decks=new ArrayList<>();
@@ -81,12 +81,12 @@ public class Player implements SaveAble {
         this.cartsId = cartsId;
     }
 
-    public List<Cart> getCarts() {
-        return carts;
+    public List<Card> getCards() {
+        return cards;
     }
 
-    public void setCarts(List<Cart> carts) {
-        this.carts = carts;
+    public void setCards(List<Card> cards) {
+        this.cards = cards;
     }
 
     public List<String> getHeroesId() {
@@ -131,7 +131,7 @@ public class Player implements SaveAble {
     @Override
     public void saveOrUpdate() {
         Connector connector=Connector.getConnector();
-        ManualMapping.saveOrUpdateList(cartsId,carts);
+        ManualMapping.saveOrUpdateList(cartsId, cards);
         ManualMapping.saveOrUpdateList(heroesId,heroes);
         ManualMapping.saveOrUpdateList(decksId,decks);
         connector.saveOrUpdate(this);
@@ -141,7 +141,7 @@ public class Player implements SaveAble {
     public void load() {
         setDecks(ManualMapping.fetchList(Deck.class,decksId));
         setHeroes(ManualMapping.fetchList(Hero.class,heroesId));
-        setCarts((ManualMapping.fetchList(Cart.class,cartsId)));
+        setCards((ManualMapping.fetchList(Card.class,cartsId)));
     }
 
     @Override

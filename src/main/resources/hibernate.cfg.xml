@@ -6,9 +6,9 @@
         <!-- SQl dialect -->
         <property name="dialect">org.hibernate.dialect.H2Dialect</property>
         <!-- Create the database schema on startup -->
-        <!--        <property name="hbm2ddl.auto">create</property>-->
+                <property name="hbm2ddl.auto">create</property>
         <!-- update the database schema on startup -->
-        <property name="hbm2ddl.auto">update</property>
+<!--        <property name="hbm2ddl.auto">update</property>-->
         <!-- Show the queries prepared by Hibernate -->
         <!--        <property name="show_sql">true</property>-->
         <!-- Names the annotated entity classes -->
@@ -17,11 +17,11 @@
         <mapping class="model.Spell" />
         <mapping class="model.Hero" />
         <mapping class="model.Minion" />
-        <mapping class="model.ClassOfCart"/>
+        <mapping class="model.ClassOfCard"/>
         <mapping class="model.Player"/>
 <!--        ????????????????????????????????????????????-->
         <mapping class="model.Unit"/>
-        <mapping class="model.Cart"/>
+        <mapping class="model.Card"/>
 
 
 

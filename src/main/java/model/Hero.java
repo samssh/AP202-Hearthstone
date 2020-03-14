@@ -11,6 +11,12 @@ public class Hero extends Unit {
     // only hibernate use this constructor
     public Hero(){}
 
+    public Hero(String name,String description,int hpFrz){
+        super(name,description);
+        this.hpFrz=hpFrz;
+    }
+
+
     public int getHpFrz() {
         return hpFrz;
     }
@@ -38,5 +44,11 @@ public class Hero extends Unit {
     @Override
     public String getId() {
         return getName();
+    }
+
+    @Override
+    public String toString() {
+        return super.toString() +
+                "hpFrz=" + hpFrz+"}";
     }
 }
