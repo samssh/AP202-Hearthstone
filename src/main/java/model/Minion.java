@@ -14,10 +14,10 @@ public class Minion extends Card {
     // only hibernate use this constructor
     public Minion(){}
 
-    public Minion(String name, String description,
+    public Minion(String name, String description,int price,
                   ClassOfCard classOfCard, Rarity rarity,
                   int manaFrz, int attFrz, int hpFrz) {
-        super(name, description, classOfCard, rarity, manaFrz);
+        super(name, description,price, classOfCard, rarity, manaFrz);
         this.attFrz = attFrz;
         this.hpFrz = hpFrz;
     }
@@ -47,6 +47,7 @@ public class Minion extends Card {
     @Override
     public void saveOrUpdate() {
         Connector connector=Connector.getConnector();
+        connector.saveOrUpdate(this.classOfCard);
         connector.saveOrUpdate(this);
 
     }
@@ -64,9 +65,15 @@ public class Minion extends Card {
 
     @Override
     public String toString() {
-        return super.toString() +
+        return "Minion{" +
                 "attFrz=" + attFrz +
                 ", hpFrz=" + hpFrz +
+                ", classOfCard=" + classOfCard +
+                ", rarity=" + rarity +
+                ", manaFrz=" + manaFrz +
+                ", name='" + name + '\'' +
+                ", description='" + description + '\'' +
+                ", price=" + price +
                 '}';
     }
 }

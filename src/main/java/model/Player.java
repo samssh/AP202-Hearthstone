@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 @Entity
 public class Player implements SaveAble {
+    // id nano time
     @Id
     private String userName;
     @Column
