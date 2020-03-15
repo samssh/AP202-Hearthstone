@@ -3,19 +3,23 @@ package model;
 import hibernate.SaveAble;
 
 import javax.persistence.*;
+import java.util.Objects;
 
 @Entity
 abstract public class Unit implements SaveAble {
     @Id
-    private String name;
+    protected String name;
     @Column
-    private String description;
+    protected String description;
+    @Column
+    protected int price;
     // only hibernate use this constructor
     public Unit(){}
 
-    public Unit(String name,String description){
+    public Unit(String name,String description,int price){
         this.name=name;
         this.description=description;
+        this.price=price;
     }
 
 
@@ -35,10 +39,19 @@ abstract public class Unit implements SaveAble {
         this.description = description;
     }
 
+    public int getPrice() {
+        return price;
+    }
+
+    public void setPrice(int price) {
+        this.price = price;
+    }
+
     @Override
-    public String toString() {
-        return "card{" +
-                "name=" + name;
-//                ", description=" + description;
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Unit)) return false;
+        Unit unit = (Unit) o;
+        return Objects.equals(getName(), unit.getName());
     }
 }

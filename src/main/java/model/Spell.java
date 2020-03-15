@@ -12,9 +12,9 @@ public class Spell extends Card {
     public Spell() {}
 
     public Spell(String name,String description,
-                ClassOfCard classOfCard,
+                int price,ClassOfCard classOfCard,
                 Rarity rarity,int manaFrz){
-        super(name, description, classOfCard, rarity, manaFrz);
+        super(name, description,price, classOfCard, rarity, manaFrz);
     }
     @Override
     public void delete() {
@@ -25,6 +25,7 @@ public class Spell extends Card {
     @Override
     public void saveOrUpdate() {
         Connector connector=Connector.getConnector();
+        connector.saveOrUpdate(this.classOfCard);
         connector.saveOrUpdate(this);
     }
 
@@ -40,6 +41,13 @@ public class Spell extends Card {
 
     @Override
     public String toString() {
-        return super.toString()+"}";
+        return "Spell{" +
+                "classOfCard=" + classOfCard +
+                ", rarity=" + rarity +
+                ", manaFrz=" + manaFrz +
+                ", name='" + name + '\'' +
+                ", description='" + description + '\'' +
+                ", price=" + price +
+                '}';
     }
 }

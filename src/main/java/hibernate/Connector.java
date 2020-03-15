@@ -7,57 +7,73 @@ import org.hibernate.boot.MetadataSources;
 import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
 import org.hibernate.service.ServiceRegistry;
 
-import java.io.Serializable;
+import java.io.*;
 import java.util.List;
 
-public class Connector{
-    private static final Connector connector= new Connector();
+public class Connector {
+    private static final Connector connector = new Connector();
     private final SessionFactory sessionFactory = buildSessionFactory();
     private Session session;
-    private boolean hasTransaction=false;
+    private boolean hasTransaction = false;
 
     private SessionFactory buildSessionFactory() {
+        try {
+            PrintStream nullOut = new PrintStream(new File("./log/hibernate log.txt"));
+            System.setErr(nullOut);
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
         final ServiceRegistry registry = new StandardServiceRegistryBuilder().configure().build();
-        return new MetadataSources(registry).buildMetadata().buildSessionFactory();
+        SessionFactory sessionFactory = new MetadataSources(registry).buildMetadata().buildSessionFactory();
+        return sessionFactory;
+//        final ServiceRegistry registry = new StandardServiceRegistryBuilder().configure().build();
+//        return new MetadataSources(registry).buildMetadata().buildSessionFactory();
     }
-    private Connector(){
+
+    private Connector() {
     }
+
     public static Connector getConnector() {
         return connector;
     }
-    public void open(){
-        session=sessionFactory.openSession();
+
+    public void open() {
+        session = sessionFactory.openSession();
     }
+
     public void close() {
         if (session.isOpen())
             session.close();
     }
-    public void beginTransaction(){
-        if (!hasTransaction){
+
+    public void beginTransaction() {
+        if (!hasTransaction) {
             session.beginTransaction();
-            hasTransaction=true;
+            hasTransaction = true;
         }
     }
-    public void commit(){
+
+    public void commit() {
         if (hasTransaction) {
             session.getTransaction().commit();
             hasTransaction = false;
         }
     }
-    public void saveOrUpdate(Object o){
-        session.saveOrUpdate(o.getClass().getName(),o);
+
+    public void saveOrUpdate(Object o) {
+        session.saveOrUpdate(o.getClass().getName(), o);
     }
-//    public void update(Object o){
-//        session.update(o.getClass().getName(),o);
-//    }
-    public void delete(Object o){
-        session.delete(o.getClass().getName(),o);
+
+    public void delete(Object o) {
+        session.delete(o.getClass().getName(), o);
     }
-    public Object fetchById(Class c,Serializable id){
-        return session.get(c.getName(),id);
+
+    public Object fetchById(Class c, Serializable id) {
+        return session.get(c.getName(), id);
     }
-    public List fetchAll(Class c){
-        Criteria criteria=session.createCriteria(c.getName());
+
+    public List fetchAll(Class c) {
+        Criteria criteria = session.createCriteria(c.getName());
         return criteria.list();
     }
 

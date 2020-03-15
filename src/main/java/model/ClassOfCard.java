@@ -7,9 +7,6 @@ import javax.persistence.*;
 
 @Entity
 public class ClassOfCard implements SaveAble {
-//    @Id
-//    @GeneratedValue(strategy = GenerationType.IDENTITY)
-//    private Long id;
     @Id
     private String heroName;
 
@@ -19,10 +16,6 @@ public class ClassOfCard implements SaveAble {
     public ClassOfCard(String heroName) {
         this.heroName = heroName;
     }
-
-//    public void setId(Long id) {
-//        this.id = id;
-//    }
 
     public String getHeroName() {
         return heroName;
@@ -55,7 +48,7 @@ public class ClassOfCard implements SaveAble {
 
     @Override
     public String toString() {
-        return "ClassOfCard{" +
+        return "{" +
                 "heroName='" + heroName + '\'' +
                 '}';
     }

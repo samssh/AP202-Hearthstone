@@ -5,19 +5,19 @@ import javax.persistence.*;
 @Entity
 abstract public class Card extends Unit {
     @ManyToOne
-    private ClassOfCard classOfCard;
+    protected ClassOfCard classOfCard;
     @Column
-    private Rarity rarity;
+    protected Rarity rarity;
     @Column
-    private int manaFrz;
+    protected int manaFrz;
 
     // only hibernate use this constructor
     public Card() {}
 
-    public Card(String name,String description,
+    public Card(String name,String description,int price,
                 ClassOfCard classOfCard,
                 Rarity rarity,int manaFrz) {
-        super(name,description);
+        super(name,description,price);
         this.classOfCard=classOfCard;
         this.rarity=rarity;
         this.manaFrz=manaFrz;
@@ -48,25 +48,4 @@ abstract public class Card extends Unit {
         this.manaFrz = manaFrz;
     }
 
-    @Override
-    public boolean equals(Object o){
-        if (o instanceof Card){
-            try {
-                if (this.getName().equals(((Card) o).getName()))
-                    return true;
-            }catch (NullPointerException e){
-                e.printStackTrace();
-                return false;
-            }
-        }
-        return false;
-    }
-
-    @Override
-    public String toString() {
-        return super.toString() +
-                ",classOfCard=" + classOfCard +
-                ", rarity=" + rarity +
-                ", manaFrz=" + manaFrz;
-    }
 }
