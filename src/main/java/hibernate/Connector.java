@@ -17,6 +17,7 @@ public class Connector {
     private boolean hasTransaction = false;
 
     private SessionFactory buildSessionFactory() {
+        PrintStream err=System.err;
         try {
             PrintStream nullOut = new PrintStream(new File("./log/hibernate log.txt"));
             System.setErr(nullOut);
@@ -25,9 +26,8 @@ public class Connector {
         }
         final ServiceRegistry registry = new StandardServiceRegistryBuilder().configure().build();
         SessionFactory sessionFactory = new MetadataSources(registry).buildMetadata().buildSessionFactory();
+        System.setErr(err);
         return sessionFactory;
-//        final ServiceRegistry registry = new StandardServiceRegistryBuilder().configure().build();
-//        return new MetadataSources(registry).buildMetadata().buildSessionFactory();
     }
 
     private Connector() {

@@ -1,5 +1,6 @@
 package model;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class Menu {
@@ -11,6 +12,15 @@ public class Menu {
     private boolean hasEntryList;
     private List<String> entryList;
 
+    {
+        menuList = new ArrayList<>();
+    }
+
+    public Menu(String name, String key, boolean hasEntryList) {
+        this.name = name;
+        this.key = key;
+        this.hasEntryList = hasEntryList;
+    }
 
     public String getName() {
         return name;

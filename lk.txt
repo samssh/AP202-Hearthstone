@@ -1,0 +1,87 @@
+case "welcome":
+welcome();
+break;
+case "signUp":
+signUp();
+break;
+case "login":
+login();
+break;
+case "main":
+main();
+break;
+case "logOut":
+logOut();
+break;
+case "deleteAccount":
+deleteAccount();
+break;
+case "exit":
+exit();
+break;
+case "helpMain":
+helpMain();
+break;
+case "store":
+store();
+break;
+case "buy":
+buy();
+break;
+case "sell":
+sell();
+break;
+case "wallet":
+wallet();
+break;
+case "buyAble":
+buyAble();
+break;
+case "sellAble":
+sellAble();
+break;
+case "helpCollection":
+helpCollection();
+break;
+case "helpStore":
+helpStore();
+break;
+case "collection":
+collection();
+break;
+case "back":
+back();
+break;
+case "openHero":
+openHero();
+break;
+case "defaultHero":
+defaultHero();
+break;
+case "selectHero":
+selectHero();
+break;
+case "availableCard":
+availableCard();
+break;
+case "deckCards":
+deckCards();
+break;
+case "noDeckCard":
+noDeckCard();
+break;
+case "addCard":
+addCard();
+break;
+case "removeCard":
+removeCard();
+break;
+case "detailStore":
+detailStore();
+break;
+case "detailCollection":
+detailCollection();
+break;
+case "allCard":
+allCard();
+break;
