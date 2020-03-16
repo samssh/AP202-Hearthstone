@@ -7,6 +7,9 @@ import hibernate.SaveAble;
 import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
+
+import static model.Models.mage;
+
 @Entity
 public class Player implements SaveAble {
     // id nano time
@@ -14,6 +17,8 @@ public class Player implements SaveAble {
     private String userName;
     @Column
     private String password;
+    @Column
+    private Long creatTime;
     @Column
     private int coin;
     @ManyToOne
@@ -30,17 +35,32 @@ public class Player implements SaveAble {
     private List<Long> decksId;
     @Transient
     private List<Deck> decks;
+
     {
-        cartsId=new ArrayList<>();
-        cards =new ArrayList<>();
-        heroes=new ArrayList<>();
-        heroesId=new ArrayList<>();
-        decks=new ArrayList<>();
-        decksId=new ArrayList<>();
+        cartsId = new ArrayList<>();
+        cards = new ArrayList<>();
+        heroes = new ArrayList<>();
+        heroesId = new ArrayList<>();
+        decks = new ArrayList<>();
+        decksId = new ArrayList<>();
     }
 
     // only hibernate use this constructor
-    public Player(){}
+    public Player() {
+    }
+
+    public Player(String userName, String password, Long creatTime,
+                  int coin, Hero selectedHero, List<Card> cards,
+                  List<Hero> heroes, List<Deck> decks) {
+        this.userName = userName;
+        this.password = password;
+        this.creatTime = creatTime;
+        this.coin = coin;
+        this.selectedHero = selectedHero;
+        this.cards = cards;
+        this.heroes = heroes;
+        this.decks = decks;
+    }
 
     public String getUserName() {
         return userName;
@@ -52,6 +72,14 @@ public class Player implements SaveAble {
 
     public String getPassword() {
         return password;
+    }
+
+    public Long getCreatTime() {
+        return creatTime;
+    }
+
+    public void setCreatTime(Long creatTime) {
+        this.creatTime = creatTime;
     }
 
     public int getCoin() {
@@ -122,27 +150,54 @@ public class Player implements SaveAble {
         this.decks = decks;
     }
 
+    public void addCard(Card card) {
+        if (cards.contains(card)) cards.add(this.cards.lastIndexOf(card), card);
+        else cards.add(card);
+    }
+
+    public void removeCard(Card card){
+        cards.remove(card);
+    }
+
+    public int numberOfCard(Card card) {
+        int c = 0;
+        for (int i = 0; i < cards.size(); i++) {
+            if (cards.get(i).equals(card)) {
+                c++;
+            }
+        }
+        return c;
+    }
+
+    public boolean isInDeck(Card card) {
+        for (Deck d : decks)
+            if (d.numberOfCard(card) > 0)
+                return true;
+        return false;
+    }
+
+
     @Override
     public void delete() {
-        Connector connector=Connector.getConnector();
+        Connector connector = Connector.getConnector();
         ManualMapping.deleteList(decks);
         connector.delete(this);
     }
 
     @Override
     public void saveOrUpdate() {
-        Connector connector=Connector.getConnector();
+        Connector connector = Connector.getConnector();
         ManualMapping.saveOrUpdateList(cartsId, cards);
-        ManualMapping.saveOrUpdateList(heroesId,heroes);
-        ManualMapping.saveOrUpdateList(decksId,decks);
+        ManualMapping.saveOrUpdateList(heroesId, heroes);
+        ManualMapping.saveOrUpdateList(decksId, decks);
         connector.saveOrUpdate(this);
     }
 
     @Override
     public void load() {
-        setDecks(ManualMapping.fetchList(Deck.class,decksId));
-        setHeroes(ManualMapping.fetchList(Hero.class,heroesId));
-        setCards((ManualMapping.fetchList(Card.class,cartsId)));
+        setDecks(ManualMapping.fetchList(Deck.class, decksId));
+        setHeroes(ManualMapping.fetchList(Hero.class, heroesId));
+        setCards((ManualMapping.fetchList(Card.class, cartsId)));
     }
 
     @Override

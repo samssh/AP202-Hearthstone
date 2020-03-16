@@ -54,8 +54,6 @@ public class Minion extends Card {
 
     @Override
     public void load() {
-
-
     }
 
     @Override

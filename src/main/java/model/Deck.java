@@ -25,6 +25,12 @@ public class Deck implements SaveAble {
         cardListId = new ArrayList<>();
         cardList = new ArrayList<>();
     }
+    // only hibernate use this constructor
+    public Deck(){}
+
+    public Deck(Hero hero){
+        this.hero=hero;
+    }
 
     public Hero getHero() {
         return hero;
@@ -44,6 +50,21 @@ public class Deck implements SaveAble {
 
     public void setId(Long id) {
         Id = id;
+    }
+
+    public void addCard(Card card){
+        if (cardList.contains(card)) cardList.add(this.cardList.lastIndexOf(card),card);
+        else cardList.add(card);
+    }
+
+    public int numberOfCard(Card card){
+        int c=0;
+        for (int i = 0; i < cardList.size(); i++) {
+            if (cardList.get(i).equals(card)){
+                c++;
+            }
+        }
+        return c;
     }
 
     @Override
