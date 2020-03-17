@@ -23,6 +23,8 @@ public class Player implements SaveAble {
     private int coin;
     @ManyToOne
     private Hero selectedHero;
+    @ManyToOne
+    private Deck selectedDeck;
     @ElementCollection
     private List<String> cartsId;
     @Transient
@@ -50,15 +52,19 @@ public class Player implements SaveAble {
     }
 
     public Player(String userName, String password, Long creatTime,
-                  int coin, Hero selectedHero, List<Card> cards,
-                  List<Hero> heroes, List<Deck> decks) {
+                  int coin, Hero selectedHero, Deck selectedDeck,
+                  List<Card> cards, List<Hero> heroes, List<Deck> decks) {
         this.userName = userName;
         this.password = password;
         this.creatTime = creatTime;
         this.coin = coin;
         this.selectedHero = selectedHero;
+        this.selectedDeck = selectedDeck;
+        this.cartsId = cartsId;
         this.cards = cards;
+        this.heroesId = heroesId;
         this.heroes = heroes;
+        this.decksId = decksId;
         this.decks = decks;
     }
 
@@ -72,6 +78,10 @@ public class Player implements SaveAble {
 
     public String getPassword() {
         return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
     }
 
     public Long getCreatTime() {
@@ -98,8 +108,12 @@ public class Player implements SaveAble {
         this.selectedHero = selectedHero;
     }
 
-    public void setPassword(String password) {
-        this.password = password;
+    public Deck getSelectedDeck() {
+        return selectedDeck;
+    }
+
+    public void setSelectedDeck(Deck selectedDeck) {
+        this.selectedDeck = selectedDeck;
     }
 
     public List<String> getCartsId() {
@@ -155,7 +169,7 @@ public class Player implements SaveAble {
         else cards.add(card);
     }
 
-    public void removeCard(Card card){
+    public void removeCard(Card card) {
         cards.remove(card);
     }
 
@@ -174,6 +188,16 @@ public class Player implements SaveAble {
             if (d.numberOfCard(card) > 0)
                 return true;
         return false;
+    }
+
+    public Deck getHeroDeck(Hero h){
+        for (Deck d:decks){
+            if (d.getHero().getName().equals(h.getName()))
+                return d;
+        }
+        System.err.println("problem in getHeroDeck");
+        return null;
+
     }
 
 
@@ -203,5 +227,23 @@ public class Player implements SaveAble {
     @Override
     public String getId() {
         return getUserName();
+    }
+
+    @Override
+    public String toString() {
+        return "Player{" +
+                "userName='" + userName + '\'' +
+                ", password='" + password + '\'' +
+                ", creatTime=" + creatTime +
+                ", coin=" + coin +
+                ", selectedHero=" + selectedHero +
+                ", selectedDeck=" + selectedDeck +
+                ", cartsId=" + cartsId +
+                ", cards=" + cards +
+                ", heroesId=" + heroesId +
+                ", heroes=" + heroes +
+                ", decksId=" + decksId +
+                ", decks=" + decks +
+                '}';
     }
 }

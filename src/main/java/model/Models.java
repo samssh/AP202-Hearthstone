@@ -11,6 +11,7 @@ public class Models {
     public static List<Spell> spells;
     public static List<Card> cards;
     public static Hero mage;
+    public static Deck mageDeck;
     public static List<Hero> firstHeros;
     public static List<Card> firstCards;
     public static List<Deck> firstDecks;
@@ -23,32 +24,54 @@ public class Models {
         cards = new ArrayList<>();
         cards.addAll(minions);
         cards.addAll(spells);
-        for (Hero h : heroes)
-            if (h.getName().equals("mage"))
+        for (Hero h : heroes) {
+            if (h.getName().equals("Mage"))
                 mage = h;
+            System.err.println(h.getName());
+            System.out.println(mage);
+        }
         firstHeros = new ArrayList<>(heroes);
         firstDecks = new ArrayList<>();
         for (Hero h : firstHeros) {
             firstDecks.add(new Deck(h));
+            if (h.getName().equals("Mage"))
+                mageDeck=firstDecks.get(firstDecks.size()-1);
         }
         firstCards = new ArrayList<>();
-        firstCards.add(search("polymorph"));
-        firstCards.add(search("Arena Fanatic"));
-        firstCards.add(search("Spirit Bomb"));
-        firstCards.add(search("Arena Patron"));
-        firstCards.add(search("Khartut Defender"));
-        firstCards.add(search("Wisp"));
-        firstCards.add(search("Weaponized Pinata"));
-        firstCards.add(search("Deadly Shot"));
-        firstCards.add(search("Kobold Sandtrooper"));
-        firstCards.add(search("Baron Geddon"));
+        firstCards.add(searchCard("polymorph"));
+        firstCards.add(searchCard("Arena Fanatic"));
+        firstCards.add(searchCard("Spirit Bomb"));
+        firstCards.add(searchCard("Arena Patron"));
+        firstCards.add(searchCard("Khartut Defender"));
+        firstCards.add(searchCard("Wisp"));
+        firstCards.add(searchCard("Weaponized Pinata"));
+        firstCards.add(searchCard("Deadly Shot"));
+        firstCards.add(searchCard("Kobold Sandtrooper"));
+        firstCards.add(searchCard("Baron Geddon"));
 
     }
 
-    public static Card search(String s) {
+    public static Card searchCard(String s) {
         for (Card c : cards)
             if (c.getName().equals(s))
                 return c;
         return null;
     }
+    public static Hero searchHero(String s) {
+        for (Hero h : heroes)
+            if (h.getName().equals(s))
+                return h;
+        return null;
+    }
+    public static Unit searchUnit(String s) {
+        for (Hero h : heroes)
+            if (h.getName().equals(s))
+                return h;
+        for (Card c : cards)
+            if (c.getName().equals(s))
+                return c;
+        return null;
+    }
+
+
 }

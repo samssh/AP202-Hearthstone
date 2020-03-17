@@ -25,6 +25,13 @@ public class ClassOfCard implements SaveAble {
         this.heroName = heroName;
     }
 
+    public boolean isItForHero(Hero h){
+        if (heroName.equals(h.getName())|| heroName.equals("Neutral")){
+            return true;
+        }
+        return false;
+    }
+
     @Override
     public void delete() {
         Connector connector = Connector.getConnector();
