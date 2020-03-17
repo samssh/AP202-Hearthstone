@@ -57,6 +57,10 @@ public class Deck implements SaveAble {
         else cardList.add(card);
     }
 
+    public void removeCard(Card card){
+        cardList.remove(card);
+    }
+
     public int numberOfCard(Card card){
         int c=0;
         for (int i = 0; i < cardList.size(); i++) {

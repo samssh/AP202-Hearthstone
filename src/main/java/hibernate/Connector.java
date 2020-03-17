@@ -68,11 +68,11 @@ public class Connector {
         session.delete(o.getClass().getName(), o);
     }
 
-    public Object fetchById(Class c, Serializable id) {
+    Object fetchById(Class c, Serializable id) {
         return session.get(c.getName(), id);
     }
 
-    public List fetchAll(Class c) {
+    List fetchAll(Class c) {
         Criteria criteria = session.createCriteria(c.getName());
         return criteria.list();
     }

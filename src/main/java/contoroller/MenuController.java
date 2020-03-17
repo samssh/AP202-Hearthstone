@@ -1,8 +1,12 @@
 package contoroller;
 
 import hibernate.Connector;
+import hibernate.ManualMapping;
 import model.*;
 import view.Console;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class MenuController {
     private Menu menu;
@@ -23,7 +27,8 @@ public class MenuController {
                 i = -1;
                 continue;
             }
-            while (true) {
+            boolean end=true;
+            while (end) {
                 String s = console.read();
                 for (Menu m : menu.getMenuList()) {
                     if (m.isHasEntryList()) {
@@ -36,12 +41,14 @@ public class MenuController {
                                     break;
                                 }
                             }
+                            end=false;
                             break;
                         }
 
                     } else {
                         if (m.getKey().equals(s)) {
                             menu = m;
+                            end=false;
                             break;
                         }
                     }
@@ -49,8 +56,6 @@ public class MenuController {
                 //incorrect input state
             }
         }
-
-
     }
 
     private void action() {
@@ -127,6 +132,9 @@ public class MenuController {
             case "noDeckCard":
                 noDeckCard();
                 break;
+            case "allCard":
+                allCard();
+                break;
             case "addCard":
                 addCard();
                 break;
@@ -139,53 +147,271 @@ public class MenuController {
             case "detailCollection":
                 detailCollection();
                 break;
-            case "allCard":
-                allCard();
-                break;
         }
 
 
     }
 
-    private void buyAble() {
-
-    }
-
-    private void wallet() {
-        Console.getConsole().print("your coin is: "+player.getCoin());
+    private void detailCollection() {
+        Console.getConsole().print(Models.searchUnit(menu.getEntry()).toString());
         i=0;
     }
 
-    private void sell() {
-        Card c=Models.search(menu.getEntry());
-        if (player.getCards().contains(c)) {
-            if (!player.isInDeck(c)){
-                player.removeCard(c);
-                player.setCoin(player.getCoin()+c.getPrice());
-                Console.getConsole().print("sell card done");
-            }else {
-                Console.getConsole().print("you cant sell this card because this card in your deck");
+    private void detailStore() {
+        Console.getConsole().print(Models.searchUnit(menu.getEntry()).toString());
+        i=0;
+    }
+
+    private void removeCard() {
+        Card card=Models.searchCard(menu.getEntry());
+        if (player.getCards().contains(card)){
+            if (player.getSelectedDeck().numberOfCard(card)>0){
+                player.getSelectedDeck().removeCard(card);
+                Console.getConsole().print("card removed");
             }
-        }else {
+            else {
+                Console.getConsole().print("you cant add this card to your deck");
+            }
+        }
+        else {
             Console.getConsole().print("you dont have this card");
         }
         i=0;
     }
 
-    private void buy() {
-        Card c=Models.search(menu.getEntry());
-        if (c.getPrice()<=player.getCoin()) {
-            if (player.numberOfCard(c) < 2){
-                player.addCard(c);
-                player.setCoin(player.getCoin()-c.getPrice());
-                Console.getConsole().print("buy card done");
-            }else {
-                Console.getConsole().print("you cant buy this because you have 2 of this");
+    private void addCard() {
+        Card card=Models.searchCard(menu.getEntry());
+        if (player.getCards().contains(card)){
+            if (card.getClassOfCard().isItForHero(player.getSelectedHero())
+                    && player.getSelectedDeck().numberOfCard(card) < 2){
+                player.getSelectedDeck().addCard(card);
+                Console.getConsole().print("card added");
             }
-        }else {
-            Console.getConsole().print("you dont have enough coin to buy this");
+            else {
+                Console.getConsole().print("you cant add this card to your deck");
+            }
+        }
+        else {
+            Console.getConsole().print("you dont have this card");
         }
         i=0;
+    }
+
+    private void allCard() {
+        List<String> list = new ArrayList<>();
+        List<Card> cards = player.getCards();
+        for (int i = 0; i < cards.size(); i++) {
+            Card c = cards.get(i);
+            if (i < cards.size() - 1 && c.equals(cards.get(i + 1))) {
+                list.add(c.getName() + "(2)");
+                i++;
+                continue;
+            }
+            list.add(c.getName());
+        }
+        if (list.size() == 0)
+            Console.getConsole().print("no card for your hero");
+        else {
+            Console.getConsole().print("the card for your hero:");
+            for (String str : list)
+                Console.getConsole().print(str);
+        }
+        i=0;
+    }
+
+    private void noDeckCard() {
+        List<String> list = new ArrayList<>();
+        List<Card> cards = player.getCards();
+        for (int i = 0; i < cards.size(); i++) {
+            Card c = cards.get(i);
+            if (c.getClassOfCard().isItForHero(player.getSelectedHero())
+                    && player.getSelectedDeck().numberOfCard(c) < 2) {
+                list.add(c.getName());
+                if (i < cards.size() - 1 && c.equals(cards.get(i + 1))) {
+                    i++;
+                }
+
+            }
+        }
+        if (list.size() == 0)
+            Console.getConsole().print("no card to add");
+        else {
+            Console.getConsole().print("the card that you can add to your deck:");
+            for (String str : list)
+                Console.getConsole().print(str);
+        }
+        i=0;
+    }
+
+    private void deckCards() {
+        List<String> list = new ArrayList<>();
+        List<Card> cList = player.getSelectedDeck().getCardList();
+        for (int i = 0; i < cList.size(); i++) {
+            if (i < cList.size() - 1) {
+                if (cList.get(i).equals(cList.get(i + 1))) {
+                    list.add(cList.get(i).getName() + "(2)");
+                    i++;
+                    continue;
+                }
+            }
+            list.add(cList.get(i).getName());
+        }
+        if (list.size() == 0)
+            Console.getConsole().print("no card to Deck");
+        else {
+            Console.getConsole().print("the card in your deck:");
+            for (String str : list)
+                Console.getConsole().print(str);
+        }
+        i=0;
+    }
+
+    private void availableCard() {
+        List<String> list = new ArrayList<>();
+        List<Card> cards = player.getCards();
+        for (int i = 0; i < cards.size(); i++) {
+            Card c = cards.get(i);
+            if (c.getClassOfCard().isItForHero(player.getSelectedHero())) {
+                if (i < cards.size() - 1 && c.equals(cards.get(i + 1))) {
+                    list.add(c.getName() + "(2)");
+                    i++;
+                    continue;
+                }
+                list.add(c.getName());
+            }
+        }
+        if (list.size() == 0)
+            Console.getConsole().print("no card for your hero");
+        else {
+            Console.getConsole().print("the card for your hero:");
+            for (String str : list)
+                Console.getConsole().print(str);
+        }
+        i=0;
+    }
+
+    private void selectHero() {
+        for (Hero h : player.getHeroes())
+            if (h.getName().equals(menu.getEntry())) {
+                if (!h.equals(player.getSelectedHero())) {
+                    player.setSelectedHero(h);
+                    player.setSelectedDeck(player.getHeroDeck(h));
+                    Console.getConsole().print("your default hero has changed to " + h.getName());
+                    i = 0;
+                    return;
+                } else {
+                    Console.getConsole().print("your hero already is " + h.getName());
+                    i = 0;
+                    return;
+                }
+            }
+        Console.getConsole().print("this hero is locked");
+        i = 0;
+    }
+
+    private void defaultHero() {
+        Console.getConsole().print("your default hero is:");
+        Console.getConsole().print(player.getSelectedHero().getName());
+        i = 0;
+    }
+
+    private void openHero() {
+        Console.getConsole().print("your hero is:");
+        for (Hero h : player.getHeroes())
+            Console.getConsole().print(h.getName());
+        i = 0;
+    }
+
+    private void back() {
+        i = 0;
+    }
+
+    private void collection() {
+        Console.getConsole().print("Collection");
+    }
+
+    private void helpStore() {
+        // keys most be printed
+        Console.getConsole().print("help");
+        i = 0;
+    }
+
+    private void helpCollection() {
+        // keys most be printed
+        Console.getConsole().print("help");
+        i = 0;
+    }
+
+    private void sellAble() {
+        List<String> list = new ArrayList<>();
+        for (Card c : player.getCards()) {
+            if (player.isInDeck(c))
+                list.add(c.getName());
+        }
+        if (list.size() == 0)
+            Console.getConsole().print("nothing to sell!!!");
+        else {
+            Console.getConsole().print("you can sell these:");
+            for (String str : list) {
+                Console.getConsole().print(str);
+            }
+        }
+        i = 0;
+
+    }
+
+    private void buyAble() {
+        List<String> list = new ArrayList<>();
+        for (Card c : Models.cards) {
+            if (c.getPrice() <= player.getCoin() && player.numberOfCard(c) < 2)
+                list.add(c.getName());
+        }
+        if (list.size() == 0)
+            Console.getConsole().print("nothing to buy!!!");
+        else {
+            Console.getConsole().print("you can buy these:");
+            for (String str : list) {
+                Console.getConsole().print(str);
+            }
+        }
+        i = 0;
+    }
+
+    private void wallet() {
+        Console.getConsole().print("your coin is: " + player.getCoin());
+        i = 0;
+    }
+
+    private void sell() {
+        Card c = Models.searchCard(menu.getEntry());
+        if (player.getCards().contains(c)) {
+            if (!player.isInDeck(c)) {
+                player.removeCard(c);
+                player.setCoin(player.getCoin() + c.getPrice());
+                Console.getConsole().print("sell card done");
+            } else {
+                Console.getConsole().print("you cant sell this card because this card in your deck");
+            }
+        } else {
+            Console.getConsole().print("you dont have this card");
+        }
+        i = 0;
+    }
+
+    private void buy() {
+        Card c = Models.searchCard(menu.getEntry());
+        if (c.getPrice() <= player.getCoin()) {
+            if (player.numberOfCard(c) < 2) {
+                player.addCard(c);
+                player.setCoin(player.getCoin() - c.getPrice());
+                Console.getConsole().print("buy card done");
+            } else {
+                Console.getConsole().print("you cant buy this because you have 2 of this");
+            }
+        } else {
+            Console.getConsole().print("you dont have enough coin to buy this");
+        }
+        i = 0;
     }
 
     private void store() {
@@ -195,40 +421,40 @@ public class MenuController {
     private void helpMain() {
         // keys most be printed
         Console.getConsole().print("help");
-        i=0;
+        i = 0;
     }
 
     private void exit() {
-        Connector connector=Connector.getConnector();
+        Connector connector = Connector.getConnector();
         connector.open();
         connector.beginTransaction();
-        if (player!=null)
-        player.saveOrUpdate();
+        if (player != null)
+            player.saveOrUpdate();
         connector.commit();
         connector.close();
         System.exit(0);
     }
 
     private void deleteAccount() {
-        Connector connector=Connector.getConnector();
+        Connector connector = Connector.getConnector();
         connector.open();
         connector.beginTransaction();
         player.delete();
-        player=null;
+        player = null;
         connector.commit();
         connector.close();
-        i=0;
+        i = 0;
     }
 
     private void logOut() {
-        Connector connector=Connector.getConnector();
+        Connector connector = Connector.getConnector();
         connector.open();
         connector.beginTransaction();
         player.saveOrUpdate();
-        player=null;
+        player = null;
         connector.commit();
         connector.close();
-        i=0;
+        i = 0;
     }
 
     private void main() {
@@ -239,29 +465,32 @@ public class MenuController {
         while (true) {
             Console.getConsole().print("enter user name");
             String s = Console.getConsole().read();
-            if ("&".equals(s)){
-                i=0;
+            if ("&".equals(s)) {
+                i = 0;
                 return;
             }
-            Player p=(Player) Connector.getConnector().fetchById(Player.class,s);
-            if (p!=null){
+            Connector connector=Connector.getConnector();
+            connector.open();
+            Player p = (Player) ManualMapping.fetch(Player.class, s);
+            connector.close();
+            if (p != null) {
                 while (true) {
                     Console.getConsole().print("enter password");
                     String pass1 = Console.getConsole().read();
-                    if ("&".equals(pass1)){
-                        i=0;
+                    if ("&".equals(pass1)) {
+                        i = 0;
                         return;
                     }
-                    if (pass1.equals(p.getPassword())){
-                        player=p;
-                        i=1;
+                    if (pass1.equals(p.getPassword())) {
+                        player = p;
+                        i = 1;
                         return;
-                    }else {
+                    } else {
                         Console.getConsole().print("password wrong");
                         Console.getConsole().print("Enter again or Enter '&' to back");
                     }
                 }
-            }else {
+            } else {
                 Console.getConsole().print("this user not exist enter another");
                 Console.getConsole().print("Enter again or Enter '&' to back");
             }
@@ -272,32 +501,36 @@ public class MenuController {
         while (true) {
             Console.getConsole().print("enter user name");
             String s = Console.getConsole().read();
-            if ("&".equals(s)){
-                i=0;
+            if ("&".equals(s)) {
+                i = 0;
                 return;
             }
-            Player p=(Player) Connector.getConnector().fetchById(Player.class,s);
-            if (p==null){
+            Connector connector=Connector.getConnector();
+            connector.open();
+            Player p = (Player) ManualMapping.fetch(Player.class, s);
+            connector.close();
+            if (p == null) {
                 while (true) {
                     Console.getConsole().print("enter password");
                     String pass1 = Console.getConsole().read();
-                    if ("&".equals(pass1)){
-                        i=0;
+                    if ("&".equals(pass1)) {
+                        i = 0;
                         return;
                     }
                     Console.getConsole().print("enter password again");
                     String pass2 = Console.getConsole().read();
-                    if (pass1.equals(pass2)){
-                        player=new Player(s,pass1,System.nanoTime(),30,
-                                Models.mage,Models.firstCards,Models.firstHeros,Models.firstDecks);
-                        i=1;
+                    if (pass1.equals(pass2)) {
+                        player = new Player(s, pass1, System.nanoTime(), 30,
+                                Models.mage, Models.mageDeck, Models.firstCards, Models.firstHeros, Models.firstDecks);
+                        Console.getConsole().print(player.toString());
+                        i = 1;
                         return;
-                    }else {
+                    } else {
                         Console.getConsole().print("password not same");
                         Console.getConsole().print("Enter again or Enter '&' to back");
                     }
                 }
-            }else {
+            } else {
                 Console.getConsole().print("this user exist enter another");
                 Console.getConsole().print("Enter again or Enter '&' to back");
             }
