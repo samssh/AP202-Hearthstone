@@ -12,12 +12,13 @@ public class Minion extends Card {
     private int hpFrz;
 
     // only hibernate use this constructor
-    public Minion(){}
+    public Minion() {
+    }
 
-    public Minion(String name, String description,int price,
+    public Minion(String name, String description, int price,
                   ClassOfCard classOfCard, Rarity rarity,
                   int manaFrz, int attFrz, int hpFrz) {
-        super(name, description,price, classOfCard, rarity, manaFrz);
+        super(name, description, price, classOfCard, rarity, manaFrz);
         this.attFrz = attFrz;
         this.hpFrz = hpFrz;
     }
@@ -40,13 +41,13 @@ public class Minion extends Card {
 
     @Override
     public void delete() {
-        Connector connector=Connector.getConnector();
+        Connector connector = Connector.getConnector();
         connector.delete(this);
     }
 
     @Override
     public void saveOrUpdate() {
-        Connector connector=Connector.getConnector();
+        Connector connector = Connector.getConnector();
         connector.saveOrUpdate(this.classOfCard);
         connector.saveOrUpdate(this);
 
@@ -56,6 +57,7 @@ public class Minion extends Card {
     public void load() {
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public String getId() {
         return getName();
@@ -64,14 +66,14 @@ public class Minion extends Card {
     @Override
     public String toString() {
         return "Minion{" +
-                "attFrz=" + attFrz +
-                ", hpFrz=" + hpFrz +
-                ", classOfCard=" + classOfCard +
-                ", rarity=" + rarity +
-                ", manaFrz=" + manaFrz +
                 ", name='" + name + '\'' +
                 ", description='" + description + '\'' +
+                ", mana=" + manaFrz +
                 ", price=" + price +
+                "att=" + attFrz +
+                ", hp=" + hpFrz +
+                ", classOfCard=" + classOfCard +
+                ", rarity=" + rarity +
                 '}';
     }
 }

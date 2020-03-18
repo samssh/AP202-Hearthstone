@@ -8,12 +8,14 @@ import javax.persistence.*;
 public class Hero extends Unit {
     @Column
     private int hpFrz;
-    // only hibernate use this constructor
-    public Hero(){}
 
-    public Hero(String name,String description,int price,int hpFrz){
-        super(name,description,price);
-        this.hpFrz=hpFrz;
+    // only hibernate use this constructor
+    public Hero() {
+    }
+
+    public Hero(String name, String description, int price, int hpFrz) {
+        super(name, description, price);
+        this.hpFrz = hpFrz;
     }
 
 
@@ -27,13 +29,13 @@ public class Hero extends Unit {
 
     @Override
     public void delete() {
-        Connector connector=Connector.getConnector();
+        Connector connector = Connector.getConnector();
         connector.delete(this);
     }
 
     @Override
     public void saveOrUpdate() {
-        Connector connector=Connector.getConnector();
+        Connector connector = Connector.getConnector();
         connector.saveOrUpdate(this);
     }
 
@@ -41,6 +43,7 @@ public class Hero extends Unit {
     public void load() {
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public String getId() {
         return getName();
@@ -49,9 +52,9 @@ public class Hero extends Unit {
     @Override
     public String toString() {
         return "Hero{" +
-                "hpFrz=" + hpFrz +
                 ", name='" + name + '\'' +
                 ", description='" + description + '\'' +
+                "hp=" + hpFrz +
                 ", price=" + price +
                 '}';
     }

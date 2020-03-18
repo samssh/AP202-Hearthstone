@@ -5,11 +5,11 @@ import javax.persistence.*;
 @Entity
 abstract public class Card extends Unit {
     @ManyToOne
-    protected ClassOfCard classOfCard;
+    ClassOfCard classOfCard;
     @Column
-    protected Rarity rarity;
+    Rarity rarity;
     @Column
-    protected int manaFrz;
+    int manaFrz;
 
     // only hibernate use this constructor
     public Card() {}

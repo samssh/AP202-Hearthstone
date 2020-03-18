@@ -1,4 +1,4 @@
-package contoroller;
+package controller;
 
 import model.Card;
 import model.Hero;
@@ -12,22 +12,22 @@ import java.util.List;
 public class MenuMaker {
     public static Menu getWelcomeMenu(){
         Menu welcome=new Menu("welcome","",false);
-        Menu signUp=new Menu("signUp","N",false);
-        Menu login=new Menu("login","Y",false);
+        Menu signUp=new Menu("signUp","n",false);
+        Menu login=new Menu("login","y",false);
         Menu mainMenu=new Menu("main","",false);
-        Menu logOut=new Menu("logOut","log Out",false);
-        Menu deleteAcc=new Menu("deleteAccount","delete-player",false);
-        Menu exit=new Menu("exit","exit-a",false);
-        Menu helpMain=new Menu("helpMain","hearthstone--help",false);
+        Menu logOut=new Menu("logOut","log out",false);
+        Menu deleteAcc=new Menu("deleteAccount","delete account",false);
+        Menu exit=new Menu("exit","exit",false);
+        Menu helpMain=new Menu("helpMain","help",false);
         Menu store=new Menu("store","store",false);
         Menu buy=new Menu("buy","buy",true);
         Menu sell=new Menu("sell","sell",true);
         Menu wallet=new Menu("wallet","wallet",false);
-        Menu buyAble=new Menu("buyAble","ls-b",false);
-        Menu sellAble=new Menu("sellAble","ls-s",false);
-        Menu helpCollection=new Menu("helpCollection","hearthstone--help",false);
-        Menu helpStore=new Menu("helpStore","hearthstone--help",false);
-        Menu collection=new Menu("collection","collections",false);
+        Menu buyAble=new Menu("buyAble","ls -b",false);
+        Menu sellAble=new Menu("sellAble","ls -s",false);
+        Menu helpCollection=new Menu("helpCollection","help",false);
+        Menu helpStore=new Menu("helpStore","help",false);
+        Menu collection=new Menu("collection","collection",false);
         Menu back=new Menu("back","back",false);
         Menu openHero=new Menu("openHero","ls -a -heros",false);
         Menu defaultHero=new Menu("defaultHero","ls -m -heros",false);
@@ -39,7 +39,7 @@ public class MenuMaker {
         Menu removeCard=new Menu("removeCard","remove", true);
         Menu detailStore=new Menu("detailStore","detail", true);
         Menu detailCollection=new Menu("detailCollection","detail", true);
-        Menu allCard=new Menu("allCard","ls -o -card",false);
+        Menu allCard=new Menu("allCard","ls -o -cards",false);
 //        Menu =new Menu(,,false);
 
         welcome.getMenuList().add(signUp);
@@ -51,6 +51,7 @@ public class MenuMaker {
         signUp.getMenuList().add(welcome);
         signUp.getMenuList().add(mainMenu);
         deleteAcc.getMenuList().add(welcome);
+        deleteAcc.getMenuList().add(mainMenu);
         mainMenu.getMenuList().add(logOut);
         mainMenu.getMenuList().add(deleteAcc);
         mainMenu.getMenuList().add(exit);
@@ -114,20 +115,7 @@ public class MenuMaker {
         detailStore.setEntryList(new ArrayList<>());
         detailStore.getEntryList().addAll(heroName);
         detailStore.getEntryList().addAll(cardName);
-
-//        .getMenuList().add();
-
         return welcome;
-    }
 
-//    public static void main(String[] args) throws FileNotFoundException {
-//        File file=new File("lk.txt");
-//        PrintStream p=new PrintStream(file);
-//        getWelcomeMenu();
-//        for (int i = 0; i < Menu.i; i++) {
-//            p.println("case "+'"'+k[i].getName()+'"'+":");
-//            p.println(k[i].getName()+"();");
-//            p.println("break;");
-//        }
-//    }
+    }
 }

@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ManualMapping {
+    @SuppressWarnings("unchecked")
     public static void saveOrUpdateList(List listId, List list) {
         listId.subList(0, listId.size()).clear();
         for (Object element : list) {
@@ -17,7 +18,7 @@ public class ManualMapping {
     public static void deleteList(List list){
         for (Object o : list) ((SaveAble)o).delete();
     }
-
+    @SuppressWarnings("unchecked")
     public static List fetchList(Class target, List listId) {
         List objectList = new ArrayList();
         for (Object s : listId) {

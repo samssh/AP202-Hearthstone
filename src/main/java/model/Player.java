@@ -60,11 +60,8 @@ public class Player implements SaveAble {
         this.coin = coin;
         this.selectedHero = selectedHero;
         this.selectedDeck = selectedDeck;
-        this.cartsId = cartsId;
         this.cards = cards;
-        this.heroesId = heroesId;
         this.heroes = heroes;
-        this.decksId = decksId;
         this.decks = decks;
     }
 
@@ -175,8 +172,8 @@ public class Player implements SaveAble {
 
     public int numberOfCard(Card card) {
         int c = 0;
-        for (int i = 0; i < cards.size(); i++) {
-            if (cards.get(i).equals(card)) {
+        for (Card value : cards) {
+            if (value.equals(card)) {
                 c++;
             }
         }
@@ -200,7 +197,6 @@ public class Player implements SaveAble {
 
     }
 
-
     @Override
     public void delete() {
         Connector connector = Connector.getConnector();
@@ -216,7 +212,7 @@ public class Player implements SaveAble {
         ManualMapping.saveOrUpdateList(decksId, decks);
         connector.saveOrUpdate(this);
     }
-
+    @SuppressWarnings("unchecked")
     @Override
     public void load() {
         setDecks(ManualMapping.fetchList(Deck.class, decksId));
@@ -224,26 +220,9 @@ public class Player implements SaveAble {
         setCards((ManualMapping.fetchList(Card.class, cartsId)));
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public String getId() {
         return getUserName();
-    }
-
-    @Override
-    public String toString() {
-        return "Player{" +
-                "userName='" + userName + '\'' +
-                ", password='" + password + '\'' +
-                ", creatTime=" + creatTime +
-                ", coin=" + coin +
-                ", selectedHero=" + selectedHero +
-                ", selectedDeck=" + selectedDeck +
-                ", cartsId=" + cartsId +
-                ", cards=" + cards +
-                ", heroesId=" + heroesId +
-                ", heroes=" + heroes +
-                ", decksId=" + decksId +
-                ", decks=" + decks +
-                '}';
     }
 }
