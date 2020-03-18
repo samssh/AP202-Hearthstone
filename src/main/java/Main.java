@@ -19,11 +19,6 @@ public class Main {
             rootLogger.removeHandler(handlers[0]);
         }
         logger.setLevel(Level.INFO);
-        // add file handler for test
-        fileTxt = new FileHandler("Logging.txt");
-        formatter = new SimpleFormatter();
-        fileTxt.setFormatter(formatter);
-        logger.addHandler(fileTxt);
         // add my handler
         logger.addHandler(SamHandler.getHandler());
         Connector connector=Connector.getConnector();
