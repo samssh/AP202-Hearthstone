@@ -25,11 +25,8 @@ public class ClassOfCard implements SaveAble {
         this.heroName = heroName;
     }
 
-    public boolean isItForHero(Hero h){
-        if (heroName.equals(h.getName())|| heroName.equals("Neutral")){
-            return true;
-        }
-        return false;
+    public boolean isItForHero(Hero h) {
+        return heroName.equals(h.getName()) || heroName.equals("Neutral");
     }
 
     @Override
@@ -48,6 +45,7 @@ public class ClassOfCard implements SaveAble {
     public void load() {
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public String getId() {
         return heroName;

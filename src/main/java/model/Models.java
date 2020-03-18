@@ -24,18 +24,15 @@ public class Models {
         cards = new ArrayList<>();
         cards.addAll(minions);
         cards.addAll(spells);
-        for (Hero h : heroes) {
+        for (Hero h : heroes)
             if (h.getName().equals("Mage"))
                 mage = h;
-            System.err.println(h.getName());
-            System.out.println(mage);
-        }
         firstHeros = new ArrayList<>(heroes);
         firstDecks = new ArrayList<>();
         for (Hero h : firstHeros) {
             firstDecks.add(new Deck(h));
             if (h.getName().equals("Mage"))
-                mageDeck=firstDecks.get(firstDecks.size()-1);
+                mageDeck = firstDecks.get(firstDecks.size() - 1);
         }
         firstCards = new ArrayList<>();
         firstCards.add(searchCard("polymorph"));
@@ -57,12 +54,14 @@ public class Models {
                 return c;
         return null;
     }
+
     public static Hero searchHero(String s) {
         for (Hero h : heroes)
             if (h.getName().equals(s))
                 return h;
         return null;
     }
+
     public static Unit searchUnit(String s) {
         for (Hero h : heroes)
             if (h.getName().equals(s))
@@ -72,6 +71,4 @@ public class Models {
                 return c;
         return null;
     }
-
-
 }

@@ -68,6 +68,10 @@ public class Connector {
         session.delete(o.getClass().getName(), o);
     }
 
+    public Criteria createCriteria(Class c){
+        return session.createCriteria(c);
+    }
+
     Object fetchById(Class c, Serializable id) {
         return session.get(c.getName(), id);
     }
@@ -76,5 +80,6 @@ public class Connector {
         Criteria criteria = session.createCriteria(c.getName());
         return criteria.list();
     }
+
 
 }

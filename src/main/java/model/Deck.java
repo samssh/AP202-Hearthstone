@@ -25,11 +25,13 @@ public class Deck implements SaveAble {
         cardListId = new ArrayList<>();
         cardList = new ArrayList<>();
     }
-    // only hibernate use this constructor
-    public Deck(){}
 
-    public Deck(Hero hero){
-        this.hero=hero;
+    // only hibernate use this constructor
+    public Deck() {
+    }
+
+    public Deck(Hero hero) {
+        this.hero = hero;
     }
 
     public Hero getHero() {
@@ -52,25 +54,26 @@ public class Deck implements SaveAble {
         Id = id;
     }
 
-    public void addCard(Card card){
-        if (cardList.contains(card)) cardList.add(this.cardList.lastIndexOf(card),card);
+    public void addCard(Card card) {
+        if (cardList.contains(card)) cardList.add(this.cardList.lastIndexOf(card), card);
         else cardList.add(card);
     }
 
-    public void removeCard(Card card){
+    public void removeCard(Card card) {
         cardList.remove(card);
     }
 
-    public int numberOfCard(Card card){
-        int c=0;
-        for (int i = 0; i < cardList.size(); i++) {
-            if (cardList.get(i).equals(card)){
+    public int numberOfCard(Card card) {
+        int c = 0;
+        for (Card value : cardList) {
+            if (value.equals(card)) {
                 c++;
             }
         }
         return c;
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public Long getId() {
         return Id;
@@ -90,6 +93,7 @@ public class Deck implements SaveAble {
 
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public void load() {
         setCardList(ManualMapping.fetchList(Card.class, cardListId));

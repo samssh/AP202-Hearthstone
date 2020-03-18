@@ -8,11 +8,11 @@ import java.util.Objects;
 @Entity
 abstract public class Unit implements SaveAble {
     @Id
-    protected String name;
+    String name;
     @Column
-    protected String description;
+    String description;
     @Column
-    protected int price;
+    int price;
     // only hibernate use this constructor
     public Unit(){}
 

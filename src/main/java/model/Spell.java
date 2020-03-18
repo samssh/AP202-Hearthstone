@@ -34,6 +34,7 @@ public class Spell extends Card {
 
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public String getId() {
         return getName();
@@ -42,12 +43,12 @@ public class Spell extends Card {
     @Override
     public String toString() {
         return "Spell{" +
-                "classOfCard=" + classOfCard +
-                ", rarity=" + rarity +
-                ", manaFrz=" + manaFrz +
                 ", name='" + name + '\'' +
                 ", description='" + description + '\'' +
+                ", mana=" + manaFrz +
                 ", price=" + price +
+                "classOfCard=" + classOfCard +
+                ", rarity=" + rarity +
                 '}';
     }
 }

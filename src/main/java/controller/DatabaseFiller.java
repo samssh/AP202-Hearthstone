@@ -1,15 +1,13 @@
-package contoroller;
+package controller;
 
 import hibernate.*;
 import model.*;
 
-import java.io.File;
 import java.io.FileNotFoundException;
-import java.io.PrintStream;
 import java.util.List;
 
 public class DatabaseFiller {
-    public static void fill(){
+    private static void fill(){
         Connector connector= Connector.getConnector();
         connector.open();
         connector.beginTransaction();
@@ -102,12 +100,7 @@ public class DatabaseFiller {
         Connector connector=Connector.getConnector();
         connector.open();
         List heros=ManualMapping.fetchAll(Hero.class);
-        File file=new File("./data/t.txt");
-        PrintStream printStream=new PrintStream(file);
-        PrintStream out=System.out;
-        System.setOut(printStream);
         heros.forEach(System.out::println);
-
         System.out.println();
         System.out.println();
         List minions=ManualMapping.fetchAll(Minion.class);
@@ -116,7 +109,10 @@ public class DatabaseFiller {
         System.out.println();
         List spells=ManualMapping.fetchAll(Spell.class);
         spells.forEach(System.out::println);
-        System.setOut(out);
+        System.out.println();
+        System.out.println();
+        List players=ManualMapping.fetchAll(Player.class);
+        players.forEach(System.out::println);
         connector.close();
         System.exit(0);
     }
