@@ -41,12 +41,5 @@ public class LogViewer {
         System.out.println();
         bodyLogs.forEach(System.out::println);
         System.exit(0);
-//connector.beginTransaction();
-//        HeaderLog bodyLog=(HeaderLog) ManualMapping.fetch(HeaderLog.class, 204118464030086L);
-//        bodyLog.delete();
-//        connector.commit();
-//        connector.close();
-//        System.exit(0);
-
     }
 }
