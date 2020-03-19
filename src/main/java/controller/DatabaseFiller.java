@@ -18,13 +18,15 @@ public class DatabaseFiller {
     }
     // hero
     private static void writeHero(){
-        new Hero("Mage","She is a skilled wizard who has special skills in using spells.",8
+        new Hero("Mage","She is a skilled wizard who has special skills in using spells."
                 ,30).saveOrUpdate();
-        new Hero("Rogue","He is a thief and most of his abilities are in stealing from the enemy!",8
+        new Hero("Rogue","He is a thief and most of his abilities are in stealing from the enemy!"
                 ,30).saveOrUpdate();
         new Hero("Warlock",
                 "You will never see anyone beyond him. He passes on his life and property and sacrifices something to win the war.",
-                9,35).saveOrUpdate();
+                35).saveOrUpdate();
+        new Hero("Saman","he is nice master but his assistants are not(special cards release in next version)"
+                ,37).saveOrUpdate();
     }
     // carts
     private static void writeCart(){
@@ -34,6 +36,8 @@ public class DatabaseFiller {
         rogue.saveOrUpdate();
         ClassOfCard warlock=new ClassOfCard("Warlock");
         warlock.saveOrUpdate();
+        ClassOfCard saman=new ClassOfCard("Saman");
+        saman.saveOrUpdate();
         ClassOfCard neutral=new ClassOfCard("Neutral");
         neutral.saveOrUpdate();
         new Spell("polymorph",

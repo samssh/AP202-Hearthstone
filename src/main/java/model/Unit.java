@@ -11,15 +11,12 @@ abstract public class Unit implements SaveAble {
     String name;
     @Column
     String description;
-    @Column
-    int price;
     // only hibernate use this constructor
     public Unit(){}
 
-    public Unit(String name,String description,int price){
+    public Unit(String name,String description){
         this.name=name;
         this.description=description;
-        this.price=price;
     }
 
 
@@ -37,14 +34,6 @@ abstract public class Unit implements SaveAble {
 
     public void setDescription(String description) {
         this.description = description;
-    }
-
-    public int getPrice() {
-        return price;
-    }
-
-    public void setPrice(int price) {
-        this.price = price;
     }
 
     @Override

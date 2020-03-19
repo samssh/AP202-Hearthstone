@@ -31,8 +31,6 @@ public class LogViewer {
         in.nextLine();
         String end=new Date(System.currentTimeMillis()-hour*3600000).toInstant().toString();
         String start=new Date(System.currentTimeMillis()-(hour+1)*3600000).toInstant().toString();
-        System.out.println(end);
-        System.out.println(start);
         Criteria criteriaBody=connector.createCriteria(BodyLog.class);
         criteriaBody.add(Restrictions.between("instant",start,end));
         criteriaBody.add(Restrictions.eq("headId",id));

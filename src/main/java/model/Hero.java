@@ -13,8 +13,8 @@ public class Hero extends Unit {
     public Hero() {
     }
 
-    public Hero(String name, String description, int price, int hpFrz) {
-        super(name, description, price);
+    public Hero(String name, String description, int hpFrz) {
+        super(name, description);
         this.hpFrz = hpFrz;
     }
 
@@ -55,7 +55,6 @@ public class Hero extends Unit {
                 ", name='" + name + '\'' +
                 ", description='" + description + '\'' +
                 "hp=" + hpFrz +
-                ", price=" + price +
                 '}';
     }
 }
