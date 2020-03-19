@@ -13,6 +13,7 @@ public class Main {
     public static FileHandler fileTxt;
     public static SimpleFormatter formatter;
     public static void main(String[] args) throws IOException {
+        System.out.println("test");
         // delete console handler
         Logger rootLogger = Logger.getLogger("");
         Handler[] handlers = rootLogger.getHandlers();
