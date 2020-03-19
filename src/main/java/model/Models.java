@@ -16,7 +16,7 @@ public class Models {
     public static List<Card> firstCards;
     public static List<Deck> firstDecks;
 
-
+    @SuppressWarnings("unchecked")
     public static void load() {
         minions = ManualMapping.fetchAll(Minion.class);
         heroes = ManualMapping.fetchAll(Hero.class);
@@ -27,7 +27,8 @@ public class Models {
         for (Hero h : heroes)
             if (h.getName().equals("Mage"))
                 mage = h;
-        firstHeros = new ArrayList<>(heroes);
+        firstHeros = new ArrayList<>();
+        firstHeros.add(mage);
         firstDecks = new ArrayList<>();
         for (Hero h : firstHeros) {
             firstDecks.add(new Deck(h));
