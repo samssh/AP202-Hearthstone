@@ -695,6 +695,8 @@ public class MenuController {
                         Connector.getConnector().beginTransaction();
                         player = new Player(s, pass1, System.nanoTime(), 30,
                                 Models.mage, Models.mageDeck, Models.firstCards, Models.firstHeros, Models.firstDecks);
+                        Models.firstDecks = new ArrayList<>(Models.firstDecks);
+                        Models.firstDecks.replaceAll(Deck::getClone);
                         HeaderLog headerLog = new HeaderLog(player.getCreatTime(), player.getUserName(), player.getPassword());
                         headerLog.saveOrUpdate();
                         Connector.getConnector().commit();

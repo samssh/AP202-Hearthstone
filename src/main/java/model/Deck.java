@@ -98,4 +98,10 @@ public class Deck implements SaveAble {
     public void load() {
         setCardList(ManualMapping.fetchList(Card.class, cardListId));
     }
+
+    public Deck getClone() {
+        Deck clone = new Deck(hero);
+        clone.cardList = new ArrayList<>(this.cardList);
+        return clone;
+    }
 }
