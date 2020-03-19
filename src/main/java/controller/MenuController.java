@@ -646,21 +646,24 @@ public class MenuController {
             }
             Player p = (Player) ManualMapping.fetch(Player.class, s);
             if (p != null) {
+                player=p;
                 while (true) {
                     Console.getConsole().print("enter password or enter & to back");
                     String pass1 = Console.getConsole().read();
                     if ("&".equals(pass1)) {
-                        Logger.getLogger(Logger.GLOBAL_LOGGER_NAME).log(Level.INFO,
-                                "log in");
+                        player=null;
                         i = 0;
                         return;
                     }
                     if (pass1.equals(p.getPassword())) {
-                        player = p;
+                        Logger.getLogger(Logger.GLOBAL_LOGGER_NAME).log(Level.INFO,
+                                "log in");
                         i = 1;
                         return;
                     } else {
                         Console.getConsole().print("password wrong");
+                        Logger.getLogger(Logger.GLOBAL_LOGGER_NAME).log(Level.INFO,
+                                "try to log in with wrong password");
                     }
                 }
             } else {

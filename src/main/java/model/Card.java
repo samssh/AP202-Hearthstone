@@ -10,17 +10,20 @@ abstract public class Card extends Unit {
     Rarity rarity;
     @Column
     int manaFrz;
+    @Column
+    int price;
 
     // only hibernate use this constructor
     public Card() {}
 
-    public Card(String name,String description,int price,
+    Card(String name,String description,int price,
                 ClassOfCard classOfCard,
                 Rarity rarity,int manaFrz) {
-        super(name,description,price);
+        super(name,description);
         this.classOfCard=classOfCard;
         this.rarity=rarity;
         this.manaFrz=manaFrz;
+        this.price=price;
     }
 
 
@@ -48,4 +51,11 @@ abstract public class Card extends Unit {
         this.manaFrz = manaFrz;
     }
 
+    public int getPrice() {
+        return price;
+    }
+
+    public void setPrice(int price) {
+        this.price = price;
+    }
 }
