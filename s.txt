@@ -1,5 +1,0 @@
-welcome
-already have an account?
-if you have an account just enter y
-if dont you have an account just enter n
-enter 'exit' to exit
