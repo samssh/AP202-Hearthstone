@@ -4,6 +4,8 @@ package model;
 import hibernate.Connector;
 import hibernate.ManualMapping;
 import hibernate.SaveAble;
+import lombok.Getter;
+import lombok.Setter;
 
 import javax.persistence.*;
 import java.util.ArrayList;
@@ -13,12 +15,20 @@ import java.util.List;
 public class Deck implements SaveAble {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
+    @Setter
+    @Getter
     private Long Id;
     @ManyToOne
+    @Setter
+    @Getter
     private Hero hero;
     @Transient
+    @Setter
+    @Getter
     private List<Card> cardList;
     @ElementCollection
+    @Setter
+    @Getter
     private List<String> cardListId;
 
     {
@@ -32,26 +42,6 @@ public class Deck implements SaveAble {
 
     public Deck(Hero hero) {
         this.hero = hero;
-    }
-
-    public Hero getHero() {
-        return hero;
-    }
-
-    public void setHero(Hero hero) {
-        this.hero = hero;
-    }
-
-    public List<Card> getCardList() {
-        return cardList;
-    }
-
-    public void setCardList(List<Card> cardList) {
-        this.cardList = cardList;
-    }
-
-    public void setId(Long id) {
-        Id = id;
     }
 
     public void addCard(Card card) {

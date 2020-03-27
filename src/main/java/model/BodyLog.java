@@ -2,25 +2,38 @@ package model;
 
 import hibernate.Connector;
 import hibernate.SaveAble;
+import lombok.Getter;
+import lombok.Setter;
 
 import javax.persistence.*;
 import java.util.Date;
-import java.util.logging.Handler;
 import java.util.logging.LogRecord;
 
 @Entity
 public class BodyLog implements SaveAble {
     @Id
+    @Setter
+    @Getter
     private String instant;
     @Column
+    @Setter
+    @Getter
     private String sourceClassName;
     @Column
+    @Setter
+    @Getter
     private String sourceMethodName;
     @Column
+    @Setter
+    @Getter
     private String message;
     @Column
+    @Setter
+    @Getter
     private long millis;
     @Column
+    @Setter
+    @Getter
     private long headId;
 
     public BodyLog() {
@@ -33,54 +46,6 @@ public class BodyLog implements SaveAble {
         this.sourceMethodName = logRecord.getSourceMethodName();
         this.message = logRecord.getMessage();
         this.millis = logRecord.getMillis();
-    }
-
-    public String getInstant() {
-        return instant;
-    }
-
-    public void setInstant(String instant) {
-        this.instant = instant;
-    }
-
-    public String getSourceClassName() {
-        return sourceClassName;
-    }
-
-    public void setSourceClassName(String sourceClassName) {
-        this.sourceClassName = sourceClassName;
-    }
-
-    public String getSourceMethodName() {
-        return sourceMethodName;
-    }
-
-    public void setSourceMethodName(String sourceMethodName) {
-        this.sourceMethodName = sourceMethodName;
-    }
-
-    public String getMessage() {
-        return message;
-    }
-
-    public void setMessage(String message) {
-        this.message = message;
-    }
-
-    public long getMillis() {
-        return millis;
-    }
-
-    public void setMillis(long millis) {
-        this.millis = millis;
-    }
-
-    public long getHeadId() {
-        return headId;
-    }
-
-    public void setHeadId(long headId) {
-        this.headId = headId;
     }
 
     @Override
@@ -97,6 +62,7 @@ public class BodyLog implements SaveAble {
     public void load() {
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public String getId() {
         return instant;

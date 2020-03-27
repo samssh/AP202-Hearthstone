@@ -1,14 +1,20 @@
 package model;
 
 import hibernate.Connector;
+import lombok.Getter;
+import lombok.Setter;
 
 import javax.persistence.*;
 
 @Entity
 public class Minion extends Card {
     @Column
+    @Setter
+    @Getter
     private int attFrz;
     @Column
+    @Setter
+    @Getter
     private int hpFrz;
 
     // only hibernate use this constructor
@@ -20,22 +26,6 @@ public class Minion extends Card {
                   int manaFrz, int attFrz, int hpFrz) {
         super(name, description, price, classOfCard, rarity, manaFrz);
         this.attFrz = attFrz;
-        this.hpFrz = hpFrz;
-    }
-
-    public int getAttFrz() {
-        return attFrz;
-    }
-
-    public void setAttFrz(int attFrz) {
-        this.attFrz = attFrz;
-    }
-
-    public int getHpFrz() {
-        return hpFrz;
-    }
-
-    public void setHpFrz(int hpFrz) {
         this.hpFrz = hpFrz;
     }
 

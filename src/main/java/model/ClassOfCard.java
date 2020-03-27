@@ -2,26 +2,22 @@ package model;
 
 import hibernate.Connector;
 import hibernate.SaveAble;
+import lombok.Getter;
+import lombok.Setter;
 
 import javax.persistence.*;
 
 @Entity
 public class ClassOfCard implements SaveAble {
     @Id
+    @Setter
+    @Getter
     private String heroName;
 
     public ClassOfCard() {
     }
 
     public ClassOfCard(String heroName) {
-        this.heroName = heroName;
-    }
-
-    public String getHeroName() {
-        return heroName;
-    }
-
-    public void setHeroName(String heroName) {
         this.heroName = heroName;
     }
 

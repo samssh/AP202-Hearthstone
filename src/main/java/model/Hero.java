@@ -1,12 +1,16 @@
 package model;
 
 import hibernate.Connector;
+import lombok.Getter;
+import lombok.Setter;
 
 import javax.persistence.*;
 
 @Entity
 public class Hero extends Unit {
     @Column
+    @Setter
+    @Getter
     private int hpFrz;
 
     // only hibernate use this constructor
@@ -15,15 +19,6 @@ public class Hero extends Unit {
 
     public Hero(String name, String description, int hpFrz) {
         super(name, description);
-        this.hpFrz = hpFrz;
-    }
-
-
-    public int getHpFrz() {
-        return hpFrz;
-    }
-
-    public void setHpFrz(int hpFrz) {
         this.hpFrz = hpFrz;
     }
 

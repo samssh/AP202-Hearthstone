@@ -3,6 +3,8 @@ package model;
 import hibernate.Connector;
 import hibernate.ManualMapping;
 import hibernate.SaveAble;
+import lombok.Getter;
+import lombok.Setter;
 
 import javax.persistence.*;
 import java.util.ArrayList;
@@ -14,28 +16,52 @@ import static model.Models.mage;
 public class Player implements SaveAble {
     // id nano time
     @Id
+    @Setter
+    @Getter
     private String userName;
     @Column
+    @Setter
+    @Getter
     private String password;
     @Column
+    @Setter
+    @Getter
     private Long creatTime;
     @Column
+    @Setter
+    @Getter
     private int coin;
     @ManyToOne
+    @Setter
+    @Getter
     private Hero selectedHero;
     @ManyToOne
+    @Setter
+    @Getter
     private Deck selectedDeck;
     @ElementCollection
+    @Setter
+    @Getter
     private List<String> cartsId;
     @Transient
+    @Setter
+    @Getter
     private List<Card> cards;
     @ElementCollection
+    @Setter
+    @Getter
     private List<String> heroesId;
     @Transient
+    @Setter
+    @Getter
     private List<Hero> heroes;
     @ElementCollection
+    @Setter
+    @Getter
     private List<Long> decksId;
     @Transient
+    @Setter
+    @Getter
     private List<Deck> decks;
 
     {
@@ -65,102 +91,6 @@ public class Player implements SaveAble {
         this.decks = decks;
     }
 
-    public String getUserName() {
-        return userName;
-    }
-
-    public void setUserName(String userName) {
-        this.userName = userName;
-    }
-
-    public String getPassword() {
-        return password;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
-    }
-
-    public Long getCreatTime() {
-        return creatTime;
-    }
-
-    public void setCreatTime(Long creatTime) {
-        this.creatTime = creatTime;
-    }
-
-    public int getCoin() {
-        return coin;
-    }
-
-    public void setCoin(int coin) {
-        this.coin = coin;
-    }
-
-    public Hero getSelectedHero() {
-        return selectedHero;
-    }
-
-    public void setSelectedHero(Hero selectedHero) {
-        this.selectedHero = selectedHero;
-    }
-
-    public Deck getSelectedDeck() {
-        return selectedDeck;
-    }
-
-    public void setSelectedDeck(Deck selectedDeck) {
-        this.selectedDeck = selectedDeck;
-    }
-
-    public List<String> getCartsId() {
-        return cartsId;
-    }
-
-    public void setCartsId(List<String> cartsId) {
-        this.cartsId = cartsId;
-    }
-
-    public List<Card> getCards() {
-        return cards;
-    }
-
-    public void setCards(List<Card> cards) {
-        this.cards = cards;
-    }
-
-    public List<String> getHeroesId() {
-        return heroesId;
-    }
-
-    public void setHeroesId(List<String> heroesId) {
-        this.heroesId = heroesId;
-    }
-
-    public List<Hero> getHeroes() {
-        return heroes;
-    }
-
-    public void setHeroes(List<Hero> heroes) {
-        this.heroes = heroes;
-    }
-
-    public List<Long> getDecksId() {
-        return decksId;
-    }
-
-    public void setDecksId(List<Long> decksId) {
-        this.decksId = decksId;
-    }
-
-    public List<Deck> getDecks() {
-        return decks;
-    }
-
-    public void setDecks(List<Deck> decks) {
-        this.decks = decks;
-    }
-
     public void addCard(Card card) {
         if (cards.contains(card)) cards.add(this.cards.lastIndexOf(card), card);
         else cards.add(card);
@@ -187,8 +117,8 @@ public class Player implements SaveAble {
         return false;
     }
 
-    public Deck getHeroDeck(Hero h){
-        for (Deck d:decks){
+    public Deck getHeroDeck(Hero h) {
+        for (Deck d : decks) {
             if (d.getHero().getName().equals(h.getName()))
                 return d;
         }
@@ -212,6 +142,7 @@ public class Player implements SaveAble {
         ManualMapping.saveOrUpdateList(decksId, decks);
         connector.saveOrUpdate(this);
     }
+
     @SuppressWarnings("unchecked")
     @Override
     public void load() {

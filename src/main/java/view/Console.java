@@ -1,5 +1,7 @@
 package view;
 
+import lombok.Getter;
+
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
@@ -21,13 +23,10 @@ public class Console {
         }
     }
 
+    @Getter
     private static Console console = new Console();
 
     private Console() {
-    }
-
-    public static Console getConsole() {
-        return console;
     }
 
     public void print(String s) {

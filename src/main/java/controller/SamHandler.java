@@ -1,19 +1,17 @@
 package controller;
 
 import hibernate.Connector;
+import lombok.Getter;
 import model.BodyLog;
 
 import java.util.logging.Handler;
 import java.util.logging.LogRecord;
 
 public class SamHandler extends Handler {
-    private static SamHandler samHandler=new SamHandler();
+    @Getter
+    private static SamHandler handler=new SamHandler();
     private SamHandler(){
         super();
-    }
-
-    public static SamHandler getHandler() {
-        return samHandler;
     }
 
     @Override

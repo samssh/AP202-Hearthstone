@@ -2,6 +2,7 @@ package controller;
 
 import hibernate.Connector;
 import hibernate.ManualMapping;
+import lombok.Getter;
 import model.*;
 import view.Console;
 
@@ -12,6 +13,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class MenuController {
+    @Getter
     private static MenuController menuController = new MenuController();
 
     private MenuController() {
@@ -20,10 +22,6 @@ public class MenuController {
     private Menu menu;
     private Player player;
     private int i = -1;
-
-    public static MenuController getMenuController() {
-        return menuController;
-    }
 
     public Menu getMenu() {
         return menu;
@@ -646,12 +644,12 @@ public class MenuController {
             }
             Player p = (Player) ManualMapping.fetch(Player.class, s);
             if (p != null) {
-                player=p;
+                player = p;
                 while (true) {
                     Console.getConsole().print("enter password or enter & to back");
                     String pass1 = Console.getConsole().read();
                     if ("&".equals(pass1)) {
-                        player=null;
+                        player = null;
                         i = 0;
                         return;
                     }

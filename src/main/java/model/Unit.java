@@ -1,6 +1,8 @@
 package model;
 
 import hibernate.SaveAble;
+import lombok.Getter;
+import lombok.Setter;
 
 import javax.persistence.*;
 import java.util.Objects;
@@ -8,31 +10,20 @@ import java.util.Objects;
 @Entity
 abstract public class Unit implements SaveAble {
     @Id
+    @Setter
+    @Getter
     String name;
+    @Setter
+    @Getter
     @Column
     String description;
+
     // only hibernate use this constructor
-    public Unit(){}
-
-    public Unit(String name,String description){
-        this.name=name;
-        this.description=description;
+    public Unit() {
     }
 
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
+    public Unit(String name, String description) {
         this.name = name;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
         this.description = description;
     }
 

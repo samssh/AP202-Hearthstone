@@ -14,4 +14,7 @@ repositories {
 dependencies {
     compile 'org.hibernate:hibernate-core:5.1.0.Final'
     compile 'com.h2database:h2:1.4.191'
-    compile 'javax.transaction:jta:1.1'}
+    compile 'javax.transaction:jta:1.1'
+    compileOnly 'org.projectlombok:lombok:1.18.4'
+    annotationProcessor 'org.projectlombok:lombok:1.18.4'
+}
