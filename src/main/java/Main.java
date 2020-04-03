@@ -7,13 +7,9 @@ import model.Models;
 import java.io.IOException;
 import java.util.logging.*;
 
-@SuppressWarnings("unchecked")
 public class Main {
     private static final Logger logger =  Logger.getLogger(Logger.GLOBAL_LOGGER_NAME);
-    public static FileHandler fileTxt;
-    public static SimpleFormatter formatter;
-    public static void main(String[] args) throws IOException {
-        System.out.println("salam");
+    public static void main(String[] args) {
         // delete console handler
         Logger rootLogger = Logger.getLogger("");
         Handler[] handlers = rootLogger.getHandlers();

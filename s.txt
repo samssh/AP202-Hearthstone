@@ -3,3 +3,9 @@ already have an account?
 if you have an account just enter y
 if dont you have an account just enter n
 enter 'exit' to exit
+wrong input
+enter your user name or enter & to back
+enter password or enter & to back
+enter password again
+main menu
+enter help to show commands

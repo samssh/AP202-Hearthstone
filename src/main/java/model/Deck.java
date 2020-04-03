@@ -16,7 +16,6 @@ public class Deck implements SaveAble {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Setter
-    @Getter
     private Long Id;
     @ManyToOne
     @Setter
