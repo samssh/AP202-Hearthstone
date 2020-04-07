@@ -131,10 +131,6 @@ public class Connector {
         criteriaQuery.select(eRoot);
         criteriaQuery.where(criteriaBuilder.equal(eRoot.get(fieldName), value));
         TypedQuery<E> typedQuery = session.createQuery(criteriaQuery);
-//        return typedQuery.getResultList();
-
-
-
-        return session.createCriteria(entity).add(Restrictions.eq(fieldName,value)).list();
+        return typedQuery.getResultList();
     }
 }
