@@ -1,7 +1,6 @@
 package controller;
 
 import hibernate.Connector;
-import hibernate.ManualMapping;
 import lombok.Getter;
 import model.*;
 import view.Console;
@@ -23,15 +22,11 @@ public class MenuController {
     private Player player;
     private int i = -1;
 
-    public Menu getMenu() {
-        return menu;
-    }
-
     public void setMenu(Menu menu) {
         this.menu = menu;
     }
 
-    public Player getPlayer() {
+    Player getPlayer() {
         return player;
     }
 
@@ -608,7 +603,7 @@ public class MenuController {
         Connector connector = Connector.getConnector();
         Logger.getLogger(Logger.GLOBAL_LOGGER_NAME).log(Level.INFO,
                 "delete account");
-        HeaderLog headerLog = (HeaderLog) ManualMapping.fetch(HeaderLog.class, player.getCreatTime());
+        HeaderLog headerLog = Connector.getConnector().fetch(HeaderLog.class, player.getCreatTime());
         headerLog.setDeletedAt(new Date(System.currentTimeMillis()).toString());
         connector.beginTransaction();
         headerLog.saveOrUpdate();
@@ -642,7 +637,7 @@ public class MenuController {
                 i = 0;
                 return;
             }
-            Player p = (Player) ManualMapping.fetch(Player.class, s);
+            Player p =Connector.getConnector().fetch(Player.class, s);
             if (p != null) {
                 player = p;
                 while (true) {
@@ -678,7 +673,7 @@ public class MenuController {
                 i = 0;
                 return;
             }
-            Player p = (Player) ManualMapping.fetch(Player.class, s);
+            Player p = Connector.getConnector().fetch(Player.class, s);
             if (p == null) {
                 while (true) {
                     Console.getConsole().print("enter password or enter & to back");
@@ -689,10 +684,12 @@ public class MenuController {
                     }
                     Console.getConsole().print("enter password again");
                     String pass2 = Console.getConsole().read();
+                    List<Deck> deckList=new ArrayList<>(Models.firstDecks);
+                    deckList.replaceAll(Deck::clone);
                     if (pass1.equals(pass2)) {
                         Connector.getConnector().beginTransaction();
                         player = new Player(s, pass1, System.nanoTime(), 30,
-                                Models.mage, Models.mageDeck, Models.firstCards, Models.firstHeros, Models.firstDecks);
+                                Models.mage,deckList.get(0), Models.firstCards, Models.firstHeros, deckList);
                         HeaderLog headerLog = new HeaderLog(player.getCreatTime(), player.getUserName(), player.getPassword());
                         headerLog.saveOrUpdate();
                         Connector.getConnector().commit();

@@ -1,7 +1,6 @@
 package model;
 
 import hibernate.Connector;
-import hibernate.ManualMapping;
 import hibernate.SaveAble;
 import lombok.Getter;
 import lombok.Setter;
@@ -9,8 +8,6 @@ import lombok.Setter;
 import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
-
-import static model.Models.mage;
 
 @Entity
 public class Player implements SaveAble {
@@ -26,7 +23,7 @@ public class Player implements SaveAble {
     @Column
     @Setter
     @Getter
-    private Long creatTime;
+    private long creatTime;
     @Column
     @Setter
     @Getter
@@ -42,7 +39,7 @@ public class Player implements SaveAble {
     @ElementCollection
     @Setter
     @Getter
-    private List<String> cartsId;
+    private List<String> cardsId;
     @Transient
     @Setter
     @Getter
@@ -65,7 +62,7 @@ public class Player implements SaveAble {
     private List<Deck> decks;
 
     {
-        cartsId = new ArrayList<>();
+        cardsId = new ArrayList<>();
         cards = new ArrayList<>();
         heroes = new ArrayList<>();
         heroesId = new ArrayList<>();
@@ -130,25 +127,25 @@ public class Player implements SaveAble {
     @Override
     public void delete() {
         Connector connector = Connector.getConnector();
-        ManualMapping.deleteList(decks);
+        connector.deleteList(decks);
         connector.delete(this);
     }
 
     @Override
     public void saveOrUpdate() {
         Connector connector = Connector.getConnector();
-        ManualMapping.saveOrUpdateList(cartsId, cards);
-        ManualMapping.saveOrUpdateList(heroesId, heroes);
-        ManualMapping.saveOrUpdateList(decksId, decks);
+        connector.saveOrUpdateList(cardsId, cards);
+        connector.saveOrUpdateList(heroesId, heroes);
+        connector.saveOrUpdateList(decksId, decks);
         connector.saveOrUpdate(this);
     }
 
-    @SuppressWarnings("unchecked")
     @Override
     public void load() {
-        setDecks(ManualMapping.fetchList(Deck.class, decksId));
-        setHeroes(ManualMapping.fetchList(Hero.class, heroesId));
-        setCards((ManualMapping.fetchList(Card.class, cartsId)));
+        Connector connector=Connector.getConnector();
+        connector.fetchList(Deck.class, decksId,decks);
+        connector.fetchList(Hero.class, heroesId,heroes);
+        connector.fetchList(Card.class, cardsId,cards);
     }
 
     @SuppressWarnings("unchecked")

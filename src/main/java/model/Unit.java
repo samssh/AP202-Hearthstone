@@ -22,7 +22,7 @@ abstract public class Unit implements SaveAble {
     public Unit() {
     }
 
-    public Unit(String name, String description) {
+    Unit(String name, String description) {
         this.name = name;
         this.description = description;
     }

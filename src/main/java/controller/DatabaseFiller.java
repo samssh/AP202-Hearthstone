@@ -3,7 +3,6 @@ package controller;
 import hibernate.*;
 import model.*;
 
-import java.io.FileNotFoundException;
 import java.util.List;
 
 public class DatabaseFiller {
@@ -98,24 +97,23 @@ public class DatabaseFiller {
                 7,neutral,Rarity.Legendary,9).saveOrUpdate();
     }
 
-    @SuppressWarnings("unchecked")
-    public static void main(String[] args) throws FileNotFoundException {
+    public static void main(String[] args) {
         fill();
         Connector connector=Connector.getConnector();
         connector.open();
-        List heros=ManualMapping.fetchAll(Hero.class);
+        List<Hero> heros=connector.fetchAll(Hero.class);
         heros.forEach(System.out::println);
         System.out.println();
         System.out.println();
-        List minions=ManualMapping.fetchAll(Minion.class);
+        List<Minion> minions=connector.fetchAll(Minion.class);
         minions.forEach(System.out::println);
         System.out.println();
         System.out.println();
-        List spells=ManualMapping.fetchAll(Spell.class);
+        List<Spell> spells=connector.fetchAll(Spell.class);
         spells.forEach(System.out::println);
         System.out.println();
         System.out.println();
-        List players=ManualMapping.fetchAll(Player.class);
+        List<Player> players=connector.fetchAll(Player.class);
         players.forEach(System.out::println);
         connector.close();
         System.exit(0);

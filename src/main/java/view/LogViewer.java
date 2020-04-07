@@ -1,18 +1,18 @@
 package view;
 
 import hibernate.Connector;
-import hibernate.ManualMapping;
-import hibernate.SaveAble;
 import model.BodyLog;
 import model.HeaderLog;
-import org.hibernate.Criteria;
-import org.hibernate.criterion.Restrictions;
 
+import javax.persistence.TypedQuery;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Root;
 import java.util.Date;
 import java.util.List;
 import java.util.Scanner;
 
-@SuppressWarnings("unchecked")
+
 public class LogViewer {
     public static void main(String[] args) {
         Connector connector = Connector.getConnector();
@@ -20,21 +20,24 @@ public class LogViewer {
         connector.open();
         System.out.println("enter user name");
         String userName = in.next();
-        Criteria criteriaHeader = connector.createCriteria(HeaderLog.class);
-        List<HeaderLog> headerLogs = criteriaHeader.add(Restrictions.eq("userName", userName)).list();
+        List<HeaderLog> headerLogs=connector.fetchWithRestriction(HeaderLog.class,"userName",userName);
         headerLogs.forEach(System.out::println);
         System.out.println("now enter id:");
         long id=in.nextLong();
         in.nextLine();
         System.out.println("now enter time of log(enter time distance until now to hours)");
-        Long hour=in.nextLong();
+        long hour=in.nextLong();
         in.nextLine();
         String end=new Date(System.currentTimeMillis()-hour*3600000).toInstant().toString();
         String start=new Date(System.currentTimeMillis()-(hour+1)*3600000).toInstant().toString();
-        Criteria criteriaBody=connector.createCriteria(BodyLog.class);
-        criteriaBody.add(Restrictions.between("instant",start,end));
-        criteriaBody.add(Restrictions.eq("headId",id));
-        List<BodyLog> bodyLogs=criteriaBody.list();
+        CriteriaBuilder criteriaBuilder=connector.getCriteriaBuilder();
+        CriteriaQuery<BodyLog> bodyLogCriteriaQuery= connector.createCriteriaQuery(BodyLog.class);
+        Root<BodyLog> bodyLogRoot=bodyLogCriteriaQuery.from(BodyLog.class);
+        bodyLogCriteriaQuery.select(bodyLogRoot);
+        bodyLogCriteriaQuery.where(criteriaBuilder.equal(bodyLogRoot.get("headId"),id))
+                .where(criteriaBuilder.between(bodyLogRoot.get("instant"),start,end));
+        TypedQuery<BodyLog> bodyLogTypedQuery=connector.createQuery(bodyLogCriteriaQuery);
+        List<BodyLog> bodyLogs=bodyLogTypedQuery.getResultList();
         System.out.println();
         System.out.println();
         bodyLogs.forEach(System.out::println);

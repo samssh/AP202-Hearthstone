@@ -1,14 +1,11 @@
 package model;
 
-import hibernate.ManualMapping;
-
+import hibernate.Connector;
 import java.util.ArrayList;
 import java.util.List;
 
 public class Models {
-    public static List<Minion> minions;
     public static List<Hero> heroes;
-    public static List<Spell> spells;
     public static List<Card> cards;
     public static Hero mage;
     public static Deck mageDeck;
@@ -16,14 +13,11 @@ public class Models {
     public static List<Card> firstCards;
     public static List<Deck> firstDecks;
 
-    @SuppressWarnings("unchecked")
+
     public static void load() {
-        minions = ManualMapping.fetchAll(Minion.class);
-        heroes = ManualMapping.fetchAll(Hero.class);
-        spells = ManualMapping.fetchAll(Spell.class);
-        cards = new ArrayList<>();
-        cards.addAll(minions);
-        cards.addAll(spells);
+        Connector connector=Connector.getConnector();
+        heroes = connector.fetchAll(Hero.class);
+        cards = connector.fetchAll(Card.class);
         for (Hero h : heroes)
             if (h.getName().equals("Mage"))
                 mage = h;

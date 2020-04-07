@@ -2,7 +2,6 @@ package model;
 
 
 import hibernate.Connector;
-import hibernate.ManualMapping;
 import hibernate.SaveAble;
 import lombok.Getter;
 import lombok.Setter;
@@ -16,7 +15,7 @@ public class Deck implements SaveAble {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Setter
-    private Long Id;
+    private long Id;
     @ManyToOne
     @Setter
     @Getter
@@ -39,7 +38,7 @@ public class Deck implements SaveAble {
     public Deck() {
     }
 
-    public Deck(Hero hero) {
+    Deck(Hero hero) {
         this.hero = hero;
     }
 
@@ -77,14 +76,21 @@ public class Deck implements SaveAble {
     @Override
     public void saveOrUpdate() {
         Connector connector = Connector.getConnector();
-        ManualMapping.saveOrUpdateList(cardListId, cardList);
+        connector.saveOrUpdateList(cardListId, cardList);
         connector.saveOrUpdate(this);
 
     }
 
-    @SuppressWarnings("unchecked")
     @Override
     public void load() {
-        setCardList(ManualMapping.fetchList(Card.class, cardListId));
+        Connector connector = Connector.getConnector();
+        connector.fetchList(Card.class, cardListId, cardList);
+    }
+
+    @Override
+    public Deck clone() {
+        Deck deck=new Deck(this.hero);
+        deck.getCardList().addAll(cardList);
+        return deck;
     }
 }

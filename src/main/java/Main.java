@@ -4,7 +4,6 @@ import controller.SamHandler;
 import hibernate.Connector;
 import model.Models;
 
-import java.io.IOException;
 import java.util.logging.*;
 
 public class Main {
