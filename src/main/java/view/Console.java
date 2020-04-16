@@ -9,9 +9,9 @@ import java.io.PrintStream;
 import java.util.Scanner;
 
 public class Console {
-    private PrintStream out = System.out;
-    private InputStream in = System.in;
-    private Scanner inScanner;
+    private final PrintStream out = System.out;
+    private final InputStream in = System.in;
+    private final Scanner inScanner;
     private PrintStream filePrinter;
 
     {
@@ -24,7 +24,7 @@ public class Console {
     }
 
     @Getter
-    private static Console console = new Console();
+    private static final Console console = new Console();
 
     private Console() {
     }

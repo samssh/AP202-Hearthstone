@@ -4,14 +4,24 @@ import hibernate.Connector;
 import hibernate.SaveAble;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
+import org.hibernate.annotations.Cascade;
+import org.hibernate.annotations.CascadeType;
+import org.hibernate.annotations.LazyCollection;
+import org.hibernate.annotations.LazyCollectionOption;
 
-import javax.persistence.*;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
+import javax.persistence.OneToMany;
 import java.util.ArrayList;
 import java.util.List;
 
 @Entity
+@ToString
 public class Player implements SaveAble {
-    // id nano time
     @Id
     @Setter
     @Getter
@@ -28,61 +38,48 @@ public class Player implements SaveAble {
     @Setter
     @Getter
     private int coin;
-    @ManyToOne
+    @Column
+    @Getter
+    @Setter
+    private int selectedDeckIndex;
+    @ManyToMany
+    @Cascade(CascadeType.SAVE_UPDATE)
+    @LazyCollection(LazyCollectionOption.FALSE)
     @Setter
     @Getter
-    private Hero selectedHero;
-    @ManyToOne
-    @Setter
-    @Getter
-    private Deck selectedDeck;
-    @ElementCollection
-    @Setter
-    @Getter
-    private List<String> cardsId;
-    @Transient
-    @Setter
-    @Getter
+    @JoinTable (name = "Player_Card")
     private List<Card> cards;
-    @ElementCollection
+    @ManyToMany
+    @Cascade( CascadeType.SAVE_UPDATE)
+    @LazyCollection(LazyCollectionOption.FALSE)
     @Setter
     @Getter
-    private List<String> heroesId;
-    @Transient
-    @Setter
-    @Getter
+    @JoinTable (name = "Player_Hero")
     private List<Hero> heroes;
-    @ElementCollection
-    @Setter
-    @Getter
-    private List<Long> decksId;
-    @Transient
+    @OneToMany
+    @LazyCollection(LazyCollectionOption.FALSE)
+    @Cascade({CascadeType.SAVE_UPDATE ,CascadeType.DELETE})
     @Setter
     @Getter
     private List<Deck> decks;
 
     {
-        cardsId = new ArrayList<>();
         cards = new ArrayList<>();
         heroes = new ArrayList<>();
-        heroesId = new ArrayList<>();
         decks = new ArrayList<>();
-        decksId = new ArrayList<>();
     }
 
-    // only hibernate use this constructor
     public Player() {
     }
 
-    public Player(String userName, String password, Long creatTime,
-                  int coin, Hero selectedHero, Deck selectedDeck,
+    public Player(String userName, String password, long creatTime,
+                  int coin, int selectedDeckIndex,
                   List<Card> cards, List<Hero> heroes, List<Deck> decks) {
         this.userName = userName;
         this.password = password;
         this.creatTime = creatTime;
         this.coin = coin;
-        this.selectedHero = selectedHero;
-        this.selectedDeck = selectedDeck;
+        this.selectedDeckIndex = selectedDeckIndex;
         this.cards = cards;
         this.heroes = heroes;
         this.decks = decks;
@@ -114,43 +111,44 @@ public class Player implements SaveAble {
         return false;
     }
 
-    public Deck getHeroDeck(Hero h) {
-        for (Deck d : decks) {
-            if (d.getHero().getName().equals(h.getName()))
-                return d;
+    public int getHeroDeckIndex(Hero h) {
+        for (int i = 0; i < decks.size(); i++) {
+            if (decks.get(i).getHero().getName().equals(h.getName()))
+                return i;
+
         }
         System.err.println("problem in getHeroDeck");
-        return null;
-
+        return -1;
     }
 
     @Override
     public void delete() {
         Connector connector = Connector.getConnector();
-        connector.deleteList(decks);
         connector.delete(this);
     }
 
     @Override
     public void saveOrUpdate() {
         Connector connector = Connector.getConnector();
-        connector.saveOrUpdateList(cardsId, cards);
-        connector.saveOrUpdateList(heroesId, heroes);
-        connector.saveOrUpdateList(decksId, decks);
         connector.saveOrUpdate(this);
     }
 
     @Override
     public void load() {
         Connector connector=Connector.getConnector();
-        connector.fetchList(Deck.class, decksId,decks);
-        connector.fetchList(Hero.class, heroesId,heroes);
-        connector.fetchList(Card.class, cardsId,cards);
     }
 
     @SuppressWarnings("unchecked")
     @Override
     public String getId() {
         return getUserName();
+    }
+
+    public Deck getSelectedDeck() {
+        return decks.get(selectedDeckIndex);
+    }
+
+    public Hero getSelectedHero() {
+        return decks.get(selectedDeckIndex).getHero();
     }
 }

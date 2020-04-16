@@ -5,14 +5,9 @@
         <property name="connection.driver_class">org.sqlite.JDBC</property>
         <property name="connection.url">jdbc:sqlite:./data/Database.db</property>
 
-        <!-- Create the database schema on startup -->
-<!--                <property name="hbm2ddl.auto">create</property>-->
-        <!-- update the database schema on startup -->
+<!--        <property name="hbm2ddl.auto">create</property>-->
         <property name="hbm2ddl.auto">update</property>
-        <!-- Show the queries prepared by Hibernate -->
-        <!--        <property name="show_sql">true</property>-->
-        <!-- Names the annotated entity classes -->
-        <!--  here we define mapping class :\ -->
+<!--        <property name="show_sql">true</property>-->
         <mapping class="model.Deck"/>
         <mapping class="model.Spell"/>
         <mapping class="model.Hero"/>
@@ -21,11 +16,7 @@
         <mapping class="model.Player"/>
         <mapping class="model.HeaderLog"/>
         <mapping class="model.BodyLog"/>
-
-        <!--        ????????????????????????????????????????????-->
         <mapping class="model.Unit"/>
         <mapping class="model.Card"/>
-
-
     </session-factory>
 </hibernate-configuration>

@@ -17,9 +17,9 @@ public class Minion extends Card {
     @Getter
     private int hpFrz;
 
-    // only hibernate use this constructor
     public Minion() {
     }
+
 
     public Minion(String name, String description, int price,
                   ClassOfCard classOfCard, Rarity rarity,
@@ -38,7 +38,6 @@ public class Minion extends Card {
     @Override
     public void saveOrUpdate() {
         Connector connector = Connector.getConnector();
-        connector.saveOrUpdate(this.classOfCard);
         connector.saveOrUpdate(this);
 
     }

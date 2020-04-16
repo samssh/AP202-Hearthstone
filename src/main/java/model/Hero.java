@@ -7,13 +7,12 @@ import lombok.Setter;
 import javax.persistence.*;
 
 @Entity
-public class Hero extends Unit {
+public class  Hero extends Unit {
     @Column
     @Setter
     @Getter
     private int hpFrz;
 
-    // only hibernate use this constructor
     public Hero() {
     }
 

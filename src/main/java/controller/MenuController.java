@@ -5,15 +5,19 @@ import lombok.Getter;
 import model.*;
 import view.Console;
 
+import javax.swing.*;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class MenuController {
     @Getter
-    private static MenuController menuController = new MenuController();
+    private static final MenuController menuController = new MenuController();
 
     private MenuController() {
     }
@@ -80,102 +84,19 @@ public class MenuController {
     }
 
     private void action() {
-        switch (menu.getName()) {
-            case "welcome":
-                welcome();
-                break;
-            case "signUp":
-                signUp();
-                break;
-            case "login":
-                login();
-                break;
-            case "main":
-                main();
-                break;
-            case "logOut":
-                logOut();
-                break;
-            case "deleteAccount":
-                deleteAccount();
-                break;
-            case "exit":
-                exit();
-                break;
-            case "helpMain":
-                helpMain();
-                break;
-            case "store":
-                store();
-                break;
-            case "buy":
-                buy();
-                break;
-            case "sell":
-                sell();
-                break;
-            case "wallet":
-                wallet();
-                break;
-            case "buyAble":
-                buyAble();
-                break;
-            case "sellAble":
-                sellAble();
-                break;
-            case "helpCollection":
-                helpCollection();
-                break;
-            case "helpStore":
-                helpStore();
-                break;
-            case "collection":
-                collection();
-                break;
-            case "back":
-                back();
-                break;
-            case "openHero":
-                openHero();
-                break;
-            case "defaultHero":
-                defaultHero();
-                break;
-            case "selectHero":
-                selectHero();
-                break;
-            case "availableCard":
-                availableCard();
-                break;
-            case "deckCards":
-                deckCards();
-                break;
-            case "noDeckCard":
-                noDeckCard();
-                break;
-            case "allCard":
-                allCard();
-                break;
-            case "addCard":
-                addCard();
-                break;
-            case "removeCard":
-                removeCard();
-                break;
-            case "detailStore":
-                detailStore();
-                break;
-            case "detailCollection":
-                detailCollection();
-                break;
+        Class<MenuController> menuControllerClass = MenuController.class;
+        Method method;
+        try {
+            method = menuControllerClass.getDeclaredMethod(menu.getName());
+            method.invoke(this);
+        } catch (SecurityException | NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
+            e.printStackTrace();
         }
-
-
     }
 
     private void detailCollection() {
         try {
-            Console.getConsole().print(Models.searchUnit(menu.getEntry()).toString());
+            Console.getConsole().print(Objects.requireNonNull(Models.searchUnit(menu.getEntry())).toString());
         } catch (NullPointerException e) {
             e.printStackTrace();
             Logger.getLogger(Logger.GLOBAL_LOGGER_NAME).log(Level.INFO, "valid Entry not found entry:" + menu.getEntry());
@@ -185,7 +106,7 @@ public class MenuController {
 
     private void detailStore() {
         try {
-            Console.getConsole().print(Models.searchUnit(menu.getEntry()).toString());
+            Console.getConsole().print(Objects.requireNonNull(Models.searchUnit(menu.getEntry())).toString());
         } catch (NullPointerException e) {
             e.printStackTrace();
             Logger.getLogger(Logger.GLOBAL_LOGGER_NAME).log(Level.INFO,
@@ -365,20 +286,17 @@ public class MenuController {
         for (Hero h : player.getHeroes())
             if (h.equals(hero)) {
                 if (!h.equals(player.getSelectedHero())) {
-                    player.setSelectedHero(h);
-                    player.setSelectedDeck(player.getHeroDeck(h));
+                    player.setSelectedDeckIndex(player.getHeroDeckIndex(h));
                     Console.getConsole().print("your default hero has changed to " + h.getName());
                     Logger.getLogger(Logger.GLOBAL_LOGGER_NAME).log(Level.INFO,
                             "default hero changed to:" + hero.getName());
-                    i = 0;
-                    return;
                 } else {
                     Console.getConsole().print("your hero already is " + h.getName());
                     Logger.getLogger(Logger.GLOBAL_LOGGER_NAME).log(Level.INFO,
                             "try to change default hero to default hero:|");
-                    i = 0;
-                    return;
                 }
+                i = 0;
+                return;
             }
         Console.getConsole().print("this hero is locked");
         Logger.getLogger(Logger.GLOBAL_LOGGER_NAME).log(Level.INFO,
@@ -619,8 +537,8 @@ public class MenuController {
                 "log out");
         connector.beginTransaction();
         player.saveOrUpdate();
-        player = null;
         connector.commit();
+        player = null;
         i = 0;
     }
 
@@ -637,7 +555,7 @@ public class MenuController {
                 i = 0;
                 return;
             }
-            Player p =Connector.getConnector().fetch(Player.class, s);
+            Player p = Connector.getConnector().fetch(Player.class, s);
             if (p != null) {
                 player = p;
                 while (true) {
@@ -684,12 +602,12 @@ public class MenuController {
                     }
                     Console.getConsole().print("enter password again");
                     String pass2 = Console.getConsole().read();
-                    List<Deck> deckList=new ArrayList<>(Models.firstDecks);
+                    List<Deck> deckList = new ArrayList<>(Models.firstDecks);
                     deckList.replaceAll(Deck::clone);
                     if (pass1.equals(pass2)) {
                         Connector.getConnector().beginTransaction();
-                        player = new Player(s, pass1, System.nanoTime(), 30,
-                                Models.mage,deckList.get(0), Models.firstCards, Models.firstHeros, deckList);
+                        player = new Player(s, pass1, System.nanoTime(), 30, 0
+                                , Models.firstCards, Models.firstHeros, deckList);
                         HeaderLog headerLog = new HeaderLog(player.getCreatTime(), player.getUserName(), player.getPassword());
                         headerLog.saveOrUpdate();
                         Connector.getConnector().commit();

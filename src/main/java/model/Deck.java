@@ -5,36 +5,42 @@ import hibernate.Connector;
 import hibernate.SaveAble;
 import lombok.Getter;
 import lombok.Setter;
+import org.hibernate.annotations.Cascade;
+import org.hibernate.annotations.CascadeType;
+import org.hibernate.annotations.LazyCollection;
+import org.hibernate.annotations.LazyCollectionOption;
 
-import javax.persistence.*;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.ManyToMany;
+import javax.persistence.ManyToOne;
 import java.util.ArrayList;
 import java.util.List;
 
 @Entity
-public class Deck implements SaveAble {
+public class Deck implements SaveAble{
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Setter
     private long Id;
     @ManyToOne
+    @Cascade(CascadeType.SAVE_UPDATE)
     @Setter
     @Getter
     private Hero hero;
-    @Transient
+    @ManyToMany
+    @Cascade(CascadeType.SAVE_UPDATE)
+    @LazyCollection(LazyCollectionOption.FALSE)
     @Setter
     @Getter
     private List<Card> cardList;
-    @ElementCollection
-    @Setter
-    @Getter
-    private List<String> cardListId;
 
     {
-        cardListId = new ArrayList<>();
         cardList = new ArrayList<>();
     }
 
-    // only hibernate use this constructor
     public Deck() {
     }
 
@@ -76,15 +82,12 @@ public class Deck implements SaveAble {
     @Override
     public void saveOrUpdate() {
         Connector connector = Connector.getConnector();
-        connector.saveOrUpdateList(cardListId, cardList);
         connector.saveOrUpdate(this);
 
     }
 
     @Override
     public void load() {
-        Connector connector = Connector.getConnector();
-        connector.fetchList(Card.class, cardListId, cardList);
     }
 
     @Override

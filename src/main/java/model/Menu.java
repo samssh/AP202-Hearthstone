@@ -27,6 +27,7 @@ public class Menu {
     private List<String> entryList;
 
 
+
     {
         menuList = new ArrayList<>();
     }

@@ -34,8 +34,8 @@ public class LogViewer {
         CriteriaQuery<BodyLog> bodyLogCriteriaQuery= connector.createCriteriaQuery(BodyLog.class);
         Root<BodyLog> bodyLogRoot=bodyLogCriteriaQuery.from(BodyLog.class);
         bodyLogCriteriaQuery.select(bodyLogRoot);
-        bodyLogCriteriaQuery.where(criteriaBuilder.equal(bodyLogRoot.get("headId"),id))
-                .where(criteriaBuilder.between(bodyLogRoot.get("instant"),start,end));
+        bodyLogCriteriaQuery.where(criteriaBuilder.equal(bodyLogRoot.get("headId"),id));
+        bodyLogCriteriaQuery.where(criteriaBuilder.between(bodyLogRoot.get("instant"),start,end));
         TypedQuery<BodyLog> bodyLogTypedQuery=connector.createQuery(bodyLogCriteriaQuery);
         List<BodyLog> bodyLogs=bodyLogTypedQuery.getResultList();
         System.out.println();

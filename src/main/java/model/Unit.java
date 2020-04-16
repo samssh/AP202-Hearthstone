@@ -18,7 +18,6 @@ abstract public class Unit implements SaveAble {
     @Column
     String description;
 
-    // only hibernate use this constructor
     public Unit() {
     }
 
