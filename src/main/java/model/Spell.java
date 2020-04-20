@@ -17,19 +17,17 @@ public class Spell extends Card {
     }
 
     @Override
-    public void delete() {
-        Connector connector = Connector.getConnector();
+    public void delete(Connector connector) {
         connector.delete(this);
     }
 
     @Override
-    public void saveOrUpdate() {
-        Connector connector = Connector.getConnector();
+    public void saveOrUpdate(Connector connector) {
         connector.saveOrUpdate(this);
     }
 
     @Override
-    public void load() {
+    public void load(Connector connector) {
     }
 
     @SuppressWarnings("unchecked")

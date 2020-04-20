@@ -1,29 +1,16 @@
-import controller.MenuController;
-import controller.MenuMaker;
-import controller.SamHandler;
+import configs.ConfigFactory;
+//import controller.MenuController;
+//import controller.MenuMaker;
 import hibernate.Connector;
-import model.Models;
+import model.ModelLoader;
 
-import java.util.logging.*;
+import java.io.*;
 
 public class Main {
-    private static final Logger logger =  Logger.getLogger(Logger.GLOBAL_LOGGER_NAME);
     public static void main(String[] args) {
-        // delete console handler
-        Logger rootLogger = Logger.getLogger("");
-        Handler[] handlers = rootLogger.getHandlers();
-        if (handlers[0] instanceof ConsoleHandler) {
-            rootLogger.removeHandler(handlers[0]);
-        }
-        logger.setLevel(Level.INFO);
-        // add my handler
-        logger.addHandler(SamHandler.getHandler());
-        Connector connector=Connector.getConnector();
-        connector.open();
-        Models.load();
-        MenuController.getMenuController().setMenu(MenuMaker.getWelcomeMenu());
-        MenuController.getMenuController().run();
-        connector.close();
-        System.exit(-1);
+//        ConfigFactory.getInstance("DEFAULT");
+        File f=new File("");
+
+//        System.exit(0);
     }
 }

@@ -1,5 +1,6 @@
 package hibernate;
 
+import configs.ConfigFactory;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.boot.MetadataSources;
@@ -13,31 +14,34 @@ import java.io.*;
 import java.util.List;
 
 public class Connector {
-    private static final Connector connector = new Connector();
-    private final SessionFactory sessionFactory = buildSessionFactory();
+//    private static Connector instance;
+    private final SessionFactory sessionFactory;
     private Session session;
     private boolean hasTransaction = false;
 
-    private SessionFactory buildSessionFactory() {
+    private SessionFactory buildSessionFactory(File file) {
         PrintStream err = System.err;
         try {
             PrintStream nullOut = new PrintStream(new File("./log/hibernate log.txt"));
-//            System.setErr(nullOut);
+            System.setErr(nullOut);
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         }
-        final ServiceRegistry registry = new StandardServiceRegistryBuilder().configure().build();
+        final ServiceRegistry registry = new StandardServiceRegistryBuilder().configure(file).build();
         SessionFactory sessionFactory = new MetadataSources(registry).buildMetadata().buildSessionFactory();
         System.setErr(err);
         return sessionFactory;
     }
 
-    private Connector() {
+    public Connector(String configName) {
+        sessionFactory=buildSessionFactory(ConfigFactory.getInstance("").getConfigFile(configName));
     }
 
-    public static Connector getConnector() {
-        return connector;
-    }
+//    public static Connector getInstance() {
+//        if (null==instance)
+//            instance = new Connector("");
+//        return instance;
+//    }
 
     public void open() {
         session = sessionFactory.openSession();

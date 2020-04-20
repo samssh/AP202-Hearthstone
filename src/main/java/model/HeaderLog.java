@@ -36,17 +36,17 @@ public class HeaderLog implements SaveAble {
     }
 
     @Override
-    public void delete() {
-        Connector.getConnector().delete(this);
+    public void delete(Connector connector) {
+        connector.delete(this);
     }
 
     @Override
-    public void saveOrUpdate() {
-        Connector.getConnector().saveOrUpdate(this);
+    public void saveOrUpdate(Connector connector) {
+        connector.saveOrUpdate(this);
     }
 
     @Override
-    public void load() {
+    public void load(Connector connector) {
     }
 
     @Override

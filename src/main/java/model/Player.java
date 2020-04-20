@@ -122,20 +122,17 @@ public class Player implements SaveAble {
     }
 
     @Override
-    public void delete() {
-        Connector connector = Connector.getConnector();
+    public void delete(Connector connector) {
         connector.delete(this);
     }
 
     @Override
-    public void saveOrUpdate() {
-        Connector connector = Connector.getConnector();
+    public void saveOrUpdate(Connector connector) {
         connector.saveOrUpdate(this);
     }
 
     @Override
-    public void load() {
-        Connector connector=Connector.getConnector();
+    public void load(Connector connector) {
     }
 
     @SuppressWarnings("unchecked")

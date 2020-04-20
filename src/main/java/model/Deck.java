@@ -74,24 +74,20 @@ public class Deck implements SaveAble{
     }
 
     @Override
-    public void delete() {
-        Connector connector = Connector.getConnector();
+    public void delete(Connector connector) {
         connector.delete(this);
     }
 
     @Override
-    public void saveOrUpdate() {
-        Connector connector = Connector.getConnector();
+    public void saveOrUpdate(Connector connector) {
         connector.saveOrUpdate(this);
-
     }
 
     @Override
-    public void load() {
+    public void load(Connector connector) {
     }
 
-    @Override
-    public Deck clone() {
+    public Deck getclone() {
         Deck deck=new Deck(this.hero);
         deck.getCardList().addAll(cardList);
         return deck;
