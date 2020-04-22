@@ -1,33 +1,51 @@
 package view.panel;
 
-import server.Request;
+import client.Client;
+import lombok.Getter;
+import lombok.SneakyThrows;
 import server.Server;
 import configs.Config;
 import configs.ConfigFactory;
 import lombok.Setter;
 
+import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
-import java.util.Arrays;
+import java.io.File;
+import java.io.IOException;
 
 public class LoginPanel extends JPanel {
     @Setter
+    @Getter
     private Mode mode;
     private JLabel welcome;
     private JTextField userName;
     private JPasswordField password, passwordAgain;
-    private JButton login, changeMode;
+    private JButton login, changeMode, exit;
     private int componentWidth, componentHeight, componentSpace;
+    private int exitWidth, exitHeight, exitX, exitY, shiftX, shiftY;
     private final Dimension dimension;
+    private final Client.LoginPanelAction loginPanelAction;
+    Image image;
+    {
+        try {
+            image = ImageIO.read(new File("C:\\Users\\HP\\Downloads\\d.png"));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
 
+    @SneakyThrows
     @Override
     protected void paintComponent(Graphics g) {
         Graphics2D graphics2D = (Graphics2D) g;
         super.paintComponent(graphics2D);
-        int startWidth = (this.getWidth() - componentWidth) / 2;
-        int startHeight = this.getHeight() / 2;
+
+        graphics2D.drawImage(image,0,0,getWidth(),getHeight(),this);
+        int startWidth = (this.getWidth() - componentWidth) / 2 + shiftX;
+        int startHeight = this.getHeight() / 2 + shiftY;
         int sumHeight = componentHeight + componentSpace;
         if (mode == Mode.SIGN_IN) {
             startHeight = startHeight - (4 * sumHeight + componentHeight) / 2;
@@ -49,12 +67,12 @@ public class LoginPanel extends JPanel {
         password.setLocation(startWidth, startHeight + 2 * sumHeight);
     }
 
-
-    public LoginPanel() {
+    public LoginPanel(Client.LoginPanelAction loginPanelAction) {
         setLayout(null);
         config();
         dimension = new Dimension(componentWidth, componentHeight);
         initialize();
+        this.loginPanelAction = loginPanelAction;
         mode = Mode.SIGN_IN;
         this.add(welcome);
         this.add(userName);
@@ -62,6 +80,7 @@ public class LoginPanel extends JPanel {
         this.add(passwordAgain);
         this.add(login);
         this.add(changeMode);
+        this.add(exit);
     }
 
     private void config() {
@@ -73,6 +92,12 @@ public class LoginPanel extends JPanel {
         componentWidth = panelConfig.getProperty(Integer.class, "componentWidth");
         componentHeight = panelConfig.getProperty(Integer.class, "componentHeight");
         componentSpace = panelConfig.getProperty(Integer.class, "componentSpace");
+        exitX = panelConfig.getProperty(Integer.class, "exitX");
+        exitY = panelConfig.getProperty(Integer.class, "exitY");
+        exitWidth = panelConfig.getProperty(Integer.class, "exitWidth");
+        exitHeight = panelConfig.getProperty(Integer.class, "exitHeight");
+        shiftX = panelConfig.getProperty(Integer.class, "shiftX");
+        shiftY = panelConfig.getProperty(Integer.class, "shiftY");
     }
 
     private void initialize() {
@@ -81,32 +106,50 @@ public class LoginPanel extends JPanel {
         initializeLoginB();
         initializeUsername();
         initializePasswords();
+        initializeExit();
+    }
+
+    private void initializeExit() {
+        exit = new JButton("exit");
+        exit.setBounds(exitX, exitY, exitWidth, exitHeight);
+        exit.addActionListener(actionListener -> loginPanelAction.exit());
+        exit.setOpaque(false);
+        exit.setContentAreaFilled(false);
+        exit.setBorderPainted(false);
+        exit.setFocusable(false);
+        exit.setForeground(Color.RED);
     }
 
     private void initializeWelcome() {
         welcome = new JLabel("welcome", SwingConstants.CENTER);
         welcome.setSize(dimension);
+        welcome.setForeground(Color.RED);
+//        welcome.setFocusable(false);
     }
 
     private void initializeLoginB() {
         login = new JButton();
         login.setSize(dimension);
-        login.addActionListener(actionListener -> sendLoginRequest());
+        login.addActionListener(actionListener -> loginPanelAction.login(
+                this,userName.getText(),String.valueOf(password.getPassword()),String.valueOf(passwordAgain.getPassword())));
+        login.setOpaque(false);
+        login.setContentAreaFilled(false);
+        login.setBorderPainted(false);
+        login.setFocusable(false);
+        login.setForeground(Color.RED);
     }
 
-    private void sendLoginRequest() {
-        if (!Arrays.equals(password.getPassword(), passwordAgain.getPassword())) {
-            welcome.setText("password not same");
-            return;
-        }
-        Request request = new Request.LoginRequest(userName.getText(), String.copyValueOf(password.getPassword()), mode);
-        Server.getInstance().addRequest(request);
-    }
+
 
     private void initializeChangeMode() {
         changeMode = new JButton();
         changeMode.setSize(dimension);
-        changeMode.addActionListener(actionEvent -> changeMode());
+        changeMode.addActionListener(actionEvent -> loginPanelAction.changeMode(this));
+        changeMode.setOpaque(false);
+        changeMode.setContentAreaFilled(false);
+        changeMode.setBorderPainted(false);
+        changeMode.setFocusable(false);
+        changeMode.setForeground(Color.RED);
     }
 
     private void initializeUsername() {
@@ -127,6 +170,10 @@ public class LoginPanel extends JPanel {
                 }
             }
         });
+        userName.setOpaque(false);
+        userName.setForeground(Color.red);
+        userName.setBorder(null);
+        userName.setFont(userName.getFont().deriveFont(Font.BOLD));
     }
 
     private void initializePasswords() {
@@ -161,26 +208,35 @@ public class LoginPanel extends JPanel {
                 }
             }
         });
+        password1.setOpaque(false);
+        password1.setForeground(Color.RED);
+        password1.setBorder(null);
+        password1.setFont(password1.getFont().deriveFont(Font.BOLD));
     }
 
-
-    private void changeMode() {
-        if (mode == Mode.SIGN_IN) {
-            mode = Mode.SIGN_UP;
-            passwordAgain.setVisible(true);
-        } else {
-            passwordAgain.setVisible(false);
-            mode = Mode.SIGN_IN;
-        }
+    private void resetComponents() {
         welcome.setText("welcome");
         userName.setText("Enter username");
+        welcome.requestFocus();
         password.setText("Enter password");
         password.setEchoChar((char) 0);
         passwordAgain.setText("Enter password");
         passwordAgain.setEchoChar((char) 0);
     }
 
-    public static enum Mode {
+    public void setMessage(String message) {
+        welcome.setText(message);
+    }
+
+    public void reset() {
+        if (mode == Mode.SIGN_IN)
+            passwordAgain.setVisible(false);
+        if (mode == Mode.SIGN_UP)
+            passwordAgain.setVisible(true);
+        resetComponents();
+    }
+
+    public enum Mode {
         SIGN_IN, SIGN_UP
     }
 }

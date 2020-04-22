@@ -19,6 +19,7 @@ public class Loop implements Runnable, Updatable {
     public Loop(int fps, Updatable updatable) {
         this.fps = fps;
         this.updatable = updatable;
+        thread = new Thread(this);
     }
 
     public void update() {

@@ -35,6 +35,7 @@ public class Connector {
 
     public Connector(String configName) {
         sessionFactory=buildSessionFactory(ConfigFactory.getInstance("").getConfigFile(configName));
+        open();
     }
 
 //    public static Connector getInstance() {

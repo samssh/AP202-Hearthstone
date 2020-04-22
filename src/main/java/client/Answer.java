@@ -2,9 +2,6 @@ package client;
 
 import controller.Executable;
 import model.Player;
-import server.Request;
-import server.Server;
-import view.panel.LoginPanel;
 
 public abstract class Answer implements Executable {
     public abstract void execute();
@@ -19,7 +16,7 @@ public abstract class Answer implements Executable {
 
         @Override
         public void execute() {
-//            Client.getInstance().login(userName,password,mode);
+            Client.getInstance().login(player,message);
         }
     }
 

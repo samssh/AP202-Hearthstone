@@ -18,6 +18,7 @@ public class Server {
     private final Connector connector;
     private final ModelLoader modelLoader;
     private final Loop executor;
+    private Player player;
 
     public static Server getInstance() {
         return instance;
@@ -33,12 +34,12 @@ public class Server {
     }
 
     private void executeRequests() {
-        requestList.forEach(Request::execute);
-        requestList.clear();
         synchronized (tempRequestList) {
             requestList.addAll(tempRequestList);
             tempRequestList.clear();
         }
+        requestList.forEach(Request::execute);
+        requestList.clear();
     }
 
     public void addRequest(Request request) {
@@ -55,16 +56,33 @@ public class Server {
             signUp(username, password);
     }
 
+    void logout(Player player) {
+        if (this.player != null) {
+            this.player.saveOrUpdate(connector);
+            // log
+            this.player = null;
+        }
+    }
+
+    void deleteAccount(Player player) {
+        if (this.player != null) {
+            this.player.delete(connector);
+            // log
+            this.player = null;
+        }
+    }
+
     private void signIn(String userName, String password) {
         Player p = connector.fetch(Player.class, userName);
         if (p != null) {
             if (p.getPassword().equals(password)) {
-                Client.getInstance().putAnswer(new Answer.LoginAnswer(p,"successful"));
+                Client.getInstance().putAnswer(new Answer.LoginAnswer(p, "successful"));
+                this.player = p;
             } else {
-                Client.getInstance().putAnswer(new Answer.LoginAnswer(null,"wrong password"));
+                Client.getInstance().putAnswer(new Answer.LoginAnswer(null, "wrong password"));
             }
         } else {
-            Client.getInstance().putAnswer(new Answer.LoginAnswer(null,"username not exist"));
+            Client.getInstance().putAnswer(new Answer.LoginAnswer(null, "username not exist"));
         }
     }
 
@@ -75,11 +93,19 @@ public class Server {
             p = new Player(username, password, System.currentTimeMillis(), 30, 0
                     , modelLoader.getFirstCards(), modelLoader.getFirstHeroes(), modelLoader.getFirstDecks());
             HeaderLog headerLog = new HeaderLog(p.getCreatTime(), p.getUserName(), p.getPassword());
+            p.saveOrUpdate(connector);
             headerLog.saveOrUpdate(connector);
             connector.commit();
-            Client.getInstance().putAnswer(new Answer.LoginAnswer(p,"successful"));
+            Client.getInstance().putAnswer(new Answer.LoginAnswer(p, "successful"));
+            this.player = p;
         } else {
-            Client.getInstance().putAnswer(new Answer.LoginAnswer(null,"username already exist"));
+            Client.getInstance().putAnswer(new Answer.LoginAnswer(null, "username already exist"));
         }
+    }
+
+    public void shutdown() {
+        executor.stop();
+        executeRequests();
+        connector.close();
     }
 }

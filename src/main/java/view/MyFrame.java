@@ -13,6 +13,7 @@ public class MyFrame extends JFrame {
     public MyFrame() {
         this.config();
         this.setVisible(true);
+        this.setLocationRelativeTo(null);
         new Loop(fps, this::update).start();
     }
 
