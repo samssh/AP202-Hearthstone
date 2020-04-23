@@ -113,6 +113,7 @@ public class CardBox extends JPanel {
             } else cardViewer = new CardViewer(card, 1, parent,showPrice);
             cardViewer.setLocation(i * (Constant.cardWidth + space),
                     j * (Constant.cardHeight + space) + Constant.cardBoxLabelHeight);
+            cardViewer.setCardActionListener(cardActionListener);
             cardViewers.add(cardViewer);
             begin = k;
         }

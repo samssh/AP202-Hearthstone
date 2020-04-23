@@ -24,6 +24,7 @@ public class CardViewer extends JPanel {
         this.number = number;
         this.parent = parent;
         this.showPrice = showPrice;
+//        this.cardActionListener = cardActionListener;
         small = ImageLoader.getInstance().getSmallCard(card.getName());
         big = ImageLoader.getInstance().getBigCard(card.getName());
         this.setSize(Constant.cardWidth, Constant.cardHeight);

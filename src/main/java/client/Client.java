@@ -20,11 +20,12 @@ public class Client {
     private static final Client instance = new Client();
     private final JFrame frame;
     private final Map<PanelType, JPanel> panels;
-    private Stack<PanelType> history;
+    private final Stack<PanelType> history;
     private PanelType now;
     private Connector connector;
     private final List<Executable> tempAnswerList, answerList;
     private final Loop executor;
+    private String username;
 
     public Client() {
         this.frame = new MyFrame();
@@ -69,6 +70,7 @@ public class Client {
             now = PanelType.MAIN_MENU;
             updateFramePanel();
             ((MainMenuPanel) panels.get(now)).setPlayerName(message);
+            username = message;
         } else {
             panel.setMessage(message);
         }
