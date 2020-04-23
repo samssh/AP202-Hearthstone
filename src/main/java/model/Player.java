@@ -47,18 +47,18 @@ public class Player implements SaveAble {
     @LazyCollection(LazyCollectionOption.FALSE)
     @Setter
     @Getter
-    @JoinTable (name = "Player_Card")
+    @JoinTable(name = "Player_Card")
     private List<Card> cards;
     @ManyToMany
-    @Cascade( CascadeType.SAVE_UPDATE)
+    @Cascade(CascadeType.SAVE_UPDATE)
     @LazyCollection(LazyCollectionOption.FALSE)
     @Setter
     @Getter
-    @JoinTable (name = "Player_Hero")
+    @JoinTable(name = "Player_Hero")
     private List<Hero> heroes;
     @OneToMany
     @LazyCollection(LazyCollectionOption.FALSE)
-    @Cascade({CascadeType.SAVE_UPDATE ,CascadeType.DELETE})
+    @Cascade({CascadeType.SAVE_UPDATE, CascadeType.DELETE})
     @Setter
     @Getter
     private List<Deck> decks;
@@ -91,7 +91,11 @@ public class Player implements SaveAble {
     }
 
     public void removeCard(Card card) {
+        int number = numberOfCard(card);
         cards.remove(card);
+        for (Deck deck : decks) {
+            deck.removeCard(card, number);
+        }
     }
 
     public int numberOfCard(Card card) {

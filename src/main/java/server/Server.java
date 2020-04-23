@@ -4,6 +4,7 @@ import client.Answer;
 import client.Client;
 import controller.Loop;
 import hibernate.Connector;
+import model.Card;
 import model.HeaderLog;
 import model.ModelLoader;
 import model.Player;
@@ -56,33 +57,66 @@ public class Server {
             signUp(username, password);
     }
 
-    void logout(Player player) {
+    void logout() {
         if (this.player != null) {
+            connector.beginTransaction();
             this.player.saveOrUpdate(connector);
+            connector.commit();
             // log
             this.player = null;
         }
     }
 
-    void deleteAccount(Player player) {
+    void deleteAccount() {
         if (this.player != null) {
+            connector.beginTransaction();
             this.player.delete(connector);
+            connector.commit();
             // log
             this.player = null;
         }
+    }
+
+    void sendShop() {
+        Answer answer = new Answer.ShopDetails(makeSellList(),makeBuyList(),player.getCoin());
+        Client.getInstance().putAnswer(answer);
+    }
+
+    private List<Card> makeSellList() {
+        return new ArrayList<>(player.getCards());
+    }
+
+    private List<Card> makeBuyList() {
+        List<Card> buyList = new ArrayList<>();
+        for (Card card : modelLoader.getCards()) {
+            int number = player.numberOfCard(card);
+            if (number == 2)
+                continue;
+            if (number == 1) {
+                if (card.getPrice() <= player.getCoin())
+                    buyList.add(card);
+            }
+            if (number == 0) {
+                if (card.getPrice() <= player.getCoin())
+                    buyList.add(card);
+                if (2 * card.getPrice() <= player.getCoin())
+                    buyList.add(card);
+            }
+        }
+        return buyList;
     }
 
     private void signIn(String userName, String password) {
         Player p = connector.fetch(Player.class, userName);
         if (p != null) {
             if (p.getPassword().equals(password)) {
-                Client.getInstance().putAnswer(new Answer.LoginAnswer(p, "successful"));
                 this.player = p;
+                Client.getInstance().putAnswer(new Answer.LoginAnswer(true, player.getUserName()));
             } else {
-                Client.getInstance().putAnswer(new Answer.LoginAnswer(null, "wrong password"));
+                Client.getInstance().putAnswer(new Answer.LoginAnswer(false, "wrong password"));
             }
         } else {
-            Client.getInstance().putAnswer(new Answer.LoginAnswer(null, "username not exist"));
+            Client.getInstance().putAnswer(new Answer.LoginAnswer(false, "username not exist"));
         }
     }
 
@@ -96,11 +130,33 @@ public class Server {
             p.saveOrUpdate(connector);
             headerLog.saveOrUpdate(connector);
             connector.commit();
-            Client.getInstance().putAnswer(new Answer.LoginAnswer(p, "successful"));
             this.player = p;
+            Client.getInstance().putAnswer(new Answer.LoginAnswer(true, player.getUserName()));
         } else {
-            Client.getInstance().putAnswer(new Answer.LoginAnswer(null, "username already exist"));
+            Client.getInstance().putAnswer(new Answer.LoginAnswer(false, "username already exist"));
         }
+    }
+
+    void sellCard(Card card){
+        if (player.getCards().contains(card)){
+            player.setCoin(player.getCoin()+card.getPrice());
+            player.removeCard(card);
+            connector.beginTransaction();
+            player.saveOrUpdate(connector);
+            connector.commit();
+        }
+        sendShop();
+    }
+
+    void buyCard(Card card){
+        if (player.getCoin()>=card.getPrice()){
+            player.setCoin(player.getCoin()-card.getPrice());
+            player.addCard(card);
+            connector.beginTransaction();
+            player.saveOrUpdate(connector);
+            connector.commit();
+        }
+        sendShop();
     }
 
     public void shutdown() {

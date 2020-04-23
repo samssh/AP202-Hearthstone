@@ -3,35 +3,55 @@ import configs.ConfigFactory;
 import controller.Loop;
 import hibernate.Connector;
 import model.Card;
+import model.ModelLoader;
 import model.Player;
 import view.MyFrame;
 import view.panel.LoginPanel;
+import view.util.CardBox;
 
+import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.IOException;
-import java.io.Reader;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Scanner;
 
 public class GraphicLoop extends JButton {
 
 
-    public static void main(String[] args) {
-        JFrame frame=new MyFrame();
-        GraphicLoop b=new GraphicLoop();
-        frame.add(b);
-        b.setBounds(0,0,40,60);
-        frame.setSize(200,300);
+    public static void main(String[] args) throws IOException {
+//        File file = new File("./src/main/resources/images/cards/small");
+//        File[] files = file.listFiles();
+////        File file1 = files[0];
+////        int min=1000;
+//        for (File value : Objects.requireNonNull(files)) {
+//            String s1 = value.getName().substring(0,value.getName().length()-4)+"=";
+//            s1=s1.replace(' ','-');
+//            String d= value.getPath().replace('\\','/');
+//            System.out.println(s1+d);
+//        }
+////        System.out.println(l.getHeight());
+////        System.out.println(l.getWidth());
+////        System.out.println(file1.getName());
+        ConfigFactory.getInstance("DEFAULT");
+        Connector connector = new Connector("HIBERNATE_CONFIG");
+        ModelLoader modelLoader = new ModelLoader(connector);
+        JFrame frame = new MyFrame();
         frame.setLayout(null);
-        frame.setVisible(true);
-        if(new Scanner(System.in).nextBoolean())
-            frame.repaint();
-
-
+        JPanel panel= new JPanel();
+        panel.setLayout(null);
+        frame.setContentPane(panel);
+        panel.setBounds(0,0,1200,700);
+        panel.setBackground(Color.red);
+        modelLoader.getCards().add(modelLoader.getCards().get(modelLoader.getCards().size()-1));
+        modelLoader.getCards().add(0,modelLoader.getCards().get(0));
+        CardBox cardBox = new CardBox(2,3,panel,true);
+        cardBox.setCardList(modelLoader.getCards());
+        cardBox.setLocation(100,100);
+        cardBox.setTitle("TEST");
+        panel.add(cardBox);
     }
 
     @Override

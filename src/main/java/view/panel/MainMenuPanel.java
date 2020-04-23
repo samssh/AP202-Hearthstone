@@ -4,7 +4,6 @@ import client.Client;
 import configs.Config;
 import configs.ConfigFactory;
 import lombok.Setter;
-import server.Server;
 
 import javax.swing.*;
 import java.awt.*;
@@ -92,6 +91,7 @@ public class MainMenuPanel extends JPanel {
     private void initializeShop() {
         shop = new JButton("shop");
         shop.setSize(dimension);
+        shop.addActionListener(e -> mainMenuAction.shop());
     }
 
     private void initializeStatus() {

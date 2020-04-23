@@ -2,19 +2,16 @@ package view.panel;
 
 import client.Client;
 import lombok.Getter;
-import lombok.SneakyThrows;
-import server.Server;
+
 import configs.Config;
 import configs.ConfigFactory;
 import lombok.Setter;
+import view.ImageLoader;
 
-import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
-import java.io.File;
-import java.io.IOException;
 
 public class LoginPanel extends JPanel {
     @Setter
@@ -28,44 +25,7 @@ public class LoginPanel extends JPanel {
     private int exitWidth, exitHeight, exitX, exitY, shiftX, shiftY;
     private final Dimension dimension;
     private final Client.LoginPanelAction loginPanelAction;
-    Image image;
-    {
-        try {
-            image = ImageIO.read(new File("C:\\Users\\HP\\Downloads\\d.png"));
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
-    @SneakyThrows
-    @Override
-    protected void paintComponent(Graphics g) {
-        Graphics2D graphics2D = (Graphics2D) g;
-        super.paintComponent(graphics2D);
-
-        graphics2D.drawImage(image,0,0,getWidth(),getHeight(),this);
-        int startWidth = (this.getWidth() - componentWidth) / 2 + shiftX;
-        int startHeight = this.getHeight() / 2 + shiftY;
-        int sumHeight = componentHeight + componentSpace;
-        if (mode == Mode.SIGN_IN) {
-            startHeight = startHeight - (4 * sumHeight + componentHeight) / 2;
-            login.setLocation(startWidth, startHeight + 3 * sumHeight);
-            changeMode.setLocation(startWidth, startHeight + 4 * sumHeight);
-            login.setText("sign in");
-            changeMode.setText("sign up");
-        }
-        if (mode == Mode.SIGN_UP) {
-            startHeight = startHeight - (5 * sumHeight + componentHeight) / 2;
-            passwordAgain.setLocation(startWidth, startHeight + 3 * sumHeight);
-            login.setLocation(startWidth, startHeight + 4 * sumHeight);
-            changeMode.setLocation(startWidth, startHeight + 5 * sumHeight);
-            login.setText("sign up");
-            changeMode.setText("sign in");
-        }
-        welcome.setLocation(startWidth, startHeight);
-        userName.setLocation(startWidth, startHeight + sumHeight);
-        password.setLocation(startWidth, startHeight + 2 * sumHeight);
-    }
+    private Image bg;
 
     public LoginPanel(Client.LoginPanelAction loginPanelAction) {
         setLayout(null);
@@ -81,23 +41,6 @@ public class LoginPanel extends JPanel {
         this.add(login);
         this.add(changeMode);
         this.add(exit);
-    }
-
-    private void config() {
-        Config panelConfig = ConfigFactory.getInstance("").getConfig("LOGIN_PANEL_CONFIG");
-        setBounds(panelConfig.getProperty(Integer.class, "x"),
-                panelConfig.getProperty(Integer.class, "y"),
-                panelConfig.getProperty(Integer.class, "width"),
-                panelConfig.getProperty(Integer.class, "height"));
-        componentWidth = panelConfig.getProperty(Integer.class, "componentWidth");
-        componentHeight = panelConfig.getProperty(Integer.class, "componentHeight");
-        componentSpace = panelConfig.getProperty(Integer.class, "componentSpace");
-        exitX = panelConfig.getProperty(Integer.class, "exitX");
-        exitY = panelConfig.getProperty(Integer.class, "exitY");
-        exitWidth = panelConfig.getProperty(Integer.class, "exitWidth");
-        exitHeight = panelConfig.getProperty(Integer.class, "exitHeight");
-        shiftX = panelConfig.getProperty(Integer.class, "shiftX");
-        shiftY = panelConfig.getProperty(Integer.class, "shiftY");
     }
 
     private void initialize() {
@@ -238,5 +181,51 @@ public class LoginPanel extends JPanel {
 
     public enum Mode {
         SIGN_IN, SIGN_UP
+    }
+
+    @Override
+    protected void paintComponent(Graphics g) {
+        Graphics2D graphics2D = (Graphics2D) g;
+        super.paintComponent(graphics2D);
+        graphics2D.drawImage(bg,0,0,getWidth(),getHeight(),this);
+        int startWidth = (this.getWidth() - componentWidth) / 2 + shiftX;
+        int startHeight = this.getHeight() / 2 + shiftY;
+        int sumHeight = componentHeight + componentSpace;
+        if (mode == Mode.SIGN_IN) {
+            startHeight = startHeight - (4 * sumHeight + componentHeight) / 2;
+            login.setLocation(startWidth, startHeight + 3 * sumHeight);
+            changeMode.setLocation(startWidth, startHeight + 4 * sumHeight);
+            login.setText("sign in");
+            changeMode.setText("sign up");
+        }
+        if (mode == Mode.SIGN_UP) {
+            startHeight = startHeight - (5 * sumHeight + componentHeight) / 2;
+            passwordAgain.setLocation(startWidth, startHeight + 3 * sumHeight);
+            login.setLocation(startWidth, startHeight + 4 * sumHeight);
+            changeMode.setLocation(startWidth, startHeight + 5 * sumHeight);
+            login.setText("sign up");
+            changeMode.setText("sign in");
+        }
+        welcome.setLocation(startWidth, startHeight);
+        userName.setLocation(startWidth, startHeight + sumHeight);
+        password.setLocation(startWidth, startHeight + 2 * sumHeight);
+    }
+
+    private void config() {
+        Config panelConfig = ConfigFactory.getInstance("").getConfig("LOGIN_PANEL_CONFIG");
+        setBounds(panelConfig.getProperty(Integer.class, "x"),
+                panelConfig.getProperty(Integer.class, "y"),
+                panelConfig.getProperty(Integer.class, "width"),
+                panelConfig.getProperty(Integer.class, "height"));
+        componentWidth = panelConfig.getProperty(Integer.class, "componentWidth");
+        componentHeight = panelConfig.getProperty(Integer.class, "componentHeight");
+        componentSpace = panelConfig.getProperty(Integer.class, "componentSpace");
+        exitX = panelConfig.getProperty(Integer.class, "exitX");
+        exitY = panelConfig.getProperty(Integer.class, "exitY");
+        exitWidth = panelConfig.getProperty(Integer.class, "exitWidth");
+        exitHeight = panelConfig.getProperty(Integer.class, "exitHeight");
+        shiftX = panelConfig.getProperty(Integer.class, "shiftX");
+        shiftY = panelConfig.getProperty(Integer.class, "shiftY");
+        bg = ImageLoader.getInstance().getBackground("login");
     }
 }

@@ -20,7 +20,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Entity
-public class Deck implements SaveAble{
+public class Deck implements SaveAble {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Setter
@@ -53,8 +53,13 @@ public class Deck implements SaveAble{
         else cardList.add(card);
     }
 
-    public void removeCard(Card card) {
-        cardList.remove(card);
+    public void removeCard(Card card, int i) {
+        if (i == 1) {
+            cardList.remove(card);
+        }
+        if (i==2 && numberOfCard(card)==2){
+            cardList.remove(card);
+        }
     }
 
     public int numberOfCard(Card card) {
@@ -88,7 +93,7 @@ public class Deck implements SaveAble{
     }
 
     public Deck getclone() {
-        Deck deck=new Deck(this.hero);
+        Deck deck = new Deck(this.hero);
         deck.getCardList().addAll(cardList);
         return deck;
     }
