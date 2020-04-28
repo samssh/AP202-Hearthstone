@@ -11,27 +11,26 @@ import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import java.util.Collection;
 
-@Entity (name = "Card")
+@Entity(name = "Card")
 abstract public class Card extends Unit {
     @ManyToOne
     @Cascade(CascadeType.SAVE_UPDATE)
     @Setter
     @Getter
-    ClassOfCard classOfCard;
+    protected ClassOfCard classOfCard;
     @Column
     @Setter
     @Getter
-    Rarity rarity;
+    protected Rarity rarity;
     @Column
     @Setter
     @Getter
-    int manaFrz;
+    protected int manaFrz;
     @Column
     @Setter
     @Getter
-    int price;
+    protected int price;
 
-    // only hibernate use this constructor
     public Card() {
     }
 
@@ -45,14 +44,9 @@ abstract public class Card extends Unit {
         this.price = price;
     }
 
-    @ManyToMany(mappedBy = "cards")
-    private Collection<Player> Players;
-
-    public Collection<Player> getPlayers() {
-        return Players;
-    }
-
-    public void setPlayers(Collection<Player> players) {
-        Players = players;
+    public static int getInstanceValue(Card card) {
+        if (card instanceof Minion) return 4;
+        else if (card instanceof Spell) return 3;
+        else return -1;
     }
 }

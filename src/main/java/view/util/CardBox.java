@@ -1,31 +1,35 @@
 package view.util;
 
-import lombok.Setter;
-import model.Card;
+import view.ImageLoader;
+import view.model.CardOverview;
 
 import javax.swing.*;
+import java.awt.*;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
+import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.List;
 
+import static view.util.Constant.*;
+
 public class CardBox extends JPanel {
-    private List<Card> cardList;
+    private List<CardOverview> cardList;
     private final List<CardViewer> cardViewers;
-    private final int a, b, space = 10 , height, width;
+    private final int a, b, space = CARD_SPACE, height, width;
     private int begin, end;
     private JLabel title;
     private JButton next, previous;
     private final JPanel parent;
-    private final boolean showPrice;
-    @Setter
-    private CardActionListener cardActionListener;
+    private final CardActionListener cardActionListener;
 
-    public CardBox(int width, int height, JPanel parent,boolean showPrice) {
+    public CardBox(int width, int height, JPanel parent, CardActionListener cardActionListener) {
         this.a = width;
         this.b = height;
         this.parent = parent;
-        this.showPrice = showPrice;
-        this.width =width * (Constant.cardWidth + space);
-        this.height =height * (Constant.cardHeight + space) + Constant.cardBoxButtonHeight + Constant.cardBoxLabelHeight;
+        this.cardActionListener = cardActionListener;
+        this.width = a * (CARD_WIDTH + space) - space;
+        this.height = b * (CARD_HEIGHT + space) + BOX_BUTTON_HEIGHT + BOX_LABEL_HEIGHT;
         this.setSize(this.width, this.height);
         this.setLayout(null);
         initializeTitle();
@@ -35,9 +39,9 @@ public class CardBox extends JPanel {
         cardViewers = new ArrayList<>();
     }
 
-    private void initializeTitle(){
+    private void initializeTitle() {
         title = new JLabel();
-        title.setBounds(0,0,width,Constant.cardBoxLabelHeight);
+        title.setBounds(0, 0, width, BOX_LABEL_HEIGHT);
         title.setHorizontalAlignment(JLabel.CENTER);
         title.setOpaque(false);
         title.setFocusable(false);
@@ -47,10 +51,8 @@ public class CardBox extends JPanel {
     private void initializeNext() {
         next = new JButton("next");
         next.setHorizontalAlignment(SwingConstants.RIGHT);
-        next.setBounds(a * (Constant.cardWidth + space) - 70,
-                b * (Constant.cardHeight + space) + 10 + Constant.cardBoxLabelHeight - space,
-                70,Constant.cardBoxButtonHeight - 10);
-        next.addActionListener(actionEvent->this.next());
+        next.setBounds(width - BOX_BUTTON_WIDTH, height - BOX_BUTTON_HEIGHT, BOX_BUTTON_WIDTH, BOX_LABEL_HEIGHT);
+        next.addActionListener(actionEvent -> this.next());
         next.setOpaque(false);
         next.setFocusable(false);
         next.setContentAreaFilled(false);
@@ -61,9 +63,7 @@ public class CardBox extends JPanel {
     private void initializePrevious() {
         previous = new JButton("previous");
         previous.setHorizontalAlignment(SwingConstants.LEFT);
-        previous.setBounds(0,
-                b * (Constant.cardHeight + space) + 10 + Constant.cardBoxLabelHeight - space,
-                100,Constant.cardBoxButtonHeight - 10);
+        previous.setBounds(0, height - BOX_BUTTON_HEIGHT, BOX_BUTTON_WIDTH, BOX_LABEL_HEIGHT);
         previous.setFocusable(false);
         previous.setOpaque(false);
         previous.setContentAreaFilled(false);
@@ -72,29 +72,18 @@ public class CardBox extends JPanel {
         previous.setFocusPainted(false);
     }
 
-    public void setCardList(List<Card> cardList) {
+    public void setCardList(List<CardOverview> cardList) {
         this.cardList = cardList;
-        end=0;
+        end = 0;
         next();
     }
 
     private void next() {
         cardViewers.clear();
         begin = end;
-        for (int k = begin, t = 0; k < cardList.size(); t++, k++) {
-            int i = t % a, j = t / a;
-            if (j == b)
-                break;
-            Card card = cardList.get(k);
-            CardViewer cardViewer;
-            if (k + 1 < cardList.size() && card.equals(cardList.get(k + 1))) {
-                k++;
-                cardViewer = new CardViewer(card, 2, parent,showPrice);
-            } else cardViewer = new CardViewer(card, 1, parent,showPrice);
-            cardViewer.setLocation(i * (Constant.cardWidth + space),
-                    j * (Constant.cardHeight + space) + Constant.cardBoxLabelHeight);
-            cardViewer.setCardActionListener(cardActionListener);
-            cardViewers.add(cardViewer);
+        for (int k = begin; k < cardList.size() && k < begin + a * b; k++) {
+            int i = (k - begin) % a, j = (k - begin) / a;
+            f(cardViewers, k, i, j);
             end = k + 1;
         }
         update();
@@ -103,21 +92,20 @@ public class CardBox extends JPanel {
     private void previous() {
         cardViewers.clear();
         end = begin;
-        for (int k = end -1 , t = a * b - 1; t >= 0; t--, k--) {
-            int i = t % a, j = t / a;
-            Card card = cardList.get(k);
-            CardViewer cardViewer;
-            if (k - 1 >=0 && card.equals(cardList.get(k - 1))) {
-                k--;
-                cardViewer = new CardViewer(card, 2, parent,showPrice);
-            } else cardViewer = new CardViewer(card, 1, parent,showPrice);
-            cardViewer.setLocation(i * (Constant.cardWidth + space),
-                    j * (Constant.cardHeight + space) + Constant.cardBoxLabelHeight);
-            cardViewer.setCardActionListener(cardActionListener);
-            cardViewers.add(cardViewer);
+        for (int k = end - 1; k >= end - a * b && k >= 0; k--) {
+            int i = (k - end + a * b) % a, j = (k - end + a * b) / a;
+            f(cardViewers, k, i, j);
             begin = k;
         }
         update();
+    }
+
+    private void f(List<CardViewer> cardViewers, int k, int i, int j) {
+        CardOverview cardOverview = cardList.get(k);
+        CardViewer cardViewer;
+        cardViewer = new CardViewer(cardOverview);
+        cardViewer.setLocation(i * (CARD_WIDTH + space), j * (CARD_HEIGHT + space) + BOX_LABEL_HEIGHT);
+        cardViewers.add(cardViewer);
     }
 
     private void update() {
@@ -140,7 +128,76 @@ public class CardBox extends JPanel {
         return begin != 0;
     }
 
-    public void setTitle(String title){
+    public void setTitle(String title) {
         this.title.setText(title);
     }
+
+
+    public class CardViewer extends JPanel implements MouseListener {
+        private final BufferedImage small, big;
+        private final CardOverview cardOverview;
+
+
+        CardViewer(CardOverview cardOverview) {
+            this.cardOverview = cardOverview;
+            setToolTipText("class of card: " + cardOverview.getClassOfCard());
+            if (cardOverview.getColorType() == 0) {
+                small = ImageLoader.getInstance().getSmallCard(cardOverview.getName());
+                big = ImageLoader.getInstance().getBigCard(cardOverview.getName());
+            } else if (cardOverview.getColorType() == 1) {
+                small = ImageLoader.getInstance().getSmallGrayCard(cardOverview.getName());
+                big = ImageLoader.getInstance().getBigGrayCard(cardOverview.getName());
+            } else {
+                small = null;
+                big = null;
+            }
+            this.setSize(Constant.CARD_WIDTH, Constant.CARD_HEIGHT);
+            this.setOpaque(false);
+            this.addMouseListener(this);
+        }
+
+        @Override
+        protected void paintComponent(Graphics g) {
+            super.paintComponent(g);
+            if (cardOverview.getNumber() == 2)
+                g.drawImage(small, 15, 0, this);
+            g.drawImage(small, 0, 0, this);
+            if (cardOverview.isShowPrice()) {
+                g.setFont(g.getFont().deriveFont(17.0F).deriveFont(Font.BOLD));
+                g.setColor(Color.RED);
+                g.drawString("price: " + cardOverview.getPrice(), 35 * this.getWidth() / 135, 155 * this.getHeight() / 170);
+            }
+
+        }
+
+        @Override
+        public void mouseClicked(MouseEvent e) {
+            if (e.getButton() == MouseEvent.BUTTON3) {
+                if (big != null) {
+                    JOptionPane.showMessageDialog(parent, null,
+                            "card information", JOptionPane.INFORMATION_MESSAGE, new ImageIcon(big));
+                }
+            }
+            if (e.getButton() == MouseEvent.BUTTON1) {
+                cardActionListener.action(cardOverview.getName());
+            }
+        }
+
+        @Override
+        public void mousePressed(MouseEvent e) {
+        }
+
+        @Override
+        public void mouseReleased(MouseEvent e) {
+        }
+
+        @Override
+        public void mouseEntered(MouseEvent e) {
+        }
+
+        @Override
+        public void mouseExited(MouseEvent e) {
+        }
+    }
+
 }

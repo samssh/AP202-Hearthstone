@@ -12,6 +12,25 @@ repositories {
     mavenCentral()
 }
 
+sourceSets {
+    test {
+        java {
+            srcDirs = ['./src/test/java']
+        }
+        resources {
+            srcDirs = ['./src/test/resources']
+        }
+    }
+    main {
+        java {
+            srcDirs = ['./src/main/java']
+        }
+        resources {
+            srcDirs = ['./src/main/resources']
+        }
+    }
+}
+
 dependencies {
     // https://mvnrepository.com/artifact/org.xerial/sqlite-jdbc
     compile group: 'org.xerial', name: 'sqlite-jdbc', version: '3.30.1'
@@ -19,10 +38,7 @@ dependencies {
     compile group: 'com.github.gwenn', name: 'sqlite-dialect', version: '0.1.0'
     // https://mvnrepository.com/artifact/org.hibernate/hibernate-core
     compile group: 'org.hibernate', name: 'hibernate-core', version: '5.4.14.Final'
-//    // lombok
-//    compileOnly 'org.projectlombok:lombok:1.18.4'
-
-
+    // lombok
     // https://mvnrepository.com/artifact/org.projectlombok/lombok
     providedCompile group: 'org.projectlombok', name: 'lombok', version: '1.18.12'
     annotationProcessor group: 'org.projectlombok', name: 'lombok', version: '1.18.12'

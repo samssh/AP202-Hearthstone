@@ -17,5 +17,6 @@
         <mapping class="model.BodyLog"/>
         <mapping class="model.Unit"/>
         <mapping class="model.Card"/>
+        <mapping class="model.CardDetails"/>
     </session-factory>
 </hibernate-configuration>

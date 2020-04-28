@@ -4,7 +4,7 @@ import client.Client;
 import configs.Config;
 import configs.ConfigFactory;
 import lombok.Setter;
-import model.Card;
+import view.model.CardOverview;
 import view.util.CardBox;
 
 import javax.swing.*;
@@ -16,10 +16,10 @@ public class ShopPanel extends JPanel {
     @Setter
     private int coin;
     private JButton exit, back, backMainMenu;
-    private int coinX,coinY;
-    private int sellX,sellY,sellWidth,sellHeight;
-    private int buyX,buyY,buyWidth,buyHeight;
-    private int exitX,exitY,exitWidth,exitHeight,exitSpace;
+    private int coinX, coinY;
+    private int sellX, sellY, sellWidth, sellHeight;
+    private int buyX, buyY, buyWidth, buyHeight;
+    private int exitX, exitY, exitWidth, exitHeight, exitSpace;
     private final Client.ShopAction shopAction;
 
     public ShopPanel(Client.ShopAction shopAction) {
@@ -43,45 +43,42 @@ public class ShopPanel extends JPanel {
     }
 
     private void initializeSell() {
-        sell = new CardBox(sellWidth,sellHeight,this,true);
-        sell.setLocation(sellX,sellY);
+        sell = new CardBox(sellWidth, sellHeight, this, shopAction::sell);
+        sell.setLocation(sellX, sellY);
         sell.setTitle("card you can sell");
-        sell.setCardActionListener(shopAction::sell);
     }
 
     private void initializeBuy() {
-        buy = new CardBox(buyWidth,buyHeight,this,true);
-        buy.setLocation(buyX,buyY);
+        buy = new CardBox(buyWidth, buyHeight, this, shopAction::buy);
+        buy.setLocation(buyX, buyY);
         buy.setTitle("card you can buy");
-        buy.setCardActionListener(shopAction::buy);
     }
 
-
-    private void initializeExit(){
+    private void initializeExit() {
         exit = new JButton("exit");
         exit.setBounds(exitX, exitY, exitWidth, exitHeight);
-        exit.addActionListener(e -> shopAction.exit());
+        exit.addActionListener(shopAction::exit);
     }
 
-    private void initializeBack(){
+    private void initializeBack() {
         back = new JButton("back");
         int y = exitY - 2 * (exitHeight + exitSpace);
         back.setBounds(exitX, y, exitWidth, exitHeight);
-        back.addActionListener(e -> shopAction.back());
+        back.addActionListener(shopAction::back);
     }
 
-    private void initializeBackMainMenu(){
+    private void initializeBackMainMenu() {
         backMainMenu = new JButton("back to main menu");
         int y = exitY - (exitHeight + exitSpace);
         backMainMenu.setBounds(exitX, y, exitWidth, exitHeight);
-        backMainMenu.addActionListener(e -> shopAction.backMainMenu());
+        backMainMenu.addActionListener(shopAction::backMainMenu);
     }
 
 
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
-        g.drawString("coins = "+coin,coinX,coinY);
+        g.drawString("coins = " + coin, coinX, coinY);
     }
 
     private void config() {
@@ -107,11 +104,11 @@ public class ShopPanel extends JPanel {
         coinY = shopConfig.getProperty(Integer.class, "coinY");
     }
 
-    public void setSell(List<Card> sellList){
+    public void setSell(List<CardOverview> sellList) {
         sell.setCardList(sellList);
     }
 
-    public void setBuy(List<Card> buyList){
+    public void setBuy(List<CardOverview> buyList) {
         buy.setCardList(buyList);
     }
 }

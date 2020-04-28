@@ -2,7 +2,7 @@ package view;
 
 import configs.Config;
 import configs.ConfigFactory;
-import controller.Loop;
+import util.Loop;
 
 import javax.swing.*;
 import java.awt.*;

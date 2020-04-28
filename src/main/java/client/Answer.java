@@ -1,8 +1,8 @@
 package client;
 
-import controller.Executable;
-import model.Card;
-import model.Player;
+import util.Executable;
+import view.model.CardOverview;
+import view.model.DeckOverview;
 
 import java.util.List;
 
@@ -24,10 +24,10 @@ public abstract class Answer implements Executable {
     }
 
     public static class ShopDetails extends Answer {
-        private final List<Card> sell,buy;
+        private final List<CardOverview> sell,buy;
         private final int coins;
 
-        public ShopDetails(List<Card> sell, List<Card> buy, int coins) {
+        public ShopDetails(List<CardOverview> sell, List<CardOverview> buy, int coins) {
             this.sell = sell;
             this.buy = buy;
             this.coins = coins;
@@ -39,4 +39,16 @@ public abstract class Answer implements Executable {
         }
     }
 
+    public static class StatusDetail extends Answer{
+        private final List<DeckOverview> deckOverviews;
+
+        public StatusDetail(List<DeckOverview> deckOverviews) {
+            this.deckOverviews = deckOverviews;
+        }
+
+        @Override
+        public void execute() {
+            Client.getInstance().setStatusDetails(deckOverviews);
+        }
+    }
 }

@@ -3,73 +3,92 @@ package model;
 
 import hibernate.Connector;
 import hibernate.SaveAble;
+import javassist.compiler.ast.Pair;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
 import org.hibernate.annotations.LazyCollection;
 import org.hibernate.annotations.LazyCollectionOption;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.ManyToMany;
-import javax.persistence.ManyToOne;
-import java.util.ArrayList;
-import java.util.List;
+import javax.persistence.*;
+import java.util.*;
 
 @Entity
+@ToString
 public class Deck implements SaveAble {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Setter
     private long Id;
+    @Column
+    @Getter
+    @Setter
+    private String name;
+    @Column
+    @Setter
+    @Getter
+    private int wins;
+    @Column
+    @Setter
+    @Getter
+    private int games;
     @ManyToOne
     @Cascade(CascadeType.SAVE_UPDATE)
     @Setter
     @Getter
     private Hero hero;
-    @ManyToMany
+    @ElementCollection
     @Cascade(CascadeType.SAVE_UPDATE)
     @LazyCollection(LazyCollectionOption.FALSE)
     @Setter
     @Getter
-    private List<Card> cardList;
+    private Map<Card, CardDetails> cards;
 
     {
-        cardList = new ArrayList<>();
+        cards = new HashMap<>();
     }
 
     public Deck() {
     }
 
-    Deck(Hero hero) {
+    public Deck(Hero hero,String name) {
         this.hero = hero;
+        this.name = name;
     }
 
     public void addCard(Card card) {
-        if (cardList.contains(card)) cardList.add(this.cardList.lastIndexOf(card), card);
-        else cardList.add(card);
+        if (cards.containsKey(card)) cards.get(card).vRepeatedTimes(1);
+        else cards.put(card, new CardDetails(1));
     }
 
-    public void removeCard(Card card, int i) {
-        if (i == 1) {
-            cardList.remove(card);
+    public double getWinRate(){
+        return games != 0 ? (wins + 0.0) / games : -1;
+    }
+
+
+    public double getManaAverage(){
+        double sum=0,n=0;
+        for (Card card:cards.keySet()) {
+            n++;
+            sum+=card.manaFrz;
         }
-        if (i==2 && numberOfCard(card)==2){
-            cardList.remove(card);
+
+        return n != 0 ? (sum) / n : -1;
+    }
+
+    public void removeCard(Card card) {
+        if (cards.containsKey(card)) {
+            cards.get(card).vRepeatedTimes(-1);
+            if (cards.get(card).getRepeatedTimes() == 0) cards.remove(card);
         }
     }
 
     public int numberOfCard(Card card) {
-        int c = 0;
-        for (Card value : cardList) {
-            if (value.equals(card)) {
-                c++;
-            }
-        }
-        return c;
+        if (cards.containsKey(card))
+            return cards.get(card).getRepeatedTimes();
+        return 0;
     }
 
     @SuppressWarnings("unchecked")
@@ -92,9 +111,4 @@ public class Deck implements SaveAble {
     public void load(Connector connector) {
     }
 
-    public Deck getclone() {
-        Deck deck = new Deck(this.hero);
-        deck.getCardList().addAll(cardList);
-        return deck;
-    }
 }

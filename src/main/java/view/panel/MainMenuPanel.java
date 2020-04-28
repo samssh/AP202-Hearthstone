@@ -91,12 +91,13 @@ public class MainMenuPanel extends JPanel {
     private void initializeShop() {
         shop = new JButton("shop");
         shop.setSize(dimension);
-        shop.addActionListener(e -> mainMenuAction.shop());
+        shop.addActionListener(mainMenuAction::shop);
     }
 
     private void initializeStatus() {
         status = new JButton("status");
         status.setSize(dimension);
+        status.addActionListener(mainMenuAction::Status);
     }
 
     private void initializeCollection() {
@@ -107,21 +108,21 @@ public class MainMenuPanel extends JPanel {
     private void initializeExit() {
         exit = new JButton("exit");
         exit.setBounds(exitX, exitY, exitWidth, exitHeight);
-        exit.addActionListener(actionEvent -> mainMenuAction.exit());
+        exit.addActionListener(mainMenuAction::exit);
     }
 
     private void initializeLogout() {
         logout = new JButton("logout");
         int y = exitY - 2 * (exitHeight + exitSpace);
         logout.setBounds(exitX, y, exitWidth, exitHeight);
-        logout.addActionListener(actionEvent -> mainMenuAction.logout());
+        logout.addActionListener(mainMenuAction::logout);
     }
 
     private void initializeDeleteAccount() {
         deleteAccount = new JButton("delete account");
         int y = exitY - (exitHeight + exitSpace);
         deleteAccount.setBounds(exitX, y, exitWidth, exitHeight);
-        deleteAccount.addActionListener(actionListener -> mainMenuAction.deleteAccount());
+        deleteAccount.addActionListener(mainMenuAction::deleteAccount);
     }
 
 

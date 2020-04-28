@@ -1,19 +1,21 @@
 package client;
 
-import controller.Executable;
-import controller.Loop;
+import util.Executable;
+import util.Loop;
 import hibernate.Connector;
-import model.Card;
-import model.Player;
+import view.model.CardOverview;
 import server.Request;
 import server.Server;
 import view.MyFrame;
+import view.model.DeckOverview;
 import view.panel.LoginPanel;
 import view.panel.MainMenuPanel;
-import view.panel.PanelType;
+import view.PanelType;
 import view.panel.ShopPanel;
+import view.panel.StatusPanel;
 
 import javax.swing.*;
+import java.awt.event.ActionEvent;
 import java.util.*;
 
 public class Client {
@@ -34,6 +36,7 @@ public class Client {
         panels.put(PanelType.LOGIN_PANEL, new LoginPanel(new LoginPanelAction()));
         panels.put(PanelType.MAIN_MENU, new MainMenuPanel(new MainMenuAction()));
         panels.put(PanelType.SHOP, new ShopPanel(new ShopAction()));
+        panels.put(PanelType.STATUS,new StatusPanel(new StatusAction()));
         now = PanelType.LOGIN_PANEL;
         updateFramePanel();
         tempAnswerList = new ArrayList<>();
@@ -76,8 +79,8 @@ public class Client {
         }
     }
 
-    void setShopDetails(List<Card> sell,List<Card> buy, int coin){
-        if (now != PanelType.SHOP){
+    void setShopDetails(List<CardOverview> sell, List<CardOverview> buy, int coin) {
+        if (now != PanelType.SHOP) {
             now = PanelType.SHOP;
             updateFramePanel();
         }
@@ -87,36 +90,45 @@ public class Client {
         shopPanel.setCoin(coin);
     }
 
-    private void updateFramePanel(){
+    void setStatusDetails(List<DeckOverview> deckOverviews){
+        if (now != PanelType.STATUS) {
+            now = PanelType.STATUS;
+            updateFramePanel();
+        }
+        StatusPanel statusPanel = (StatusPanel) panels.get(PanelType.STATUS);
+        statusPanel.setDeckBoxList(deckOverviews);
+    }
+
+    private void updateFramePanel() {
         frame.setContentPane(panels.get(now));
         history.push(now);
     }
 
-    private void back(){
+    private void back() {
         history.pop();
         now = history.peek();
         frame.setContentPane(panels.get(now));
     }
 
-    private void backMainMenu(){
-        while (history.peek()!= PanelType.MAIN_MENU)
+    private void backMainMenu() {
+        while (history.peek() != PanelType.MAIN_MENU)
             history.pop();
         now = history.peek();
         frame.setContentPane(panels.get(now));
     }
 
-    private void exit(){
+    private void exit() {
         Server.getInstance().shutdown();
         this.shutdown();
         System.exit(0);
     }
 
-    private void logout(){
+    private void logout() {
         Request request = new Request.LogoutRequest();
         Server.getInstance().addRequest(request);
     }
 
-    private void deleteAccount(){
+    private void deleteAccount() {
         Request request = new Request.DeleteAccount();
         Server.getInstance().addRequest(request);
     }
@@ -135,6 +147,7 @@ public class Client {
             }
             loginPanel.reset();
         }
+
         public void login(LoginPanel loginPanel, String username, String pass, String pass2) {
             if ("Enter username".equals(username) || "".equals(username))
                 return;
@@ -148,55 +161,82 @@ public class Client {
             Server.getInstance().addRequest(request);
         }
 
-        public void exit(){
+        public void exit() {
             Client.this.exit();
         }
     }
 
     public class MainMenuAction {
-        public void exit(){
+        public void exit(ActionEvent e) {
             Client.this.logout();
             Client.this.exit();
         }
 
-        public void logout(){
+        public void logout(ActionEvent e) {
             Client.this.logout();
             // reset panels
             now = PanelType.LOGIN_PANEL;
             updateFramePanel();
         }
-        public void deleteAccount(){
+
+        public void deleteAccount(ActionEvent e) {
             Client.this.deleteAccount();
             // reset panels
             now = PanelType.LOGIN_PANEL;
             updateFramePanel();
         }
 
-        public void shop(){
+        public void shop(ActionEvent e) {
             now = PanelType.SHOP;
             Request request = new Request.Shop();
+            Server.getInstance().addRequest(request);
+            updateFramePanel();
+        }
+
+        public void Status(ActionEvent e) {
+            now = PanelType.STATUS;
+            Request request = new Request.Status();
             Server.getInstance().addRequest(request);
             updateFramePanel();
         }
     }
 
     public class ShopAction {
-        public void sell(Card card){
-            Request request = new Request.SellCard(card);
+        public void sell(String cardName) {
+            Request request = new Request.SellCard(cardName);
             Server.getInstance().addRequest(request);
         }
-        public void buy(Card card){
-            Request request = new Request.BuyCard(card);
+
+        public void buy(String cardName) {
+            Request request = new Request.BuyCard(cardName);
             Server.getInstance().addRequest(request);
         }
-        public void exit(){
+
+        public void exit(ActionEvent e) {
             Client.this.logout();
             Client.this.exit();
         }
-        public void back(){
+
+        public void back(ActionEvent e) {
             Client.this.back();
         }
-        public void backMainMenu(){
+
+        public void backMainMenu(ActionEvent e) {
+            Client.this.backMainMenu();
+        }
+    }
+
+    public class StatusAction {
+        public void exit(ActionEvent e) {
+            Client.this.logout();
+            Client.this.exit();
+        }
+
+        public void back(ActionEvent e) {
+            Client.this.back();
+        }
+
+        public void backMainMenu(ActionEvent e) {
             Client.this.backMainMenu();
         }
     }

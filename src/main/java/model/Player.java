@@ -10,14 +10,11 @@ import org.hibernate.annotations.CascadeType;
 import org.hibernate.annotations.LazyCollection;
 import org.hibernate.annotations.LazyCollectionOption;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.JoinTable;
-import javax.persistence.ManyToMany;
-import javax.persistence.OneToMany;
+import javax.persistence.*;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Entity
 @ToString
@@ -42,13 +39,13 @@ public class Player implements SaveAble {
     @Getter
     @Setter
     private int selectedDeckIndex;
-    @ManyToMany
+    @ElementCollection
     @Cascade(CascadeType.SAVE_UPDATE)
     @LazyCollection(LazyCollectionOption.FALSE)
     @Setter
     @Getter
     @JoinTable(name = "Player_Card")
-    private List<Card> cards;
+    private Map<Card,CardDetails> cards;
     @ManyToMany
     @Cascade(CascadeType.SAVE_UPDATE)
     @LazyCollection(LazyCollectionOption.FALSE)
@@ -64,7 +61,7 @@ public class Player implements SaveAble {
     private List<Deck> decks;
 
     {
-        cards = new ArrayList<>();
+        cards = new HashMap<>();
         heroes = new ArrayList<>();
         decks = new ArrayList<>();
     }
@@ -74,7 +71,7 @@ public class Player implements SaveAble {
 
     public Player(String userName, String password, long creatTime,
                   int coin, int selectedDeckIndex,
-                  List<Card> cards, List<Hero> heroes, List<Deck> decks) {
+                  Map<Card,CardDetails> cards, List<Hero> heroes, List<Deck> decks) {
         this.userName = userName;
         this.password = password;
         this.creatTime = creatTime;
@@ -86,43 +83,20 @@ public class Player implements SaveAble {
     }
 
     public void addCard(Card card) {
-        if (cards.contains(card)) cards.add(this.cards.lastIndexOf(card), card);
-        else cards.add(card);
+        if (cards.containsKey(card)) cards.get(card).vRepeatedTimes(1);
+        else cards.put(card ,new CardDetails(1));
     }
 
     public void removeCard(Card card) {
-        int number = numberOfCard(card);
-        cards.remove(card);
-        for (Deck deck : decks) {
-            deck.removeCard(card, number);
-        }
+        cards.get(card).vRepeatedTimes(-1);
+        if (cards.get(card).getRepeatedTimes()==0) cards.remove(card);
+        for (Deck deck:decks) deck.removeCard(card);
     }
 
     public int numberOfCard(Card card) {
-        int c = 0;
-        for (Card value : cards) {
-            if (value.equals(card)) {
-                c++;
-            }
-        }
-        return c;
-    }
-
-    public boolean isInDeck(Card card) {
-        for (Deck d : decks)
-            if (d.numberOfCard(card) > 0)
-                return true;
-        return false;
-    }
-
-    public int getHeroDeckIndex(Hero h) {
-        for (int i = 0; i < decks.size(); i++) {
-            if (decks.get(i).getHero().getName().equals(h.getName()))
-                return i;
-
-        }
-        System.err.println("problem in getHeroDeck");
-        return -1;
+        if (cards.containsKey(card))
+            return cards.get(card).getRepeatedTimes();
+        return 0;
     }
 
     @Override

@@ -1,5 +1,6 @@
 package hibernate;
 
+import configs.ConfigFactory;
 import model.*;
 
 import java.util.List;
@@ -100,6 +101,8 @@ public class DatabaseFiller {
 
     private static Connector connector;
     public static void main(String[] args) {
+        ConfigFactory.getInstance("DEFAULT");
+        connector = new Connector("HIBERNATE_CONFIG");
         fill();
         connector.open();
         List<Hero> heros = connector.fetchAll(Hero.class);

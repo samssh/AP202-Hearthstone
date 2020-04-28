@@ -1,12 +1,15 @@
-package model;
+package util;
 
 import configs.Config;
 import configs.ConfigFactory;
 import hibernate.Connector;
 import lombok.Getter;
+import model.*;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class ModelLoader {
     @Getter
@@ -17,13 +20,11 @@ public class ModelLoader {
     private Hero defaultHero;
     private final List<Hero> firstHeroes;
     private final List<Card> firstCards;
-    private final List<Deck> firstDecks;
 
     public ModelLoader(Connector connector) {
         heroes = connector.fetchAll(Hero.class);
         cards = connector.fetchAll(Card.class);
         firstHeroes = new ArrayList<>();
-        firstDecks = new ArrayList<>();
         firstCards = new ArrayList<>();
         config(ConfigFactory.getInstance("").getConfig("MODEL_LOADER_CONFIG"));
     }
@@ -34,9 +35,6 @@ public class ModelLoader {
         for (String s : heroName) {
             firstHeroes.add(searchHero(s));
         }
-        for (Hero h : firstHeroes) {
-            firstDecks.add(new Deck(h));
-        }
         List<String> cardsName = config.getPropertyList(String.class, "firstCards");
         for (String s : cardsName) {
             firstCards.add(searchCard(s));
@@ -44,8 +42,10 @@ public class ModelLoader {
     }
 
     public List<Deck> getFirstDecks() {
-        List<Deck> deckList = new ArrayList<>(firstDecks);
-        deckList.replaceAll(Deck::getclone);
+        List<Deck> deckList = new ArrayList<>();
+        for (Hero hero:firstHeroes) {
+            deckList.add(new Deck(hero,"default"));
+        }
         return deckList;
     }
 
@@ -53,8 +53,10 @@ public class ModelLoader {
         return new ArrayList<>(firstHeroes);
     }
 
-    public List<Card> getFirstCards() {
-        return new ArrayList<>(firstCards);
+    public Map<Card, CardDetails> getFirstCards() {
+        Map<Card,CardDetails> map = new HashMap<>();
+        for (Card card:firstCards) map.put(card,new CardDetails(1));
+        return map;
     }
 
     public Card searchCard(String s) {

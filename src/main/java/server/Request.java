@@ -1,8 +1,6 @@
 package server;
 
-import controller.Executable;
-import model.Card;
-import model.Player;
+import util.Executable;
 import view.panel.LoginPanel;
 
 public abstract class Request implements Executable {
@@ -46,28 +44,36 @@ public abstract class Request implements Executable {
     }
 
     public static class SellCard extends Request {
-        private final Card card;
+        private final String cardName;
 
-        public SellCard(Card card) {
-            this.card = card;
+        public SellCard(String cardName) {
+            this.cardName = cardName;
         }
 
         @Override
         public void execute() {
-            Server.getInstance().sellCard(card);
+            Server.getInstance().sellCard(cardName);
         }
     }
 
     public static class BuyCard extends Request {
-        private final Card card;
+        private final String cardName;
 
-        public BuyCard(Card card) {
-            this.card = card;
+        public BuyCard(String cardName) {
+            this.cardName = cardName;
         }
 
         @Override
         public void execute() {
-            Server.getInstance().buyCard(card);
+            Server.getInstance().buyCard(cardName);
+        }
+    }
+
+    public static class Status extends Request{
+
+        @Override
+        public void execute() {
+            Server.getInstance().sendStatus();
         }
     }
 
