@@ -1,7 +1,7 @@
 import client.Client;
 import configs.ConfigFactory;
 import server.Server;
-import view.ImageLoader;
+import util.ImageLoader;
 
 import java.awt.*;
 import java.io.File;

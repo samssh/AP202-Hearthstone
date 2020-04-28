@@ -6,7 +6,7 @@ import lombok.Getter;
 import configs.Config;
 import configs.ConfigFactory;
 import lombok.Setter;
-import view.ImageLoader;
+import util.ImageLoader;
 
 import javax.swing.*;
 import java.awt.*;

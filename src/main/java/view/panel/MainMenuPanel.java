@@ -97,7 +97,6 @@ public class MainMenuPanel extends JPanel {
     private void initializeStatus() {
         status = new JButton("status");
         status.setSize(dimension);
-        status.addActionListener(mainMenuAction::Status);
     }
 
     private void initializeCollection() {

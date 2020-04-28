@@ -1,6 +1,6 @@
 package view.util;
 
-import view.ImageLoader;
+import util.ImageLoader;
 import view.model.CardOverview;
 
 import javax.swing.*;

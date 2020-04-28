@@ -1,4 +1,4 @@
-package view;
+package util;
 
 import configs.Config;
 import configs.ConfigFactory;
