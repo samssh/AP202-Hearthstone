@@ -105,11 +105,11 @@ public class ShopPanel extends JPanel {
     }
 
     public void setSell(List<CardOverview> sellList) {
-        sell.setCardList(sellList);
+        sell.setModels(sellList);
     }
 
     public void setBuy(List<CardOverview> buyList) {
-        buy.setCardList(buyList);
+        buy.setModels(buyList);
     }
 }
 

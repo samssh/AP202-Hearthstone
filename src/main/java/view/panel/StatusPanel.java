@@ -4,14 +4,14 @@ import client.Client;
 import configs.Config;
 import configs.ConfigFactory;
 import view.model.DeckOverview;
-import view.util.DeckBox;
+import view.util.BigDeckBox;
 
 import javax.swing.*;
 import java.awt.*;
 import java.util.List;
 
 public class StatusPanel extends JPanel {
-    private DeckBox deckBox;
+    private BigDeckBox bigDeckBox;
     private JButton exit, back, backMainMenu;
     private int deckBoxX,deckBoxY,deckBoxWidth,deckBoxHeight;
     private int exitX,exitY,exitWidth,exitHeight,exitSpace;
@@ -22,7 +22,7 @@ public class StatusPanel extends JPanel {
         this.statusAction = statusAction;
         config();
         initialize();
-        this.add(deckBox);
+        this.add(bigDeckBox);
         this.add(exit);
         this.add(back);
         this.add(backMainMenu);
@@ -36,9 +36,9 @@ public class StatusPanel extends JPanel {
     }
 
     private void initializeDeckBox() {
-        deckBox = new DeckBox(deckBoxWidth,deckBoxHeight,this,null);
-        deckBox.setLocation(deckBoxX,deckBoxY);
-        deckBox.setTitle("your best deck");
+        bigDeckBox = new BigDeckBox(deckBoxWidth,deckBoxHeight,this,null);
+        bigDeckBox.setLocation(deckBoxX,deckBoxY);
+        bigDeckBox.setTitle("your best deck");
     }
 
 
@@ -86,6 +86,6 @@ public class StatusPanel extends JPanel {
     }
 
     public void setDeckBoxList(List<DeckOverview> deckOverviewList){
-        deckBox.setDeckList(deckOverviewList.subList(0,deckBoxHeight*deckBoxWidth));
+        bigDeckBox.setModels(deckOverviewList.subList(0,deckBoxHeight*deckBoxWidth));
     }
 }

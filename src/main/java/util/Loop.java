@@ -1,9 +1,7 @@
 package util;
 
-import controller.Updatable;
 import lombok.SneakyThrows;
 
-import java.util.List;
 
 public class Loop implements Runnable, Updatable {
     private final int fps;

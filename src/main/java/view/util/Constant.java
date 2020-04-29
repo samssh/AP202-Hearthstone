@@ -7,9 +7,11 @@ public class Constant {
     static int BOX_BUTTON_WIDTH = 100;
     static int BOX_BUTTON_HEIGHT = 30;
     static int BOX_LABEL_HEIGHT = 20;
-    static int DECK_WIDTH = 400;
-    static int DECK_HEIGHT = 200;
-    static int DECK_SPACE = 5;
-
+    static int BIG_DECK_WIDTH = 400;
+    static int BIG_DECK_HEIGHT = 200;
+    static int BIG_DECK_SPACE = 5;
+    static int SMALL_DECK_WIDTH = 240;
+    static int SMALL_DECK_HEIGHT = 100;
+    static int SMALL_DECK_SPACE = 3;
 
 }

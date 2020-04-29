@@ -1,5 +1,6 @@
 package server;
 
+import client.Client;
 import util.Executable;
 import view.panel.LoginPanel;
 
@@ -69,7 +70,7 @@ public abstract class Request implements Executable {
         }
     }
 
-    public static class Status extends Request{
+    public static class Status extends Request {
 
         @Override
         public void execute() {
@@ -77,5 +78,29 @@ public abstract class Request implements Executable {
         }
     }
 
+    public static class FirstCollection extends Request {
 
+        @Override
+        public void execute() {
+            Server.getInstance().sendFirstCollection();
+        }
+    }
+
+    public static class CollectionDetails extends Request {
+        private final String name ,classOfCard, deckName;
+        private final int mana, lockMode;
+
+        public CollectionDetails(String name, String classOfCard, int mana, int lockMode, String deckName) {
+            this.name = name;
+            this.classOfCard = classOfCard;
+            this.deckName = deckName;
+            this.mana = mana;
+            this.lockMode = lockMode;
+        }
+
+        @Override
+        public void execute() {
+            Server.getInstance().sendCollectionDetails(name,classOfCard,mana,lockMode,deckName);
+        }
+    }
 }

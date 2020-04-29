@@ -51,11 +51,54 @@ public class Server {
             }
     }
 
+    public void shutdown() {
+        executor.stop();
+        executeRequests();
+        connector.close();
+    }
+
     void login(String username, String password, LoginPanel.Mode mode) {
         if (mode == LoginPanel.Mode.SIGN_IN)
             signIn(username, password);
         if (mode == LoginPanel.Mode.SIGN_UP)
             signUp(username, password);
+    }
+
+
+    private void signIn(String userName, String password) {
+        Player p = connector.fetch(Player.class, userName);
+        if (p != null) {
+            if (p.getPassword().equals(password)) {
+                this.player = p;
+                Answer answer = new Answer.LoginAnswer(true, player.getUserName());
+                Client.getInstance().putAnswer(answer);
+            } else {
+                Answer answer = new Answer.LoginAnswer(false, "wrong password");
+                Client.getInstance().putAnswer(answer);
+            }
+        } else {
+            Answer answer = new Answer.LoginAnswer(false, "username not exist");
+            Client.getInstance().putAnswer(answer);
+        }
+    }
+
+    private void signUp(String username, String password) {
+        Player p = connector.fetch(Player.class, username);
+        if (p == null) {
+            connector.beginTransaction();
+            p = new Player(username, password, System.currentTimeMillis(), 30, 0
+                    , modelLoader.getFirstCards(), modelLoader.getFirstHeroes(), modelLoader.getFirstDecks());
+            HeaderLog headerLog = new HeaderLog(p.getCreatTime(), p.getUserName(), p.getPassword());
+            p.saveOrUpdate(connector);
+            headerLog.saveOrUpdate(connector);
+            connector.commit();
+            this.player = p;
+            Answer answer = new Answer.LoginAnswer(true, player.getUserName());
+            Client.getInstance().putAnswer(answer);
+        } else {
+            Answer answer = new Answer.LoginAnswer(false, "username already exist");
+            Client.getInstance().putAnswer(answer);
+        }
     }
 
     void logout() {
@@ -88,7 +131,7 @@ public class Server {
         List<CardOverview> result = new ArrayList<>();
         for (Card card : player.getCards().keySet()) {
             result.add(new CardOverview(card,
-                    player.getCards().get(card).getRepeatedTimes(), 0,true));
+                    player.getCards().get(card).getRepeatedTimes(), true));
         }
         return result;
     }
@@ -101,33 +144,62 @@ public class Server {
                 continue;
             if (number == 1) {
                 if (card.getPrice() <= player.getCoin())
-                    buyList.add(new CardOverview(card, 1, 0,true));
+                    buyList.add(new CardOverview(card, 1, true));
             }
             if (number == 0) {
                 if (2 * card.getPrice() <= player.getCoin())
-                    buyList.add(new CardOverview(card, 2, 0,true));
+                    buyList.add(new CardOverview(card, 2, true));
                 else if (card.getPrice() <= player.getCoin())
-                    buyList.add(new CardOverview(card, 1, 0,true));
+                    buyList.add(new CardOverview(card, 1, true));
 
             }
         }
         return buyList;
     }
 
+    void sellCard(String cardName) {
+        Card card = modelLoader.getCard(cardName);
+        if (player.getCards().containsKey(card)) {
+            player.setCoin(player.getCoin() + card.getPrice());
+            player.removeCard(card);
+            connector.beginTransaction();
+            player.saveOrUpdate(connector);
+            connector.commit();
+        }
+        sendShop();
+    }
+
+    void buyCard(String cardName) {
+        Card card = modelLoader.getCard(cardName);
+        if (player.getCoin() >= card.getPrice()) {
+            player.setCoin(player.getCoin() - card.getPrice());
+            player.addCard(card);
+            connector.beginTransaction();
+            player.saveOrUpdate(connector);
+            connector.commit();
+        }
+        sendShop();
+    }
+
     void sendStatus() {
-        Answer answer = new Answer.StatusDetail(makeStatusDetails());
+        Answer answer = new Answer.StatusDetails(makeStatusDetails());
         Client.getInstance().putAnswer(answer);
     }
 
     private List<DeckOverview> makeStatusDetails() {
-        List<DeckOverview> result = new ArrayList<>();
         List<Deck> sortedList = new ArrayList<>(player.getDecks());
         sortedList.sort(this::compareDeck);
-        for (int i = 0; i < player.getDecks().size(); i++) {
-            Deck deck = sortedList.get(i);
-            Card card = getMVC(deck);
-            if (card!=null) result.add(new DeckOverview(deck, card.getName()));
-            else result.add(new DeckOverview(deck, null));
+        return turnToDeckOverview(sortedList,true);
+    }
+
+    private List<DeckOverview> turnToDeckOverview(List<Deck> decks, boolean hasMVC) {
+        List<DeckOverview> result = new ArrayList<>();
+        for (Deck deck : decks) {
+            if (hasMVC) {
+                Card card = getMVC(deck);
+                if (card != null) result.add(new DeckOverview(deck, card.getName()));
+                else result.add(new DeckOverview(deck, null));
+            } else result.add(new DeckOverview(deck, null));
         }
         return result;
     }
@@ -173,64 +245,113 @@ public class Server {
         return list.size() != 0 ? list.get(0) : null;
     }
 
-    private void signIn(String userName, String password) {
-        Player p = connector.fetch(Player.class, userName);
-        if (p != null) {
-            if (p.getPassword().equals(password)) {
-                this.player = p;
-                Client.getInstance().putAnswer(new Answer.LoginAnswer(true, player.getUserName()));
+    void sendFirstCollection() {
+        Answer answer = new Answer.FirstCollectionDetails(makeHeroNames());
+        Client.getInstance().putAnswer(answer);
+    }
+
+    private List<String> makeHeroNames() {
+        List<String> result = new ArrayList<>();
+        for (Hero h : player.getHeroes()) {
+            result.add(h.getName());
+        }
+        return result;
+    }
+
+    void sendCollectionDetails(String name, String classOfCard, int mana, int lockMode, String deckName) {
+        List<CardOverview> cards = makeCardsList(name, modelLoader.getClassOfCard(classOfCard), mana, lockMode);
+        List<DeckOverview> decks = makeDeckList();
+        Deck d=getDeck(deckName);
+        List<CardOverview> deckCards = getDeckCards(d);
+        boolean canAddDeck = canAddDeck();
+        boolean canChangeHero = canChangeHero(d);
+        Answer answer = new Answer.CollectionDetails(cards, decks,deckCards,canAddDeck,canChangeHero);
+        Client.getInstance().putAnswer(answer);
+    }
+
+    private List<CardOverview> makeCardsList(String name, ClassOfCard classOfCard, int mana, int lockMode) {
+        List<Card> result = new ArrayList<>(modelLoader.getCards());
+        if (name != null) result = filterName(result, name);
+        if (mana != 0) result = filterMana(result, mana);
+        if (classOfCard != null) result = filterClassOfCard(result, classOfCard);
+        return filterLockMode(result, lockMode);
+    }
+
+    private List<Card> filterName(List<Card> cards, String name) {
+        List<Card> result = new ArrayList<>();
+        for (Card c : cards) {
+            if (c.getName().contains(name))
+                result.add(c);
+        }
+        return result;
+    }
+
+    private List<Card> filterMana(List<Card> cards, int mana) {
+        List<Card> result = new ArrayList<>();
+        for (Card c : cards) {
+            if (c.getManaFrz() == mana)
+                result.add(c);
+        }
+        return result;
+    }
+
+    private List<Card> filterClassOfCard(List<Card> cards, ClassOfCard classOfCard) {
+        List<Card> result = new ArrayList<>();
+        for (Card c : cards) {
+            if (c.getClassOfCard().equals(classOfCard))
+                result.add(c);
+        }
+        return result;
+    }
+
+    private List<CardOverview> filterLockMode(List<Card> cards, int lockMode) {
+        List<CardOverview> result = new ArrayList<>();
+        Map<Card, CardDetails> map = player.getCards();
+        boolean locked = true, unlocked = true;
+        if (lockMode == 1) locked = false;
+        if (lockMode == 2) unlocked = false;
+        for (Card c : cards) {
+            if (map.containsKey(c)) {
+                if (unlocked) result.add(new CardOverview(c, map.get(c).getRepeatedTimes(), false));
             } else {
-                Client.getInstance().putAnswer(new Answer.LoginAnswer(false, "wrong password"));
+                if (locked) result.add(new CardOverview(c, 0, false));
             }
-        } else {
-            Client.getInstance().putAnswer(new Answer.LoginAnswer(false, "username not exist"));
         }
+        return result;
     }
 
-    private void signUp(String username, String password) {
-        Player p = connector.fetch(Player.class, username);
-        if (p == null) {
-            connector.beginTransaction();
-            p = new Player(username, password, System.currentTimeMillis(), 30, 0
-                    , modelLoader.getFirstCards(), modelLoader.getFirstHeroes(), modelLoader.getFirstDecks());
-            HeaderLog headerLog = new HeaderLog(p.getCreatTime(), p.getUserName(), p.getPassword());
-            p.saveOrUpdate(connector);
-            headerLog.saveOrUpdate(connector);
-            connector.commit();
-            this.player = p;
-            Client.getInstance().putAnswer(new Answer.LoginAnswer(true, player.getUserName()));
-        } else {
-            Client.getInstance().putAnswer(new Answer.LoginAnswer(false, "username already exist"));
-        }
+    private List<DeckOverview> makeDeckList(){
+        return turnToDeckOverview(player.getDecks(),false);
     }
 
-    void sellCard(String cardName) {
-        Card card = modelLoader.searchCard(cardName);
-        if (player.getCards().containsKey(card)) {
-            player.setCoin(player.getCoin() + card.getPrice());
-            player.removeCard(card);
-            connector.beginTransaction();
-            player.saveOrUpdate(connector);
-            connector.commit();
+    private List<CardOverview> getDeckCards(Deck deck){
+        if (deck==null)
+            return null;
+        List<CardOverview> result = new ArrayList<>();
+        Map<Card,CardDetails> map = deck.getCards();
+        for (Card c :map.keySet()) {
+            result.add(new CardOverview(c,map.get(c).getRepeatedTimes(),false));
         }
-        sendShop();
+        return result;
     }
 
-    void buyCard(String cardName) {
-        Card card = modelLoader.searchCard(cardName);
-        if (player.getCoin() >= card.getPrice()) {
-            player.setCoin(player.getCoin() - card.getPrice());
-            player.addCard(card);
-            connector.beginTransaction();
-            player.saveOrUpdate(connector);
-            connector.commit();
-        }
-        sendShop();
+    private Deck getDeck(String deckName){
+        List<Deck> decks = player.getDecks();
+        for (Deck d:decks) if (d.getName().equals(deckName)) return d;
+        return null;
     }
 
-    public void shutdown() {
-        executor.stop();
-        executeRequests();
-        connector.close();
+    private boolean canAddDeck(){
+        return player.getDecks().size()<=15;
+    }
+
+    private boolean canChangeHero(Deck deck){
+        if (deck==null)
+            return false;
+        for (Card c:deck.getCards().keySet()) {
+            if(!c.getClassOfCard().equals(modelLoader.getClassOfCard("Neutral")))
+                return false;
+        }
+        return true;
     }
 }

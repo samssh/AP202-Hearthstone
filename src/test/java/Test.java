@@ -1,6 +1,7 @@
 import configs.ConfigFactory;
 import view.MyFrame;
 
+import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.image.BufferedImage;
@@ -10,53 +11,53 @@ import java.util.Objects;
 public class Test extends JPanel {
 
 
-    public static void main(String[] args) throws IOException {
-//        String out = "./src/main/resources/images/cards/small-gray/";
-//        File file = new File("./src/main/resources/images/cards/small");
-//        File[] files = file.listFiles();
-////        File file1 = files[0];
-////        int min=1000;
-//        for (File value : Objects.requireNonNull(files)) {
-//            try {
-//                BufferedImage image = ImageIO.read(value);
-//
-//                BufferedImage result = new BufferedImage(
-//                        image.getWidth(),
-//                        image.getHeight(),
-//                        BufferedImage.TYPE_USHORT_GRAY);
-//                Graphics2D graphic = result.createGraphics();
-//                graphic.drawImage(image, 0, 0, Color.WHITE, null);
-//                graphic.dispose();
-//                File output = new File(out + value.getName());
-//                ImageIO.write(result, "png", output);
-//
-//            }  catch (IOException e) {
-//                e.printStackTrace();
-//            }
-//        }
+    public static void main(String[] args) {
+        String out = "./src/main/resources/images/cards/small-gray/";
+        File file = new File("./src/main/resources/images/cards/small");
+        File[] files = file.listFiles();
+//        File file1 = files[0];
+//        int min=1000;
+        for (File value : Objects.requireNonNull(files)) {
+            try {
+                BufferedImage image = ImageIO.read(value);
+                BufferedImage result = new BufferedImage(
+                        image.getWidth(),
+                        image.getHeight(),
+                        BufferedImage.TYPE_USHORT_GRAY);
+                Graphics2D graphic = result.createGraphics();
+                graphic.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR);
+                graphic.drawImage( image, 0, 0, null);
+                graphic.dispose();
+                File output = new File(out + value.getName());
+                ImageIO.write(result, "png", output);
+
+            }  catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
 ////        System.out.println(l.getHeight());
 ////        System.out.println(l.getWidth());
 ////        System.out.println(file1.getName());
-        try {
-            GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
-            File file = new File("./src/main/resources/fonts");
-            File[] files = file.listFiles();
-            for (File value : Objects.requireNonNull(files)) {
-                ge.registerFont(Font.createFont(Font.TRUETYPE_FONT, value));
-            }
-        } catch (IOException | FontFormatException e) {
-            e.printStackTrace();
-        }
-        ConfigFactory.getInstance("DEFAULT");
-//        Connector connector = new Connector("HIBERNATE_CONFIG");
-//        ModelLoader modelLoader = new ModelLoader(connector);
-        JFrame frame = new MyFrame();
-        frame.setLayout(null);
-        JPanel panel = new Test();
-        panel.setLayout(null);
-        frame.setContentPane(panel);
-        panel.setBounds(0, 0, 1200, 700);
-        panel.setBackground(Color.red);
+//        try {
+//            GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
+//            File file = new File("./src/main/resources/fonts");
+//            File[] files = file.listFiles();
+//            for (File value : Objects.requireNonNull(files)) {
+//                ge.registerFont(Font.createFont(Font.TRUETYPE_FONT, value));
+//            }
+//        } catch (IOException | FontFormatException e) {
+//            e.printStackTrace();
+//        }
+//        ConfigFactory.getInstance("DEFAULT");
+////        Connector connector = new Connector("HIBERNATE_CONFIG");
+////        ModelLoader modelLoader = new ModelLoader(connector);
+//        JFrame frame = new MyFrame();
+//        frame.setLayout(null);
+//        JPanel panel = new Test();
+//        panel.setLayout(null);
+//        frame.setContentPane(panel);
+//        panel.setBounds(0, 0, 1200, 700);
+//        panel.setBackground(Color.red);
 
 
 //        String out = "./src/main/resources/images/cards/small-gray/";

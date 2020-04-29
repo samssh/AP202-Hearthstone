@@ -12,27 +12,30 @@ import java.util.Map;
 
 public class ImageLoader {
     private static final ImageLoader instance = new ImageLoader();
-    private final Map<String, BufferedImage> big, bigGray, smallGray, small, bg , deck;
+    private final Map<String, BufferedImage> big, bigGray, smallGray, small, bg , bigDeck,smallDeck;
 
     private ImageLoader() {
-        Config smallConfig = ConfigFactory.getInstance("").getConfig("SMALL_CARDS");
         Config bigConfig = ConfigFactory.getInstance("").getConfig("BIG_CARDS");
-        Config bgConfig = ConfigFactory.getInstance("").getConfig("BG");
-        Config bigGrayConfig = ConfigFactory.getInstance("").getConfig("BIG_GRAY_CARDS");
-        Config smallGayConfig = ConfigFactory.getInstance("").getConfig("SMALL_GRAY_CARDS");
-        Config deckConfig = ConfigFactory.getInstance("").getConfig("DECK_IMAGES");
         big = new HashMap<>();
         load(bigConfig, big);
+        Config smallConfig = ConfigFactory.getInstance("").getConfig("SMALL_CARDS");
         small = new HashMap<>();
         load(smallConfig, small);
+        Config bgConfig = ConfigFactory.getInstance("").getConfig("BG");
         bg = new HashMap<>();
         load(bgConfig, bg);
+        Config bigGrayConfig = ConfigFactory.getInstance("").getConfig("BIG_GRAY_CARDS");
         bigGray = new HashMap<>();
         load(bigGrayConfig, bigGray);
+        Config smallGayConfig = ConfigFactory.getInstance("").getConfig("SMALL_GRAY_CARDS");
         smallGray = new HashMap<>();
         load(smallGayConfig, smallGray);
-        deck = new HashMap<>();
-        load(deckConfig,deck);
+        Config bigDeckConfig = ConfigFactory.getInstance("").getConfig("BIG_DECK");
+        bigDeck = new HashMap<>();
+        load(bigDeckConfig, bigDeck);
+        Config smallDeckConfig = ConfigFactory.getInstance("").getConfig("SMALL_DECK");
+        smallDeck = new HashMap<>();
+        load(smallDeckConfig, smallDeck);
     }
 
     public static ImageLoader getInstance() {
@@ -73,8 +76,12 @@ public class ImageLoader {
         return smallGray.get(name);
     }
 
-    public BufferedImage getDeck(String heroName){
-        return deck.get(heroName);
+    public BufferedImage getBigDeck(String heroName){
+        return bigDeck.get(heroName);
+    }
+
+    public BufferedImage getSmallDeck(String heroName){
+        return smallDeck.get(heroName);
     }
 }
 
