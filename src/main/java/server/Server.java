@@ -7,12 +7,11 @@ import util.ModelLoader;
 import hibernate.Connector;
 import model.*;
 import view.model.CardOverview;
-import view.model.DeckOverview;
+import view.model.BigDeckOverview;
+import view.model.SmallDeckOverview;
 import view.panel.LoginPanel;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class Server {
     private static final Server instance = new Server();
@@ -21,6 +20,9 @@ public class Server {
     private final ModelLoader modelLoader;
     private final Loop executor;
     private Player player;
+    // last filter of collection
+    private int mana, lockMode;
+    private String name, classOfCard, deckName;
 
     public static Server getInstance() {
         return instance;
@@ -63,7 +65,6 @@ public class Server {
         if (mode == LoginPanel.Mode.SIGN_UP)
             signUp(username, password);
     }
-
 
     private void signIn(String userName, String password) {
         Player p = connector.fetch(Player.class, userName);
@@ -126,7 +127,6 @@ public class Server {
         Client.getInstance().putAnswer(answer);
     }
 
-
     private List<CardOverview> makeSellList() {
         List<CardOverview> result = new ArrayList<>();
         for (Card card : player.getCards().keySet()) {
@@ -138,15 +138,15 @@ public class Server {
 
     private List<CardOverview> makeBuyList() {
         List<CardOverview> buyList = new ArrayList<>();
-        for (Card card : modelLoader.getCards()) {
-            int number = player.numberOfCard(card);
-            if (number == 2)
-                continue;
-            if (number == 1) {
-                if (card.getPrice() <= player.getCoin())
-                    buyList.add(new CardOverview(card, 1, true));
-            }
-            if (number == 0) {
+        List<Card> availableCards = availableCards();
+        for (Card card : availableCards) {
+            if (player.getCards().containsKey(card)) {
+                int number = player.getCards().get(card).getRepeatedTimes();
+                if (number == 1) {
+                    if (card.getPrice() <= player.getCoin())
+                        buyList.add(new CardOverview(card, 1, true));
+                }
+            } else {
                 if (2 * card.getPrice() <= player.getCoin())
                     buyList.add(new CardOverview(card, 2, true));
                 else if (card.getPrice() <= player.getCoin())
@@ -157,9 +157,28 @@ public class Server {
         return buyList;
     }
 
+    private List<Card> availableCards() {
+        List<Card> result = new ArrayList<>();
+        List<Card> cards = modelLoader.getCards();
+        for (Card c : cards) {
+            String heroName = c.getClassOfCard().getHeroName();
+            if (heroName.equals("Neutral"))
+                result.add(c);
+            else {
+                for (Hero h : player.getHeroes())
+                    if (h.getName().equals(heroName)) {
+                        result.add(c);
+                        break;
+                    }
+            }
+        }
+        return result;
+    }
+
     void sellCard(String cardName) {
         Card card = modelLoader.getCard(cardName);
-        if (player.getCards().containsKey(card)) {
+        boolean result = canSell(card);
+        if (result) {
             player.setCoin(player.getCoin() + card.getPrice());
             player.removeCard(card);
             connector.beginTransaction();
@@ -167,11 +186,23 @@ public class Server {
             connector.commit();
         }
         sendShop();
+//        Answer answer;
+//        if (result) {
+//            answer = new Answer.showMessage("sell done");
+//        } else {
+//            answer = new Answer.showMessage("sell not done");
+//        }
+//        Client.getInstance().putAnswer(answer);
+    }
+
+    private boolean canSell(Card card) {
+        return player.getCards().containsKey(card);
     }
 
     void buyCard(String cardName) {
         Card card = modelLoader.getCard(cardName);
-        if (player.getCoin() >= card.getPrice()) {
+        boolean result = canBuy(card);
+        if (result) {
             player.setCoin(player.getCoin() - card.getPrice());
             player.addCard(card);
             connector.beginTransaction();
@@ -179,6 +210,22 @@ public class Server {
             connector.commit();
         }
         sendShop();
+//        Answer answer;
+//        if (result) {
+//            answer = new Answer.showMessage("buy done");
+//        } else {
+//            answer = new Answer.showMessage("buy not done");
+//        }
+//        Client.getInstance().putAnswer(answer);
+    }
+
+    private boolean canBuy(Card card) {
+        if (player.getCoin() >= card.getPrice()) {
+            for (Hero h : player.getHeroes())
+                if (isForHero(card.getClassOfCard(), h))
+                    return true;
+        }
+        return false;
     }
 
     void sendStatus() {
@@ -186,20 +233,14 @@ public class Server {
         Client.getInstance().putAnswer(answer);
     }
 
-    private List<DeckOverview> makeStatusDetails() {
+    private List<BigDeckOverview> makeStatusDetails() {
+        List<BigDeckOverview> result = new ArrayList<>();
         List<Deck> sortedList = new ArrayList<>(player.getDecks());
         sortedList.sort(this::compareDeck);
-        return turnToDeckOverview(sortedList,true);
-    }
-
-    private List<DeckOverview> turnToDeckOverview(List<Deck> decks, boolean hasMVC) {
-        List<DeckOverview> result = new ArrayList<>();
-        for (Deck deck : decks) {
-            if (hasMVC) {
-                Card card = getMVC(deck);
-                if (card != null) result.add(new DeckOverview(deck, card.getName()));
-                else result.add(new DeckOverview(deck, null));
-            } else result.add(new DeckOverview(deck, null));
+        for (Deck deck : sortedList) {
+            Card card = getMVC(deck);
+            String MVCname = card == null ? null : card.getName();
+            result.add(new BigDeckOverview(deck, MVCname));
         }
         return result;
     }
@@ -246,7 +287,7 @@ public class Server {
     }
 
     void sendFirstCollection() {
-        Answer answer = new Answer.FirstCollectionDetails(makeHeroNames());
+        Answer answer = new Answer.FirstCollectionDetails(makeHeroNames(), makeClassOfCardNames());
         Client.getInstance().putAnswer(answer);
     }
 
@@ -258,29 +299,50 @@ public class Server {
         return result;
     }
 
+    private List<String> makeClassOfCardNames() {
+        List<String> result = new ArrayList<>();
+        result.add("All classes");
+        for (ClassOfCard c : modelLoader.getClassOfCards()) {
+            result.add(c.getHeroName());
+        }
+
+        return result;
+    }
+
     void sendCollectionDetails(String name, String classOfCard, int mana, int lockMode, String deckName) {
-        List<CardOverview> cards = makeCardsList(name, modelLoader.getClassOfCard(classOfCard), mana, lockMode);
-        List<DeckOverview> decks = makeDeckList();
-        Deck d=getDeck(deckName);
+        this.name = name;
+        this.classOfCard = classOfCard;
+        this.mana = mana;
+        this.lockMode = lockMode;
+        this.deckName = deckName;
+        List<SmallDeckOverview> decks = makeDeckList();
+        Deck d = getDeck(deckName);
+        if (d != null) {
+            if (player.getSelectedDeckIndex() != player.getDecks().indexOf(d)) {
+                player.setSelectedDeckIndex(player.getDecks().indexOf(d));
+                player.saveOrUpdate(connector);
+            }
+        }
+        List<CardOverview> cards = makeCardsList(name, modelLoader.getClassOfCard(classOfCard), mana, lockMode, d);
         List<CardOverview> deckCards = getDeckCards(d);
         boolean canAddDeck = canAddDeck();
         boolean canChangeHero = canChangeHero(d);
-        Answer answer = new Answer.CollectionDetails(cards, decks,deckCards,canAddDeck,canChangeHero);
+        Answer answer = new Answer.CollectionDetails(cards, decks, deckCards, canAddDeck, canChangeHero, deckName);
         Client.getInstance().putAnswer(answer);
     }
 
-    private List<CardOverview> makeCardsList(String name, ClassOfCard classOfCard, int mana, int lockMode) {
+    private List<CardOverview> makeCardsList(String name, ClassOfCard classOfCard, int mana, int lockMode, Deck deck) {
         List<Card> result = new ArrayList<>(modelLoader.getCards());
         if (name != null) result = filterName(result, name);
         if (mana != 0) result = filterMana(result, mana);
         if (classOfCard != null) result = filterClassOfCard(result, classOfCard);
-        return filterLockMode(result, lockMode);
+        return filterLockMode(result, lockMode, deck);
     }
 
     private List<Card> filterName(List<Card> cards, String name) {
         List<Card> result = new ArrayList<>();
         for (Card c : cards) {
-            if (c.getName().contains(name))
+            if (c.getName().toLowerCase().contains(name))
                 result.add(c);
         }
         return result;
@@ -304,15 +366,22 @@ public class Server {
         return result;
     }
 
-    private List<CardOverview> filterLockMode(List<Card> cards, int lockMode) {
+    private List<CardOverview> filterLockMode(List<Card> cards, int lockMode, Deck deck) {
         List<CardOverview> result = new ArrayList<>();
         Map<Card, CardDetails> map = player.getCards();
+        Map<Card, CardDetails> deckMap;
+        if (deck != null) deckMap = deck.getCards();
+        else deckMap = Collections.emptyMap();
         boolean locked = true, unlocked = true;
-        if (lockMode == 1) locked = false;
-        if (lockMode == 2) unlocked = false;
+        if (lockMode == 2) locked = false;
+        if (lockMode == 1) unlocked = false;
         for (Card c : cards) {
             if (map.containsKey(c)) {
-                if (unlocked) result.add(new CardOverview(c, map.get(c).getRepeatedTimes(), false));
+                if (deckMap.containsKey(c)) {
+                    int r = map.get(c).getRepeatedTimes() - deckMap.get(c).getRepeatedTimes();
+                    if (r > 0)
+                        if (unlocked) result.add(new CardOverview(c, r, false));
+                } else if (unlocked) result.add(new CardOverview(c, map.get(c).getRepeatedTimes(), false));
             } else {
                 if (locked) result.add(new CardOverview(c, 0, false));
             }
@@ -320,38 +389,171 @@ public class Server {
         return result;
     }
 
-    private List<DeckOverview> makeDeckList(){
-        return turnToDeckOverview(player.getDecks(),false);
+    private List<SmallDeckOverview> makeDeckList() {
+        List<SmallDeckOverview> result = new ArrayList<>();
+        player.getDecks().forEach(d -> result.add(new SmallDeckOverview(d)));
+        return result;
     }
 
-    private List<CardOverview> getDeckCards(Deck deck){
-        if (deck==null)
+    private List<CardOverview> getDeckCards(Deck deck) {
+        if (deck == null)
             return null;
         List<CardOverview> result = new ArrayList<>();
-        Map<Card,CardDetails> map = deck.getCards();
-        for (Card c :map.keySet()) {
-            result.add(new CardOverview(c,map.get(c).getRepeatedTimes(),false));
+        Map<Card, CardDetails> map = deck.getCards();
+        for (Card c : map.keySet()) {
+            result.add(new CardOverview(c, map.get(c).getRepeatedTimes(), false));
         }
         return result;
     }
 
-    private Deck getDeck(String deckName){
+    private Deck getDeck(String deckName) {
         List<Deck> decks = player.getDecks();
-        for (Deck d:decks) if (d.getName().equals(deckName)) return d;
+        for (Deck d : decks) if (d.getName().equals(deckName)) return d;
         return null;
     }
 
-    private boolean canAddDeck(){
-        return player.getDecks().size()<=15;
+    private boolean canAddDeck() {
+        return player.getDecks().size() <= 15;
     }
 
-    private boolean canChangeHero(Deck deck){
-        if (deck==null)
+    private boolean canChangeHero(Deck deck) {
+        if (deck == null)
             return false;
-        for (Card c:deck.getCards().keySet()) {
-            if(!c.getClassOfCard().equals(modelLoader.getClassOfCard("Neutral")))
+        for (Card c : deck.getCards().keySet()) {
+            if (!c.getClassOfCard().equals(modelLoader.getClassOfCard("Neutral")))
                 return false;
         }
         return true;
+    }
+
+    void newDeck(String deckName, String heroName) {
+        Answer answer;
+        if (!containDeckName(deckName) && containHero(heroName)) {
+            Hero h = modelLoader.getHero(heroName);
+            player.getDecks().add(new Deck(h, deckName));
+            connector.beginTransaction();
+            player.saveOrUpdate(connector);
+            connector.commit();
+            sendCollectionDetails(name, classOfCard, mana, lockMode, deckName);
+            answer = new Answer.showMessage("deck created");
+        } else {
+            answer = new Answer.showMessage("deck not created");
+        }
+        Client.getInstance().putAnswer(answer);
+    }
+
+    private boolean containHero(String heroName) {
+        Hero h = modelLoader.getHero(heroName);
+        return player.getHeroes().contains(h);
+    }
+
+    private boolean containDeckName(String deckName) {
+        boolean result = false;
+        for (Deck d : player.getDecks()) {
+            if (d.getName().equals(deckName)) {
+                result = true;
+                break;
+            }
+        }
+        return result;
+    }
+
+    void deleteDeck(String deckName) {
+        Deck deck = getDeck(deckName);
+        Answer answer;
+        if (deck != null) {
+            player.getDecks().remove(deck);
+            connector.beginTransaction();
+            player.saveOrUpdate(connector);
+            deck.delete(connector);
+            connector.commit();
+            sendCollectionDetails(name, classOfCard, mana, lockMode, null);
+            this.deckName = null;
+            answer = new Answer.showMessage("deck deleted");
+        } else answer = new Answer.showMessage("deck not deleted");
+        Client.getInstance().putAnswer(answer);
+    }
+
+    void changeDeckName(String oldDeckName, String newDeckName) {
+        Answer answer;
+        if (containDeckName(oldDeckName) && !containDeckName(newDeckName)) {
+            Deck deck = getDeck(oldDeckName);
+            Objects.requireNonNull(deck).setName(newDeckName);
+            connector.beginTransaction();
+            player.saveOrUpdate(connector);
+            connector.commit();
+            sendCollectionDetails(name, classOfCard, mana, lockMode, newDeckName);
+            answer = new Answer.showMessage("deck name changed");
+        } else answer = new Answer.showMessage("deck name not changed");
+        Client.getInstance().putAnswer(answer);
+    }
+
+    void changeHeroDeck(String deckName, String heroName) {
+        Answer answer;
+        if (containDeckName(deckName) && containHero(heroName)) {
+            Hero h = modelLoader.getHero(heroName);
+            Deck deck = getDeck(deckName);
+            Objects.requireNonNull(deck).setHero(h);
+            connector.beginTransaction();
+            player.saveOrUpdate(connector);
+            connector.commit();
+            sendCollectionDetails(name, classOfCard, mana, lockMode, deckName);
+            answer = new Answer.showMessage("hero deck changed");
+        } else {
+            answer = new Answer.showMessage("hero deck not changed");
+        }
+        Client.getInstance().putAnswer(answer);
+    }
+
+    void removeCardFromDeck(String cardName, String deckName) {
+        Card card = modelLoader.getCard(cardName);
+        Deck deck = getDeck(deckName);
+        if (card != null && deck != null) {
+            deck.removeCard(card);
+            sendCollectionDetails(name, classOfCard, mana, lockMode, deckName);
+        }
+    }
+
+    void addCardToDeck(String cardName, String deckName) {
+        Card card = modelLoader.getCard(cardName);
+        Answer answer = null;
+        if (card != null) {
+            Map<Card, CardDetails> playerCards = player.getCards();
+            if (playerCards.containsKey(card)) {
+                Deck deck = getDeck(deckName);
+                if (deck != null) {
+                    if (playerCards.get(card).getRepeatedTimes() > deck.numberOfCard(card)) {
+                        if (isForHero(card.getClassOfCard(), deck.getHero())) {
+                            if (deck.getSize() < 30) {
+                                deck.addCard(card);
+                                connector.beginTransaction();
+                                player.saveOrUpdate(connector);
+                                connector.commit();
+                                sendCollectionDetails(name, classOfCard, mana, lockMode, deckName);
+                            }else {
+                                answer = new Answer.showMessage("cant add card to deck\ndeck is full!!!");
+                            }
+                        } else {
+                            answer = new Answer.showMessage("cant add card to deck\nchange hero of deck");
+                        }
+                    } else answer = new Answer.showMessage("cant add card to deck");
+                }
+            } else {
+                if (canBuy(card)) {
+                    answer = new Answer.GotoShop();
+                } else {
+                    answer = new Answer.showMessage("you dont have this card\nyou cant buy card");
+                }
+            }
+        } else {
+            answer = new Answer.showMessage("cant add card to deck");
+        }
+        Client.getInstance().putAnswer(answer);
+    }
+
+    private boolean isForHero(ClassOfCard classOfCard, Hero hero) {
+        if (classOfCard.getHeroName().equals(hero.getName()))
+            return true;
+        return classOfCard.equals(modelLoader.getClassOfCard("Neutral"));
     }
 }

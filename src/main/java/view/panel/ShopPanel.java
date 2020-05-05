@@ -4,6 +4,7 @@ import client.Client;
 import configs.Config;
 import configs.ConfigFactory;
 import lombok.Setter;
+import util.Updatable;
 import view.model.CardOverview;
 import view.util.CardBox;
 
@@ -11,7 +12,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.util.List;
 
-public class ShopPanel extends JPanel {
+public class ShopPanel extends JPanel implements Updatable {
     private CardBox sell, buy;
     @Setter
     private int coin;
@@ -57,28 +58,28 @@ public class ShopPanel extends JPanel {
     private void initializeExit() {
         exit = new JButton("exit");
         exit.setBounds(exitX, exitY, exitWidth, exitHeight);
-        exit.addActionListener(shopAction::exit);
+        exit.addActionListener(e -> shopAction.exit());
     }
 
     private void initializeBack() {
         back = new JButton("back");
         int y = exitY - 2 * (exitHeight + exitSpace);
         back.setBounds(exitX, y, exitWidth, exitHeight);
-        back.addActionListener(shopAction::back);
+        back.addActionListener(e -> shopAction.back());
     }
 
     private void initializeBackMainMenu() {
         backMainMenu = new JButton("back to main menu");
         int y = exitY - (exitHeight + exitSpace);
         backMainMenu.setBounds(exitX, y, exitWidth, exitHeight);
-        backMainMenu.addActionListener(shopAction::backMainMenu);
+        backMainMenu.addActionListener(e -> shopAction.backMainMenu());
     }
 
 
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
-        g.drawString("coins = " + coin, coinX, coinY);
+        g.drawString("\u0024" + coin, coinX, coinY);
     }
 
     private void config() {
@@ -110,6 +111,11 @@ public class ShopPanel extends JPanel {
 
     public void setBuy(List<CardOverview> buyList) {
         buy.setModels(buyList);
+    }
+
+    @Override
+    public void update() {
+        shopAction.update();
     }
 }
 

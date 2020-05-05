@@ -1,4 +1,4 @@
-package util;
+package view.util;
 
 import javax.swing.*;
 import javax.swing.event.DocumentEvent;

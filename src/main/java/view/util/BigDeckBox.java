@@ -1,35 +1,30 @@
 package view.util;
 
-import util.ImageLoader;
-import view.model.DeckOverview;
+import view.model.BigDeckOverview;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
-import java.awt.image.BufferedImage;
-import java.text.DecimalFormat;
 
 import static view.util.Constant.*;
 
-public class BigDeckBox extends Box<DeckOverview, BigDeckBox.SmallDeckViewer, DeckActionListener> {
+public class BigDeckBox extends Box<BigDeckOverview, BigDeckBox.BigDeckViewer, DeckActionListener> {
     public BigDeckBox(int width, int height, JPanel parent, DeckActionListener deckActionListener) {
         super(width, height, parent, deckActionListener, BIG_DECK_WIDTH, BIG_DECK_HEIGHT, BIG_DECK_SPACE);
     }
 
     @Override
-    protected SmallDeckViewer createNew(DeckOverview deckOverview) {
-        return new SmallDeckViewer(deckOverview);
+    protected BigDeckViewer createNew(BigDeckOverview overview) {
+        return new BigDeckViewer(overview);
     }
 
 
-    public class SmallDeckViewer extends JPanel implements MouseListener {
-        private final BufferedImage image;
-        private final DeckOverview deckOverview;
+    public class BigDeckViewer extends JPanel implements MouseListener {
+        private final BigDeckOverview bigDeckOverview;
 
-        SmallDeckViewer(DeckOverview deckOverview) {
-            this.deckOverview = deckOverview;
-            this.image = ImageLoader.getInstance().getBigDeck(deckOverview.getHeroName());
+        private BigDeckViewer(BigDeckOverview bigDeckOverview) {
+            this.bigDeckOverview = bigDeckOverview;
             this.setSize(Constant.BIG_DECK_WIDTH, Constant.BIG_DECK_HEIGHT);
             this.setOpaque(false);
             this.addMouseListener(this);
@@ -38,30 +33,14 @@ public class BigDeckBox extends Box<DeckOverview, BigDeckBox.SmallDeckViewer, De
         @Override
         protected void paintComponent(Graphics g) {
             super.paintComponent(g);
-            g.drawImage(image, 0, 0, this);
-            // todo draw information
-            g.setFont(new Font("War Priest Expanded", Font.PLAIN, 20));
-            g.setColor(Color.yellow);
-            g.drawString("deck name:" + deckOverview.getDeckName(), 0, 40);
-            g.drawString("hero name:" + deckOverview.getHeroName(), 0, 80);
-            String s;
-            if (deckOverview.getWinRate() != -1) s = new DecimalFormat("#.##").format(deckOverview.getWinRate());
-            else s = "--";
-            g.drawString("wins:" + deckOverview.getWins() + " games:" + deckOverview.getGames() + " winRate:" + s, 0, 120);
-            String p;
-            if (deckOverview.getManaAverage() != -1) {
-                p = new DecimalFormat("#.##").format(deckOverview.getManaAverage());
-                g.drawString("mana average:" + p, 0, 160);
-                g.drawString("MVC:" + deckOverview.getCardName(), 0, 200);
-            } else g.drawString("deck empty", 0, 160);
-
+            bigDeckOverview.paint(g);
         }
 
         @Override
         public void mouseClicked(MouseEvent e) {
             if (e.getButton() == MouseEvent.BUTTON1) {
                 if (action != null)
-                    action.action(deckOverview.getDeckName());
+                    action.action(bigDeckOverview.getName());
             }
         }
 

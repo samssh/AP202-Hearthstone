@@ -7,7 +7,6 @@ import java.util.List;
 
 public class DatabaseFiller {
     private static void fill() {
-//        Connector connector = Connector.getInstance();
         connector.open();
         connector.beginTransaction();
         writeHero();
@@ -16,7 +15,6 @@ public class DatabaseFiller {
         connector.close();
     }
 
-    // hero
     private static void writeHero() {
         new Hero("Mage", "She is a skilled wizard who has special skills in using spells."
                 , 30).saveOrUpdate(connector);
@@ -25,43 +23,48 @@ public class DatabaseFiller {
         new Hero("Warlock",
                 "You will never see anyone beyond him. He passes on his life and property and sacrifices something to win the war.",
                 35).saveOrUpdate(connector);
-//        new Hero("Saman", "he is nice master but his assistants are not(special cards release in next version)"
-//                , 37).saveOrUpdate();
+        new Hero("Hunter", "She is keen to attack quickly. And because it has a strong interest in hunting," +
+                " most of its minions are animal-type.", 30).saveOrUpdate(connector);
+        new Hero("Priest", "Although she has few soldiers, her soldiers are loyal. She has many skills in healing, healing and reviving.",
+                30).saveOrUpdate(connector);
     }
 
-    // carts
     private static void writeCart() {
+        ClassOfCard neutral = new ClassOfCard("Neutral");
+        neutral.saveOrUpdate(connector);
         ClassOfCard mage = new ClassOfCard("Mage");
         mage.saveOrUpdate(connector);
         ClassOfCard rogue = new ClassOfCard("Rogue");
         rogue.saveOrUpdate(connector);
         ClassOfCard warlock = new ClassOfCard("Warlock");
         warlock.saveOrUpdate(connector);
-//        ClassOfCard saman = new ClassOfCard("Saman");
-//        saman.saveOrUpdate(c);
-        ClassOfCard neutral = new ClassOfCard("Neutral");
-        neutral.saveOrUpdate(connector);
-        new Spell("polymorph",
+        ClassOfCard hunter = new ClassOfCard("Hunter");
+        hunter.saveOrUpdate(connector);
+        ClassOfCard priest = new ClassOfCard("Priest");
+        priest.saveOrUpdate(connector);
+
+
+        new Spell("Polymorph",
                 "transforms a target minion into a 1/1 Sheep.", 3,
                 mage, Rarity.Rare, 4).saveOrUpdate(connector);
         new Spell("Pyroblast", "Deal 10 damage.", 5,
                 mage, Rarity.Epic, 10).saveOrUpdate(connector);
         new Minion("Reno the Relicologist", "Battlecry: if your deck has no duplicates, deal 10 damage randomly split among all enemy minions",
                 6, mage, Rarity.Legendary, 6, 4, 6);
+
         new Spell("Friendly Smith", "Discover a weapon from any class. Add it to your Adventure Deck with +2/+2.",
                 2, rogue, Rarity.Common, 1).saveOrUpdate(connector);
         new Spell("Preparation", "The next spell you cast this turn costs (2) less.",
                 6, rogue, Rarity.Epic, 0).saveOrUpdate(connector);
         new Minion("Crazed Chemist", "Combo: Give a friendly minion +4 Attack.",
                 4, rogue, Rarity.Common, 5, 4, 4).saveOrUpdate(connector);
-        new Spell("Spirit Bomb", "Deal 4 damage to a minion and your hero.",
-                3, warlock, Rarity.Common, 1).saveOrUpdate(connector);
+
+
         new Minion("Ratcatcher", "Rush Battlecry: Destroy a friendly minion and gain its Attack and Health.",
                 5, warlock, Rarity.Epic, 3, 2, 2).saveOrUpdate(connector);
         new Minion("Dreadscale", "At the end of your turn, deal 1 damage to all other minions.",
                 7, warlock, Rarity.Legendary, 3, 4, 2).saveOrUpdate(connector);
-        new Minion("Living Monument", "Taunt",
-                7, neutral, Rarity.Common, 10, 10, 10).saveOrUpdate(connector);
+
         new Minion("Wisp", "", 6, neutral, Rarity.Common, 0, 1, 1).saveOrUpdate(connector);
         new Minion("Potion Vendor", "Battlecry: Restore 2 Health to all friendly characters.",
                 4, neutral, Rarity.Common, 1, 1, 1).saveOrUpdate(connector);
@@ -81,32 +84,76 @@ public class DatabaseFiller {
                 5, neutral, Rarity.Epic, 4, 4, 3).saveOrUpdate(connector);
         new Minion("Big Game Hunter", "Battlecry: Destroy a minion with 7 or more attack.",
                 6, neutral, Rarity.Epic, 5, 4, 2).saveOrUpdate(connector);
-        new Minion("Batterhead", "Rush.",
-                5, neutral, Rarity.Epic, 8, 3, 12).saveOrUpdate(connector);
         new Minion("Baron Geddon", "At the end of your turn, deal 2 damage to all other characters.",
                 6, neutral, Rarity.Legendary, 7, 7, 5).saveOrUpdate(connector);
         new Minion("Malygos", "Spell Damage +5.",
                 7, neutral, Rarity.Legendary, 6, 4, 12).saveOrUpdate(connector);
+
+
         new Spell("Deadly Shot", "Destroy a random enemy minion.",
                 3, neutral, Rarity.Common, 3).saveOrUpdate(connector);
-        new Spell("Gift of the Wild", "Give your minions +2/+2 and taunt",
-                6, neutral, Rarity.Common, 8).saveOrUpdate(connector);
         new Spell("Starfall", "Choose One -Deal 5 damage to a minion; or 2 damage to all enemy minions.",
                 5, neutral, Rarity.Rare, 5).saveOrUpdate(connector);
         new Spell("Overflow", "Restore 5 Health to all characters. Draw 5 cards.",
                 6, neutral, Rarity.Rare, 7).saveOrUpdate(connector);
         new Spell("The Boomship", "Summon 3 random minions from your hand. Give them Rush",
                 7, neutral, Rarity.Legendary, 9).saveOrUpdate(connector);
+        new Spell("Blessing of the Ancients","Twinspell. Give your minions +1/+1.",
+                5,neutral,Rarity.Common,3).saveOrUpdate(connector);
+
+        new Quest("Strength in Numbers", "Sidequest: Spend 10 Mana on minions." +
+                "Reward: Summon a minion from your deck.", 3, neutral, Rarity.Common, 1).saveOrUpdate(connector);
+        new Quest("Learn Draconic", "Sidequest: Spend 8 Mana on spells. Reward: Summon a 6/6 Dragon.",
+                6, neutral, Rarity.Common, 1).saveOrUpdate(connector);
+
+
+        new Weapon("Arcanite Reaper", "", 4, neutral,
+                Rarity.Common, 5, 5, 2).saveOrUpdate(connector);
+        new Weapon("Blood Fury", "", 4, neutral,
+                Rarity.Common, 3, 3, 8).saveOrUpdate(connector);
+        new Weapon("Ashbringer", "", 3, neutral,
+                Rarity.Epic, 5, 5, 3).saveOrUpdate(connector);
+
+        new Spell("Arcane Shot", "Deal 2 damage.", 5, hunter, Rarity.Common,
+                1).saveOrUpdate(connector);
+        new Minion("Swamp King Dred", "After your opponent plays a minion, attack it.",
+                7, hunter, Rarity.Legendary, 7, 9, 9).saveOrUpdate(connector);
+
+        new Spell("Sand Breath", "Give a minion +1/+2. Give it Divine Shield if you're holding a Dragon.",
+                4, priest, Rarity.Common, 1).saveOrUpdate(connector);
+        new Minion("High Priest Amet", "Whenever you summon a minion, set its Health equal to this minion's.",
+                6, priest, Rarity.Legendary, 4, 2, 7).saveOrUpdate(connector);
+
+
+        new Minion("Tomb Warden", "Taunt, Battlecry: Summon a copy of this minion.", 4, neutral, Rarity.Rare,
+                8, 3, 6).saveOrUpdate(connector);
+        new Minion("Security Rover", "Whenever this minion takes damage, summon a 2/3 Mech with Taunt.",
+                3, neutral, Rarity.Rare, 6, 2, 6).saveOrUpdate(connector);
+        new Minion("Curio Collector", "Whenever you draw a card, gain +1/+1.", 6
+                , neutral, Rarity.Rare, 5, 4, 4).saveOrUpdate(connector);
+        new Minion("Sathrovarr", "Choose a friendly minion. Add a copy of it to your hand, deck and battlefield.",
+                7, neutral, Rarity.Legendary, 9, 5, 5).saveOrUpdate(connector);
+
+
+        new Spell("Sprint", "Draw 4 cards", 3, neutral
+                , Rarity.Common, 7).saveOrUpdate(connector);
+        new Spell("Swarm of Locusts", "Summon seven 1/1 Locusts with Rush.", 4
+                , neutral, Rarity.Rare, 6).saveOrUpdate(connector);
+        new Spell("Pharaoh's Blessing", "Give a minion +4/+4, Divine Shield, and Taunt.", 5,
+                neutral, Rarity.Rare, 6).saveOrUpdate(connector);
+        new Spell("Book of Specters", "Draw 3 cards. Discard any spells drawn.", 4,
+                neutral, Rarity.Epic, 2).saveOrUpdate(connector);
     }
 
     private static Connector connector;
+
     public static void main(String[] args) {
         ConfigFactory.getInstance("DEFAULT");
         connector = new Connector("HIBERNATE_CONFIG");
         fill();
         connector.open();
-        List<Hero> heros = connector.fetchAll(Hero.class);
-        heros.forEach(System.out::println);
+        List<Hero> heroes = connector.fetchAll(Hero.class);
+        heroes.forEach(System.out::println);
         System.out.println();
         System.out.println();
         List<Minion> minions = connector.fetchAll(Minion.class);

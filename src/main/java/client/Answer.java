@@ -1,12 +1,14 @@
 package client;
 
-import util.Executable;
 import view.model.CardOverview;
-import view.model.DeckOverview;
+import view.model.BigDeckOverview;
+import view.model.SmallDeckOverview;
 
 import java.util.List;
 
-public abstract class Answer implements Executable {
+public abstract class Answer {
+    abstract void execute();
+
     public static class LoginAnswer extends Answer {
         private final boolean success;
         private final String message;
@@ -17,7 +19,7 @@ public abstract class Answer implements Executable {
         }
 
         @Override
-        public void execute() {
+        void execute() {
             Client.getInstance().login(success, message);
         }
     }
@@ -33,55 +35,81 @@ public abstract class Answer implements Executable {
         }
 
         @Override
-        public void execute() {
+        void execute() {
             Client.getInstance().setShopDetails(sell, buy, coins);
         }
     }
 
     public static class StatusDetails extends Answer {
-        private final List<DeckOverview> deckOverviews;
+        private final List<BigDeckOverview> bigDeckOverviews;
 
-        public StatusDetails(List<DeckOverview> deckOverviews) {
-            this.deckOverviews = deckOverviews;
+        public StatusDetails(List<BigDeckOverview> bigDeckOverviews) {
+            this.bigDeckOverviews = bigDeckOverviews;
         }
 
         @Override
-        public void execute() {
-            Client.getInstance().setStatusDetails(deckOverviews);
+        void execute() {
+            Client.getInstance().setStatusDetails(bigDeckOverviews);
         }
     }
 
     public static class FirstCollectionDetails extends Answer {
-        private final List<String> heroNames;
+        private final List<String> heroNames, classOfCardNames;
 
-        public FirstCollectionDetails(List<String> heroNames) {
+        public FirstCollectionDetails(List<String> heroNames, List<String> classOfCardNames) {
+            this.classOfCardNames = classOfCardNames;
             this.heroNames = heroNames;
         }
 
         @Override
-        public void execute() {
-            Client.getInstance().setFirstCollectionDetail(heroNames);
+        void execute() {
+            Client.getInstance().setFirstCollectionDetail(heroNames, classOfCardNames);
         }
     }
 
     public static class CollectionDetails extends Answer {
         private final List<CardOverview> cards;
-        private final List<DeckOverview> decks;
+        private final List<SmallDeckOverview> decks;
         private final List<CardOverview> deckCards;
-        private final boolean canAddDeck ,canChangeHero;
+        private final boolean canAddDeck, canChangeHero;
+        private final String deckName;
 
-        public CollectionDetails(List<CardOverview> cards, List<DeckOverview> decks,
-                                 List<CardOverview> deckCards, boolean canAddDeck, boolean canChangeHero) {
+        public CollectionDetails(List<CardOverview> cards, List<SmallDeckOverview> decks,
+                                 List<CardOverview> deckCards, boolean canAddDeck,
+                                 boolean canChangeHero, String deckName) {
             this.cards = cards;
             this.decks = decks;
             this.deckCards = deckCards;
             this.canAddDeck = canAddDeck;
             this.canChangeHero = canChangeHero;
+            this.deckName = deckName;
         }
 
         @Override
-        public void execute() {
-            Client.getInstance().setCollectionDetail(cards, decks,deckCards,canAddDeck,canChangeHero);
+        void execute() {
+            Client.getInstance().setCollectionDetail(cards, decks, deckCards, canAddDeck, canChangeHero, deckName);
+        }
+    }
+
+    public static class showMessage extends Answer {
+        private final String message;
+
+        public showMessage(String message) {
+            this.message = message;
+        }
+
+        @Override
+        void execute() {
+            Client.getInstance().showMessage(message);
+        }
+    }
+
+    public static class GotoShop extends Answer {
+
+        @Override
+        void execute() {
+            Client.getInstance().gotoShop();
         }
     }
 }
+

@@ -1,34 +1,30 @@
 package view.util;
 
-import util.ImageLoader;
-import view.model.DeckOverview;
+import view.model.SmallDeckOverview;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
-import java.awt.image.BufferedImage;
 
 import static view.util.Constant.*;
 
-public class SmallDeckBox extends Box<DeckOverview, SmallDeckBox.SmallDeckViewer, DeckActionListener> {
+public class SmallDeckBox extends Box<SmallDeckOverview, SmallDeckBox.SmallDeckViewer, DeckActionListener> {
     public SmallDeckBox(int width, int height, JPanel parent, DeckActionListener deckActionListener) {
         super(width, height, parent, deckActionListener, SMALL_DECK_WIDTH, SMALL_DECK_HEIGHT, SMALL_DECK_SPACE);
     }
 
     @Override
-    protected SmallDeckViewer createNew(DeckOverview deckOverview) {
+    protected SmallDeckViewer createNew(SmallDeckOverview deckOverview) {
         return new SmallDeckViewer(deckOverview);
     }
 
 
     public class SmallDeckViewer extends JPanel implements MouseListener {
-        private final BufferedImage image;
-        private final DeckOverview deckOverview;
+        private final SmallDeckOverview smallDeckOverview;
 
-        SmallDeckViewer(DeckOverview deckOverview) {
-            this.deckOverview = deckOverview;
-            this.image = ImageLoader.getInstance().getSmallDeck(deckOverview.getHeroName());
+        SmallDeckViewer(SmallDeckOverview smallDeckOverview) {
+            this.smallDeckOverview = smallDeckOverview;
             this.setSize(Constant.SMALL_DECK_WIDTH, Constant.SMALL_DECK_HEIGHT);
             this.setOpaque(false);
             this.addMouseListener(this);
@@ -37,19 +33,14 @@ public class SmallDeckBox extends Box<DeckOverview, SmallDeckBox.SmallDeckViewer
         @Override
         protected void paintComponent(Graphics g) {
             super.paintComponent(g);
-
-            g.drawImage(image, 0, 0, this);
-            g.setFont(new Font("War Priest 3D", Font.PLAIN, 15));
-            g.setColor(Color.yellow);
-            g.drawString("deck name:" + deckOverview.getDeckName(), 0, 20);
-            g.drawString("hero name:" + deckOverview.getHeroName(), 0, 40);
+            smallDeckOverview.paint(g);
         }
 
         @Override
         public void mouseClicked(MouseEvent e) {
             if (e.getButton() == MouseEvent.BUTTON1) {
                 if (action != null)
-                    action.action(deckOverview.getDeckName());
+                    action.action(smallDeckOverview.getName());
             }
         }
 

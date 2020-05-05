@@ -7,16 +7,18 @@
 <!--        <property name="hbm2ddl.auto">create</property>-->
         <property name="hbm2ddl.auto">update</property>
 <!--        <property name="show_sql">true</property>-->
-        <mapping class="model.Deck"/>
-        <mapping class="model.Spell"/>
+        <mapping class="model.Unit"/>
+        <mapping class="model.Card"/>
         <mapping class="model.Hero"/>
+        <mapping class="model.Spell"/>
+        <mapping class="model.Quest"/>
+        <mapping class="model.Weapon"/>
         <mapping class="model.Minion"/>
         <mapping class="model.ClassOfCard"/>
+        <mapping class="model.CardDetails"/>
+        <mapping class="model.Deck"/>
         <mapping class="model.Player"/>
         <mapping class="model.HeaderLog"/>
         <mapping class="model.BodyLog"/>
-        <mapping class="model.Unit"/>
-        <mapping class="model.Card"/>
-        <mapping class="model.CardDetails"/>
     </session-factory>
 </hibernate-configuration>

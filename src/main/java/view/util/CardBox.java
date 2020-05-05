@@ -8,6 +8,7 @@ import java.awt.*;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.image.BufferedImage;
+import java.awt.image.ColorModel;
 
 import static view.util.Constant.*;
 
@@ -23,7 +24,7 @@ public class CardBox extends Box<CardOverview, CardBox.CardViewer, CardActionLis
 
 
     public class CardViewer extends JPanel implements MouseListener {
-        private final BufferedImage small, big;
+        private final BufferedImage big;
         private final CardOverview cardOverview;
 
 
@@ -31,10 +32,8 @@ public class CardBox extends Box<CardOverview, CardBox.CardViewer, CardActionLis
             this.cardOverview = cardOverview;
             setToolTipText("class of card: " + cardOverview.getClassOfCard());
             if (cardOverview.getNumber() > 0) {
-                small = ImageLoader.getInstance().getSmallCard(cardOverview.getName());
                 big = ImageLoader.getInstance().getBigCard(cardOverview.getName());
             } else {
-                small = ImageLoader.getInstance().getSmallGrayCard(cardOverview.getName());
                 big = ImageLoader.getInstance().getBigGrayCard(cardOverview.getName());
             }
             this.setSize(Constant.CARD_WIDTH, Constant.CARD_HEIGHT);
@@ -45,22 +44,19 @@ public class CardBox extends Box<CardOverview, CardBox.CardViewer, CardActionLis
         @Override
         protected void paintComponent(Graphics g) {
             super.paintComponent(g);
-            if (cardOverview.getNumber() == 2)
-                g.drawImage(small, 15, 0, this);
-            g.drawImage(small, 0, 0, this);
-            if (cardOverview.isShowPrice()) {
-                g.setFont(g.getFont().deriveFont(17.0F).deriveFont(Font.BOLD));
-                g.setColor(Color.RED);
-                g.drawString("price: " + cardOverview.getPrice(), 35 * this.getWidth() / 135, 155 * this.getHeight() / 170);
-            }
-
+            cardOverview.paint(g);
         }
 
         @Override
         public void mouseClicked(MouseEvent e) {
             if (e.getButton() == MouseEvent.BUTTON3) {
+                ColorModel cm =big.getColorModel();
+                BufferedImage image = new BufferedImage(cm,big.copyData(null),cm.isAlphaPremultiplied(),null);
+                Graphics g = image.createGraphics();
+                g.setClip(0,0,image.getWidth(),image.getHeight());
+                cardOverview.paintBig(g);
                 JOptionPane.showMessageDialog(parent, null,
-                        "card information", JOptionPane.INFORMATION_MESSAGE, new ImageIcon(big));
+                        "card information", JOptionPane.INFORMATION_MESSAGE, new ImageIcon(image));
             }
             if (e.getButton() == MouseEvent.BUTTON1) {
                 if (action != null) {

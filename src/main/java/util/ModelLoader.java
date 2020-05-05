@@ -59,6 +59,7 @@ public class ModelLoader {
     public Map<Card, CardDetails> getFirstCards() {
         Map<Card,CardDetails> map = new HashMap<>();
         for (Card card:firstCards) map.put(card,new CardDetails(1));
+        System.out.println(map);
         return map;
     }
 

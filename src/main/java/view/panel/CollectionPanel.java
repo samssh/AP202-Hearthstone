@@ -3,16 +3,19 @@ package view.panel;
 import client.Client;
 import configs.Config;
 import configs.ConfigFactory;
-import util.MyJTextField;
+import util.Updatable;
+import view.model.SmallDeckOverview;
+import view.util.MyJTextField;
 import view.model.CardOverview;
-import view.model.DeckOverview;
+import view.model.BigDeckOverview;
 import view.util.CardBox;
 import view.util.SmallDeckBox;
 
 import javax.swing.*;
+import java.awt.event.ActionEvent;
 import java.util.List;
 
-public class CollectionPanel extends JPanel {
+public class CollectionPanel extends JPanel implements Updatable {
     private JLabel label;
     private MyJTextField search;
     private JComboBox<String> mana, classOfCard, lockMode;
@@ -21,6 +24,7 @@ public class CollectionPanel extends JPanel {
     private JButton newDeck, deleteDeck, changeDeckName, changeHeroDeck;
     private JButton back, backMainMenu, exit;
     private List<String> heroNames;
+    private String deckName;
     private final Client.CollectionAction collectionAction;
     private int x, y, width, height;
     private int exitX, exitY, exitWidth, exitHeight, exitSpace;
@@ -54,7 +58,7 @@ public class CollectionPanel extends JPanel {
         initializeMana();
         initializeClassOfCard();
         initializeLockMode();
-        initializeCollection();
+        initializeCards();
         initializeDeckCard();
         initializeDecks();
         initializeNewDeck();
@@ -82,8 +86,6 @@ public class CollectionPanel extends JPanel {
         classOfCard = new JComboBox<>();
         int x = filterX + 2 * (filterWidth + filterSpace);
         classOfCard.setBounds(x, filterY, filterWidth, filterHeight);
-        classOfCard.addItem("All classes");
-        classOfCard.addItem("Neutral");
         classOfCard.addItemListener(collectionAction::classOfCard);
     }
 
@@ -102,18 +104,18 @@ public class CollectionPanel extends JPanel {
         lockMode.addItemListener(collectionAction::lockMode);
     }
 
-    private void initializeCollection() {
-        cards = new CardBox(cardsWidth, cardsHeight, this, null);
+    private void initializeCards() {
+        cards = new CardBox(cardsWidth, cardsHeight, this, collectionAction::addCardToDeck);
         cards.setLocation(cardsX, cardsY);
     }
 
     private void initializeDeckCard() {
-        deckCards = new CardBox(deckCardsWidth, deckCardsHeight, this, null);
+        deckCards = new CardBox(deckCardsWidth, deckCardsHeight, this, collectionAction::removeCardFromDeck);
         deckCards.setLocation(deckCardsX, deckCardsY);
     }
 
     private void initializeDecks() {
-        decks = new SmallDeckBox(decksWidth, decksHeight, this, collectionAction::deck);
+        decks = new SmallDeckBox(decksWidth, decksHeight, this, collectionAction::selectDeck);
         decks.setLocation(decksX, decksY);
 
     }
@@ -121,61 +123,94 @@ public class CollectionPanel extends JPanel {
     private void initializeNewDeck() {
         newDeck = new JButton("new deck");
         newDeck.setBounds(deckButtonX, deckButtonY, deckButtonWidth, deckButtonHeight);
+        newDeck.addActionListener(this::newDeck);
+    }
+
+    private void newDeck(ActionEvent event) {
+        String deckName = JOptionPane.showInputDialog(this, "enter deck name",
+                "new deck", JOptionPane.INFORMATION_MESSAGE);
+        if (deckName != null) {
+            String heroName = (String) JOptionPane.showInputDialog(this, "select hero",
+                    "new deck", JOptionPane.INFORMATION_MESSAGE, null, heroNames.toArray(), heroNames.get(0));
+            collectionAction.newDeck(deckName, heroName);
+        }
     }
 
     private void initializeDeleteDeck() {
         deleteDeck = new JButton("delete deck");
         int x = deckButtonX + (deckButtonWidth + deckButtonSpace);
         deleteDeck.setBounds(x, deckButtonY, deckButtonWidth, deckButtonHeight);
+        deleteDeck.addActionListener(e -> collectionAction.deleteDeck(deckName));
     }
 
     private void initializeChangeDeckName() {
         changeDeckName = new JButton("change name");
         int x = deckButtonX + 2 * (deckButtonWidth + deckButtonSpace);
         changeDeckName.setBounds(x, deckButtonY, deckButtonWidth, deckButtonHeight);
+        changeDeckName.addActionListener(this::changeDeckName);
+    }
+
+    private void changeDeckName(ActionEvent event) {
+        String newName = JOptionPane.showInputDialog(this, "enter new deck name",
+                "change deck name", JOptionPane.INFORMATION_MESSAGE);
+        if (newName != null) {
+            collectionAction.changeDeckName(deckName, newName);
+        }
     }
 
     private void initializeChangeHeroDeck() {
         changeHeroDeck = new JButton("change hero");
         int x = deckButtonX + 3 * (deckButtonWidth + deckButtonSpace);
         changeHeroDeck.setBounds(x, deckButtonY, deckButtonWidth, deckButtonHeight);
+        changeHeroDeck.addActionListener(this::changeHeroDeck);
+    }
+
+    private void changeHeroDeck(ActionEvent event) {
+        String newHeroName = (String) JOptionPane.showInputDialog(this, "select hero",
+                "new deck", JOptionPane.INFORMATION_MESSAGE, null, heroNames.toArray(), heroNames.get(0));
+        if (newHeroName!=null){
+            collectionAction.changeHeroDeck(deckName,newHeroName);
+        }
     }
 
     private void initializeExit() {
         exit = new JButton("exit");
         exit.setBounds(exitX, exitY, exitWidth, exitHeight);
-        exit.addActionListener(collectionAction::exit);
+        exit.addActionListener(e -> collectionAction.exit());
     }
 
     private void initializeBack() {
         back = new JButton("back");
         int x = exitX - 2 * (exitWidth + exitSpace);
         back.setBounds(x, exitY, exitWidth, exitHeight);
-        back.addActionListener(collectionAction::back);
+        back.addActionListener(e -> collectionAction.back());
     }
 
     private void initializeBackMainMenu() {
         backMainMenu = new JButton("back to main menu");
         int x = exitX - (exitWidth + exitSpace);
         backMainMenu.setBounds(x, exitY, exitWidth, exitHeight);
-        backMainMenu.addActionListener(collectionAction::backMainMenu);
+        backMainMenu.addActionListener(e -> collectionAction.backMainMenu());
     }
 
-    public void setFirstDetails(List<String> heroNames) {
+    public void setFirstDetails(List<String> heroNames, List<String> classOfCardNames) {
         collectionAction.sendRequest();
         this.heroNames = heroNames;
-        for (String s : heroNames) {
+        classOfCard.removeAllItems();
+        for (String s : classOfCardNames) {
             classOfCard.addItem(s);
         }
     }
 
-    public void setDetails(List<CardOverview> cards, List<DeckOverview> decks,
-                           List<CardOverview> deckCards, boolean canAddDeck, boolean canChangeHero) {
+    public void setDetails(List<CardOverview> cards, List<SmallDeckOverview> decks,
+                           List<CardOverview> deckCards, boolean canAddDeck, boolean canChangeHero, String deckName) {
         this.cards.setModels(cards);
         this.decks.setModels(decks);
+        this.deckName = deckName;
         if (deckCards != null) {
             this.add(this.deckCards);
             this.deckCards.setModels(deckCards);
+            this.deckCards.setTitle(deckName);
             this.add(changeDeckName);
             this.add(deleteDeck);
         } else {
@@ -227,4 +262,11 @@ public class CollectionPanel extends JPanel {
     public void reset() {
         collectionAction.reset();
     }
+
+    @Override
+    public void update() {
+        collectionAction.update();
+    }
+
+//    public void
 }

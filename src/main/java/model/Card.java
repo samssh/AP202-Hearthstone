@@ -7,11 +7,9 @@ import org.hibernate.annotations.CascadeType;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
-import java.util.Collection;
 
-@Entity(name = "Card")
+@Entity
 abstract public class Card extends Unit {
     @ManyToOne
     @Cascade(CascadeType.SAVE_UPDATE)

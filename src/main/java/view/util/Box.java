@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static view.util.Constant.*;
-import static view.util.Constant.BOX_LABEL_HEIGHT;
 
 public abstract class Box<E, T extends JPanel, S> extends JPanel {
     private List<E> models;

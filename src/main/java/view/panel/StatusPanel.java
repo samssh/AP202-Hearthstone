@@ -3,14 +3,15 @@ package view.panel;
 import client.Client;
 import configs.Config;
 import configs.ConfigFactory;
-import view.model.DeckOverview;
+import util.Updatable;
+import view.model.BigDeckOverview;
 import view.util.BigDeckBox;
 
 import javax.swing.*;
 import java.awt.*;
 import java.util.List;
 
-public class StatusPanel extends JPanel {
+public class StatusPanel extends JPanel implements Updatable {
     private BigDeckBox bigDeckBox;
     private JButton exit, back, backMainMenu;
     private int deckBoxX,deckBoxY,deckBoxWidth,deckBoxHeight;
@@ -45,21 +46,21 @@ public class StatusPanel extends JPanel {
     private void initializeExit(){
         exit = new JButton("exit");
         exit.setBounds(exitX, exitY, exitWidth, exitHeight);
-        exit.addActionListener(statusAction::exit);
+        exit.addActionListener(e -> statusAction.exit());
     }
 
     private void initializeBack(){
         back = new JButton("back");
         int x = exitX - 2 * (exitWidth + exitSpace);
         back.setBounds(x, exitY, exitWidth, exitHeight);
-        back.addActionListener(statusAction::back);
+        back.addActionListener(e -> statusAction.back());
     }
 
     private void initializeBackMainMenu(){
         backMainMenu = new JButton("back to main menu");
         int x = exitX - (exitWidth + exitSpace);
         backMainMenu.setBounds(x, exitY, exitWidth, exitHeight);
-        backMainMenu.addActionListener(statusAction::backMainMenu);
+        backMainMenu.addActionListener(e -> statusAction.backMainMenu());
     }
 
 
@@ -85,7 +86,12 @@ public class StatusPanel extends JPanel {
         exitSpace = shopConfig.getProperty(Integer.class, "exitSpace");
     }
 
-    public void setDeckBoxList(List<DeckOverview> deckOverviewList){
-        bigDeckBox.setModels(deckOverviewList.subList(0,deckBoxHeight*deckBoxWidth));
+    public void setDeckBoxList(List<BigDeckOverview> bigDeckOverviewList){
+        bigDeckBox.setModels(bigDeckOverviewList.subList(0,Math.min(deckBoxHeight*deckBoxWidth, bigDeckOverviewList.size())));
+    }
+
+    @Override
+    public void update() {
+        statusAction.update();
     }
 }

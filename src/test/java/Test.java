@@ -4,34 +4,37 @@ import view.MyFrame;
 import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
-import java.awt.image.BufferedImage;
+import java.awt.color.ColorSpace;
+import java.awt.image.*;
 import java.io.*;
 import java.util.Objects;
 
-public class Test extends JPanel {
+public class Test{
 
+    private static BufferedImage gray(BufferedImage image) {
+        BufferedImage result = new BufferedImage(image.getWidth(), image.getHeight(), BufferedImage.TYPE_INT_ARGB);
+        ColorConvertOp op = new ColorConvertOp(ColorSpace.getInstance(ColorSpace.CS_GRAY), null);
+        op.filter(image, result);
+        return result;
+    }
 
     public static void main(String[] args) {
-        String out = "./src/main/resources/images/cards/small-gray/";
-        File file = new File("./src/main/resources/images/cards/small");
+        String out = "./src/main/resources/images/cards/big/";
+        File file = new File("./src/main/resources/images/cards/temp");
         File[] files = file.listFiles();
-//        File file1 = files[0];
-//        int min=1000;
+
+//        for (File value : Objects.requireNonNull(files)) {
+//            System.out.print(value.getName().substring(0,value.getName().length()-4).replace(' ','-'));
+//            System.out.print("=");
+//            System.out.println(value.getPath().replace('\\','/'));
+//        }
+
         for (File value : Objects.requireNonNull(files)) {
             try {
                 BufferedImage image = ImageIO.read(value);
-                BufferedImage result = new BufferedImage(
-                        image.getWidth(),
-                        image.getHeight(),
-                        BufferedImage.TYPE_USHORT_GRAY);
-                Graphics2D graphic = result.createGraphics();
-                graphic.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR);
-                graphic.drawImage( image, 0, 0, null);
-                graphic.dispose();
                 File output = new File(out + value.getName());
-                ImageIO.write(result, "png", output);
-
-            }  catch (IOException e) {
+                ImageIO.write(resize(image,250,350), "png", output);
+            } catch (IOException e) {
                 e.printStackTrace();
             }
         }
@@ -70,9 +73,9 @@ public class Test extends JPanel {
 //        }
     }
 
-    @Override
+
     protected void paintComponent(Graphics graphics) {
-        super.paintComponent(graphics);
+
 //        g.setColor(Color.blue);
         Graphics2D graphics2D = (Graphics2D) graphics;
         graphics2D.setFont(new Font("War Priest Condensed", Font.PLAIN, 35));
@@ -92,14 +95,20 @@ public class Test extends JPanel {
         graphics2D.drawString("win rate", 23, 423);
     }
 
-    private static BufferedImage gray(BufferedImage bufferedImage) {
-        BufferedImage result = new BufferedImage(
-                bufferedImage.getWidth(),
-                bufferedImage.getHeight(),
-                BufferedImage.TYPE_USHORT_GRAY);
-        Graphics2D graphic = result.createGraphics();
-        graphic.drawImage(bufferedImage, 0, 0, Color.WHITE, null);
-        graphic.dispose();
-        return result;
+    public static BufferedImage resize(BufferedImage img, int newW, int newH) {
+        int w = img.getWidth();
+        int h = img.getHeight();
+//        BufferedImage dest = new BufferedImage(img.getWidth(), img.getHeight() - 23, img.getType());
+//        Graphics ga = dest.getGraphics();
+//        ga.drawImage(img,0,-20,null);
+//        ga.drawImage(img, 0, 0, rect.getWidth(), rect.getHeight(), rect.getX(), rect.getY(), rect.getX() + rect.getWidth(), rect.getY() + rect.getHeight(), null);
+//        ga.dispose();
+        BufferedImage dimg = new BufferedImage(newW, newH, img.getType());
+//        BufferedImage dimg = daimg.getSubimage(0,23,daimg.getWidth(),daimg.getHeight()-23);
+        Graphics2D g = dimg.createGraphics();
+        g.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR);
+        g.drawImage(img, 0, 0, newW, newH, 0, 0, w, h, null);
+        g.dispose();
+        return dimg;
     }
 }

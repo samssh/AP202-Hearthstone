@@ -93,12 +93,6 @@ public class Player implements SaveAble {
         for (Deck deck:decks) deck.removeCard(card);
     }
 
-    public int numberOfCard(Card card) {
-        if (cards.containsKey(card))
-            return cards.get(card).getRepeatedTimes();
-        return 0;
-    }
-
     @Override
     public void delete(Connector connector) {
         connector.delete(this);
@@ -120,10 +114,10 @@ public class Player implements SaveAble {
     }
 
     public Deck getSelectedDeck() {
-        return decks.get(selectedDeckIndex);
+        return decks.size() > selectedDeckIndex ? decks.get(selectedDeckIndex) : null;
     }
 
     public Hero getSelectedHero() {
-        return decks.get(selectedDeckIndex).getHero();
+        return getSelectedDeck() != null ? getSelectedDeck().getHero() : null;
     }
 }

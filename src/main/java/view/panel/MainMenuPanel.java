@@ -4,23 +4,30 @@ import client.Client;
 import configs.Config;
 import configs.ConfigFactory;
 import lombok.Setter;
+import util.Updatable;
 
 import javax.swing.*;
 import java.awt.*;
 
-public class MainMenuPanel extends JPanel {
-    @Setter
-    private String playerName;
+public class MainMenuPanel extends JPanel implements Updatable {
+//    @Setter
+//    private String playerName;
     private JLabel welcome;
     private JButton play, shop, status, collection, exit, logout, deleteAccount;
     private int componentWidth, componentHeight, componentSpace;
     private int exitWidth, exitHeight, exitX, exitY, exitSpace, shiftX, shiftY;
+    int sumHeight;
+    int startX;
+    int startY;
     private final Dimension dimension;
     private final Client.MainMenuAction mainMenuAction;
 
     public MainMenuPanel(Client.MainMenuAction mainMenuAction) {
         setLayout(null);
         config();
+        sumHeight = componentHeight + componentSpace;
+        startX = (this.getWidth() - componentWidth) / 2 + shiftX;
+        startY = this.getHeight() / 2 - (4 * sumHeight + componentHeight) / 2 + shiftY;
         this.mainMenuAction = mainMenuAction;
         dimension = new Dimension(componentWidth, componentHeight);
         initialize();
@@ -56,15 +63,6 @@ public class MainMenuPanel extends JPanel {
     protected void paintComponent(Graphics g) {
         Graphics2D graphics2D = (Graphics2D) g;
         super.paintComponent(graphics2D);
-        welcome.setText("welcome " + playerName);
-        int sumHeight = componentHeight + componentSpace;
-        int startX = (this.getWidth() - componentWidth) / 2 + shiftX;
-        int startY = this.getHeight() / 2 - (4 * sumHeight + componentHeight) / 2 + shiftY;
-        welcome.setLocation(startX, startY);
-        play.setLocation(startX, startY + sumHeight);
-        shop.setLocation(startX, startY + 2 * sumHeight);
-        status.setLocation(startX, startY + 3 * sumHeight);
-        collection.setLocation(startX, startY + 4 * sumHeight);
     }
 
     private void initialize() {
@@ -79,51 +77,58 @@ public class MainMenuPanel extends JPanel {
     }
 
     private void initializeWelcome() {
-        welcome = new JLabel("welcome " + playerName, SwingConstants.CENTER);
+        welcome = new JLabel("welcome ", SwingConstants.CENTER);
         welcome.setSize(dimension);
+        welcome.setLocation(startX, startY);
     }
 
     private void initializePlay() {
         play = new JButton("play");
         play.setSize(dimension);
+        play.setLocation(startX, startY + sumHeight);
     }
 
     private void initializeShop() {
         shop = new JButton("shop");
         shop.setSize(dimension);
-        shop.addActionListener(mainMenuAction::shop);
+        shop.addActionListener(e -> mainMenuAction.shop());
+        shop.setLocation(startX, startY + 2 * sumHeight);
+
     }
 
     private void initializeStatus() {
         status = new JButton("status");
         status.setSize(dimension);
-        status.addActionListener(mainMenuAction::status);
+        status.addActionListener(e -> mainMenuAction.status());
+        status.setLocation(startX, startY + 3 * sumHeight);
+
     }
 
     private void initializeCollection() {
         collection = new JButton("collection");
+        collection.addActionListener(e -> mainMenuAction.collection());
         collection.setSize(dimension);
-        collection.addActionListener(mainMenuAction::collection);
+        collection.setLocation(startX, startY + 4 * sumHeight);
     }
 
     private void initializeExit() {
         exit = new JButton("exit");
         exit.setBounds(exitX, exitY, exitWidth, exitHeight);
-        exit.addActionListener(mainMenuAction::exit);
+        exit.addActionListener(e -> mainMenuAction.exit());
     }
 
     private void initializeLogout() {
         logout = new JButton("logout");
         int y = exitY - 2 * (exitHeight + exitSpace);
         logout.setBounds(exitX, y, exitWidth, exitHeight);
-        logout.addActionListener(mainMenuAction::logout);
+        logout.addActionListener(e -> mainMenuAction.logout());
     }
 
     private void initializeDeleteAccount() {
         deleteAccount = new JButton("delete account");
         int y = exitY - (exitHeight + exitSpace);
         deleteAccount.setBounds(exitX, y, exitWidth, exitHeight);
-        deleteAccount.addActionListener(mainMenuAction::deleteAccount);
+        deleteAccount.addActionListener(e -> mainMenuAction.deleteAccount());
     }
 
 
@@ -138,6 +143,11 @@ public class MainMenuPanel extends JPanel {
 
     public void setMessage(String message) {
         welcome.setText(message);
+    }
+
+    @Override
+    public void update() {
+        mainMenuAction.update();
     }
 //
 //    public void reset() {

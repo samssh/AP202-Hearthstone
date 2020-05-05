@@ -3,7 +3,6 @@ package model;
 
 import hibernate.Connector;
 import hibernate.SaveAble;
-import javassist.compiler.ast.Pair;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -91,6 +90,10 @@ public class Deck implements SaveAble {
         return 0;
     }
 
+    public int getSize(){
+        return cards.keySet().stream().mapToInt(card -> cards.get(card).getRepeatedTimes()).sum();
+    }
+
     @SuppressWarnings("unchecked")
     @Override
     public Long getId() {
@@ -111,4 +114,11 @@ public class Deck implements SaveAble {
     public void load(Connector connector) {
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Deck deck = (Deck) o;
+        return Objects.equals(name, deck.name);
+    }
 }
