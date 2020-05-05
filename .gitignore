@@ -1,4 +1,7 @@
 /src/main/resources/
 /build/
-/build/classes/
-*.png
+/.gradle/
+/data/
+/.idea/
+/src/test/
+/log/
