@@ -9,11 +9,8 @@ import java.lang.reflect.Constructor;
 import java.util.*;
 
 public class Config extends Properties {
-    @Getter
-    private final String address;
     public Config(String address) {
         super();
-        this.address=address;
         try {
             Reader fileReader = new FileReader(address);
             this.load(fileReader);
@@ -23,12 +20,12 @@ public class Config extends Properties {
     }
 
     public <E> E getProperty(Class<E> c, String propertyName) {
-        return getObject(c,getProperty(propertyName));
+        return getObject(c, getProperty(propertyName));
     }
 
-    public <E> List<E> getPropertyList(Class<E> c,String propertyName){
-        List<E> list=new ArrayList<>();
-        String[] values=getProperty(propertyName).split(",");
+    public <E> List<E> getPropertyList(Class<E> c, String propertyName) {
+        List<E> list = new ArrayList<>();
+        String[] values = getProperty(propertyName).split(",");
         for (String value : values) {
             list.add(getObject(c, value));
         }

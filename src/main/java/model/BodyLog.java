@@ -62,12 +62,6 @@ public class BodyLog implements SaveAble {
     public void load(Connector connector) {
     }
 
-    @SuppressWarnings("unchecked")
-    @Override
-    public String getId() {
-        return instant;
-    }
-
     @Override
     public String toString() {
         return "BodyLog{" +

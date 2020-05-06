@@ -8,6 +8,7 @@ import server.Request;
 import server.Server;
 import view.MyFrame;
 import view.model.BigDeckOverview;
+import view.model.PassiveOverview;
 import view.model.SmallDeckOverview;
 import view.panel.*;
 import view.PanelType;
@@ -33,12 +34,13 @@ public class Client {
         this.frame = new MyFrame();
         panels = new HashMap<>();
         history = new Stack<>();
-        panels.put(PanelType.LOGIN_PANEL, new LoginPanel(new LoginPanelAction()));
+        panels.put(PanelType.LOGIN, new LoginPanel(new LoginPanelAction()));
         panels.put(PanelType.MAIN_MENU, new MainMenuPanel(new MainMenuAction()));
         panels.put(PanelType.SHOP, new ShopPanel(new ShopAction()));
         panels.put(PanelType.STATUS, new StatusPanel(new StatusAction()));
         panels.put(PanelType.COLLECTION, new CollectionPanel(new CollectionAction()));
-        now = PanelType.LOGIN_PANEL;
+        panels.put(PanelType.PASSIVE, new PassivePanel(new PassiveAction()));
+        now = PanelType.LOGIN;
         updateFrame();
         tempAnswerList = new ArrayList<>();
         answerList = new ArrayList<>();
@@ -84,7 +86,7 @@ public class Client {
     }
 
     void login(boolean success, String message) {
-        LoginPanel panel = (LoginPanel) panels.get(PanelType.LOGIN_PANEL);
+        LoginPanel panel = (LoginPanel) panels.get(PanelType.LOGIN);
         if (success) {
             panel.reset();
             now = PanelType.MAIN_MENU;
@@ -109,7 +111,8 @@ public class Client {
     private void back() {
         history.pop();
         now = history.peek();
-        ((Updatable)panels.get(now)).update();
+        if (panels.get(now) instanceof Updatable)
+            ((Updatable) panels.get(now)).update();
         frame.setContentPane(panels.get(now));
     }
 
@@ -120,26 +123,27 @@ public class Client {
         frame.setContentPane(panels.get(now));
     }
 
-    private void sendLoginRequest(String username,String pass,LoginPanel.Mode mode){
+    private void sendLoginRequest(String username, String pass, int mode) {
         Request request = new Request.LoginRequest(username, pass, mode);
         Server.getInstance().addRequest(request);
     }
 
-    private void sendShopRequest(){
+    private void sendShopRequest() {
         Request request = new Request.Shop();
         Server.getInstance().addRequest(request);
     }
 
-    private void sendStatusRequest(){
+    private void sendStatusRequest() {
         Request request = new Request.Status();
         Server.getInstance().addRequest(request);
     }
 
-    private void sendFirstCollectionRequest(){
+    private void sendFirstCollectionRequest() {
         Request request = new Request.FirstCollection();
         Server.getInstance().addRequest(request);
     }
-    private void sendCollectionRequest(String name, String classOfCard, int mana, int lockMode, String deckName){
+
+    private void sendCollectionRequest(String name, String classOfCard, int mana, int lockMode, String deckName) {
         Request request = new Request.CollectionDetails(name, classOfCard, mana, lockMode, deckName);
         Server.getInstance().addRequest(request);
     }
@@ -173,21 +177,36 @@ public class Client {
                              List<CardOverview> deckCards, boolean canAddDeck,
                              boolean canChangeHero, String deckName) {
         CollectionPanel collectionPanel = (CollectionPanel) panels.get(PanelType.COLLECTION);
-        collectionPanel.setDetails(cards, decks, deckCards, canAddDeck, canChangeHero , deckName);
+        collectionPanel.setDetails(cards, decks, deckCards, canAddDeck, canChangeHero, deckName);
     }
 
-    void showMessage(String message){
-        JOptionPane.showMessageDialog(frame,message);
+    void showMessage(String message) {
+        JOptionPane.showMessageDialog(frame, message);
     }
 
-    void gotoShop(){
-        int c= JOptionPane.showConfirmDialog(frame,"you can buy this card in shop\ngoto shop?",
-                "goto shop", JOptionPane.YES_NO_OPTION);
-        if (c==JOptionPane.YES_OPTION){
-            now = PanelType.SHOP;
-            updateFrame();
-            sendShopRequest();
+    void goTo(String panel, String message) {
+        try {
+            PanelType p = PanelType.valueOf(panel);
+            int c = JOptionPane.showConfirmDialog(frame, message, "goto", JOptionPane.YES_NO_OPTION);
+            if (c == JOptionPane.YES_OPTION) {
+                now = p;
+                updateFrame();
+                if (panels.get(now) instanceof Updatable)
+                    ((Updatable) panels.get(now)).update();
+            }
+        } catch (IllegalArgumentException ignored) {
         }
+    }
+
+    private void sendStartPlayRequest() {
+        Request request = new Request.StartPlaying();
+        Server.getInstance().addRequest(request);
+    }
+
+    void setPassives(List<PassiveOverview> passives) {
+        now = PanelType.PASSIVE;
+        ((PassivePanel) panels.get(PanelType.PASSIVE)).setPassives(passives);
+        updateFrame();
     }
 
     public class LoginPanelAction {
@@ -209,7 +228,7 @@ public class Client {
             }
             if ("Enter password".equals(pass))
                 return;
-            sendLoginRequest(username,pass,loginPanel.getMode());
+            sendLoginRequest(username, pass, loginPanel.getMode().getValue());
         }
 
         public void exit() {
@@ -226,8 +245,8 @@ public class Client {
         public void logout() {
             Client.this.logout();
             // reset panels
-            ((CollectionPanel)panels.get(PanelType.COLLECTION)).reset();
-            now = PanelType.LOGIN_PANEL;
+            ((CollectionPanel) panels.get(PanelType.COLLECTION)).reset();
+            now = PanelType.LOGIN;
             updateFrame();
             history.clear();
         }
@@ -235,7 +254,7 @@ public class Client {
         public void deleteAccount() {
             Client.this.deleteAccount();
             // reset panels
-            now = PanelType.LOGIN_PANEL;
+            now = PanelType.LOGIN;
             updateFrame();
         }
 
@@ -257,8 +276,12 @@ public class Client {
             sendFirstCollectionRequest();
         }
 
-        public void update(){
-            ((MainMenuPanel)panels.get(PanelType.MAIN_MENU)).setMessage("welcome " + username);
+        public void play() {
+            sendStartPlayRequest();
+        }
+
+        public void update() {
+            ((MainMenuPanel) panels.get(PanelType.MAIN_MENU)).setMessage("welcome " + username);
         }
     }
 
@@ -286,7 +309,7 @@ public class Client {
             Client.this.backMainMenu();
         }
 
-        public void update(){
+        public void update() {
             sendShopRequest();
         }
     }
@@ -305,7 +328,7 @@ public class Client {
             Client.this.backMainMenu();
         }
 
-        public void update(){
+        public void update() {
             sendStatusRequest();
         }
     }
@@ -369,33 +392,33 @@ public class Client {
             sendRequest();
         }
 
-        public void newDeck(String deckName,String heroName){
-            Request request = new Request.NewDeck(deckName,heroName);
+        public void newDeck(String deckName, String heroName) {
+            Request request = new Request.NewDeck(deckName, heroName);
             Server.getInstance().addRequest(request);
         }
 
-        public void deleteDeck(String deckName){
+        public void deleteDeck(String deckName) {
             Request request = new Request.DeleteDeck(deckName);
             Server.getInstance().addRequest(request);
         }
 
-        public void changeDeckName(String oldDeckName,String newDeckName){
+        public void changeDeckName(String oldDeckName, String newDeckName) {
             Request request = new Request.ChangeDeckName(oldDeckName, newDeckName);
             Server.getInstance().addRequest(request);
         }
 
-        public void changeHeroDeck(String deckName,String heroName){
+        public void changeHeroDeck(String deckName, String heroName) {
             Request request = new Request.ChangeHeroDeck(deckName, heroName);
             Server.getInstance().addRequest(request);
         }
 
-        public void addCardToDeck(String cardName){
-            Request request = new Request.AddCardToDeck(cardName,deckName);
+        public void addCardToDeck(String cardName) {
+            Request request = new Request.AddCardToDeck(cardName, deckName);
             Server.getInstance().addRequest(request);
         }
 
-        public void removeCardFromDeck(String cardName){
-            Request request = new Request.RemoveCardFromDeck(cardName,deckName);
+        public void removeCardFromDeck(String cardName) {
+            Request request = new Request.RemoveCardFromDeck(cardName, deckName);
             Server.getInstance().addRequest(request);
         }
 
@@ -408,11 +431,26 @@ public class Client {
         }
 
         public void sendRequest() {
-            sendCollectionRequest(name,classOfCard,mana,lockMode,deckName);
+            sendCollectionRequest(name, classOfCard, mana, lockMode, deckName);
         }
 
-        public void update(){
+        public void update() {
             sendRequest();
+        }
+    }
+
+    public class PassiveAction {
+        public void exit() {
+            Client.this.logout();
+            Client.this.exit();
+        }
+
+        public void back() {
+            Client.this.back();
+        }
+
+        public void backMainMenu() {
+            Client.this.backMainMenu();
         }
     }
 }

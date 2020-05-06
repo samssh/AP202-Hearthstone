@@ -42,7 +42,6 @@ public class StatusPanel extends JPanel implements Updatable {
         bigDeckBox.setTitle("your best deck");
     }
 
-
     private void initializeExit(){
         exit = new JButton("exit");
         exit.setBounds(exitX, exitY, exitWidth, exitHeight);
@@ -70,7 +69,7 @@ public class StatusPanel extends JPanel implements Updatable {
     }
 
     private void config() {
-        Config shopConfig = ConfigFactory.getInstance("").getConfig("STATUS_CONFIG");
+        Config shopConfig = ConfigFactory.getInstance().getConfig("STATUS_CONFIG");
         setBounds(shopConfig.getProperty(Integer.class, "x"),
                 shopConfig.getProperty(Integer.class, "y"),
                 shopConfig.getProperty(Integer.class, "width"),

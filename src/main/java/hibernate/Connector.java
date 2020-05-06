@@ -1,6 +1,7 @@
 package hibernate;
 
 import configs.ConfigFactory;
+import lombok.SneakyThrows;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.boot.MetadataSources;
@@ -19,14 +20,23 @@ public class Connector {
     private Session session;
     private boolean hasTransaction = false;
 
+    @SneakyThrows
     private SessionFactory buildSessionFactory(File file) {
         PrintStream err = System.err;
-        try {
-            PrintStream nullOut = new PrintStream(new File("./log/hibernate log.txt"));
-            System.setErr(nullOut);
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
+        File log = new File("./log");
+        if (log.exists()||log.mkdirs()) {
+            PrintStream logStream = new PrintStream(new File("./log/hibernate log.txt"));
+            System.setErr(logStream);
         }
+        File date = new File("./data");
+        if (date.mkdirs())
+            System.out.println("data directory created");
+//        try {
+//            PrintStream nullOut = new PrintStream(new File("./log/hibernate log.txt"));
+//            System.setErr(nullOut);
+//        } catch (FileNotFoundException e) {
+//            e.printStackTrace();
+//        }
         final ServiceRegistry registry = new StandardServiceRegistryBuilder().configure(file).build();
         SessionFactory sessionFactory = new MetadataSources(registry).buildMetadata().buildSessionFactory();
         System.setErr(err);
@@ -34,7 +44,7 @@ public class Connector {
     }
 
     public Connector(String configName) {
-        sessionFactory=buildSessionFactory(ConfigFactory.getInstance("").getConfigFile(configName));
+        sessionFactory=buildSessionFactory(ConfigFactory.getInstance().getConfigFile(configName));
         open();
     }
 

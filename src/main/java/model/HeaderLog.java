@@ -12,7 +12,7 @@ public class HeaderLog implements SaveAble {
     @Id
     @Setter
     @Getter
-    private Long id;
+    private long id;
     @Column
     @Setter
     @Getter

@@ -94,12 +94,6 @@ public class Deck implements SaveAble {
         return cards.keySet().stream().mapToInt(card -> cards.get(card).getRepeatedTimes()).sum();
     }
 
-    @SuppressWarnings("unchecked")
-    @Override
-    public Long getId() {
-        return Id;
-    }
-
     @Override
     public void delete(Connector connector) {
         connector.delete(this);

@@ -8,20 +8,19 @@ import util.ImageLoader;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
+import java.awt.image.ColorModel;
 
-public class CardOverview extends Overview {
-    @Getter
-    private final String classOfCard;
+public class CardOverview extends UnitOverview {
     @Getter
     private final int number;
     private final int price, mana, att, hp;
     private final boolean showPrice;
+    private final BufferedImage big, small;
 
     public CardOverview(Card card, int number, boolean showPrice) {
-        super(card.getName(), card.getName());
+        super(card.getName(), card.getName(), "class of card: " + card.getClassOfCard().getHeroName());
         this.number = number;
         this.price = card.getPrice();
-        this.classOfCard = card.getClassOfCard().getHeroName();
         this.showPrice = showPrice;
         this.mana = card.getManaFrz();
         if (card instanceof Minion) {
@@ -34,19 +33,21 @@ public class CardOverview extends Overview {
             this.att = -1;
             this.hp = -1;
         }
+
+        if (this.number > 0) {
+            big = ImageLoader.getInstance().getBigCard(imageName);
+            small = ImageLoader.getInstance().getSmallCard(imageName);
+        } else {
+            big = ImageLoader.getInstance().getBigGrayCard(imageName);
+            small = ImageLoader.getInstance().getSmallGrayCard(imageName);
+        }
     }
 
     @Override
     public void paint(Graphics g) {
-        BufferedImage image;
-        if (number > 0) {
-            image = ImageLoader.getInstance().getSmallCard(imageName);
-        } else {
-            image = ImageLoader.getInstance().getSmallGrayCard(imageName);
-        }
         if (number == 2)
-            g.drawImage(image, 15, 0, null);
-        g.drawImage(image, 0, 0, null);
+            g.drawImage(small, 15, 0, null);
+        g.drawImage(small, 0, 0, null);
         int w = g.getClipBounds().width;
         int h = g.getClipBounds().height;
         g.setColor(Color.WHITE);
@@ -64,7 +65,7 @@ public class CardOverview extends Overview {
         }
     }
 
-    public void paintBig(Graphics g) {
+    private void paintBig(Graphics g) {
         int w = g.getClipBounds().width;
         int h = g.getClipBounds().height;
         g.setColor(Color.WHITE);
@@ -80,5 +81,15 @@ public class CardOverview extends Overview {
             g.setColor(Color.RED);
             g.drawString("\u0024" + price, 60 * w / 135, 155 * h / 170);
         }
+    }
+
+    @Override
+    public BufferedImage getBigImage() {
+        ColorModel cm = big.getColorModel();
+        BufferedImage image = new BufferedImage(cm, big.copyData(null), cm.isAlphaPremultiplied(), null);
+        Graphics g = image.createGraphics();
+        g.setClip(0, 0, image.getWidth(), image.getHeight());
+        this.paintBig(g);
+        return null;
     }
 }

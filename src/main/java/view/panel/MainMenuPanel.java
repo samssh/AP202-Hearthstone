@@ -41,24 +41,6 @@ public class MainMenuPanel extends JPanel implements Updatable {
         this.add(deleteAccount);
     }
 
-    private void config() {
-        Config panelConfig = ConfigFactory.getInstance("").getConfig("MAIN_MENU_CONFIG");
-        componentWidth = panelConfig.getProperty(Integer.class, "componentWidth");
-        componentHeight = panelConfig.getProperty(Integer.class, "componentHeight");
-        componentSpace = panelConfig.getProperty(Integer.class, "componentSpace");
-        setBounds(panelConfig.getProperty(Integer.class, "x"),
-                panelConfig.getProperty(Integer.class, "y"),
-                panelConfig.getProperty(Integer.class, "width"),
-                panelConfig.getProperty(Integer.class, "height"));
-        exitX = panelConfig.getProperty(Integer.class, "exitX");
-        exitY = panelConfig.getProperty(Integer.class, "exitY");
-        exitWidth = panelConfig.getProperty(Integer.class, "exitWidth");
-        exitHeight = panelConfig.getProperty(Integer.class, "exitHeight");
-        exitSpace = panelConfig.getProperty(Integer.class, "exitSpace");
-        shiftX = panelConfig.getProperty(Integer.class, "shiftX");
-        shiftY = panelConfig.getProperty(Integer.class, "shiftY");
-    }
-
     @Override
     protected void paintComponent(Graphics g) {
         Graphics2D graphics2D = (Graphics2D) g;
@@ -86,6 +68,7 @@ public class MainMenuPanel extends JPanel implements Updatable {
         play = new JButton("play");
         play.setSize(dimension);
         play.setLocation(startX, startY + sumHeight);
+        play.addActionListener(e->mainMenuAction.play());
     }
 
     private void initializeShop() {
@@ -129,6 +112,24 @@ public class MainMenuPanel extends JPanel implements Updatable {
         int y = exitY - (exitHeight + exitSpace);
         deleteAccount.setBounds(exitX, y, exitWidth, exitHeight);
         deleteAccount.addActionListener(e -> mainMenuAction.deleteAccount());
+    }
+
+    private void config() {
+        Config panelConfig = ConfigFactory.getInstance().getConfig("MAIN_MENU_CONFIG");
+        componentWidth = panelConfig.getProperty(Integer.class, "componentWidth");
+        componentHeight = panelConfig.getProperty(Integer.class, "componentHeight");
+        componentSpace = panelConfig.getProperty(Integer.class, "componentSpace");
+        setBounds(panelConfig.getProperty(Integer.class, "x"),
+                panelConfig.getProperty(Integer.class, "y"),
+                panelConfig.getProperty(Integer.class, "width"),
+                panelConfig.getProperty(Integer.class, "height"));
+        exitX = panelConfig.getProperty(Integer.class, "exitX");
+        exitY = panelConfig.getProperty(Integer.class, "exitY");
+        exitWidth = panelConfig.getProperty(Integer.class, "exitWidth");
+        exitHeight = panelConfig.getProperty(Integer.class, "exitHeight");
+        exitSpace = panelConfig.getProperty(Integer.class, "exitSpace");
+        shiftX = panelConfig.getProperty(Integer.class, "shiftX");
+        shiftY = panelConfig.getProperty(Integer.class, "shiftY");
     }
 
 

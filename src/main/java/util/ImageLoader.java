@@ -2,6 +2,7 @@ package util;
 
 import configs.Config;
 import configs.ConfigFactory;
+import model.Passive;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
@@ -12,30 +13,33 @@ import java.util.Map;
 
 public class ImageLoader {
     private static final ImageLoader instance = new ImageLoader();
-    private final Map<String, BufferedImage> big, bigGray, smallGray, small, bg , bigDeck,smallDeck;
+    private final Map<String, BufferedImage> big, bigGray, smallGray, small, bg, bigDeck, smallDeck, passive;
 
     private ImageLoader() {
-        Config bigConfig = ConfigFactory.getInstance("").getConfig("BIG_CARDS");
+        Config bigConfig = ConfigFactory.getInstance().getConfig("BIG_CARDS");
         big = new HashMap<>();
         load(bigConfig, big);
-        Config smallConfig = ConfigFactory.getInstance("").getConfig("SMALL_CARDS");
+        Config smallConfig = ConfigFactory.getInstance().getConfig("SMALL_CARDS");
         small = new HashMap<>();
         load(smallConfig, small);
-        Config bgConfig = ConfigFactory.getInstance("").getConfig("BG");
+        Config bgConfig = ConfigFactory.getInstance().getConfig("BG");
         bg = new HashMap<>();
         load(bgConfig, bg);
-        Config bigGrayConfig = ConfigFactory.getInstance("").getConfig("BIG_GRAY_CARDS");
+        Config bigGrayConfig = ConfigFactory.getInstance().getConfig("BIG_GRAY_CARDS");
         bigGray = new HashMap<>();
         load(bigGrayConfig, bigGray);
-        Config smallGayConfig = ConfigFactory.getInstance("").getConfig("SMALL_GRAY_CARDS");
+        Config smallGayConfig = ConfigFactory.getInstance().getConfig("SMALL_GRAY_CARDS");
         smallGray = new HashMap<>();
         load(smallGayConfig, smallGray);
-        Config bigDeckConfig = ConfigFactory.getInstance("").getConfig("BIG_DECK");
+        Config bigDeckConfig = ConfigFactory.getInstance().getConfig("BIG_DECK");
         bigDeck = new HashMap<>();
         load(bigDeckConfig, bigDeck);
-        Config smallDeckConfig = ConfigFactory.getInstance("").getConfig("SMALL_DECK");
+        Config smallDeckConfig = ConfigFactory.getInstance().getConfig("SMALL_DECK");
         smallDeck = new HashMap<>();
         load(smallDeckConfig, smallDeck);
+        Config passiveDeckConfig = ConfigFactory.getInstance().getConfig("PASSIVE");
+        passive = new HashMap<>();
+        load(passiveDeckConfig, passive);
     }
 
     public static ImageLoader getInstance() {
@@ -76,12 +80,16 @@ public class ImageLoader {
         return smallGray.get(name);
     }
 
-    public BufferedImage getBigDeck(String heroName){
+    public BufferedImage getBigDeck(String heroName) {
         return bigDeck.get(heroName);
     }
 
-    public BufferedImage getSmallDeck(String heroName){
+    public BufferedImage getSmallDeck(String heroName) {
         return smallDeck.get(heroName);
+    }
+
+    public BufferedImage getPassive(String name) {
+        return passive.get(name);
     }
 }
 

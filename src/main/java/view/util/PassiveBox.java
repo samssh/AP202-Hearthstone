@@ -1,6 +1,6 @@
 package view.util;
 
-import view.model.BigDeckOverview;
+import view.model.PassiveOverview;
 
 import javax.swing.*;
 import java.awt.*;
@@ -9,23 +9,23 @@ import java.awt.event.MouseListener;
 
 import static view.util.Constant.*;
 
-public class BigDeckBox extends Box<BigDeckOverview, BigDeckBox.BigDeckViewer> {
-    public BigDeckBox(int width, int height, JPanel parent, MyActionListener deckActionListener) {
-        super(width, height, parent, deckActionListener, BIG_DECK_WIDTH, BIG_DECK_HEIGHT, BIG_DECK_SPACE);
+public class PassiveBox extends Box<PassiveOverview, PassiveBox.PassiveViewer>{
+
+    public PassiveBox(int width, int height, JPanel parent, MyActionListener action) {
+        super(width, height, parent, action, PASSIVE_WIDTH, PASSIVE_HEIGHT, PASSIVE_SPACE);
     }
 
     @Override
-    protected BigDeckViewer createNew(BigDeckOverview overview) {
-        return new BigDeckViewer(overview);
+    PassiveViewer createNew(PassiveOverview passiveOverview) {
+        return new PassiveViewer(passiveOverview);
     }
 
+    class PassiveViewer extends JPanel implements MouseListener {
+        private final PassiveOverview passiveOverview;
 
-    class BigDeckViewer extends JPanel implements MouseListener {
-        private final BigDeckOverview bigDeckOverview;
-
-        private BigDeckViewer(BigDeckOverview bigDeckOverview) {
-            this.bigDeckOverview = bigDeckOverview;
-            this.setSize(BIG_DECK_WIDTH, BIG_DECK_HEIGHT);
+        private PassiveViewer(PassiveOverview passiveOverview) {
+            this.passiveOverview = passiveOverview;
+            this.setSize(PASSIVE_WIDTH, PASSIVE_HEIGHT);
             this.setOpaque(false);
             this.addMouseListener(this);
         }
@@ -33,14 +33,14 @@ public class BigDeckBox extends Box<BigDeckOverview, BigDeckBox.BigDeckViewer> {
         @Override
         protected void paintComponent(Graphics g) {
             super.paintComponent(g);
-            bigDeckOverview.paint(g);
+            passiveOverview.paint(g);
         }
 
         @Override
         public void mouseClicked(MouseEvent e) {
             if (e.getButton() == MouseEvent.BUTTON1) {
                 if (action != null)
-                    action.action(bigDeckOverview.getName());
+                    action.action(passiveOverview.getName());
             }
         }
 

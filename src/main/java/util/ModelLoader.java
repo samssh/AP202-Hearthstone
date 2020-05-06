@@ -22,6 +22,7 @@ public class ModelLoader {
     private Hero defaultHero;
     private final List<Hero> firstHeroes;
     private final List<Card> firstCards;
+    private final List<Passive> firstPassives;
 
     public ModelLoader(Connector connector) {
         heroes = connector.fetchAll(Hero.class);
@@ -29,10 +30,11 @@ public class ModelLoader {
         classOfCards = connector.fetchAll(ClassOfCard.class);
         firstHeroes = new ArrayList<>();
         firstCards = new ArrayList<>();
-        config(ConfigFactory.getInstance("").getConfig("MODEL_LOADER_CONFIG"));
+        firstPassives = connector.fetchAll(Passive.class);
+        config(ConfigFactory.getInstance().getConfig("MODEL_LOADER_CONFIG"),connector);
     }
 
-    public void config(Config config) {
+    public void config(Config config,Connector connector) {
         defaultHero = getHero(config.getProperty(String.class, "defaultHero"));
         List<String> heroName = config.getPropertyList(String.class, "firstHeroes");
         for (String s : heroName) {
@@ -50,6 +52,10 @@ public class ModelLoader {
             deckList.add(new Deck(hero,"default"));
         }
         return deckList;
+    }
+
+    public List<Passive> getFirstPassives() {
+        return new ArrayList<>(firstPassives);
     }
 
     public List<Hero> getFirstHeroes() {
@@ -81,6 +87,13 @@ public class ModelLoader {
         for (ClassOfCard c : classOfCards)
             if (c.getHeroName().equals(name))
                 return c;
+        return null;
+    }
+
+    public Passive getPassive(String name){
+        for (Passive p : firstPassives)
+            if (p.getName().equals(name))
+                return p;
         return null;
     }
 

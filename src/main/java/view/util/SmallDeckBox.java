@@ -9,8 +9,8 @@ import java.awt.event.MouseListener;
 
 import static view.util.Constant.*;
 
-public class SmallDeckBox extends Box<SmallDeckOverview, SmallDeckBox.SmallDeckViewer, DeckActionListener> {
-    public SmallDeckBox(int width, int height, JPanel parent, DeckActionListener deckActionListener) {
+public class SmallDeckBox extends Box<SmallDeckOverview, SmallDeckBox.SmallDeckViewer> {
+    public SmallDeckBox(int width, int height, JPanel parent, MyActionListener deckActionListener) {
         super(width, height, parent, deckActionListener, SMALL_DECK_WIDTH, SMALL_DECK_HEIGHT, SMALL_DECK_SPACE);
     }
 
@@ -25,7 +25,7 @@ public class SmallDeckBox extends Box<SmallDeckOverview, SmallDeckBox.SmallDeckV
 
         SmallDeckViewer(SmallDeckOverview smallDeckOverview) {
             this.smallDeckOverview = smallDeckOverview;
-            this.setSize(Constant.SMALL_DECK_WIDTH, Constant.SMALL_DECK_HEIGHT);
+            this.setSize(SMALL_DECK_WIDTH, SMALL_DECK_HEIGHT);
             this.setOpaque(false);
             this.addMouseListener(this);
         }

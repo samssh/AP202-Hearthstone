@@ -7,7 +7,6 @@ import util.Updatable;
 import view.model.SmallDeckOverview;
 import view.util.MyJTextField;
 import view.model.CardOverview;
-import view.model.BigDeckOverview;
 import view.util.CardBox;
 import view.util.SmallDeckBox;
 
@@ -225,7 +224,7 @@ public class CollectionPanel extends JPanel implements Updatable {
     }
 
     private void config() {
-        Config config = ConfigFactory.getInstance("").getConfig("COLLECTION_CONFIG");
+        Config config = ConfigFactory.getInstance().getConfig("COLLECTION_CONFIG");
         x = config.getProperty(Integer.class, "x");
         y = config.getProperty(Integer.class, "y");
         width = config.getProperty(Integer.class, "width");

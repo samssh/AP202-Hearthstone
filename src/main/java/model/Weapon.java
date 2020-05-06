@@ -45,18 +45,12 @@ public class Weapon extends Card{
     public void load(Connector connector) {
     }
 
-    @SuppressWarnings("unchecked")
-    @Override
-    public String getId() {
-        return getName();
-    }
-
     @Override
     public String toString() {
         return "Weapon{" +
-                ", name='" + name + '\'' +
+                "name='" + name + '\'' +
                 ", description='" + description + '\'' +
-                "att=" + attFrz +
+                ", att=" + attFrz +
                 ", usage=" + usage +
                 ", classOfCard=" + classOfCard +
                 ", rarity=" + rarity +

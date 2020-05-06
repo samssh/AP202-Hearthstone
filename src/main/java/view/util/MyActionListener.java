@@ -1,6 +1,6 @@
 package view.util;
 
 
-public interface CardActionListener {
+public interface MyActionListener {
     void action(String cardName);
 }

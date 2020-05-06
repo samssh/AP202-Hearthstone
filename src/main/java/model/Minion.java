@@ -44,20 +44,14 @@ public class Minion extends Card {
     public void load(Connector connector) {
     }
 
-    @SuppressWarnings("unchecked")
-    @Override
-    public String getId() {
-        return getName();
-    }
-
     @Override
     public String toString() {
         return "Minion{" +
-                ", name='" + name + '\'' +
+                "name='" + name + '\'' +
                 ", description='" + description + '\'' +
                 ", mana=" + manaFrz +
                 ", price=" + price +
-                "att=" + attFrz +
+                ", att=" + attFrz +
                 ", hp=" + hpFrz +
                 ", classOfCard=" + classOfCard +
                 ", rarity=" + rarity +

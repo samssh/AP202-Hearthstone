@@ -180,7 +180,12 @@ public class LoginPanel extends JPanel {
     }
 
     public enum Mode {
-        SIGN_IN, SIGN_UP
+        SIGN_IN(1), SIGN_UP(2);
+        @Getter
+        int value;
+        Mode(int value){
+            this.value = value;
+        }
     }
 
     @Override
@@ -212,7 +217,7 @@ public class LoginPanel extends JPanel {
     }
 
     private void config() {
-        Config panelConfig = ConfigFactory.getInstance("").getConfig("LOGIN_PANEL_CONFIG");
+        Config panelConfig = ConfigFactory.getInstance().getConfig("LOGIN_PANEL_CONFIG");
         setBounds(panelConfig.getProperty(Integer.class, "x"),
                 panelConfig.getProperty(Integer.class, "y"),
                 panelConfig.getProperty(Integer.class, "width"),

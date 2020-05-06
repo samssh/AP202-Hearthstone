@@ -8,12 +8,15 @@ import hibernate.Connector;
 import model.*;
 import view.model.CardOverview;
 import view.model.BigDeckOverview;
+import view.model.PassiveOverview;
 import view.model.SmallDeckOverview;
-import view.panel.LoginPanel;
 
 import java.util.*;
 
 public class Server {
+    private static final int MAX_DECK_SIZE = 30;
+    private static final int STARTING_PASSIVES = 3;
+    private static final int STARTING_HAND_CARDS = 3;
     private static final Server instance = new Server();
     private final List<Request> tempRequestList, requestList;
     private final Connector connector;
@@ -22,7 +25,8 @@ public class Server {
     private Player player;
     // last filter of collection
     private int mana, lockMode;
-    private String name, classOfCard, deckName;
+    private String name, classOfCard;
+    private Game game;
 
     public static Server getInstance() {
         return instance;
@@ -59,10 +63,10 @@ public class Server {
         connector.close();
     }
 
-    void login(String username, String password, LoginPanel.Mode mode) {
-        if (mode == LoginPanel.Mode.SIGN_IN)
+    void login(String username, String password, int mode) {
+        if (mode == 1)
             signIn(username, password);
-        if (mode == LoginPanel.Mode.SIGN_UP)
+        if (mode == 2)
             signUp(username, password);
     }
 
@@ -186,13 +190,6 @@ public class Server {
             connector.commit();
         }
         sendShop();
-//        Answer answer;
-//        if (result) {
-//            answer = new Answer.showMessage("sell done");
-//        } else {
-//            answer = new Answer.showMessage("sell not done");
-//        }
-//        Client.getInstance().putAnswer(answer);
     }
 
     private boolean canSell(Card card) {
@@ -210,20 +207,14 @@ public class Server {
             connector.commit();
         }
         sendShop();
-//        Answer answer;
-//        if (result) {
-//            answer = new Answer.showMessage("buy done");
-//        } else {
-//            answer = new Answer.showMessage("buy not done");
-//        }
-//        Client.getInstance().putAnswer(answer);
     }
 
     private boolean canBuy(Card card) {
         if (player.getCoin() >= card.getPrice()) {
-            for (Hero h : player.getHeroes())
-                if (isForHero(card.getClassOfCard(), h))
-                    return true;
+            if (player.numberOfCard(card) < 2)
+                for (Hero h : player.getHeroes())
+                    if (isForHero(card.getClassOfCard(), h))
+                        return true;
         }
         return false;
     }
@@ -314,7 +305,7 @@ public class Server {
         this.classOfCard = classOfCard;
         this.mana = mana;
         this.lockMode = lockMode;
-        this.deckName = deckName;
+//        this.deckName = deckName;
         List<SmallDeckOverview> decks = makeDeckList();
         Deck d = getDeck(deckName);
         if (d != null) {
@@ -468,7 +459,7 @@ public class Server {
             deck.delete(connector);
             connector.commit();
             sendCollectionDetails(name, classOfCard, mana, lockMode, null);
-            this.deckName = null;
+//            this.deckName = null;
             answer = new Answer.showMessage("deck deleted");
         } else answer = new Answer.showMessage("deck not deleted");
         Client.getInstance().putAnswer(answer);
@@ -524,13 +515,13 @@ public class Server {
                 if (deck != null) {
                     if (playerCards.get(card).getRepeatedTimes() > deck.numberOfCard(card)) {
                         if (isForHero(card.getClassOfCard(), deck.getHero())) {
-                            if (deck.getSize() < 30) {
+                            if (deck.getSize() < MAX_DECK_SIZE) {
                                 deck.addCard(card);
                                 connector.beginTransaction();
                                 player.saveOrUpdate(connector);
                                 connector.commit();
                                 sendCollectionDetails(name, classOfCard, mana, lockMode, deckName);
-                            }else {
+                            } else {
                                 answer = new Answer.showMessage("cant add card to deck\ndeck is full!!!");
                             }
                         } else {
@@ -540,7 +531,7 @@ public class Server {
                 }
             } else {
                 if (canBuy(card)) {
-                    answer = new Answer.GotoShop();
+                    answer = new Answer.GoTo("SHOP", "you can buy this card in shop\ngoto shop?");
                 } else {
                     answer = new Answer.showMessage("you dont have this card\nyou cant buy card");
                 }
@@ -555,5 +546,43 @@ public class Server {
         if (classOfCard.getHeroName().equals(hero.getName()))
             return true;
         return classOfCard.equals(modelLoader.getClassOfCard("Neutral"));
+    }
+
+    void startPlay() {
+        Answer answer;
+        if (canStartGame()) {
+            List<Passive> passives = chooseRandom(modelLoader.getFirstPassives(), STARTING_PASSIVES);
+            answer = new Answer.PassiveDetails(turnToPassiveOverview(passives));
+        } else {
+            answer = new Answer.GoTo("COLLECTION", "your deck is not ready\ngoto collection?");
+        }
+        Client.getInstance().putAnswer(answer);
+
+    }
+
+    private boolean canStartGame() {
+        Deck d = player.getSelectedDeck();
+        return d != null && d.getSize() == MAX_DECK_SIZE;
+    }
+
+    private <T> List<T> chooseRandom(List<T> list, int n) {
+        int k = list.size() - n;
+        for (int i = 0; i < k; i++) {
+            list.remove((int) (Math.random() * list.size()));
+        }
+        return list;
+    }
+
+    private List<PassiveOverview> turnToPassiveOverview(List<Passive> passives) {
+        List<PassiveOverview> result = new ArrayList<>();
+        passives.forEach(p -> result.add(new PassiveOverview(p)));
+        return result;
+    }
+
+    void selectPassive(String passiveName){
+        Passive p = modelLoader.getPassive(passiveName);
+        if (p!=null&& canStartGame()) {
+            game = new Game(player.getSelectedDeck(),p);
+        }
     }
 }

@@ -83,7 +83,7 @@ public class ShopPanel extends JPanel implements Updatable {
     }
 
     private void config() {
-        Config shopConfig = ConfigFactory.getInstance("").getConfig("SHOP_CONFIG");
+        Config shopConfig = ConfigFactory.getInstance().getConfig("SHOP_CONFIG");
         setBounds(shopConfig.getProperty(Integer.class, "x"),
                 shopConfig.getProperty(Integer.class, "y"),
                 shopConfig.getProperty(Integer.class, "width"),

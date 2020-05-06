@@ -30,20 +30,14 @@ public class Spell extends Card {
     public void load(Connector connector) {
     }
 
-    @SuppressWarnings("unchecked")
-    @Override
-    public String getId() {
-        return getName();
-    }
-
     @Override
     public String toString() {
         return "Spell{" +
-                ", name='" + name + '\'' +
+                "name='" + name + '\'' +
                 ", description='" + description + '\'' +
                 ", mana=" + manaFrz +
                 ", price=" + price +
-                "classOfCard=" + classOfCard +
+                ", classOfCard=" + classOfCard +
                 ", rarity=" + rarity +
                 '}';
     }

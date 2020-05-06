@@ -6,7 +6,7 @@ import java.util.List;
 
 import static view.util.Constant.*;
 
-public abstract class Box<E, T extends JPanel, S> extends JPanel {
+public abstract class Box<E, T extends JPanel> extends JPanel {
     private List<E> models;
     private final List<T> items;
     private final int a, b, height, width;
@@ -15,9 +15,9 @@ public abstract class Box<E, T extends JPanel, S> extends JPanel {
     private JLabel title;
     private JButton next, previous;
     protected final JPanel parent;
-    protected final S action;
+    protected final MyActionListener action;
 
-    public Box(int width, int height, JPanel parent, S action, int itemWidth, int itemHeight, int itemSpace) {
+    public Box(int width, int height, JPanel parent, MyActionListener action, int itemWidth, int itemHeight, int itemSpace) {
         this.a = width;
         this.b = height;
         this.parent = parent;

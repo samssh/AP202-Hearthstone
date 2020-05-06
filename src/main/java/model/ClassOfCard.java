@@ -35,12 +35,6 @@ public class ClassOfCard implements SaveAble {
     @Override
     public void load(Connector connector) {}
 
-    @SuppressWarnings("unchecked")
-    @Override
-    public String getId() {
-        return heroName;
-    }
-
     @Override
     public String toString() {
         return "{" +

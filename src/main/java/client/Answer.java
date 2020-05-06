@@ -2,6 +2,7 @@ package client;
 
 import view.model.CardOverview;
 import view.model.BigDeckOverview;
+import view.model.PassiveOverview;
 import view.model.SmallDeckOverview;
 
 import java.util.List;
@@ -104,11 +105,31 @@ public abstract class Answer {
         }
     }
 
-    public static class GotoShop extends Answer {
+    public static class GoTo extends Answer {
+        private final String panel,message;
+
+        public GoTo(String panel, String message) {
+            this.panel = panel;
+            this.message = message;
+        }
+
 
         @Override
         void execute() {
-            Client.getInstance().gotoShop();
+            Client.getInstance().goTo(panel,message);
+        }
+    }
+
+    public static class PassiveDetails extends Answer {
+        private final List<PassiveOverview> passives;
+
+        public PassiveDetails(List<PassiveOverview> passives) {
+            this.passives = passives;
+        }
+
+        @Override
+        void execute() {
+            Client.getInstance().setPassives(passives);
         }
     }
 }

@@ -10,6 +10,7 @@ import java.util.Objects;
 
 public class Main {
     public static void main(String[] args) {
+        ConfigFactory.setArgs(args);
         try {
             GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
             File file = new File("./src/main/resources/fonts");
@@ -20,7 +21,6 @@ public class Main {
         } catch (IOException | FontFormatException e) {
             e.printStackTrace();
         }
-        ConfigFactory.getInstance("DEFAULT");
         ImageLoader imageLoader = ImageLoader.getInstance();
         Client client = Client.getInstance();
         Server server = Server.getInstance();

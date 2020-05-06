@@ -13,5 +13,8 @@ public class Constant {
     static int SMALL_DECK_WIDTH = 240;
     static int SMALL_DECK_HEIGHT = 100;
     static int SMALL_DECK_SPACE = 3;
+    static int PASSIVE_WIDTH = 250;
+    static int PASSIVE_HEIGHT = 350;
+    static int PASSIVE_SPACE = 30;
 
 }

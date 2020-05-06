@@ -16,17 +16,22 @@ public class DatabaseFiller {
     }
 
     private static void writeHero() {
+        HeroPower magePower = new HeroPower("Fireblast","Deal 1 damage",2);
         new Hero("Mage", "She is a skilled wizard who has special skills in using spells."
-                , 30).saveOrUpdate(connector);
+                , 30,magePower).saveOrUpdate(connector);
+        HeroPower roguePower = new HeroPower("Rubbery","Steal a card from opponent's hand and add it to your hand",3);
         new Hero("Rogue", "He is a thief and most of his abilities are in stealing from the enemy!"
-                , 30).saveOrUpdate(connector);
+                , 30,roguePower).saveOrUpdate(connector);
+        HeroPower warlockPower = new HeroPower("Life Tap","Draw a card and take 2 damage Or add a random minion  1/1.",0);
         new Hero("Warlock",
                 "You will never see anyone beyond him. He passes on his life and property and sacrifices something to win the war.",
-                35).saveOrUpdate(connector);
+                35,warlockPower).saveOrUpdate(connector);
+        HeroPower hunterPower = new HeroPower("Caltrops","After your opponent plays a minion, deal 1 damage to it",0);
         new Hero("Hunter", "She is keen to attack quickly. And because it has a strong interest in hunting," +
-                " most of its minions are animal-type.", 30).saveOrUpdate(connector);
+                " most of its minions are animal-type.", 30,hunterPower).saveOrUpdate(connector);
+        HeroPower priestPower= new HeroPower("Heal","Restore 4 Health.",2);
         new Hero("Priest", "Although she has few soldiers, her soldiers are loyal. She has many skills in healing, healing and reviving.",
-                30).saveOrUpdate(connector);
+                30,priestPower).saveOrUpdate(connector);
     }
 
     private static void writeCart() {
@@ -143,12 +148,18 @@ public class DatabaseFiller {
                 neutral, Rarity.Rare, 6).saveOrUpdate(connector);
         new Spell("Book of Specters", "Draw 3 cards. Discard any spells drawn.", 4,
                 neutral, Rarity.Epic, 2).saveOrUpdate(connector);
+
+        new Passive("Mana Jump","start with an extra Mana").saveOrUpdate(connector);
+        new Passive("Nurse","At the end of your turn,Restore 2 Health to random friendly minion").saveOrUpdate(connector);
+        new Passive("Off Card","The cost of all cards is reduced by one mana").saveOrUpdate(connector);
+        new Passive("Twice Draw","Draw two Card each turn").saveOrUpdate(connector);
+        new Passive("Warriors","if a minion dies on the playground, your hero gain two defence").saveOrUpdate(connector);
     }
 
     private static Connector connector;
 
     public static void main(String[] args) {
-        ConfigFactory.getInstance("DEFAULT");
+        ConfigFactory.setArgs(args);
         connector = new Connector("HIBERNATE_CONFIG");
         fill();
         connector.open();
@@ -166,6 +177,10 @@ public class DatabaseFiller {
         System.out.println();
         List<Player> players = connector.fetchAll(Player.class);
         players.forEach(System.out::println);
+        System.out.println();
+        System.out.println();
+        List<Passive> passives = connector.fetchAll(Passive.class);
+        passives.forEach(System.out::println);
         connector.close();
         System.exit(0);
     }

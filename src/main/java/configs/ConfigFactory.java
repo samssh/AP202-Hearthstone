@@ -1,28 +1,38 @@
 package configs;
 
 import java.io.File;
-import java.util.concurrent.atomic.AtomicReference;
 
 public class ConfigFactory {
+    private static String[] args;
     private static ConfigFactory instance;
-    private final static String defaultAddress="./src/main/resources/configurations/MainConfig.properties";
-    private final AtomicReference<Config> mainConfig = new AtomicReference<>();
+    private final static String defaultAddress = "./src/main/resources/configurations/MainConfig.properties";
+    @SuppressWarnings("MismatchedQueryAndUpdateOfCollection")
+    private final Config mainConfig;
 
-    public static ConfigFactory getInstance(String mainConfigAddress) {
-        if (null == instance){
-            instance=new ConfigFactory();
-            if(mainConfigAddress.equals("DEFAULT"))
-                mainConfigAddress=defaultAddress;
-            instance.mainConfig.set(new Config(mainConfigAddress));
+    public static ConfigFactory getInstance() {
+        if (null == instance) {
+            String mainConfigAddress;
+            if (args.length > 0) mainConfigAddress = args[0];
+            else mainConfigAddress = defaultAddress;
+            instance = new ConfigFactory(mainConfigAddress);
         }
         return instance;
     }
 
-    public Config getConfig(String configName){
-        return mainConfig.get().getProperty(Config.class,configName);
+    public static void setArgs(String[] args) {
+        ConfigFactory.args = args;
     }
 
-    public File getConfigFile(String configName){
-        return mainConfig.get().getProperty(File.class,configName);
+    private ConfigFactory(String mainConfigAddress) {
+        mainConfig = new Config(mainConfigAddress);
+//        mainConfig.put("", "");
+    }
+
+    public Config getConfig(String configName) {
+        return mainConfig.getProperty(Config.class, configName);
+    }
+
+    public File getConfigFile(String configName) {
+        return mainConfig.getProperty(File.class, configName);
     }
 }

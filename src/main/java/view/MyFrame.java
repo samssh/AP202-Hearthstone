@@ -18,7 +18,7 @@ public class MyFrame extends JFrame {
     }
 
     private void config() {
-        Config frameConfig = ConfigFactory.getInstance("").getConfig("FRAME_CONFIG");
+        Config frameConfig = ConfigFactory.getInstance().getConfig("FRAME_CONFIG");
         setSize(new Dimension(frameConfig.getProperty(Integer.class, "width")
                 , frameConfig.getProperty(Integer.class, "height")));
         setDefaultCloseOperation(frameConfig.getProperty(Integer.class, "closeOperation"));

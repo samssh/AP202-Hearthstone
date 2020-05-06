@@ -3,8 +3,12 @@ package model;
 import hibernate.Connector;
 import lombok.Getter;
 import lombok.Setter;
+import org.hibernate.annotations.Cascade;
+import org.hibernate.annotations.CascadeType;
 
-import javax.persistence.*;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.OneToOne;
 
 @Entity
 public class  Hero extends Unit {
@@ -12,13 +16,19 @@ public class  Hero extends Unit {
     @Setter
     @Getter
     private int hpFrz;
+    @OneToOne
+    @Cascade({CascadeType.SAVE_UPDATE,CascadeType.DELETE})
+    @Setter
+    @Getter
+    private HeroPower power;
 
     public Hero() {
     }
 
-    public Hero(String name, String description, int hpFrz) {
+    public Hero(String name, String description, int hpFrz,HeroPower power) {
         super(name, description);
         this.hpFrz = hpFrz;
+        this.power = power;
     }
 
     @Override
@@ -34,18 +44,13 @@ public class  Hero extends Unit {
     @Override
     public void load(Connector connector) {}
 
-    @SuppressWarnings("unchecked")
-    @Override
-    public String getId() {
-        return getName();
-    }
-
     @Override
     public String toString() {
         return "Hero{" +
-                ", name='" + name + '\'' +
+                "name='" + name + '\'' +
                 ", description='" + description + '\'' +
-                "hp=" + hpFrz +
+                ", hp=" + hpFrz +
+                ", power=" + power +
                 '}';
     }
 }

@@ -7,9 +7,9 @@ public abstract class Request {
 
     public static class LoginRequest extends Request {
         private final String userName, password;
-        private final LoginPanel.Mode mode;
+        private final int mode;
 
-        public LoginRequest(String userName, String password, LoginPanel.Mode mode) {
+        public LoginRequest(String userName, String password, int mode) {
             this.userName = userName;
             this.password = password;
             this.mode = mode;
@@ -182,6 +182,13 @@ public abstract class Request {
         @Override
         void execute() {
             Server.getInstance().removeCardFromDeck(cardName, deckName);
+        }
+    }
+
+    public static class StartPlaying extends Request {
+        @Override
+        void execute() {
+            Server.getInstance().startPlay();
         }
     }
 }
