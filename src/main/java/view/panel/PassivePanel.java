@@ -37,7 +37,7 @@ public class PassivePanel extends JPanel {
     }
 
     private void initializePassiveBox() {
-        passiveBox = new PassiveBox(passiveBoxWidth, passiveBoxHeight,this,null);
+        passiveBox = new PassiveBox(passiveBoxWidth, passiveBoxHeight,this,passiveAction::selectPassive);
         passiveBox.setLocation(passiveBoxX, passiveBoxY);
         passiveBox.setTitle("choose one:");
     }

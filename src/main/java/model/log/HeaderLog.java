@@ -1,4 +1,4 @@
-package model;
+package model.log;
 
 import hibernate.Connector;
 import hibernate.SaveAble;

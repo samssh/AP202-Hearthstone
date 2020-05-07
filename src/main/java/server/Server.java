@@ -2,21 +2,22 @@ package server;
 
 import client.Answer;
 import client.Client;
+import model.account.Deck;
+import model.account.Player;
+import model.log.HeaderLog;
+import model.main.*;
 import util.Loop;
 import util.ModelLoader;
 import hibernate.Connector;
-import model.*;
-import view.model.CardOverview;
-import view.model.BigDeckOverview;
-import view.model.PassiveOverview;
-import view.model.SmallDeckOverview;
+import view.model.*;
 
 import java.util.*;
 
 public class Server {
-    private static final int MAX_DECK_SIZE = 30;
-    private static final int STARTING_PASSIVES = 3;
-    private static final int STARTING_HAND_CARDS = 3;
+    static int MAX_DECK_SIZE = 30;
+    static int STARTING_PASSIVES = 3;
+    static int STARTING_HAND_CARDS = 3;
+    static int MAX_MANA = 10;
     private static final Server instance = new Server();
     private final List<Request> tempRequestList, requestList;
     private final Connector connector;
@@ -569,6 +570,7 @@ public class Server {
         int k = list.size() - n;
         for (int i = 0; i < k; i++) {
             list.remove((int) (Math.random() * list.size()));
+
         }
         return list;
     }
@@ -579,10 +581,33 @@ public class Server {
         return result;
     }
 
-    void selectPassive(String passiveName){
+    void selectPassive(String passiveName) {
         Passive p = modelLoader.getPassive(passiveName);
-        if (p!=null&& canStartGame()) {
-            game = new Game(player.getSelectedDeck(),p);
+        if (p != null && canStartGame()) {
+            game = new Game(player.getSelectedDeck(), p);
+            sendPlayDetails();
         }
+    }
+
+    private void sendPlayDetails() {
+        List<CardOverview> hand = turnToCardOverView(game.getHandCard());
+        List<CardOverview> ground = turnToCardOverView(game.getGround());
+        CardOverview weapon = game.getActiveWeapon() == null ? null : new CardOverview(game.getActiveWeapon(), 1, false);
+        HeroOverview hero = new HeroOverview(game.getHero());
+        HeroPowerOverview heroPower = new HeroPowerOverview(game.getHero().getPower());
+        String eventLog = game.getGameEvents();
+        Answer answer = new Answer.PlayDetails(hand, ground, weapon, hero, heroPower, eventLog, game.getMana(), game.getDeck().size());
+        Client.getInstance().putAnswer(answer);
+    }
+
+    private List<CardOverview> turnToCardOverView(List<? extends Card> cards) {
+        List<CardOverview> result = new ArrayList<>();
+        cards.forEach(card -> result.add(new CardOverview(card, 1, false)));
+        return result;
+    }
+
+    void endTurn() {
+        if (game != null)
+            game.endTurn();
     }
 }

@@ -1,5 +1,6 @@
 package view.util;
 
+import lombok.Setter;
 import view.model.UnitOverview;
 
 import javax.swing.*;
@@ -8,44 +9,54 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 
 public class UnitViewer extends JPanel implements MouseListener {
-    private final UnitOverview unitOverview;
-    private final JPanel parent;
+    private UnitOverview unitOverview;
+    @Setter
     private MyActionListener actionListener;
+    private final JPanel parent;
 
 
-    UnitViewer(UnitOverview unitOverview, JPanel parent) {
+    public UnitViewer(JPanel parent) {
+        this.setLayout(null);
         this.parent = parent;
-        this.unitOverview = unitOverview;
-        if (unitOverview.getToolkit() != null)
-            setToolTipText(unitOverview.getToolkit());
-
-        this.setSize(Constant.CARD_WIDTH, Constant.CARD_HEIGHT);
         this.setOpaque(false);
         this.addMouseListener(this);
     }
 
-    public UnitViewer setActionListener(MyActionListener actionListener) {
+    public UnitViewer(UnitOverview unitOverview, JPanel parent) {
+        this(parent);
+        this.unitOverview = unitOverview;
+        if (unitOverview.getToolkit() != null)
+            setToolTipText(unitOverview.getToolkit());
+    }
+
+    public UnitViewer(UnitOverview unitOverview, JPanel parent, MyActionListener actionListener) {
+        this(unitOverview, parent);
         this.actionListener = actionListener;
-        return this;
+    }
+    public void setUnitOverview(UnitOverview unitOverview) {
+        this.unitOverview = unitOverview;
+
+        if (unitOverview!=null&&unitOverview.getToolkit() != null)
+            setToolTipText(unitOverview.getToolkit());
     }
 
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
-        unitOverview.paint(g);
+        if (unitOverview != null)
+            unitOverview.paint(g);
     }
 
     @Override
     public void mouseClicked(MouseEvent e) {
-        if (e.getButton() == MouseEvent.BUTTON3) {
-            JOptionPane.showMessageDialog(this.parent, null,
+        if (unitOverview != null) {
+            if (e.getButton() == MouseEvent.BUTTON3) JOptionPane.showMessageDialog(this.parent, null,
                     "card information", JOptionPane.INFORMATION_MESSAGE, new ImageIcon(unitOverview.getBigImage()));
-        }
-        if (e.getButton() == MouseEvent.BUTTON1) {
-            if (actionListener != null) {
-                actionListener.action(unitOverview.getName());
+            if (e.getButton() == MouseEvent.BUTTON1) {
+                if (actionListener != null) {
+                    actionListener.action(unitOverview.getName());
+                }
             }
-
         }
     }
 

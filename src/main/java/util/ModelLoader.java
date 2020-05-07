@@ -4,7 +4,8 @@ import configs.Config;
 import configs.ConfigFactory;
 import hibernate.Connector;
 import lombok.Getter;
-import model.*;
+import model.account.Deck;
+import model.main.*;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -65,7 +66,6 @@ public class ModelLoader {
     public Map<Card, CardDetails> getFirstCards() {
         Map<Card,CardDetails> map = new HashMap<>();
         for (Card card:firstCards) map.put(card,new CardDetails(1));
-        System.out.println(map);
         return map;
     }
 

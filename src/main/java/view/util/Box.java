@@ -101,6 +101,7 @@ public abstract class Box<E, T extends JPanel> extends JPanel {
     private void f(List<T> items, int k, int i, int j) {
         E e = models.get(k);
         T t = createNew(e);
+        t.setSize(itemWidth,itemHeight);
         t.setLocation(i * (itemWidth + itemSpace), j * (itemHeight + itemSpace) + BOX_LABEL_HEIGHT);
         items.add(t);
     }

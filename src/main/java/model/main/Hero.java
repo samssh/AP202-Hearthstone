@@ -1,4 +1,4 @@
-package model;
+package model.main;
 
 import hibernate.Connector;
 import lombok.Getter;

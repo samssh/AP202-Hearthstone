@@ -1,9 +1,9 @@
-package model;
+package model.main;
 
 import javax.persistence.Entity;
 
 @Entity
-public class Quest extends Spell{
+public class Quest extends Spell {
     public Quest(String name, String description, int price, ClassOfCard classOfCard, Rarity rarity, int manaFrz) {
         super(name, description, price, classOfCard, rarity, manaFrz);
     }

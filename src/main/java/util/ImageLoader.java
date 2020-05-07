@@ -2,7 +2,6 @@ package util;
 
 import configs.Config;
 import configs.ConfigFactory;
-import model.Passive;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
@@ -13,7 +12,8 @@ import java.util.Map;
 
 public class ImageLoader {
     private static final ImageLoader instance = new ImageLoader();
-    private final Map<String, BufferedImage> big, bigGray, smallGray, small, bg, bigDeck, smallDeck, passive;
+    private final Map<String, BufferedImage> big, bigGray, smallGray, small, bg, bigDeck, smallDeck,
+            passive,smallHero,bigHero,smallHeroPower,bigHeroPower;
 
     private ImageLoader() {
         Config bigConfig = ConfigFactory.getInstance().getConfig("BIG_CARDS");
@@ -40,6 +40,18 @@ public class ImageLoader {
         Config passiveDeckConfig = ConfigFactory.getInstance().getConfig("PASSIVE");
         passive = new HashMap<>();
         load(passiveDeckConfig, passive);
+        Config bigHeroConfig = ConfigFactory.getInstance().getConfig("BIG_HEROES");
+        bigHero = new HashMap<>();
+        load(bigHeroConfig, bigHero);
+        Config smallHeroConfig = ConfigFactory.getInstance().getConfig("SMALL_HEROES");
+        smallHero = new HashMap<>();
+        load(smallHeroConfig,smallHero);
+        Config bigHeroPowerConfig = ConfigFactory.getInstance().getConfig("BIG_HERO_POWERS");
+        bigHeroPower = new HashMap<>();
+        load(bigHeroPowerConfig, bigHeroPower);
+        Config smallHeroPowerConfig = ConfigFactory.getInstance().getConfig("SMALL_HERO_POWERS");
+        smallHeroPower = new HashMap<>();
+        load(smallHeroPowerConfig,smallHeroPower);
     }
 
     public static ImageLoader getInstance() {
@@ -90,6 +102,22 @@ public class ImageLoader {
 
     public BufferedImage getPassive(String name) {
         return passive.get(name);
+    }
+
+    public BufferedImage getSmallHero(String name) {
+        return smallHero.get(name);
+    }
+
+    public BufferedImage getBigHero(String name) {
+        return bigHero.get(name);
+    }
+
+    public BufferedImage getSmallHeroPower(String name) {
+        return smallHeroPower.get(name);
+    }
+
+    public BufferedImage getBigHeroPower(String name) {
+        return bigHeroPower.get(name);
     }
 }
 

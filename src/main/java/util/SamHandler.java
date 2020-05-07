@@ -2,7 +2,7 @@
 //
 //import hibernate.Connector;
 //import lombok.Getter;
-//import model.BodyLog;
+//import model.log.BodyLog;
 //
 //import java.util.logging.Handler;
 //import java.util.logging.LogRecord;

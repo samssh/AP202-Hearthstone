@@ -13,7 +13,7 @@ public class CardBox extends Box<CardOverview, UnitViewer> {
 
     @Override
     protected UnitViewer createNew(CardOverview cardOverview) {
-        return new UnitViewer(cardOverview,parent).setActionListener(action);
+        return new UnitViewer(cardOverview, parent, action);
     }
 
 

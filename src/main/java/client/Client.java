@@ -3,13 +3,10 @@ package client;
 import util.Loop;
 import hibernate.Connector;
 import util.Updatable;
-import view.model.CardOverview;
+import view.model.*;
 import server.Request;
 import server.Server;
 import view.MyFrame;
-import view.model.BigDeckOverview;
-import view.model.PassiveOverview;
-import view.model.SmallDeckOverview;
 import view.panel.*;
 import view.PanelType;
 
@@ -40,6 +37,7 @@ public class Client {
         panels.put(PanelType.STATUS, new StatusPanel(new StatusAction()));
         panels.put(PanelType.COLLECTION, new CollectionPanel(new CollectionAction()));
         panels.put(PanelType.PASSIVE, new PassivePanel(new PassiveAction()));
+        panels.put(PanelType.PLAY,new PlayPanel(new PlayAction()));
         now = PanelType.LOGIN;
         updateFrame();
         tempAnswerList = new ArrayList<>();
@@ -160,17 +158,21 @@ public class Client {
     }
 
     void setStatusDetails(List<BigDeckOverview> bigDeckOverviews) {
+        StatusPanel statusPanel = (StatusPanel) panels.get(PanelType.STATUS);
+        statusPanel.setDeckBoxList(bigDeckOverviews);
         if (now != PanelType.STATUS) {
             now = PanelType.STATUS;
             updateFrame();
         }
-        StatusPanel statusPanel = (StatusPanel) panels.get(PanelType.STATUS);
-        statusPanel.setDeckBoxList(bigDeckOverviews);
     }
 
     void setFirstCollectionDetail(List<String> heroNames, List<String> classOfCardNames) {
         CollectionPanel collectionPanel = (CollectionPanel) panels.get(PanelType.COLLECTION);
         collectionPanel.setFirstDetails(heroNames, classOfCardNames);
+        if (now != PanelType.COLLECTION) {
+            now = PanelType.COLLECTION;
+            updateFrame();
+        }
     }
 
     void setCollectionDetail(List<CardOverview> cards, List<SmallDeckOverview> decks,
@@ -178,6 +180,10 @@ public class Client {
                              boolean canChangeHero, String deckName) {
         CollectionPanel collectionPanel = (CollectionPanel) panels.get(PanelType.COLLECTION);
         collectionPanel.setDetails(cards, decks, deckCards, canAddDeck, canChangeHero, deckName);
+        if (now != PanelType.COLLECTION) {
+            now = PanelType.COLLECTION;
+            updateFrame();
+        }
     }
 
     void showMessage(String message) {
@@ -204,9 +210,20 @@ public class Client {
     }
 
     void setPassives(List<PassiveOverview> passives) {
-        now = PanelType.PASSIVE;
         ((PassivePanel) panels.get(PanelType.PASSIVE)).setPassives(passives);
-        updateFrame();
+        if (now != PanelType.PASSIVE) {
+            now = PanelType.PASSIVE;
+            updateFrame();
+        }
+    }
+
+    void setPlayDetail(List<CardOverview> hand, List<CardOverview> ground, CardOverview weapon,
+                       HeroOverview hero, HeroPowerOverview heroPower, String eventLog, int mana, int deckCards){
+        ((PlayPanel) panels.get(PanelType.PLAY)).setDetails(hand,ground,weapon,hero,heroPower,eventLog,mana,deckCards);
+        if (now != PanelType.PLAY) {
+            now = PanelType.PLAY;
+            updateFrame();
+        }
     }
 
     public class LoginPanelAction {
@@ -256,23 +273,24 @@ public class Client {
             // reset panels
             now = PanelType.LOGIN;
             updateFrame();
+            history.clear();
         }
 
         public void shop() {
-            now = PanelType.SHOP;
-            updateFrame();
+//            now = PanelType.SHOP;
+//            updateFrame();
             sendShopRequest();
         }
 
         public void status() {
-            now = PanelType.STATUS;
-            updateFrame();
+//            now = PanelType.STATUS;
+//            updateFrame();
             sendStatusRequest();
         }
 
         public void collection() {
-            now = PanelType.COLLECTION;
-            updateFrame();
+//            now = PanelType.COLLECTION;
+//            updateFrame();
             sendFirstCollectionRequest();
         }
 
@@ -435,6 +453,7 @@ public class Client {
         }
 
         public void update() {
+            Client.this.sendFirstCollectionRequest();
             sendRequest();
         }
     }
@@ -452,5 +471,26 @@ public class Client {
         public void backMainMenu() {
             Client.this.backMainMenu();
         }
+
+        public void selectPassive(String passiveName){
+            Request request = new Request.SelectPassive(passiveName);
+            Server.getInstance().addRequest(request);
+        }
+    }
+
+    public class PlayAction {
+        public void exit(){
+
+        }
+
+        public void endTurn(){
+            Request request = new Request.EndTurn();
+            Server.getInstance().addRequest(request);
+        }
+
+        public void playCard(String cardName){
+
+        }
+
     }
 }

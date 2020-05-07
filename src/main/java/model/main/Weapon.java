@@ -1,4 +1,4 @@
-package model;
+package model.main;
 
 import hibernate.Connector;
 import lombok.Getter;
@@ -8,7 +8,7 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 
 @Entity
-public class Weapon extends Card{
+public class Weapon extends Card {
     @Column
     @Setter
     @Getter

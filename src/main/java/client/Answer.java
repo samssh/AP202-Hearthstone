@@ -1,9 +1,6 @@
 package client;
 
-import view.model.CardOverview;
-import view.model.BigDeckOverview;
-import view.model.PassiveOverview;
-import view.model.SmallDeckOverview;
+import view.model.*;
 
 import java.util.List;
 
@@ -106,7 +103,7 @@ public abstract class Answer {
     }
 
     public static class GoTo extends Answer {
-        private final String panel,message;
+        private final String panel, message;
 
         public GoTo(String panel, String message) {
             this.panel = panel;
@@ -116,7 +113,7 @@ public abstract class Answer {
 
         @Override
         void execute() {
-            Client.getInstance().goTo(panel,message);
+            Client.getInstance().goTo(panel, message);
         }
     }
 
@@ -130,6 +127,32 @@ public abstract class Answer {
         @Override
         void execute() {
             Client.getInstance().setPassives(passives);
+        }
+    }
+
+    public static class PlayDetails extends Answer {
+        private final List<CardOverview> hand, ground;
+        private final CardOverview weapon;
+        private final HeroOverview hero;
+        private final HeroPowerOverview heroPower;
+        private final String eventLog;
+        private final int mana, deckCards;
+
+        public PlayDetails(List<CardOverview> hand, List<CardOverview> ground, CardOverview weapon,
+                           HeroOverview hero, HeroPowerOverview heroPower, String eventLog, int mana, int deckCards) {
+            this.hand = hand;
+            this.ground = ground;
+            this.weapon = weapon;
+            this.hero = hero;
+            this.heroPower = heroPower;
+            this.eventLog = eventLog;
+            this.mana = mana;
+            this.deckCards = deckCards;
+        }
+
+        @Override
+        void execute() {
+            Client.getInstance().setPlayDetail(hand,ground,weapon,hero,heroPower,eventLog,mana,deckCards);
         }
     }
 }

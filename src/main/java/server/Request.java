@@ -1,7 +1,5 @@
 package server;
 
-import view.panel.LoginPanel;
-
 public abstract class Request {
     abstract void execute();
 
@@ -189,6 +187,27 @@ public abstract class Request {
         @Override
         void execute() {
             Server.getInstance().startPlay();
+        }
+    }
+
+    public static class SelectPassive extends Request {
+        private final String passiveName;
+
+        public SelectPassive(String passiveName) {
+            this.passiveName = passiveName;
+        }
+
+        @Override
+        void execute() {
+            Server.getInstance().selectPassive(passiveName);
+        }
+    }
+
+    public static class EndTurn extends Request {
+
+        @Override
+        void execute() {
+//            Server.getInstance().
         }
     }
 }

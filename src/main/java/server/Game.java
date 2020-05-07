@@ -1,27 +1,43 @@
 package server;
 
-import model.*;
+import lombok.Getter;
+import model.account.*;
+import model.main.*;
+import sun.awt.geom.AreaOp;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import static server.Server.MAX_MANA;
+import static server.Server.STARTING_HAND_CARDS;
+
 class Game {
-    private final static int STARTING_CART = 3;
-    private List<Card> ground, handCard, deck;
-    private Passive passive;
-    private Hero hero;
+    final int manaPerTurn = 1;
+    final int cardPerTurn = 1;
+    @Getter
+    private final List<Minion> ground;
+    @Getter
+    private final List<Card> handCard, deck;
+    private final GameHistory gameHistory;
+    @Getter
+    private final Hero hero;
+    @Getter
     private Weapon activeWeapon;
-    private int mana;
+    @Getter
+    private int mana, nextMana;
 
     Game(Deck deck, Passive passive) {
-        this.passive = passive;
         this.hero = deck.getHero();
         this.ground = new ArrayList<>();
         this.deck = deckToList(deck);
+        this.gameHistory = new GameHistory(passive, hero, new ArrayList<>(this.deck));
         this.handCard = new ArrayList<>();
-        chooseRandom(handCard,this.deck,STARTING_CART);
+        for (int i = 0; i < STARTING_HAND_CARDS; i++) {
+            drawCard();
+        }
         this.mana = 1;
+        this.nextMana = 2;
     }
 
     private List<Card> deckToList(Deck d) {
@@ -35,11 +51,57 @@ class Game {
         return result;
     }
 
-    private <T> void chooseRandom(List<T> result ,List<T> list, int n) {
-        for (int i = 0; i < n; i++) {
-            result.add(list.remove((int) (Math.random() * list.size())));
+    void endTurn() {
+        gameHistory.getEvents().add(new EndTurn(nextMana));
+        mana = nextMana;
+        if (nextMana < MAX_MANA) {
+            nextMana += manaPerTurn;
+        }
+        for (int i = 0; i < cardPerTurn; i++) {
+            drawCard();
         }
     }
+
+    String getGameEvents() {
+        StringBuilder result = new StringBuilder();
+        // todo add limit
+        for (GameEvent g : gameHistory.getEvents()) {
+            result.append(g.toString());
+            result.append("\n");
+        }
+        return result.toString();
+    }
+
+    private void drawCard() {
+        Card card = deck.remove((int) (Math.random() * deck.size()));
+        gameHistory.getEvents().add(new DrawCard(card));
+        handCard.add(card);
+    }
+
+    void playCard(Card card) {
+        if (handCard.contains(card) && card.getManaFrz() <= mana) {
+            mana -= card.getManaFrz();
+            handCard.remove(card);
+            if (card instanceof Minion) playMinion((Minion) card);
+            if (card instanceof Weapon) playWeapon((Weapon) card);
+            if (card instanceof Spell) playSpell((Spell) card);
+        }
+    }
+
+    private void playMinion(Minion minion) {
+        ground.add(minion);
+        gameHistory.getEvents().add(new PlayCard(minion));
+    }
+
+    private void playWeapon(Weapon weapon) {
+        activeWeapon = weapon;
+        gameHistory.getEvents().add(new PlayCard(weapon));
+    }
+
+    private void playSpell(Spell spell) {
+        gameHistory.getEvents().add(new PlayCard(spell));
+    }
+
 
 }
 

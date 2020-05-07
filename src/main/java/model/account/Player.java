@@ -1,10 +1,14 @@
-package model;
+package model.account;
 
 import hibernate.Connector;
 import hibernate.SaveAble;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
+import model.account.Deck;
+import model.main.Card;
+import model.main.CardDetails;
+import model.main.Hero;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
 import org.hibernate.annotations.LazyCollection;
@@ -45,7 +49,7 @@ public class Player implements SaveAble {
     @Setter
     @Getter
     @JoinTable(name = "Player_Card")
-    private Map<Card,CardDetails> cards;
+    private Map<Card, CardDetails> cards;
     @ManyToMany
     @Cascade(CascadeType.SAVE_UPDATE)
     @LazyCollection(LazyCollectionOption.FALSE)
@@ -59,11 +63,18 @@ public class Player implements SaveAble {
     @Setter
     @Getter
     private List<Deck> decks;
+    @OneToMany
+    @LazyCollection(LazyCollectionOption.FALSE)
+    @Cascade({CascadeType.SAVE_UPDATE, CascadeType.DELETE})
+    @Setter
+    @Getter
+    private List<GameHistory> gameHistories;
 
     {
         cards = new HashMap<>();
         heroes = new ArrayList<>();
         decks = new ArrayList<>();
+        gameHistories = new ArrayList<>();
     }
 
     public Player() {

@@ -1,4 +1,4 @@
-package model;
+package model.account;
 
 
 import hibernate.Connector;
@@ -6,6 +6,9 @@ import hibernate.SaveAble;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
+import model.main.Card;
+import model.main.CardDetails;
+import model.main.Hero;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
 import org.hibernate.annotations.LazyCollection;
@@ -71,7 +74,7 @@ public class Deck implements SaveAble {
         double sum=0,n=0;
         for (Card card:cards.keySet()) {
             n++;
-            sum+=card.manaFrz;
+            sum+=card.getManaFrz();
         }
 
         return n != 0 ? (sum) / n : -1;

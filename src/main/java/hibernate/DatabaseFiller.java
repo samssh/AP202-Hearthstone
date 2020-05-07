@@ -1,8 +1,10 @@
 package hibernate;
 
 import configs.ConfigFactory;
-import model.*;
+import model.account.*;
+import model.main.*;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class DatabaseFiller {
@@ -136,8 +138,9 @@ public class DatabaseFiller {
                 3, neutral, Rarity.Rare, 6, 2, 6).saveOrUpdate(connector);
         new Minion("Curio Collector", "Whenever you draw a card, gain +1/+1.", 6
                 , neutral, Rarity.Rare, 5, 4, 4).saveOrUpdate(connector);
-        new Minion("Sathrovarr", "Choose a friendly minion. Add a copy of it to your hand, deck and battlefield.",
-                7, neutral, Rarity.Legendary, 9, 5, 5).saveOrUpdate(connector);
+        Card c=new Minion("Sathrovarr", "Choose a friendly minion. Add a copy of it to your hand, deck and battlefield.",
+                7, neutral, Rarity.Legendary, 9, 5, 5);
+        c.saveOrUpdate(connector);
 
 
         new Spell("Sprint", "Draw 4 cards", 3, neutral
@@ -154,6 +157,14 @@ public class DatabaseFiller {
         new Passive("Off Card","The cost of all cards is reduced by one mana").saveOrUpdate(connector);
         new Passive("Twice Draw","Draw two Card each turn").saveOrUpdate(connector);
         new Passive("Warriors","if a minion dies on the playground, your hero gain two defence").saveOrUpdate(connector);
+
+//        List<GameEvent> gameEvents = new ArrayList<>();
+//        GameHistory gameHistory = new GameHistory(null,null,null,gameEvents);
+////        gameEvents.add(new NextTurn(3,System.currentTimeMillis()));
+////        gameEvents.add(new PlayCard(c,System.currentTimeMillis()));
+//        gameEvents.add(new NextTurn(3));
+//        gameEvents.add(new PlayCard(c));
+//        gameHistory.saveOrUpdate(connector);
     }
 
     private static Connector connector;

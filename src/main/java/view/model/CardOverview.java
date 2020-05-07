@@ -1,9 +1,9 @@
 package view.model;
 
 import lombok.Getter;
-import model.Card;
-import model.Minion;
-import model.Weapon;
+import model.main.Card;
+import model.main.Minion;
+import model.main.Weapon;
 import util.ImageLoader;
 
 import java.awt.*;
@@ -90,6 +90,6 @@ public class CardOverview extends UnitOverview {
         Graphics g = image.createGraphics();
         g.setClip(0, 0, image.getWidth(), image.getHeight());
         this.paintBig(g);
-        return null;
+        return image;
     }
 }

@@ -1,19 +1,20 @@
 package view.model;
 
-import model.Deck;
+import model.account.Deck;
 import util.ImageLoader;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
 
 public class SmallDeckOverview extends Overview{
+    private final BufferedImage image;
     public SmallDeckOverview(Deck deck) {
         super(deck.getName(),deck.getHero().getName());
+        image = ImageLoader.getInstance().getSmallDeck(imageName);
     }
 
     @Override
     public void paint(Graphics g) {
-        BufferedImage image = ImageLoader.getInstance().getSmallDeck(imageName);
         g.drawImage(image, 0, 0, null);
         g.setFont(new Font("War Priest 3D", Font.PLAIN, 15));
         g.setColor(Color.yellow);

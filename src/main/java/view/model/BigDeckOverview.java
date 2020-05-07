@@ -1,6 +1,6 @@
 package view.model;
 
-import model.Deck;
+import model.account.Deck;
 import util.ImageLoader;
 
 import java.awt.*;
@@ -11,6 +11,7 @@ public class BigDeckOverview extends Overview {
     private final String cardName;
     private final int games,wins;
     private final double winRate,manaAverage;
+    private final BufferedImage image;
 
     public BigDeckOverview(Deck deck , String cardName) {
         super(deck.getName(),deck.getHero().getName());
@@ -19,11 +20,11 @@ public class BigDeckOverview extends Overview {
         this.wins = deck.getWins();
         this.winRate = deck.getWinRate();
         this.manaAverage = deck.getManaAverage();
+        image = ImageLoader.getInstance().getBigDeck(imageName);
     }
 
     @Override
     public void paint(Graphics g) {
-        BufferedImage image = ImageLoader.getInstance().getBigDeck(imageName);
         g.drawImage(image, 0, 0, null);
         g.setFont(new Font("War Priest Expanded", Font.PLAIN, 20));
         g.setColor(Color.yellow);
