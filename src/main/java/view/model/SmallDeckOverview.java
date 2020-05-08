@@ -21,4 +21,12 @@ public class SmallDeckOverview extends Overview{
         g.drawString("deck name:" + name, 0, 20);
         g.drawString("hero name:" + imageName, 0, 40);
     }
+
+    @Override
+    public String toString() {
+        return "SmallDeckOverview(" +
+                "name='" + name + '\'' +
+                ", imageName='" + imageName + '\'' +
+                ')';
+    }
 }

@@ -1,7 +1,8 @@
 package model.account;
 
-import hibernate.Connector;
 import hibernate.SaveAble;
+import lombok.Getter;
+import lombok.Setter;
 
 import javax.persistence.*;
 
@@ -10,21 +11,16 @@ public abstract class GameEvent implements SaveAble {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
+    @ManyToOne
+    @Getter
+    @Setter
+    private GameHistory gameHistory;
+
 
     public GameEvent() {
     }
 
-    @Override
-    public void delete(Connector connector) {
-        connector.delete(this);
-    }
-
-    @Override
-    public void saveOrUpdate(Connector connector) {
-        connector.saveOrUpdate(this);
-    }
-
-    @Override
-    public void load(Connector connector) {
+    public GameEvent(GameHistory gameHistory) {
+        this.gameHistory = gameHistory;
     }
 }

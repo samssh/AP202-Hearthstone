@@ -1,10 +1,14 @@
 package server;
 
+import lombok.Getter;
+
 public abstract class Request {
     abstract void execute();
 
     public static class LoginRequest extends Request {
+        @Getter
         private final String userName, password;
+        @Getter
         private final int mode;
 
         public LoginRequest(String userName, String password, int mode) {
@@ -41,6 +45,7 @@ public abstract class Request {
     }
 
     public static class SellCard extends Request {
+        @Getter
         private final String cardName;
 
         public SellCard(String cardName) {
@@ -54,6 +59,7 @@ public abstract class Request {
     }
 
     public static class BuyCard extends Request {
+        @Getter
         private final String cardName;
 
         public BuyCard(String cardName) {
@@ -83,7 +89,9 @@ public abstract class Request {
     }
 
     public static class CollectionDetails extends Request {
+        @Getter
         private final String name, classOfCard, deckName;
+        @Getter
         private final int mana, lockMode;
 
         public CollectionDetails(String name, String classOfCard, int mana, int lockMode, String deckName) {
@@ -101,6 +109,7 @@ public abstract class Request {
     }
 
     public static class NewDeck extends Request {
+        @Getter
         private final String deckName, heroName;
 
         public NewDeck(String deckName, String heroName) {
@@ -115,6 +124,7 @@ public abstract class Request {
     }
 
     public static class DeleteDeck extends Request {
+        @Getter
         private final String deckName;
 
         public DeleteDeck(String deckName) {
@@ -128,6 +138,7 @@ public abstract class Request {
     }
 
     public static class ChangeDeckName extends Request {
+        @Getter
         private final String oldDeckName, newDeckName;
 
         public ChangeDeckName(String oldDeckName, String newDeckName) {
@@ -142,6 +153,7 @@ public abstract class Request {
     }
 
     public static class ChangeHeroDeck extends Request {
+        @Getter
         private final String deckName, heroName;
 
         public ChangeHeroDeck(String deckName, String heroName) {
@@ -156,6 +168,7 @@ public abstract class Request {
     }
 
     public static class AddCardToDeck extends Request {
+        @Getter
         private final String cardName, deckName;
 
         public AddCardToDeck(String cardName, String deckName) {
@@ -170,6 +183,7 @@ public abstract class Request {
     }
 
     public static class RemoveCardFromDeck extends Request {
+        @Getter
         private final String cardName, deckName;
 
         public RemoveCardFromDeck(String cardName, String deckName) {
@@ -191,6 +205,7 @@ public abstract class Request {
     }
 
     public static class SelectPassive extends Request {
+        @Getter
         private final String passiveName;
 
         public SelectPassive(String passiveName) {
@@ -207,7 +222,29 @@ public abstract class Request {
 
         @Override
         void execute() {
-//            Server.getInstance().
+            Server.getInstance().endTurn();
+        }
+    }
+
+    public static class PlayCard extends Request {
+        @Getter
+        private final String cardName;
+
+        public PlayCard(String cardName) {
+            this.cardName = cardName;
+        }
+
+        @Override
+        void execute() {
+            Server.getInstance().playCard(cardName);
+        }
+    }
+
+    public static class ExitGame extends Request {
+
+        @Override
+        void execute() {
+            Server.getInstance().exitGame();
         }
     }
 }

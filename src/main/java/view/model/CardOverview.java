@@ -48,26 +48,26 @@ public class CardOverview extends UnitOverview {
         if (number == 2)
             g.drawImage(small, 15, 0, null);
         g.drawImage(small, 0, 0, null);
-        int w = g.getClipBounds().width;
-        int h = g.getClipBounds().height;
+        int w = small.getWidth();
+        int h = small.getHeight();
         g.setColor(Color.WHITE);
         g.setFont(g.getFont().deriveFont(Font.BOLD));
         g.setFont(g.getFont().deriveFont(21.0F));
-        g.drawString(mana + "", 10 * w / 135, 25 * h / 170);
+        g.drawString(mana + "", 10 * w / 120, 25 * h / 170);
         if (att >= 0 && hp >= 0) {
-            g.drawString(att + "", 13 * w / 135, 161 * h / 170);
-            g.drawString(hp + "", 100 * w / 135, 161 * h / 170);
+            g.drawString(att + "", 13 * w / 120, 161 * h / 170);
+            g.drawString(hp + "", 100 * w / 120, 161 * h / 170);
         }
         if (showPrice) {
             g.setFont(g.getFont().deriveFont(18.0F));
             g.setColor(Color.RED);
-            g.drawString("\u0024" + price, 60 * w / 135, 155 * h / 170);
+            g.drawString("\u0024" + price, 60 * w / 120, 155 * h / 170);
         }
     }
 
     private void paintBig(Graphics g) {
-        int w = g.getClipBounds().width;
-        int h = g.getClipBounds().height;
+        int w = big.getWidth();
+        int h = big.getHeight();
         g.setColor(Color.WHITE);
         g.setFont(g.getFont().deriveFont(Font.BOLD));
         g.setFont(g.getFont().deriveFont(40.0F));
@@ -79,7 +79,7 @@ public class CardOverview extends UnitOverview {
         if (showPrice) {
             g.setFont(g.getFont().deriveFont(25F).deriveFont(Font.BOLD));
             g.setColor(Color.RED);
-            g.drawString("\u0024" + price, 60 * w / 135, 155 * h / 170);
+            g.drawString("\u0024" + price, 115 * w / 250, 320 * h / 350);
         }
     }
 
@@ -88,8 +88,21 @@ public class CardOverview extends UnitOverview {
         ColorModel cm = big.getColorModel();
         BufferedImage image = new BufferedImage(cm, big.copyData(null), cm.isAlphaPremultiplied(), null);
         Graphics g = image.createGraphics();
-        g.setClip(0, 0, image.getWidth(), image.getHeight());
         this.paintBig(g);
         return image;
+    }
+
+    @Override
+    public String toString() {
+        return "CardOverview(" +
+                "name='" + name + '\'' +
+                ", imageName='" + imageName + '\'' +
+                ", number=" + number +
+                ", price=" + price +
+                ", mana=" + mana +
+                ", att=" + att +
+                ", hp=" + hp +
+                ", showPrice=" + showPrice +
+                ')';
     }
 }

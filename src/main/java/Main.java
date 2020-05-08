@@ -22,7 +22,8 @@ public class Main {
             e.printStackTrace();
         }
         ImageLoader imageLoader = ImageLoader.getInstance();
-        Client client = Client.getInstance();
         Server server = Server.getInstance();
+        Client client = Client.getInstance();
+
     }
 }

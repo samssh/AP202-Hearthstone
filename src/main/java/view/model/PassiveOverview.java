@@ -18,4 +18,12 @@ public class PassiveOverview extends Overview{
     public void paint(Graphics g) {
         g.drawImage(image,0,0,null);
     }
+
+    @Override
+    public String toString() {
+        return "PassiveOverview(" +
+                "name='" + name + '\'' +
+                ", imageName='" + imageName + '\'' +
+                ')';
+    }
 }

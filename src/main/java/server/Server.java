@@ -2,22 +2,26 @@ package server;
 
 import client.Answer;
 import client.Client;
+import hibernate.Connector;
 import model.account.Deck;
 import model.account.Player;
 import model.log.HeaderLog;
 import model.main.*;
 import util.Loop;
 import util.ModelLoader;
-import hibernate.Connector;
 import view.model.*;
 
 import java.util.*;
 
 public class Server {
+    static int STARTING_MANA = 1;
+    static int MANA_PER_TURN = 1;
+    static int CARD_PER_TURN = 1;
     static int MAX_DECK_SIZE = 30;
     static int STARTING_PASSIVES = 3;
     static int STARTING_HAND_CARDS = 3;
     static int MAX_MANA = 10;
+    static int STARTING_COINS = 400;
     private static final Server instance = new Server();
     private final List<Request> tempRequestList, requestList;
     private final Connector connector;
@@ -36,7 +40,7 @@ public class Server {
     private Server() {
         tempRequestList = new ArrayList<>();
         requestList = new ArrayList<>();
-        connector = new Connector("HIBERNATE_CONFIG");
+        connector = new Connector("SERVER_HIBERNATE_CONFIG");
         modelLoader = new ModelLoader(connector);
         executor = new Loop(60, this::executeRequests);
         executor.start();
@@ -91,13 +95,11 @@ public class Server {
     private void signUp(String username, String password) {
         Player p = connector.fetch(Player.class, username);
         if (p == null) {
-            connector.beginTransaction();
-            p = new Player(username, password, System.currentTimeMillis(), 30, 0
+
+            p = new Player(username, password, System.currentTimeMillis(), STARTING_COINS, 0
                     , modelLoader.getFirstCards(), modelLoader.getFirstHeroes(), modelLoader.getFirstDecks());
             HeaderLog headerLog = new HeaderLog(p.getCreatTime(), p.getUserName(), p.getPassword());
-            p.saveOrUpdate(connector);
-            headerLog.saveOrUpdate(connector);
-            connector.commit();
+            connector.save(p);
             this.player = p;
             Answer answer = new Answer.LoginAnswer(true, player.getUserName());
             Client.getInstance().putAnswer(answer);
@@ -109,9 +111,7 @@ public class Server {
 
     void logout() {
         if (this.player != null) {
-            connector.beginTransaction();
-            this.player.saveOrUpdate(connector);
-            connector.commit();
+            connector.save(player);
             // log
             this.player = null;
         }
@@ -119,9 +119,7 @@ public class Server {
 
     void deleteAccount() {
         if (this.player != null) {
-            connector.beginTransaction();
-            this.player.delete(connector);
-            connector.commit();
+            connector.delete(player);
             // log
             this.player = null;
         }
@@ -183,12 +181,11 @@ public class Server {
     void sellCard(String cardName) {
         Card card = modelLoader.getCard(cardName);
         boolean result = canSell(card);
+
         if (result) {
             player.setCoin(player.getCoin() + card.getPrice());
             player.removeCard(card);
-            connector.beginTransaction();
-            player.saveOrUpdate(connector);
-            connector.commit();
+            connector.save(player);
         }
         sendShop();
     }
@@ -203,9 +200,7 @@ public class Server {
         if (result) {
             player.setCoin(player.getCoin() - card.getPrice());
             player.addCard(card);
-            connector.beginTransaction();
-            player.saveOrUpdate(connector);
-            connector.commit();
+            connector.save(player);
         }
         sendShop();
     }
@@ -312,7 +307,7 @@ public class Server {
         if (d != null) {
             if (player.getSelectedDeckIndex() != player.getDecks().indexOf(d)) {
                 player.setSelectedDeckIndex(player.getDecks().indexOf(d));
-                player.saveOrUpdate(connector);
+                connector.save(player);
             }
         }
         List<CardOverview> cards = makeCardsList(name, modelLoader.getClassOfCard(classOfCard), mana, lockMode, d);
@@ -422,10 +417,8 @@ public class Server {
         Answer answer;
         if (!containDeckName(deckName) && containHero(heroName)) {
             Hero h = modelLoader.getHero(heroName);
-            player.getDecks().add(new Deck(h, deckName));
-            connector.beginTransaction();
-            player.saveOrUpdate(connector);
-            connector.commit();
+            player.getDecks().add(new Deck(h, deckName,player));
+            connector.save(player);
             sendCollectionDetails(name, classOfCard, mana, lockMode, deckName);
             answer = new Answer.showMessage("deck created");
         } else {
@@ -455,10 +448,8 @@ public class Server {
         Answer answer;
         if (deck != null) {
             player.getDecks().remove(deck);
-            connector.beginTransaction();
-            player.saveOrUpdate(connector);
-            deck.delete(connector);
-            connector.commit();
+            connector.save(player);
+            connector.delete(deck);
             sendCollectionDetails(name, classOfCard, mana, lockMode, null);
 //            this.deckName = null;
             answer = new Answer.showMessage("deck deleted");
@@ -471,9 +462,7 @@ public class Server {
         if (containDeckName(oldDeckName) && !containDeckName(newDeckName)) {
             Deck deck = getDeck(oldDeckName);
             Objects.requireNonNull(deck).setName(newDeckName);
-            connector.beginTransaction();
-            player.saveOrUpdate(connector);
-            connector.commit();
+            connector.save(player);
             sendCollectionDetails(name, classOfCard, mana, lockMode, newDeckName);
             answer = new Answer.showMessage("deck name changed");
         } else answer = new Answer.showMessage("deck name not changed");
@@ -486,9 +475,7 @@ public class Server {
             Hero h = modelLoader.getHero(heroName);
             Deck deck = getDeck(deckName);
             Objects.requireNonNull(deck).setHero(h);
-            connector.beginTransaction();
-            player.saveOrUpdate(connector);
-            connector.commit();
+            connector.save(player);
             sendCollectionDetails(name, classOfCard, mana, lockMode, deckName);
             answer = new Answer.showMessage("hero deck changed");
         } else {
@@ -518,9 +505,7 @@ public class Server {
                         if (isForHero(card.getClassOfCard(), deck.getHero())) {
                             if (deck.getSize() < MAX_DECK_SIZE) {
                                 deck.addCard(card);
-                                connector.beginTransaction();
-                                player.saveOrUpdate(connector);
-                                connector.commit();
+                                connector.save(player);
                                 sendCollectionDetails(name, classOfCard, mana, lockMode, deckName);
                             } else {
                                 answer = new Answer.showMessage("cant add card to deck\ndeck is full!!!");
@@ -584,14 +569,17 @@ public class Server {
     void selectPassive(String passiveName) {
         Passive p = modelLoader.getPassive(passiveName);
         if (p != null && canStartGame()) {
-            game = new Game(player.getSelectedDeck(), p);
+            game = new Game(player.getSelectedDeck(), p,player);
+            player.getGameHistories().add(game.getGameHistory());
             sendPlayDetails();
         }
     }
 
     private void sendPlayDetails() {
-        List<CardOverview> hand = turnToCardOverView(game.getHandCard());
-        List<CardOverview> ground = turnToCardOverView(game.getGround());
+        List<CardOverview> hand = new ArrayList<>();
+        game.getHandCard().forEach(card -> hand.add(new CardOverview(card, 1, false)));
+        List<CardOverview> ground =new ArrayList<>();
+        game.getGround().forEach(card -> ground.add(new CardOverview(card, 1, false)));
         CardOverview weapon = game.getActiveWeapon() == null ? null : new CardOverview(game.getActiveWeapon(), 1, false);
         HeroOverview hero = new HeroOverview(game.getHero());
         HeroPowerOverview heroPower = new HeroPowerOverview(game.getHero().getPower());
@@ -600,14 +588,29 @@ public class Server {
         Client.getInstance().putAnswer(answer);
     }
 
-    private List<CardOverview> turnToCardOverView(List<? extends Card> cards) {
-        List<CardOverview> result = new ArrayList<>();
-        cards.forEach(card -> result.add(new CardOverview(card, 1, false)));
-        return result;
+    void endTurn() {
+        if (game != null && game.isRunning()) {
+            game.endTurn();
+            sendPlayDetails();
+            connector.save(player);
+        }
     }
 
-    void endTurn() {
-        if (game != null)
-            game.endTurn();
+    void playCard(String cardName) {
+        Card card = modelLoader.getCard(cardName);
+        if (card != null && game != null && game.isRunning()) {
+            game.playCard(card);
+            sendPlayDetails();
+            connector.save(player);
+        }
+    }
+
+    void exitGame(){
+        if (game!=null) {
+            game.exit();
+            Answer answer = new Answer.GoTo("MAIN_MENU",null);
+            Client.getInstance().putAnswer(answer);
+            connector.save(player);
+        }
     }
 }

@@ -41,4 +41,17 @@ public class BigDeckOverview extends Overview {
             g.drawString("MVC:" + cardName, 0, 200);
         } else g.drawString("deck empty", 0, 160);
     }
+
+    @Override
+    public String toString() {
+        return "BigDeckOverview(" +
+                "name='" + name + '\'' +
+                ", imageName='" + imageName + '\'' +
+                ", cardName='" + cardName + '\'' +
+                ", games=" + games +
+                ", wins=" + wins +
+                ", winRate=" + winRate +
+                ", manaAverage=" + manaAverage +
+                ')';
+    }
 }

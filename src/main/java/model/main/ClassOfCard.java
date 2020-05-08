@@ -1,11 +1,11 @@
 package model.main;
 
-import hibernate.Connector;
 import hibernate.SaveAble;
 import lombok.Getter;
 import lombok.Setter;
 
-import javax.persistence.*;
+import javax.persistence.Entity;
+import javax.persistence.Id;
 import java.util.Objects;
 
 @Entity
@@ -21,19 +21,6 @@ public class ClassOfCard implements SaveAble {
     public ClassOfCard(String heroName) {
         this.heroName = heroName;
     }
-
-    @Override
-    public void delete(Connector connector) {
-        connector.delete(this);
-    }
-
-    @Override
-    public void saveOrUpdate(Connector connector) {
-        connector.saveOrUpdate(this);
-    }
-
-    @Override
-    public void load(Connector connector) {}
 
     @Override
     public String toString() {

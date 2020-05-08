@@ -20,6 +20,7 @@ public class PlayPanel extends JPanel {
     private UnitViewer hero, weapon, heroPower;
     private JButton exit, next;
     private JTextArea eventLog;
+    private JScrollPane scrollPane;
     private int mana, deckCards;
     private final Client.PlayAction playAction;
     private int x, y, width, height;
@@ -42,7 +43,7 @@ public class PlayPanel extends JPanel {
         this.add(hero);
         this.add(weapon);
         this.add(heroPower);
-        this.add(eventLog);
+        this.add(scrollPane);
         this.add(exit);
         this.add(next);
     }
@@ -104,7 +105,9 @@ public class PlayPanel extends JPanel {
 
     private void initializeEventLog() {
         eventLog = new JTextArea();
-        eventLog.setBounds(eventLogX, eventLogY, eventLogWidth, eventLogHeight);
+        scrollPane = new JScrollPane(eventLog);
+        scrollPane.setBounds(eventLogX, eventLogY, eventLogWidth, eventLogHeight);
+
     }
 
     public void setDetails(List<CardOverview> hand, List<CardOverview> ground, CardOverview weapon,

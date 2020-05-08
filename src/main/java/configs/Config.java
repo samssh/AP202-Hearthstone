@@ -1,12 +1,12 @@
 package configs;
 
-import lombok.Getter;
-
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.Reader;
 import java.lang.reflect.Constructor;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Properties;
 
 public class Config extends Properties {
     public Config(String address) {

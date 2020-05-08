@@ -1,11 +1,12 @@
 package model.log;
 
-import hibernate.Connector;
 import hibernate.SaveAble;
 import lombok.Getter;
 import lombok.Setter;
 
-import javax.persistence.*;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Id;
 
 @Entity
 public class HeaderLog implements SaveAble {
@@ -33,20 +34,6 @@ public class HeaderLog implements SaveAble {
         this.id = id;
         this.userName = userName;
         this.password = password;
-    }
-
-    @Override
-    public void delete(Connector connector) {
-        connector.delete(this);
-    }
-
-    @Override
-    public void saveOrUpdate(Connector connector) {
-        connector.saveOrUpdate(this);
-    }
-
-    @Override
-    public void load(Connector connector) {
     }
 
     @Override

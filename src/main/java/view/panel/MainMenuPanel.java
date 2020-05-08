@@ -3,7 +3,6 @@ package view.panel;
 import client.Client;
 import configs.Config;
 import configs.ConfigFactory;
-import lombok.Setter;
 import util.Updatable;
 
 import javax.swing.*;

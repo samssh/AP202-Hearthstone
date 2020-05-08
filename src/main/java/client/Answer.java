@@ -1,5 +1,6 @@
 package client;
 
+import lombok.Getter;
 import view.model.*;
 
 import java.util.List;
@@ -8,7 +9,9 @@ public abstract class Answer {
     abstract void execute();
 
     public static class LoginAnswer extends Answer {
+        @Getter
         private final boolean success;
+        @Getter
         private final String message;
 
         public LoginAnswer(boolean success, String message) {
@@ -23,7 +26,9 @@ public abstract class Answer {
     }
 
     public static class ShopDetails extends Answer {
+        @Getter
         private final List<CardOverview> sell, buy;
+        @Getter
         private final int coins;
 
         public ShopDetails(List<CardOverview> sell, List<CardOverview> buy, int coins) {
@@ -39,6 +44,7 @@ public abstract class Answer {
     }
 
     public static class StatusDetails extends Answer {
+        @Getter
         private final List<BigDeckOverview> bigDeckOverviews;
 
         public StatusDetails(List<BigDeckOverview> bigDeckOverviews) {
@@ -52,6 +58,7 @@ public abstract class Answer {
     }
 
     public static class FirstCollectionDetails extends Answer {
+        @Getter
         private final List<String> heroNames, classOfCardNames;
 
         public FirstCollectionDetails(List<String> heroNames, List<String> classOfCardNames) {
@@ -66,10 +73,15 @@ public abstract class Answer {
     }
 
     public static class CollectionDetails extends Answer {
+        @Getter
         private final List<CardOverview> cards;
+        @Getter
         private final List<SmallDeckOverview> decks;
+        @Getter
         private final List<CardOverview> deckCards;
+        @Getter
         private final boolean canAddDeck, canChangeHero;
+        @Getter
         private final String deckName;
 
         public CollectionDetails(List<CardOverview> cards, List<SmallDeckOverview> decks,
@@ -90,6 +102,7 @@ public abstract class Answer {
     }
 
     public static class showMessage extends Answer {
+        @Getter
         private final String message;
 
         public showMessage(String message) {
@@ -103,6 +116,7 @@ public abstract class Answer {
     }
 
     public static class GoTo extends Answer {
+        @Getter
         private final String panel, message;
 
         public GoTo(String panel, String message) {
@@ -118,6 +132,7 @@ public abstract class Answer {
     }
 
     public static class PassiveDetails extends Answer {
+        @Getter
         private final List<PassiveOverview> passives;
 
         public PassiveDetails(List<PassiveOverview> passives) {
@@ -131,11 +146,17 @@ public abstract class Answer {
     }
 
     public static class PlayDetails extends Answer {
+        @Getter
         private final List<CardOverview> hand, ground;
+        @Getter
         private final CardOverview weapon;
+        @Getter
         private final HeroOverview hero;
+        @Getter
         private final HeroPowerOverview heroPower;
+        @Getter
         private final String eventLog;
+        @Getter
         private final int mana, deckCards;
 
         public PlayDetails(List<CardOverview> hand, List<CardOverview> ground, CardOverview weapon,

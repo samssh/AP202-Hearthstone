@@ -1,9 +1,7 @@
 package model.main;
 
 
-import hibernate.Connector;
-
-import javax.persistence.*;
+import javax.persistence.Entity;
 
 @Entity
 public class Spell extends Card {
@@ -14,20 +12,6 @@ public class Spell extends Card {
                  int price, ClassOfCard classOfCard,
                  Rarity rarity, int manaFrz) {
         super(name, description, price, classOfCard, rarity, manaFrz);
-    }
-
-    @Override
-    public void delete(Connector connector) {
-        connector.delete(this);
-    }
-
-    @Override
-    public void saveOrUpdate(Connector connector) {
-        connector.saveOrUpdate(this);
-    }
-
-    @Override
-    public void load(Connector connector) {
     }
 
     @Override

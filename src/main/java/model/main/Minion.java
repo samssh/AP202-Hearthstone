@@ -1,10 +1,10 @@
 package model.main;
 
-import hibernate.Connector;
 import lombok.Getter;
 import lombok.Setter;
 
-import javax.persistence.*;
+import javax.persistence.Column;
+import javax.persistence.Entity;
 
 @Entity
 public class Minion extends Card {
@@ -27,21 +27,6 @@ public class Minion extends Card {
         super(name, description, price, classOfCard, rarity, manaFrz);
         this.attFrz = attFrz;
         this.hpFrz = hpFrz;
-    }
-
-    @Override
-    public void delete(Connector connector) {
-        connector.delete(this);
-    }
-
-    @Override
-    public void saveOrUpdate(Connector connector) {
-        connector.saveOrUpdate(this);
-
-    }
-
-    @Override
-    public void load(Connector connector) {
     }
 
     @Override

@@ -4,10 +4,10 @@ import client.Client;
 import configs.Config;
 import configs.ConfigFactory;
 import util.Updatable;
-import view.model.SmallDeckOverview;
-import view.util.MyJTextField;
 import view.model.CardOverview;
+import view.model.SmallDeckOverview;
 import view.util.CardBox;
+import view.util.MyJTextField;
 import view.util.SmallDeckBox;
 
 import javax.swing.*;
@@ -267,5 +267,7 @@ public class CollectionPanel extends JPanel implements Updatable {
         collectionAction.update();
     }
 
-//    public void
+    public boolean hasFirst(){
+        return classOfCard.getItemCount()>0;
+    }
 }

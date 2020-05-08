@@ -1,6 +1,5 @@
 package model.main;
 
-import hibernate.Connector;
 import hibernate.SaveAble;
 import lombok.Getter;
 import lombok.Setter;
@@ -29,20 +28,5 @@ public class Passive implements SaveAble {
     public Passive(String name, String description) {
         this.name = name;
         this.description = description;
-    }
-
-    @Override
-    public void delete(Connector connector) {
-        connector.delete(this);
-    }
-
-    @Override
-    public void saveOrUpdate(Connector connector) {
-        connector.saveOrUpdate(this);
-
-    }
-
-    @Override
-    public void load(Connector connector) {
     }
 }

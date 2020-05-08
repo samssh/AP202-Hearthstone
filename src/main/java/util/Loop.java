@@ -5,7 +5,7 @@ import lombok.SneakyThrows;
 
 public class Loop implements Runnable, Updatable {
     private final int fps;
-    private boolean running = false;
+    private volatile boolean running = false;
     protected Thread thread;
     private Updatable updatable;
 
@@ -26,7 +26,6 @@ public class Loop implements Runnable, Updatable {
             updatable.update();
     }
 
-    @SneakyThrows
     @Override
     public void run() {
         long lastTime = System.nanoTime();
@@ -37,15 +36,20 @@ public class Loop implements Runnable, Updatable {
             delta += (now - lastTime) * 1.0 / ns_per_update;
             lastTime = now;
             if (delta < 1) {
-                int milliseconds = (int) (ns_per_update * (1 - delta)) / 1000000;
-                int nanoseconds = (int) (ns_per_update * (1 - delta)) % 1000000;
-                Thread.sleep(milliseconds, nanoseconds);
+                sleep((long) (ns_per_update * (1 - delta)));
             }
             while (running && delta >= 1) {
                 update();
                 delta--;
             }
         }
+    }
+
+    @SneakyThrows
+    public void sleep(long time){
+        int milliseconds = (int) (time) / 1000000;
+        int nanoseconds = (int) (time) % 1000000;
+        Thread.sleep(milliseconds, nanoseconds);
     }
 
     public void start() {

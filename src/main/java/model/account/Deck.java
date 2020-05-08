@@ -1,11 +1,9 @@
 package model.account;
 
 
-import hibernate.Connector;
 import hibernate.SaveAble;
 import lombok.Getter;
 import lombok.Setter;
-import lombok.ToString;
 import model.main.Card;
 import model.main.CardDetails;
 import model.main.Hero;
@@ -15,10 +13,11 @@ import org.hibernate.annotations.LazyCollection;
 import org.hibernate.annotations.LazyCollectionOption;
 
 import javax.persistence.*;
-import java.util.*;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Objects;
 
 @Entity
-@ToString
 public class Deck implements SaveAble {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -36,6 +35,10 @@ public class Deck implements SaveAble {
     @Setter
     @Getter
     private int games;
+    @ManyToOne
+    @Setter
+    @Getter
+    private Player player;
     @ManyToOne
     @Cascade(CascadeType.SAVE_UPDATE)
     @Setter
@@ -58,6 +61,11 @@ public class Deck implements SaveAble {
     public Deck(Hero hero,String name) {
         this.hero = hero;
         this.name = name;
+    }
+
+    public Deck(Hero hero,String name,Player player) {
+        this(hero, name);
+        this.player = player;
     }
 
     public void addCard(Card card) {
@@ -98,24 +106,22 @@ public class Deck implements SaveAble {
     }
 
     @Override
-    public void delete(Connector connector) {
-        connector.delete(this);
-    }
-
-    @Override
-    public void saveOrUpdate(Connector connector) {
-        connector.saveOrUpdate(this);
-    }
-
-    @Override
-    public void load(Connector connector) {
-    }
-
-    @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Deck deck = (Deck) o;
         return Objects.equals(name, deck.name);
+    }
+
+    @Override
+    public String toString() {
+        return "Deck{" +
+                "Id=" + Id +
+                ", name='" + name + '\'' +
+                ", wins=" + wins +
+                ", games=" + games +
+                ", hero=" + hero +
+                ", cards=" + cards +
+                '}';
     }
 }

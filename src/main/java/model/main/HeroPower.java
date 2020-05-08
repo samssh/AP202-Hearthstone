@@ -1,6 +1,5 @@
 package model.main;
 
-import hibernate.Connector;
 import hibernate.SaveAble;
 import lombok.Getter;
 import lombok.Setter;
@@ -34,20 +33,5 @@ public class HeroPower implements SaveAble {
         this.name = name;
         this.description = description;
         this.manaFrz = manaFrz;
-    }
-
-    @Override
-    public void delete(Connector connector) {
-        connector.delete(this);
-    }
-
-    @Override
-    public void saveOrUpdate(Connector connector) {
-        connector.saveOrUpdate(this);
-
-    }
-
-    @Override
-    public void load(Connector connector) {
     }
 }

@@ -1,6 +1,5 @@
 package model.account;
 
-import hibernate.Connector;
 import hibernate.SaveAble;
 import lombok.Getter;
 import lombok.Setter;
@@ -22,6 +21,10 @@ public class GameHistory implements SaveAble {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
     @ManyToOne
+    @Setter
+    @Getter
+    private Player player;
+    @ManyToOne
     @Getter
     @Setter
     private Passive passive;
@@ -38,7 +41,7 @@ public class GameHistory implements SaveAble {
     private List<Card> deck;
     @OneToMany
     @LazyCollection(LazyCollectionOption.FALSE)
-    @Cascade(CascadeType.SAVE_UPDATE)
+    @Cascade({CascadeType.SAVE_UPDATE,CascadeType.DELETE})
     @Getter
     @Setter
     private List<GameEvent> events;
@@ -50,23 +53,10 @@ public class GameHistory implements SaveAble {
     public GameHistory() {
     }
 
-    public GameHistory(Passive passive, Hero hero, List<Card> deck) {
+    public GameHistory(Passive passive, Hero hero, List<Card> deck, Player player) {
         this.passive = passive;
         this.hero = hero;
         this.deck = deck;
-    }
-
-    @Override
-    public void delete(Connector connector) {
-        connector.delete(this);
-    }
-
-    @Override
-    public void saveOrUpdate(Connector connector) {
-        connector.saveOrUpdate(this);
-    }
-
-    @Override
-    public void load(Connector connector) {
+        this.player = player;
     }
 }

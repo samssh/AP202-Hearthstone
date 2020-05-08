@@ -1,11 +1,9 @@
 package model.account;
 
-import hibernate.Connector;
 import hibernate.SaveAble;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
-import model.account.Deck;
 import model.main.Card;
 import model.main.CardDetails;
 import model.main.Hero;
@@ -82,7 +80,7 @@ public class Player implements SaveAble {
 
     public Player(String userName, String password, long creatTime,
                   int coin, int selectedDeckIndex,
-                  Map<Card,CardDetails> cards, List<Hero> heroes, List<Deck> decks) {
+                  Map<Card, CardDetails> cards, List<Hero> heroes, List<Deck> decks) {
         this.userName = userName;
         this.password = password;
         this.creatTime = creatTime;
@@ -91,37 +89,24 @@ public class Player implements SaveAble {
         this.cards = cards;
         this.heroes = heroes;
         this.decks = decks;
+        decks.forEach(deck -> deck.setPlayer(this));
     }
 
     public void addCard(Card card) {
         if (cards.containsKey(card)) cards.get(card).vRepeatedTimes(1);
-        else cards.put(card ,new CardDetails(1));
+        else cards.put(card, new CardDetails(1));
     }
 
     public void removeCard(Card card) {
         cards.get(card).vRepeatedTimes(-1);
-        if (cards.get(card).getRepeatedTimes()==0) cards.remove(card);
-        for (Deck deck:decks) deck.removeCard(card);
+        if (cards.get(card).getRepeatedTimes() == 0) cards.remove(card);
+        for (Deck deck : decks) deck.removeCard(card);
     }
 
     public int numberOfCard(Card card) {
         if (cards.containsKey(card))
             return cards.get(card).getRepeatedTimes();
         return 0;
-    }
-
-    @Override
-    public void delete(Connector connector) {
-        connector.delete(this);
-    }
-
-    @Override
-    public void saveOrUpdate(Connector connector) {
-        connector.saveOrUpdate(this);
-    }
-
-    @Override
-    public void load(Connector connector) {
     }
 
     public Deck getSelectedDeck() {

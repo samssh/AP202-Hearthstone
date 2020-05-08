@@ -14,7 +14,8 @@ public class DrawCard extends GameEvent{
     @Setter
     private Card card;
 
-    public DrawCard(Card card) {
+    public DrawCard(Card card,GameHistory gameHistory) {
+        super(gameHistory);
         this.card = card;
     }
 
@@ -23,7 +24,7 @@ public class DrawCard extends GameEvent{
     @Override
     public String toString() {
         return "DrawCard(" +
-                "card=" + card +
+                "card=" + card.getName() +
                 ')';
     }
 }

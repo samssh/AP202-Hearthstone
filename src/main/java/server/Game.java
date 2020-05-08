@@ -3,22 +3,19 @@ package server;
 import lombok.Getter;
 import model.account.*;
 import model.main.*;
-import sun.awt.geom.AreaOp;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import static server.Server.MAX_MANA;
-import static server.Server.STARTING_HAND_CARDS;
+import static server.Server.*;
 
 class Game {
-    final int manaPerTurn = 1;
-    final int cardPerTurn = 1;
     @Getter
     private final List<Minion> ground;
     @Getter
     private final List<Card> handCard, deck;
+    @Getter
     private final GameHistory gameHistory;
     @Getter
     private final Hero hero;
@@ -26,18 +23,21 @@ class Game {
     private Weapon activeWeapon;
     @Getter
     private int mana, nextMana;
+    @Getter
+    private boolean running;
 
-    Game(Deck deck, Passive passive) {
+    Game(Deck deck, Passive passive,Player player) {
         this.hero = deck.getHero();
         this.ground = new ArrayList<>();
         this.deck = deckToList(deck);
-        this.gameHistory = new GameHistory(passive, hero, new ArrayList<>(this.deck));
+        this.gameHistory = new GameHistory(passive, hero, new ArrayList<>(this.deck),player);
         this.handCard = new ArrayList<>();
         for (int i = 0; i < STARTING_HAND_CARDS; i++) {
             drawCard();
         }
-        this.mana = 1;
-        this.nextMana = 2;
+        this.mana = STARTING_MANA;
+        this.nextMana = this.mana+ MANA_PER_TURN;
+        running = true;
     }
 
     private List<Card> deckToList(Deck d) {
@@ -52,13 +52,18 @@ class Game {
     }
 
     void endTurn() {
-        gameHistory.getEvents().add(new EndTurn(nextMana));
+        gameHistory.getEvents().add(new EndTurn(nextMana,gameHistory));
         mana = nextMana;
         if (nextMana < MAX_MANA) {
-            nextMana += manaPerTurn;
+            nextMana += MANA_PER_TURN;
         }
-        for (int i = 0; i < cardPerTurn; i++) {
-            drawCard();
+        if (deck.size()>0) {
+            for (int i = 0; i < CARD_PER_TURN && deck.size()>0; i++) {
+                drawCard();
+            }
+        }else {
+            gameHistory.getEvents().add(new EndGame(EndGame.EndGameType.WIN,gameHistory));
+            running =false;
         }
     }
 
@@ -74,7 +79,7 @@ class Game {
 
     private void drawCard() {
         Card card = deck.remove((int) (Math.random() * deck.size()));
-        gameHistory.getEvents().add(new DrawCard(card));
+        gameHistory.getEvents().add(new DrawCard(card,gameHistory));
         handCard.add(card);
     }
 
@@ -90,18 +95,23 @@ class Game {
 
     private void playMinion(Minion minion) {
         ground.add(minion);
-        gameHistory.getEvents().add(new PlayCard(minion));
+        gameHistory.getEvents().add(new PlayCard(minion,gameHistory));
     }
 
     private void playWeapon(Weapon weapon) {
         activeWeapon = weapon;
-        gameHistory.getEvents().add(new PlayCard(weapon));
+        gameHistory.getEvents().add(new PlayCard(weapon,gameHistory));
     }
 
     private void playSpell(Spell spell) {
-        gameHistory.getEvents().add(new PlayCard(spell));
+        gameHistory.getEvents().add(new PlayCard(spell,gameHistory));
     }
 
+    void exit(){
+        if (running){
+            gameHistory.getEvents().add(new EndGame(EndGame.EndGameType.LOSE,gameHistory));
+        }
+    }
 
 }
 

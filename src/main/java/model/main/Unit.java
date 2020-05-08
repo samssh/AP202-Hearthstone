@@ -4,7 +4,9 @@ import hibernate.SaveAble;
 import lombok.Getter;
 import lombok.Setter;
 
-import javax.persistence.*;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Id;
 import java.util.Objects;
 
 @Entity
@@ -32,5 +34,10 @@ abstract public class Unit implements SaveAble {
         if (!(o instanceof Unit)) return false;
         Unit unit = (Unit) o;
         return Objects.equals(getName(), unit.getName());
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(name);
     }
 }
