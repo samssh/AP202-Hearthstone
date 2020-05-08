@@ -20,7 +20,7 @@ import java.util.List;
 
 public class Connector {
     private final SessionFactory sessionFactory;
-    private final List<SaveAble> save, delete;
+    private final List<SaveAble> save, delete, tempSave, tempDelete;
     private final Object lock;
     private final Loop worker;
 
@@ -42,25 +42,34 @@ public class Connector {
         sessionFactory = buildSessionFactory(ConfigFactory.getInstance().getConfigFile(configName));
         save = new ArrayList<>();
         delete = new ArrayList<>();
+        tempDelete =new ArrayList<>();
+        tempSave = new ArrayList<>();
         lock = new Object();
-        worker = new Loop(10, this::persist);
+        worker = new Loop(30, this::persist);
         worker.start();
     }
 
     private void persist() {
-        List<SaveAble> save, delete;
+
         synchronized (lock) {
-            save = new ArrayList<>(this.save);
+            tempSave.addAll(save);
             this.save.clear();
-            delete = new ArrayList<>(this.delete);
+            tempDelete.addAll(delete);
             this.delete.clear();
         }
-        if (save.size() > 0 || delete.size() > 0)
-            synchronized (sessionFactory) {
+        if (tempSave.size() > 0 || tempDelete.size() > 0)
+            synchronized (Connector.class) {
                 Session session = sessionFactory.openSession();
                 session.beginTransaction();
-                delete.forEach(session::delete);
-                save.forEach(session::saveOrUpdate);
+                for (SaveAble saveAble : tempDelete) {
+                    session.delete(saveAble);
+
+                }
+                tempDelete.clear();
+                for (SaveAble saveAble : tempSave) {
+                    session.saveOrUpdate(saveAble);
+                }
+                tempSave.clear();
                 session.getTransaction().commit();
                 session.close();
             }
@@ -71,17 +80,21 @@ public class Connector {
     }
 
     public void save(SaveAble saveAble) {
-        synchronized (lock) {
-            save.add(saveAble);
-        }
+        if (saveAble != null)
+            synchronized (lock) {
+                save.add(saveAble);
+            }
     }
 
     public void delete(SaveAble saveAble) {
-        delete.add(saveAble);
+        if (saveAble != null)
+            synchronized (lock) {
+                delete.add(saveAble);
+            }
     }
 
     public <E extends SaveAble> E fetch(Class<E> entity, Serializable id) {
-        synchronized (sessionFactory) {
+        synchronized (Connector.class) {
             Session session = sessionFactory.openSession();
             E result = session.get(entity, id);
             session.close();
@@ -91,7 +104,7 @@ public class Connector {
 
 
     public <E extends SaveAble> List<E> fetchAll(Class<E> entity) {
-        synchronized (sessionFactory) {
+        synchronized (Connector.class) {
             Session session = sessionFactory.openSession();
             List<E> result = session.createQuery("from " + entity.getName(), entity).getResultList();
             session.close();
@@ -100,7 +113,7 @@ public class Connector {
     }
 
     public CriteriaBuilder getCriteriaBuilder() {
-        synchronized (sessionFactory) {
+        synchronized (Connector.class) {
             Session session = sessionFactory.openSession();
             CriteriaBuilder result = session.getCriteriaBuilder();
             session.close();
@@ -109,7 +122,7 @@ public class Connector {
     }
 
     public <E> TypedQuery<E> createQuery(CriteriaQuery<E> criteriaQuery) {
-        synchronized (sessionFactory) {
+        synchronized (Connector.class) {
             Session session = sessionFactory.openSession();
             TypedQuery<E> result = session.createQuery(criteriaQuery);
             session.close();
@@ -118,7 +131,7 @@ public class Connector {
     }
 
     public <E> CriteriaQuery<E> createCriteriaQuery(Class<E> entity) {
-        synchronized (sessionFactory) {
+        synchronized (Connector.class) {
             Session session = sessionFactory.openSession();
             CriteriaBuilder criteriaBuilder = session.getCriteriaBuilder();
             CriteriaQuery<E> result = criteriaBuilder.createQuery(entity);
@@ -128,7 +141,7 @@ public class Connector {
     }
 
     public <E extends SaveAble> List<E> fetchWithRestriction(Class<E> entity, String fieldName, Object value) {
-        synchronized (sessionFactory) {
+        synchronized (Connector.class) {
             Session session = sessionFactory.openSession();
             List<E> result = session.createQuery("from " + entity.getName() + " where " + fieldName
                     + "=" + "'" + value + "'", entity).getResultList();

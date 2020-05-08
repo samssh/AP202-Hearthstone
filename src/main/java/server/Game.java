@@ -1,7 +1,9 @@
 package server;
 
+import hibernate.Connector;
 import lombok.Getter;
 import model.account.*;
+import model.log.InGameLog;
 import model.main.*;
 
 import java.util.ArrayList;
@@ -25,18 +27,22 @@ class Game {
     private int mana, nextMana;
     @Getter
     private boolean running;
+    private final Player player;
+    private final Connector connector;
 
-    Game(Deck deck, Passive passive,Player player) {
+    Game(Deck deck, Passive passive, Player player, Connector connector) {
+        this.connector = connector;
         this.hero = deck.getHero();
         this.ground = new ArrayList<>();
         this.deck = deckToList(deck);
-        this.gameHistory = new GameHistory(passive, hero, new ArrayList<>(this.deck),player);
+        this.player = player;
+        this.gameHistory = new GameHistory(passive, hero, new ArrayList<>(this.deck));
         this.handCard = new ArrayList<>();
         for (int i = 0; i < STARTING_HAND_CARDS; i++) {
             drawCard();
         }
         this.mana = STARTING_MANA;
-        this.nextMana = this.mana+ MANA_PER_TURN;
+        this.nextMana = this.mana + MANA_PER_TURN;
         running = true;
     }
 
@@ -52,24 +58,25 @@ class Game {
     }
 
     void endTurn() {
-        gameHistory.getEvents().add(new EndTurn(nextMana,gameHistory));
+        gameHistory.getEvents().add(new EndTurn(nextMana));
+        connector.save(new InGameLog(player.getUserName(),null,"next turn",nextMana));
         mana = nextMana;
         if (nextMana < MAX_MANA) {
             nextMana += MANA_PER_TURN;
         }
-        if (deck.size()>0) {
-            for (int i = 0; i < CARD_PER_TURN && deck.size()>0; i++) {
+        if (deck.size() > 0) {
+            for (int i = 0; i < CARD_PER_TURN && deck.size() > 0; i++) {
                 drawCard();
             }
-        }else {
-            gameHistory.getEvents().add(new EndGame(EndGame.EndGameType.WIN,gameHistory));
-            running =false;
+        } else {
+            gameHistory.getEvents().add(new EndGame(EndGame.EndGameType.WIN));
+            connector.save(new InGameLog(player.getUserName(),null,"game ended:win"));
+            running = false;
         }
     }
 
     String getGameEvents() {
         StringBuilder result = new StringBuilder();
-        // todo add limit
         for (GameEvent g : gameHistory.getEvents()) {
             result.append(g.toString());
             result.append("\n");
@@ -79,7 +86,8 @@ class Game {
 
     private void drawCard() {
         Card card = deck.remove((int) (Math.random() * deck.size()));
-        gameHistory.getEvents().add(new DrawCard(card,gameHistory));
+        gameHistory.getEvents().add(new DrawCard(card));
+        connector.save(new InGameLog(player.getUserName(),card.getName(),"draw card",mana));
         handCard.add(card);
     }
 
@@ -95,21 +103,25 @@ class Game {
 
     private void playMinion(Minion minion) {
         ground.add(minion);
-        gameHistory.getEvents().add(new PlayCard(minion,gameHistory));
+        connector.save(new InGameLog(player.getUserName(),minion.getName(),"play card",mana));
+        gameHistory.getEvents().add(new PlayCard(minion));
     }
 
     private void playWeapon(Weapon weapon) {
         activeWeapon = weapon;
-        gameHistory.getEvents().add(new PlayCard(weapon,gameHistory));
+        connector.save(new InGameLog(player.getUserName(),weapon.getName(),"play card",mana));
+        gameHistory.getEvents().add(new PlayCard(weapon));
     }
 
     private void playSpell(Spell spell) {
-        gameHistory.getEvents().add(new PlayCard(spell,gameHistory));
+        connector.save(new InGameLog(player.getUserName(),spell.getName(),"play card",mana));
+        gameHistory.getEvents().add(new PlayCard(spell));
     }
 
-    void exit(){
-        if (running){
-            gameHistory.getEvents().add(new EndGame(EndGame.EndGameType.LOSE,gameHistory));
+    void exit() {
+        if (running) {
+            gameHistory.getEvents().add(new EndGame(EndGame.EndGameType.LOSE));
+            connector.save(new InGameLog(player.getUserName(),null,"game ended:lose"));
         }
     }
 

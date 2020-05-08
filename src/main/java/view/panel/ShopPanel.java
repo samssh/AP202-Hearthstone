@@ -4,12 +4,15 @@ import client.Client;
 import configs.Config;
 import configs.ConfigFactory;
 import lombok.Setter;
+import util.ImageLoader;
 import util.Updatable;
 import view.model.CardOverview;
 import view.util.CardBox;
+import view.util.Constant;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.image.BufferedImage;
 import java.util.List;
 
 public class ShopPanel extends JPanel implements Updatable {
@@ -17,6 +20,7 @@ public class ShopPanel extends JPanel implements Updatable {
     @Setter
     private int coin;
     private JButton exit, back, backMainMenu;
+    private final BufferedImage image;
     private int coinX, coinY;
     private int sellX, sellY, sellWidth, sellHeight;
     private int buyX, buyY, buyWidth, buyHeight;
@@ -26,6 +30,7 @@ public class ShopPanel extends JPanel implements Updatable {
     public ShopPanel(Client.ShopAction shopAction) {
         setLayout(null);
         this.shopAction = shopAction;
+        this.image = ImageLoader.getInstance().getBackground("shop");
         config();
         initialize();
         this.add(sell);
@@ -59,6 +64,7 @@ public class ShopPanel extends JPanel implements Updatable {
         exit = new JButton("exit");
         exit.setBounds(exitX, exitY, exitWidth, exitHeight);
         exit.addActionListener(e -> shopAction.exit());
+        Constant.makeTransparent(exit);
     }
 
     private void initializeBack() {
@@ -66,6 +72,7 @@ public class ShopPanel extends JPanel implements Updatable {
         int y = exitY - 2 * (exitHeight + exitSpace);
         back.setBounds(exitX, y, exitWidth, exitHeight);
         back.addActionListener(e -> shopAction.back());
+        Constant.makeTransparent(back);
     }
 
     private void initializeBackMainMenu() {
@@ -73,12 +80,14 @@ public class ShopPanel extends JPanel implements Updatable {
         int y = exitY - (exitHeight + exitSpace);
         backMainMenu.setBounds(exitX, y, exitWidth, exitHeight);
         backMainMenu.addActionListener(e -> shopAction.backMainMenu());
+        Constant.makeTransparent(backMainMenu);
     }
 
 
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
+        g.drawImage(image,0,0,null);
         g.drawString("\u0024" + coin, coinX, coinY);
     }
 

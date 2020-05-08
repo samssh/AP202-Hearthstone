@@ -20,8 +20,7 @@ public class EndGame extends GameEvent{
     public EndGame() {
     }
 
-    public EndGame(EndGameType type,GameHistory gameHistory) {
-        super(gameHistory);
+    public EndGame(EndGameType type) {
         this.type = type;
     }
 

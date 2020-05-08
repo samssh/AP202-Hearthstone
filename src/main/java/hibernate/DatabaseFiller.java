@@ -51,9 +51,6 @@ public class DatabaseFiller {
                 mage, Rarity.Rare, 4));
         connector.save(new Spell("Pyroblast", "Deal 10 damage.", 5,
                 mage, Rarity.Epic, 10));
-//        connector.save(new Minion("Reno the Relicologist", "Battlecry: if your deck has no duplicates, deal 10 damage randomly split among all enemy minions",
-//                6, mage, Rarity.Legendary, 6, 4, 6));
-
         connector.save(new Spell("Friendly Smith", "Discover a weapon from any class. Add it to your Adventure Deck with +2/+2.",
                 2, rogue, Rarity.Common, 1));
         connector.save(new Spell("Preparation", "The next spell you cast this turn costs (2) less.",

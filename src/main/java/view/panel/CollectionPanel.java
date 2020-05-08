@@ -3,15 +3,19 @@ package view.panel;
 import client.Client;
 import configs.Config;
 import configs.ConfigFactory;
+import util.ImageLoader;
 import util.Updatable;
 import view.model.CardOverview;
 import view.model.SmallDeckOverview;
 import view.util.CardBox;
+import view.util.Constant;
 import view.util.MyJTextField;
 import view.util.SmallDeckBox;
 
 import javax.swing.*;
+import java.awt.*;
 import java.awt.event.ActionEvent;
+import java.awt.image.BufferedImage;
 import java.util.List;
 
 public class CollectionPanel extends JPanel implements Updatable {
@@ -24,6 +28,7 @@ public class CollectionPanel extends JPanel implements Updatable {
     private JButton back, backMainMenu, exit;
     private List<String> heroNames;
     private String deckName;
+    private final BufferedImage image;
     private final Client.CollectionAction collectionAction;
     private int x, y, width, height;
     private int exitX, exitY, exitWidth, exitHeight, exitSpace;
@@ -38,6 +43,7 @@ public class CollectionPanel extends JPanel implements Updatable {
         this.setLayout(null);
         this.config();
         this.setBounds(x, y, width, height);
+        this.image = ImageLoader.getInstance().getBackground("collection");
         initialize();
         this.add(label);
         this.add(search);
@@ -123,6 +129,7 @@ public class CollectionPanel extends JPanel implements Updatable {
         newDeck = new JButton("new deck");
         newDeck.setBounds(deckButtonX, deckButtonY, deckButtonWidth, deckButtonHeight);
         newDeck.addActionListener(this::newDeck);
+        Constant.makeTransparent(newDeck);
     }
 
     private void newDeck(ActionEvent event) {
@@ -140,6 +147,7 @@ public class CollectionPanel extends JPanel implements Updatable {
         int x = deckButtonX + (deckButtonWidth + deckButtonSpace);
         deleteDeck.setBounds(x, deckButtonY, deckButtonWidth, deckButtonHeight);
         deleteDeck.addActionListener(e -> collectionAction.deleteDeck(deckName));
+        Constant.makeTransparent(deleteDeck);
     }
 
     private void initializeChangeDeckName() {
@@ -147,6 +155,7 @@ public class CollectionPanel extends JPanel implements Updatable {
         int x = deckButtonX + 2 * (deckButtonWidth + deckButtonSpace);
         changeDeckName.setBounds(x, deckButtonY, deckButtonWidth, deckButtonHeight);
         changeDeckName.addActionListener(this::changeDeckName);
+        Constant.makeTransparent(changeDeckName);
     }
 
     private void changeDeckName(ActionEvent event) {
@@ -162,6 +171,7 @@ public class CollectionPanel extends JPanel implements Updatable {
         int x = deckButtonX + 3 * (deckButtonWidth + deckButtonSpace);
         changeHeroDeck.setBounds(x, deckButtonY, deckButtonWidth, deckButtonHeight);
         changeHeroDeck.addActionListener(this::changeHeroDeck);
+        Constant.makeTransparent(changeHeroDeck);
     }
 
     private void changeHeroDeck(ActionEvent event) {
@@ -176,6 +186,7 @@ public class CollectionPanel extends JPanel implements Updatable {
         exit = new JButton("exit");
         exit.setBounds(exitX, exitY, exitWidth, exitHeight);
         exit.addActionListener(e -> collectionAction.exit());
+        Constant.makeTransparent(exit);
     }
 
     private void initializeBack() {
@@ -183,6 +194,7 @@ public class CollectionPanel extends JPanel implements Updatable {
         int x = exitX - 2 * (exitWidth + exitSpace);
         back.setBounds(x, exitY, exitWidth, exitHeight);
         back.addActionListener(e -> collectionAction.back());
+        Constant.makeTransparent(back);
     }
 
     private void initializeBackMainMenu() {
@@ -190,6 +202,7 @@ public class CollectionPanel extends JPanel implements Updatable {
         int x = exitX - (exitWidth + exitSpace);
         backMainMenu.setBounds(x, exitY, exitWidth, exitHeight);
         backMainMenu.addActionListener(e -> collectionAction.backMainMenu());
+        Constant.makeTransparent(backMainMenu);
     }
 
     public void setFirstDetails(List<String> heroNames, List<String> classOfCardNames) {
@@ -269,5 +282,11 @@ public class CollectionPanel extends JPanel implements Updatable {
 
     public boolean hasFirst(){
         return classOfCard.getItemCount()>0;
+    }
+
+    @Override
+    public void paintComponent(Graphics g) {
+        super.paintComponent(g);
+        g.drawImage(image,0,0,null);
     }
 }

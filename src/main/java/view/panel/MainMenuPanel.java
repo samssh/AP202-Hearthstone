@@ -3,16 +3,18 @@ package view.panel;
 import client.Client;
 import configs.Config;
 import configs.ConfigFactory;
+import util.ImageLoader;
 import util.Updatable;
+import view.util.Constant;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.image.BufferedImage;
 
 public class MainMenuPanel extends JPanel implements Updatable {
-//    @Setter
-//    private String playerName;
     private JLabel welcome;
     private JButton play, shop, status, collection, exit, logout, deleteAccount;
+    private final BufferedImage image;
     private int componentWidth, componentHeight, componentSpace;
     private int exitWidth, exitHeight, exitX, exitY, exitSpace, shiftX, shiftY;
     int sumHeight;
@@ -28,6 +30,7 @@ public class MainMenuPanel extends JPanel implements Updatable {
         startX = (this.getWidth() - componentWidth) / 2 + shiftX;
         startY = this.getHeight() / 2 - (4 * sumHeight + componentHeight) / 2 + shiftY;
         this.mainMenuAction = mainMenuAction;
+        this.image = ImageLoader.getInstance().getBackground("mainMenu");
         dimension = new Dimension(componentWidth, componentHeight);
         initialize();
         this.add(welcome);
@@ -44,6 +47,7 @@ public class MainMenuPanel extends JPanel implements Updatable {
     protected void paintComponent(Graphics g) {
         Graphics2D graphics2D = (Graphics2D) g;
         super.paintComponent(graphics2D);
+        g.drawImage(image,0,0,null);
     }
 
     private void initialize() {
@@ -61,6 +65,7 @@ public class MainMenuPanel extends JPanel implements Updatable {
         welcome = new JLabel("welcome ", SwingConstants.CENTER);
         welcome.setSize(dimension);
         welcome.setLocation(startX, startY);
+        Constant.makeWhite(welcome);
     }
 
     private void initializePlay() {
@@ -68,6 +73,7 @@ public class MainMenuPanel extends JPanel implements Updatable {
         play.setSize(dimension);
         play.setLocation(startX, startY + sumHeight);
         play.addActionListener(e->mainMenuAction.play());
+        Constant.makeTransparent(play);
     }
 
     private void initializeShop() {
@@ -75,6 +81,7 @@ public class MainMenuPanel extends JPanel implements Updatable {
         shop.setSize(dimension);
         shop.addActionListener(e -> mainMenuAction.shop());
         shop.setLocation(startX, startY + 2 * sumHeight);
+        Constant.makeTransparent(shop);
 
     }
 
@@ -83,7 +90,7 @@ public class MainMenuPanel extends JPanel implements Updatable {
         status.setSize(dimension);
         status.addActionListener(e -> mainMenuAction.status());
         status.setLocation(startX, startY + 3 * sumHeight);
-
+        Constant.makeTransparent(status);
     }
 
     private void initializeCollection() {
@@ -91,12 +98,14 @@ public class MainMenuPanel extends JPanel implements Updatable {
         collection.addActionListener(e -> mainMenuAction.collection());
         collection.setSize(dimension);
         collection.setLocation(startX, startY + 4 * sumHeight);
+        Constant.makeTransparent(collection);
     }
 
     private void initializeExit() {
         exit = new JButton("exit");
         exit.setBounds(exitX, exitY, exitWidth, exitHeight);
         exit.addActionListener(e -> mainMenuAction.exit());
+        Constant.makeTransparent(exit);
     }
 
     private void initializeLogout() {
@@ -104,6 +113,7 @@ public class MainMenuPanel extends JPanel implements Updatable {
         int y = exitY - 2 * (exitHeight + exitSpace);
         logout.setBounds(exitX, y, exitWidth, exitHeight);
         logout.addActionListener(e -> mainMenuAction.logout());
+        Constant.makeTransparent(logout);
     }
 
     private void initializeDeleteAccount() {
@@ -111,6 +121,7 @@ public class MainMenuPanel extends JPanel implements Updatable {
         int y = exitY - (exitHeight + exitSpace);
         deleteAccount.setBounds(exitX, y, exitWidth, exitHeight);
         deleteAccount.addActionListener(e -> mainMenuAction.deleteAccount());
+        Constant.makeTransparent(deleteAccount);
     }
 
     private void config() {
@@ -131,16 +142,6 @@ public class MainMenuPanel extends JPanel implements Updatable {
         shiftY = panelConfig.getProperty(Integer.class, "shiftY");
     }
 
-
-//    private void resetComponents() {
-////        welcome.setText("welcome");
-////        userName.setText("Enter username");
-////        password.setText("Enter password");
-////        password.setEchoChar((char) 0);
-////        passwordAgain.setText("Enter password");
-////        passwordAgain.setEchoChar((char) 0);
-//    }
-
     public void setMessage(String message) {
         welcome.setText(message);
     }
@@ -149,10 +150,4 @@ public class MainMenuPanel extends JPanel implements Updatable {
     public void update() {
         mainMenuAction.update();
     }
-//
-//    public void reset() {
-////        mode = view.panel.LoginPanel.Mode.SIGN_IN;
-////        passwordAgain.setVisible(false);
-////        resetComponents();
-//    }
 }

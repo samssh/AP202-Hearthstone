@@ -42,14 +42,12 @@ public class Player implements SaveAble {
     @Setter
     private int selectedDeckIndex;
     @ElementCollection
-    @Cascade(CascadeType.SAVE_UPDATE)
     @LazyCollection(LazyCollectionOption.FALSE)
     @Setter
     @Getter
     @JoinTable(name = "Player_Card")
     private Map<Card, CardDetails> cards;
     @ManyToMany
-    @Cascade(CascadeType.SAVE_UPDATE)
     @LazyCollection(LazyCollectionOption.FALSE)
     @Setter
     @Getter
@@ -61,18 +59,18 @@ public class Player implements SaveAble {
     @Setter
     @Getter
     private List<Deck> decks;
-    @OneToMany
-    @LazyCollection(LazyCollectionOption.FALSE)
-    @Cascade({CascadeType.SAVE_UPDATE, CascadeType.DELETE})
-    @Setter
-    @Getter
-    private List<GameHistory> gameHistories;
+//    @OneToMany
+//    @LazyCollection(LazyCollectionOption.FALSE)
+//    @Cascade({CascadeType.SAVE_UPDATE, CascadeType.DELETE})
+//    @Setter
+//    @Getter
+//    private List<GameHistory> gameHistories;
 
     {
         cards = new HashMap<>();
         heroes = new ArrayList<>();
         decks = new ArrayList<>();
-        gameHistories = new ArrayList<>();
+//        gameHistories = new ArrayList<>();
     }
 
     public Player() {
@@ -89,7 +87,6 @@ public class Player implements SaveAble {
         this.cards = cards;
         this.heroes = heroes;
         this.decks = decks;
-        decks.forEach(deck -> deck.setPlayer(this));
     }
 
     public void addCard(Card card) {
@@ -111,5 +108,13 @@ public class Player implements SaveAble {
 
     public Deck getSelectedDeck() {
         return decks.size() > selectedDeckIndex ? decks.get(selectedDeckIndex) : null;
+    }
+
+    @PostLoad
+    void postLoad() {
+        this.cards = new HashMap<>(this.cards);
+//        this.gameHistories = new ArrayList<>(this.gameHistories);
+        this.decks = new ArrayList<>(this.decks);
+        this.heroes = new ArrayList<>(this.heroes);
     }
 }

@@ -23,7 +23,7 @@ public class RequestLog extends Log {
     private int mana, lockMode, mode;
 
     public RequestLog(Request request, String username) {
-        super(System.currentTimeMillis(), username);
+        super(System.nanoTime(), username);
         type = request.getClass().getSimpleName();
         if (request instanceof Request.LoginRequest){
             mode=((Request.LoginRequest) request).getMode();

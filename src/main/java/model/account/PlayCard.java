@@ -14,8 +14,7 @@ public class PlayCard extends GameEvent{
     @Setter
     private Card card;
 
-    public PlayCard(Card card,GameHistory gameHistory) {
-        super(gameHistory);
+    public PlayCard(Card card) {
         this.card = card;
     }
 

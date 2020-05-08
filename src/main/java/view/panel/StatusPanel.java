@@ -3,17 +3,21 @@ package view.panel;
 import client.Client;
 import configs.Config;
 import configs.ConfigFactory;
+import util.ImageLoader;
 import util.Updatable;
 import view.model.BigDeckOverview;
 import view.util.BigDeckBox;
+import view.util.Constant;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.image.BufferedImage;
 import java.util.List;
 
 public class StatusPanel extends JPanel implements Updatable {
     private BigDeckBox bigDeckBox;
     private JButton exit, back, backMainMenu;
+    private final BufferedImage image;
     private int deckBoxX,deckBoxY,deckBoxWidth,deckBoxHeight;
     private int exitX,exitY,exitWidth,exitHeight,exitSpace;
     private final Client.StatusAction statusAction;
@@ -21,6 +25,7 @@ public class StatusPanel extends JPanel implements Updatable {
     public StatusPanel(Client.StatusAction statusAction) {
         setLayout(null);
         this.statusAction = statusAction;
+        this.image = ImageLoader.getInstance().getBackground("status");
         config();
         initialize();
         this.add(bigDeckBox);
@@ -46,6 +51,7 @@ public class StatusPanel extends JPanel implements Updatable {
         exit = new JButton("exit");
         exit.setBounds(exitX, exitY, exitWidth, exitHeight);
         exit.addActionListener(e -> statusAction.exit());
+        Constant.makeTransparent(exit);
     }
 
     private void initializeBack(){
@@ -53,6 +59,7 @@ public class StatusPanel extends JPanel implements Updatable {
         int x = exitX - 2 * (exitWidth + exitSpace);
         back.setBounds(x, exitY, exitWidth, exitHeight);
         back.addActionListener(e -> statusAction.back());
+        Constant.makeTransparent(back);
     }
 
     private void initializeBackMainMenu(){
@@ -60,12 +67,14 @@ public class StatusPanel extends JPanel implements Updatable {
         int x = exitX - (exitWidth + exitSpace);
         backMainMenu.setBounds(x, exitY, exitWidth, exitHeight);
         backMainMenu.addActionListener(e -> statusAction.backMainMenu());
+        Constant.makeTransparent(backMainMenu);
     }
 
 
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
+        g.drawImage(image,0,0,null);
     }
 
     private void config() {

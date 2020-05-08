@@ -14,8 +14,7 @@ public class EndTurn extends GameEvent {
     @Setter
     private int mana;
 
-    public EndTurn(int mana,GameHistory gameHistory) {
-        super(gameHistory);
+    public EndTurn(int mana) {
         this.mana = mana;
     }
 

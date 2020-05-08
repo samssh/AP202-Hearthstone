@@ -6,6 +6,7 @@ import configs.ConfigFactory;
 import lombok.Getter;
 import lombok.Setter;
 import util.ImageLoader;
+import view.util.Constant;
 
 import javax.swing.*;
 import java.awt.*;
@@ -55,18 +56,14 @@ public class LoginPanel extends JPanel {
         exit = new JButton("exit");
         exit.setBounds(exitX, exitY, exitWidth, exitHeight);
         exit.addActionListener(actionListener -> loginPanelAction.exit());
-        exit.setOpaque(false);
-        exit.setContentAreaFilled(false);
-        exit.setBorderPainted(false);
-        exit.setFocusable(false);
-        exit.setForeground(Color.RED);
+        Constant.makeTransparent(exit);
     }
 
     private void initializeWelcome() {
         welcome = new JLabel("welcome", SwingConstants.CENTER);
         welcome.setSize(dimension);
         welcome.setForeground(Color.RED);
-//        welcome.setFocusable(false);
+        Constant.makeWhite(welcome);
     }
 
     private void initializeLoginB() {
@@ -74,11 +71,7 @@ public class LoginPanel extends JPanel {
         login.setSize(dimension);
         login.addActionListener(actionListener -> loginPanelAction.login(
                 this,userName.getText(),String.valueOf(password.getPassword()),String.valueOf(passwordAgain.getPassword())));
-        login.setOpaque(false);
-        login.setContentAreaFilled(false);
-        login.setBorderPainted(false);
-        login.setFocusable(false);
-        login.setForeground(Color.RED);
+        Constant.makeTransparent(login);
     }
 
 
@@ -87,11 +80,7 @@ public class LoginPanel extends JPanel {
         changeMode = new JButton();
         changeMode.setSize(dimension);
         changeMode.addActionListener(actionEvent -> loginPanelAction.changeMode(this));
-        changeMode.setOpaque(false);
-        changeMode.setContentAreaFilled(false);
-        changeMode.setBorderPainted(false);
-        changeMode.setFocusable(false);
-        changeMode.setForeground(Color.RED);
+        Constant.makeTransparent(changeMode);
     }
 
     private void initializeUsername() {
@@ -112,10 +101,7 @@ public class LoginPanel extends JPanel {
                 }
             }
         });
-        userName.setOpaque(false);
-        userName.setForeground(Color.red);
-        userName.setBorder(null);
-        userName.setFont(userName.getFont().deriveFont(Font.BOLD));
+        Constant.makeWhite(userName);
     }
 
     private void initializePasswords() {
@@ -150,10 +136,7 @@ public class LoginPanel extends JPanel {
                 }
             }
         });
-        password1.setOpaque(false);
-        password1.setForeground(Color.RED);
-        password1.setBorder(null);
-        password1.setFont(password1.getFont().deriveFont(Font.BOLD));
+        Constant.makeWhite(password1);
     }
 
     private void resetComponents() {

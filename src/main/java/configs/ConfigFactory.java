@@ -25,7 +25,6 @@ public class ConfigFactory {
 
     private ConfigFactory(String mainConfigAddress) {
         mainConfig = new Config(mainConfigAddress);
-//        mainConfig.put("", "");
     }
 
     public Config getConfig(String configName) {

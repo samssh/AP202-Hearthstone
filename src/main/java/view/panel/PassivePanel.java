@@ -3,16 +3,21 @@ package view.panel;
 import client.Client;
 import configs.Config;
 import configs.ConfigFactory;
+import util.ImageLoader;
 import view.model.PassiveOverview;
+import view.util.Constant;
 import view.util.PassiveBox;
 
 import javax.swing.*;
+import java.awt.*;
+import java.awt.image.BufferedImage;
 import java.util.List;
 
 public class PassivePanel extends JPanel {
     private PassiveBox passiveBox;
     private final Client.PassiveAction passiveAction;
     private JButton exit, back, backMainMenu;
+    private final BufferedImage image;
     private int exitX, exitY, exitWidth, exitHeight, exitSpace;
     private int x, y, width, height;
     private int passiveBoxX, passiveBoxY, passiveBoxWidth, passiveBoxHeight;
@@ -22,11 +27,18 @@ public class PassivePanel extends JPanel {
         this.passiveAction = passiveAction;
         config();
         this.setBounds(x, y, width, height);
+        this.image = ImageLoader.getInstance().getBackground("passive");
         initialize();
         this.add(passiveBox);
         this.add(exit);
         this.add(back);
         this.add(backMainMenu);
+    }
+
+    @Override
+    public void paintComponent(Graphics g) {
+        super.paintComponent(g);
+        g.drawImage(image,0,0,null);
     }
 
     private void initialize() {
@@ -48,6 +60,7 @@ public class PassivePanel extends JPanel {
         exit = new JButton("exit");
         exit.setBounds(exitX, exitY, exitWidth, exitHeight);
         exit.addActionListener(e -> passiveAction.exit());
+        Constant.makeTransparent(exit);
     }
 
     private void initializeBack(){
@@ -55,6 +68,7 @@ public class PassivePanel extends JPanel {
         int x = exitX - 2 * (exitWidth + exitSpace);
         back.setBounds(x, exitY, exitWidth, exitHeight);
         back.addActionListener(e -> passiveAction.back());
+        Constant.makeTransparent(back);
     }
 
     private void initializeBackMainMenu(){
@@ -62,6 +76,7 @@ public class PassivePanel extends JPanel {
         int x = exitX - (exitWidth + exitSpace);
         backMainMenu.setBounds(x, exitY, exitWidth, exitHeight);
         backMainMenu.addActionListener(e -> passiveAction.backMainMenu());
+        Constant.makeTransparent(backMainMenu);
     }
 
     public void setPassives(List<PassiveOverview> passives){

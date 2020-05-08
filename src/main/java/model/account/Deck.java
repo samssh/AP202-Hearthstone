@@ -36,10 +36,6 @@ public class Deck implements SaveAble {
     @Getter
     private int games;
     @ManyToOne
-    @Setter
-    @Getter
-    private Player player;
-    @ManyToOne
     @Cascade(CascadeType.SAVE_UPDATE)
     @Setter
     @Getter
@@ -61,11 +57,6 @@ public class Deck implements SaveAble {
     public Deck(Hero hero,String name) {
         this.hero = hero;
         this.name = name;
-    }
-
-    public Deck(Hero hero,String name,Player player) {
-        this(hero, name);
-        this.player = player;
     }
 
     public void addCard(Card card) {
@@ -123,5 +114,10 @@ public class Deck implements SaveAble {
                 ", hero=" + hero +
                 ", cards=" + cards +
                 '}';
+    }
+
+    @PostLoad
+    void postLoad() {
+        this.cards = new HashMap<>(this.cards);
     }
 }

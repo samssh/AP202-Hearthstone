@@ -3,14 +3,17 @@ package view.panel;
 import client.Client;
 import configs.Config;
 import configs.ConfigFactory;
+import util.ImageLoader;
 import view.model.CardOverview;
 import view.model.HeroOverview;
 import view.model.HeroPowerOverview;
 import view.util.CardBox;
+import view.util.Constant;
 import view.util.UnitViewer;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.image.BufferedImage;
 import java.util.List;
 
 import static view.util.Constant.*;
@@ -23,6 +26,7 @@ public class PlayPanel extends JPanel {
     private JScrollPane scrollPane;
     private int mana, deckCards;
     private final Client.PlayAction playAction;
+    private final BufferedImage image;
     private int x, y, width, height;
     private int manaX, manaY, manaSpace;
     private int handX, handY, handWidth, handHeight;
@@ -35,6 +39,7 @@ public class PlayPanel extends JPanel {
     public PlayPanel(Client.PlayAction playAction) {
         setLayout(null);
         this.playAction = playAction;
+        this.image = ImageLoader.getInstance().getBackground("play");
         config();
         initialize();
         this.setBounds(x,y,width,height);
@@ -95,19 +100,30 @@ public class PlayPanel extends JPanel {
         exit = new JButton("End Game");
         exit.setBounds(exitX, exitY, exitWidth, exitHeight);
         exit.addActionListener(e -> playAction.exit());
+        Constant.makeTransparent(exit);
+        exit.setBackground(new Color(240,240,240,100));
     }
 
     private void initializeNext() {
         next = new JButton("Next Turn");
         next.setBounds(nextX, nextY, nextWidth, nextHeight);
         next.addActionListener(e -> playAction.endTurn());
+        Constant.makeTransparent(next);
+        next.setBackground(new Color(240,240,240,100));
     }
 
     private void initializeEventLog() {
         eventLog = new JTextArea();
         scrollPane = new JScrollPane(eventLog);
         scrollPane.setBounds(eventLogX, eventLogY, eventLogWidth, eventLogHeight);
-
+        scrollPane.setOpaque(false);
+        scrollPane.getViewport().setBorder(null);
+        scrollPane.setBorder(null);
+        eventLog.setBorder(null);
+        eventLog.setOpaque(false);
+        eventLog.setForeground(Color.WHITE);
+        eventLog.setEditable(false);
+        scrollPane.getViewport().setOpaque(false);
     }
 
     public void setDetails(List<CardOverview> hand, List<CardOverview> ground, CardOverview weapon,
@@ -125,6 +141,8 @@ public class PlayPanel extends JPanel {
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
+        g.drawImage(image,0,0,null);
+        g.setColor(Color.WHITE);
         g.drawString("Mana:" + mana, manaX, manaY);
         g.drawString("Deck Cards:" + deckCards, manaX, manaY + manaSpace);
     }

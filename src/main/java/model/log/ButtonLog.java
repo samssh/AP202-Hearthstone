@@ -18,7 +18,7 @@ public class ButtonLog extends Log {
     private String menuName;
 
     public ButtonLog(String username, String buttonName, String menuName) {
-        super(System.currentTimeMillis(), username);
+        super(System.nanoTime(), username);
         ButtonName = buttonName;
         this.menuName = menuName;
     }

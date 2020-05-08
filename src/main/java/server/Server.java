@@ -1,11 +1,11 @@
 package server;
 
-import client.Answer;
-import client.Client;
+import client.*;
+import configs.Config;
+import configs.ConfigFactory;
 import hibernate.Connector;
-import model.account.Deck;
-import model.account.Player;
-import model.log.HeaderLog;
+import model.account.*;
+import model.log.*;
 import model.main.*;
 import util.Loop;
 import util.ModelLoader;
@@ -14,14 +14,27 @@ import view.model.*;
 import java.util.*;
 
 public class Server {
-    static int STARTING_MANA = 1;
-    static int MANA_PER_TURN = 1;
-    static int CARD_PER_TURN = 1;
-    static int MAX_DECK_SIZE = 30;
-    static int STARTING_PASSIVES = 3;
-    static int STARTING_HAND_CARDS = 3;
-    static int MAX_MANA = 10;
-    static int STARTING_COINS = 400;
+    static int STARTING_MANA;
+    static int MANA_PER_TURN;
+    static int CARD_PER_TURN;
+    static int MAX_DECK_SIZE;
+    static int STARTING_PASSIVES;
+    static int STARTING_HAND_CARDS;
+    static int MAX_MANA;
+    static int STARTING_COINS;
+
+    static {
+        Config config = ConfigFactory.getInstance().getConfig("SERVER_CONFIG");
+        STARTING_MANA = config.getProperty(Integer.class, "STARTING_MANA");
+        MANA_PER_TURN = config.getProperty(Integer.class, "MANA_PER_TURN");
+        CARD_PER_TURN = config.getProperty(Integer.class, "CARD_PER_TURN");
+        MAX_DECK_SIZE = config.getProperty(Integer.class, "MAX_DECK_SIZE");
+        STARTING_PASSIVES = config.getProperty(Integer.class, "STARTING_PASSIVES");
+        STARTING_HAND_CARDS = config.getProperty(Integer.class, "STARTING_HAND_CARDS");
+        MAX_MANA = config.getProperty(Integer.class, "MAX_MANA");
+        STARTING_COINS = config.getProperty(Integer.class, "STARTING_COINS");
+    }
+
     private static final Server instance = new Server();
     private final List<Request> tempRequestList, requestList;
     private final Connector connector;
@@ -56,10 +69,12 @@ public class Server {
     }
 
     public void addRequest(Request request) {
-        if (request != null)
+        if (request != null) {
             synchronized (tempRequestList) {
                 tempRequestList.add(request);
             }
+            connector.save(new RequestLog(request, player == null ? null : player.getUserName()));
+        }
     }
 
     public void shutdown() {
@@ -82,37 +97,43 @@ public class Server {
                 this.player = p;
                 Answer answer = new Answer.LoginAnswer(true, player.getUserName());
                 Client.getInstance().putAnswer(answer);
+                connector.save(new AnswerLog(answer, player.getUserName()));
+                connector.save(new AccountLog(player.getUserName(), "sign in"));
             } else {
                 Answer answer = new Answer.LoginAnswer(false, "wrong password");
                 Client.getInstance().putAnswer(answer);
+                connector.save(new AnswerLog(answer, p.getUserName()));
             }
         } else {
             Answer answer = new Answer.LoginAnswer(false, "username not exist");
             Client.getInstance().putAnswer(answer);
+            connector.save(new AnswerLog(answer, null));
         }
     }
 
     private void signUp(String username, String password) {
         Player p = connector.fetch(Player.class, username);
         if (p == null) {
-
             p = new Player(username, password, System.currentTimeMillis(), STARTING_COINS, 0
                     , modelLoader.getFirstCards(), modelLoader.getFirstHeroes(), modelLoader.getFirstDecks());
-            HeaderLog headerLog = new HeaderLog(p.getCreatTime(), p.getUserName(), p.getPassword());
+            connector.save(new HeaderLog(p.getCreatTime(), p.getUserName(), p.getPassword()));
             connector.save(p);
             this.player = p;
             Answer answer = new Answer.LoginAnswer(true, player.getUserName());
             Client.getInstance().putAnswer(answer);
+            connector.save(new AnswerLog(answer, player.getUserName()));
+            connector.save(new AccountLog(player.getUserName(), "sign up"));
         } else {
             Answer answer = new Answer.LoginAnswer(false, "username already exist");
             Client.getInstance().putAnswer(answer);
+            connector.save(new AnswerLog(answer, null));
         }
     }
 
     void logout() {
         if (this.player != null) {
             connector.save(player);
-            // log
+            connector.save(new AccountLog(player.getUserName(), "logout"));
             this.player = null;
         }
     }
@@ -120,7 +141,10 @@ public class Server {
     void deleteAccount() {
         if (this.player != null) {
             connector.delete(player);
-            // log
+            connector.save(new AccountLog(player.getUserName(), "delete account"));
+            HeaderLog h = connector.fetch(HeaderLog.class, player.getCreatTime());
+            h.setDeletedAt(System.currentTimeMillis() + "");
+            connector.save(h);
             this.player = null;
         }
     }
@@ -128,6 +152,7 @@ public class Server {
     void sendShop() {
         Answer answer = new Answer.ShopDetails(makeSellList(), makeBuyList(), player.getCoin());
         Client.getInstance().putAnswer(answer);
+        connector.save(new AnswerLog(answer, player.getUserName()));
     }
 
     private List<CardOverview> makeSellList() {
@@ -181,11 +206,12 @@ public class Server {
     void sellCard(String cardName) {
         Card card = modelLoader.getCard(cardName);
         boolean result = canSell(card);
-
         if (result) {
             player.setCoin(player.getCoin() + card.getPrice());
             player.removeCard(card);
             connector.save(player);
+            connector.save(new BuySellLog(player.getUserName()
+                    , player.getCoin() - card.getPrice(), player.getCoin(), cardName, "sell"));
         }
         sendShop();
     }
@@ -201,6 +227,8 @@ public class Server {
             player.setCoin(player.getCoin() - card.getPrice());
             player.addCard(card);
             connector.save(player);
+            connector.save(new BuySellLog(player.getUserName()
+                    , player.getCoin() + card.getPrice(), player.getCoin(), cardName, "buy"));
         }
         sendShop();
     }
@@ -218,6 +246,7 @@ public class Server {
     void sendStatus() {
         Answer answer = new Answer.StatusDetails(makeStatusDetails());
         Client.getInstance().putAnswer(answer);
+        connector.save(new AnswerLog(answer, player.getUserName()));
     }
 
     private List<BigDeckOverview> makeStatusDetails() {
@@ -276,6 +305,7 @@ public class Server {
     void sendFirstCollection() {
         Answer answer = new Answer.FirstCollectionDetails(makeHeroNames(), makeClassOfCardNames());
         Client.getInstance().putAnswer(answer);
+        connector.save(new AnswerLog(answer, player.getUserName()));
     }
 
     private List<String> makeHeroNames() {
@@ -301,13 +331,14 @@ public class Server {
         this.classOfCard = classOfCard;
         this.mana = mana;
         this.lockMode = lockMode;
-//        this.deckName = deckName;
         List<SmallDeckOverview> decks = makeDeckList();
         Deck d = getDeck(deckName);
         if (d != null) {
             if (player.getSelectedDeckIndex() != player.getDecks().indexOf(d)) {
                 player.setSelectedDeckIndex(player.getDecks().indexOf(d));
                 connector.save(player);
+                connector.save(new CollectionLog(player.getUserName(), null, null, deckName,
+                        "selected deck", null));
             }
         }
         List<CardOverview> cards = makeCardsList(name, modelLoader.getClassOfCard(classOfCard), mana, lockMode, d);
@@ -316,6 +347,7 @@ public class Server {
         boolean canChangeHero = canChangeHero(d);
         Answer answer = new Answer.CollectionDetails(cards, decks, deckCards, canAddDeck, canChangeHero, deckName);
         Client.getInstance().putAnswer(answer);
+        connector.save(new AnswerLog(answer, player.getUserName()));
     }
 
     private List<CardOverview> makeCardsList(String name, ClassOfCard classOfCard, int mana, int lockMode, Deck deck) {
@@ -417,14 +449,17 @@ public class Server {
         Answer answer;
         if (!containDeckName(deckName) && containHero(heroName)) {
             Hero h = modelLoader.getHero(heroName);
-            player.getDecks().add(new Deck(h, deckName,player));
+            player.getDecks().add(new Deck(h, deckName));
             connector.save(player);
             sendCollectionDetails(name, classOfCard, mana, lockMode, deckName);
+            connector.save(new CollectionLog(player.getUserName(), null, heroName, deckName,
+                    "create deck", null));
             answer = new Answer.showMessage("deck created");
         } else {
             answer = new Answer.showMessage("deck not created");
         }
         Client.getInstance().putAnswer(answer);
+        connector.save(new AnswerLog(answer, player.getUserName()));
     }
 
     private boolean containHero(String heroName) {
@@ -451,10 +486,12 @@ public class Server {
             connector.save(player);
             connector.delete(deck);
             sendCollectionDetails(name, classOfCard, mana, lockMode, null);
-//            this.deckName = null;
             answer = new Answer.showMessage("deck deleted");
+            connector.save(new CollectionLog(player.getUserName(), null, null,
+                    deckName, "delete deck", null));
         } else answer = new Answer.showMessage("deck not deleted");
         Client.getInstance().putAnswer(answer);
+        connector.save(new AnswerLog(answer, player.getUserName()));
     }
 
     void changeDeckName(String oldDeckName, String newDeckName) {
@@ -465,8 +502,11 @@ public class Server {
             connector.save(player);
             sendCollectionDetails(name, classOfCard, mana, lockMode, newDeckName);
             answer = new Answer.showMessage("deck name changed");
+            connector.save(new CollectionLog(player.getUserName(), null, null,
+                    oldDeckName, "change deck name", newDeckName));
         } else answer = new Answer.showMessage("deck name not changed");
         Client.getInstance().putAnswer(answer);
+        connector.save(new AnswerLog(answer, player.getUserName()));
     }
 
     void changeHeroDeck(String deckName, String heroName) {
@@ -477,11 +517,14 @@ public class Server {
             Objects.requireNonNull(deck).setHero(h);
             connector.save(player);
             sendCollectionDetails(name, classOfCard, mana, lockMode, deckName);
+            connector.save(new CollectionLog(player.getUserName(), null, heroName, deckName
+                    , "change hero", null));
             answer = new Answer.showMessage("hero deck changed");
         } else {
             answer = new Answer.showMessage("hero deck not changed");
         }
         Client.getInstance().putAnswer(answer);
+        connector.save(new AnswerLog(answer, player.getUserName()));
     }
 
     void removeCardFromDeck(String cardName, String deckName) {
@@ -490,6 +533,9 @@ public class Server {
         if (card != null && deck != null) {
             deck.removeCard(card);
             sendCollectionDetails(name, classOfCard, mana, lockMode, deckName);
+            connector.save(player);
+            connector.save(new CollectionLog(player.getUserName(), cardName, null
+                    , deckName, "remove Card", null));
         }
     }
 
@@ -506,7 +552,10 @@ public class Server {
                             if (deck.getSize() < MAX_DECK_SIZE) {
                                 deck.addCard(card);
                                 connector.save(player);
+                                connector.save(new CollectionLog(player.getUserName(), cardName, null
+                                        , deckName, "add Card", null));
                                 sendCollectionDetails(name, classOfCard, mana, lockMode, deckName);
+
                             } else {
                                 answer = new Answer.showMessage("cant add card to deck\ndeck is full!!!");
                             }
@@ -526,6 +575,8 @@ public class Server {
             answer = new Answer.showMessage("cant add card to deck");
         }
         Client.getInstance().putAnswer(answer);
+        if (answer != null)
+            connector.save(new AnswerLog(answer, player.getUserName()));
     }
 
     private boolean isForHero(ClassOfCard classOfCard, Hero hero) {
@@ -543,6 +594,7 @@ public class Server {
             answer = new Answer.GoTo("COLLECTION", "your deck is not ready\ngoto collection?");
         }
         Client.getInstance().putAnswer(answer);
+        connector.save(new AnswerLog(answer, player.getUserName()));
 
     }
 
@@ -569,8 +621,8 @@ public class Server {
     void selectPassive(String passiveName) {
         Passive p = modelLoader.getPassive(passiveName);
         if (p != null && canStartGame()) {
-            game = new Game(player.getSelectedDeck(), p,player);
-            player.getGameHistories().add(game.getGameHistory());
+            game = new Game(player.getSelectedDeck(), p, player, connector);
+            connector.save(player);
             sendPlayDetails();
         }
     }
@@ -578,14 +630,17 @@ public class Server {
     private void sendPlayDetails() {
         List<CardOverview> hand = new ArrayList<>();
         game.getHandCard().forEach(card -> hand.add(new CardOverview(card, 1, false)));
-        List<CardOverview> ground =new ArrayList<>();
+        List<CardOverview> ground = new ArrayList<>();
         game.getGround().forEach(card -> ground.add(new CardOverview(card, 1, false)));
-        CardOverview weapon = game.getActiveWeapon() == null ? null : new CardOverview(game.getActiveWeapon(), 1, false);
+        CardOverview weapon = game.getActiveWeapon() == null ?
+                null : new CardOverview(game.getActiveWeapon(), 1, false);
         HeroOverview hero = new HeroOverview(game.getHero());
         HeroPowerOverview heroPower = new HeroPowerOverview(game.getHero().getPower());
         String eventLog = game.getGameEvents();
-        Answer answer = new Answer.PlayDetails(hand, ground, weapon, hero, heroPower, eventLog, game.getMana(), game.getDeck().size());
+        Answer answer = new Answer.PlayDetails(hand, ground, weapon, hero
+                , heroPower, eventLog, game.getMana(), game.getDeck().size());
         Client.getInstance().putAnswer(answer);
+        connector.save(new AnswerLog(answer, player.getUserName()));
     }
 
     void endTurn() {
@@ -605,11 +660,12 @@ public class Server {
         }
     }
 
-    void exitGame(){
-        if (game!=null) {
+    void exitGame() {
+        if (game != null) {
             game.exit();
-            Answer answer = new Answer.GoTo("MAIN_MENU",null);
+            Answer answer = new Answer.GoTo("MAIN_MENU", null);
             Client.getInstance().putAnswer(answer);
+            connector.save(new AnswerLog(answer, player.getUserName()));
             connector.save(player);
         }
     }

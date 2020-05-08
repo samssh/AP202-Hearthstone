@@ -21,10 +21,6 @@ public class GameHistory implements SaveAble {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
     @ManyToOne
-    @Setter
-    @Getter
-    private Player player;
-    @ManyToOne
     @Getter
     @Setter
     private Passive passive;
@@ -53,10 +49,9 @@ public class GameHistory implements SaveAble {
     public GameHistory() {
     }
 
-    public GameHistory(Passive passive, Hero hero, List<Card> deck, Player player) {
+    public GameHistory(Passive passive, Hero hero, List<Card> deck) {
         this.passive = passive;
         this.hero = hero;
         this.deck = deck;
-        this.player = player;
     }
 }
