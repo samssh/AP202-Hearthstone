@@ -1,6 +1,6 @@
 package hibernate;
 
-import configs.ConfigFactory;
+import util.ConfigFactory;
 import lombok.SneakyThrows;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;

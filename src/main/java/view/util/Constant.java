@@ -1,7 +1,7 @@
 package view.util;
 
-import configs.Config;
-import configs.ConfigFactory;
+import util.Config;
+import util.ConfigFactory;
 
 import javax.swing.*;
 import java.awt.*;

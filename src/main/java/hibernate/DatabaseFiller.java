@@ -1,6 +1,6 @@
 package hibernate;
 
-import configs.ConfigFactory;
+import util.ConfigFactory;
 import model.account.Player;
 import model.main.*;
 

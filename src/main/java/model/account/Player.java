@@ -59,12 +59,6 @@ public class Player implements SaveAble {
     @Setter
     @Getter
     private List<Deck> decks;
-//    @OneToMany
-//    @LazyCollection(LazyCollectionOption.FALSE)
-//    @Cascade({CascadeType.SAVE_UPDATE, CascadeType.DELETE})
-//    @Setter
-//    @Getter
-//    private List<GameHistory> gameHistories;
 
     {
         cards = new HashMap<>();
@@ -113,7 +107,6 @@ public class Player implements SaveAble {
     @PostLoad
     void postLoad() {
         this.cards = new HashMap<>(this.cards);
-//        this.gameHistories = new ArrayList<>(this.gameHistories);
         this.decks = new ArrayList<>(this.decks);
         this.heroes = new ArrayList<>(this.heroes);
     }

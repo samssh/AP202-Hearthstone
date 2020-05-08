@@ -1,7 +1,5 @@
 package util;
 
-import configs.Config;
-import configs.ConfigFactory;
 import hibernate.Connector;
 import lombok.Getter;
 import model.account.Deck;

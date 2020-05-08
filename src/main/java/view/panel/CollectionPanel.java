@@ -1,8 +1,8 @@
 package view.panel;
 
 import client.Client;
-import configs.Config;
-import configs.ConfigFactory;
+import util.Config;
+import util.ConfigFactory;
 import util.ImageLoader;
 import util.Updatable;
 import view.model.CardOverview;

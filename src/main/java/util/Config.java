@@ -1,4 +1,4 @@
-package configs;
+package util;
 
 import java.io.FileReader;
 import java.io.IOException;

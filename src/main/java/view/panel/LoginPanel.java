@@ -1,8 +1,8 @@
 package view.panel;
 
 import client.Client;
-import configs.Config;
-import configs.ConfigFactory;
+import util.Config;
+import util.ConfigFactory;
 import lombok.Getter;
 import lombok.Setter;
 import util.ImageLoader;

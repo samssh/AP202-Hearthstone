@@ -1,8 +1,5 @@
 package util;
 
-import configs.Config;
-import configs.ConfigFactory;
-
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.File;

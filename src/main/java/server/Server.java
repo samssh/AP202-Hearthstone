@@ -1,8 +1,8 @@
 package server;
 
 import client.*;
-import configs.Config;
-import configs.ConfigFactory;
+import util.Config;
+import util.ConfigFactory;
 import hibernate.Connector;
 import model.account.*;
 import model.log.*;
