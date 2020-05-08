@@ -88,6 +88,8 @@ public class ShopPanel extends JPanel implements Updatable {
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
         g.drawImage(image,0,0,null);
+        g.setColor(Color.WHITE);
+        g.setFont(g.getFont().deriveFont(17F));
         g.drawString("\u0024" + coin, coinX, coinY);
     }
 

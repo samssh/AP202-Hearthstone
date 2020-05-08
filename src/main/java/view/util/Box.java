@@ -1,6 +1,7 @@
 package view.util;
 
 import javax.swing.*;
+import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -43,6 +44,8 @@ public abstract class Box<E, T extends JPanel> extends JPanel {
         title.setOpaque(false);
         title.setFocusable(false);
         title.setBorder(null);
+        title.setFont(title.getFont().deriveFont(17F));
+        title.setForeground(Color.WHITE);
     }
 
     private void initializeNext() {

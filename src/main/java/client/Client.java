@@ -512,7 +512,7 @@ public class Client {
         }
 
         public void update() {
-            if (((CollectionPanel) panels.get(PanelType.COLLECTION)).hasFirst())
+            if (!((CollectionPanel) panels.get(PanelType.COLLECTION)).hasFirst())
                 Client.this.sendFirstCollectionRequest();
             sendRequest();
         }

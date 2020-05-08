@@ -36,7 +36,6 @@ public class Deck implements SaveAble {
     @Getter
     private int games;
     @ManyToOne
-    @Cascade(CascadeType.SAVE_UPDATE)
     @Setter
     @Getter
     private Hero hero;
