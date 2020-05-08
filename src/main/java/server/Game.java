@@ -59,7 +59,7 @@ class Game {
 
     void endTurn() {
         gameHistory.getEvents().add(new EndTurn(nextMana));
-        connector.save(new InGameLog(player.getUserName(),null,"next turn",nextMana));
+        connector.save(new InGameLog(player.getUserName(), null, "next turn", nextMana));
         mana = nextMana;
         if (nextMana < MAX_MANA) {
             nextMana += MANA_PER_TURN;
@@ -70,7 +70,7 @@ class Game {
             }
         } else {
             gameHistory.getEvents().add(new EndGame(EndGame.EndGameType.WIN));
-            connector.save(new InGameLog(player.getUserName(),null,"game ended:win"));
+            connector.save(new InGameLog(player.getUserName(), null, "game ended:win"));
             running = false;
         }
     }
@@ -86,9 +86,15 @@ class Game {
 
     private void drawCard() {
         Card card = deck.remove((int) (Math.random() * deck.size()));
-        gameHistory.getEvents().add(new DrawCard(card));
-        connector.save(new InGameLog(player.getUserName(),card.getName(),"draw card",mana));
-        handCard.add(card);
+        if (handCard.size() < 12) {
+            handCard.add(card);
+            gameHistory.getEvents().add(new DrawCard(card));
+            connector.save(new InGameLog(player.getUserName(), card.getName(), "draw card", mana));
+        } else {
+            gameHistory.getEvents().add(new DeleteCard(card));
+            connector.save(new InGameLog(player.getUserName(), card.getName(), "delete card", mana));
+
+        }
     }
 
     void playCard(Card card) {
@@ -102,26 +108,31 @@ class Game {
     }
 
     private void playMinion(Minion minion) {
-        ground.add(minion);
-        connector.save(new InGameLog(player.getUserName(),minion.getName(),"play card",mana));
-        gameHistory.getEvents().add(new PlayCard(minion));
+        if (ground.size() < 7) {
+            ground.add(minion);
+            connector.save(new InGameLog(player.getUserName(), minion.getName(), "play card", mana));
+            gameHistory.getEvents().add(new PlayCard(minion));
+        }else {
+            connector.save(new InGameLog(player.getUserName(), minion.getName(), "delete card", mana));
+            gameHistory.getEvents().add(new DeleteCard(minion));
+        }
     }
 
     private void playWeapon(Weapon weapon) {
         activeWeapon = weapon;
-        connector.save(new InGameLog(player.getUserName(),weapon.getName(),"play card",mana));
+        connector.save(new InGameLog(player.getUserName(), weapon.getName(), "play card", mana));
         gameHistory.getEvents().add(new PlayCard(weapon));
     }
 
     private void playSpell(Spell spell) {
-        connector.save(new InGameLog(player.getUserName(),spell.getName(),"play card",mana));
+        connector.save(new InGameLog(player.getUserName(), spell.getName(), "play card", mana));
         gameHistory.getEvents().add(new PlayCard(spell));
     }
 
     void exit() {
         if (running) {
             gameHistory.getEvents().add(new EndGame(EndGame.EndGameType.LOSE));
-            connector.save(new InGameLog(player.getUserName(),null,"game ended:lose"));
+            connector.save(new InGameLog(player.getUserName(), null, "game ended:lose"));
         }
     }
 
