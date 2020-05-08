@@ -58,6 +58,7 @@ public abstract class Box<E, T extends JPanel> extends JPanel {
         next.setHorizontalAlignment(SwingConstants.RIGHT);
         next.setBounds(width - BOX_BUTTON_WIDTH, height - BOX_BUTTON_HEIGHT, BOX_BUTTON_WIDTH, BOX_LABEL_HEIGHT);
         next.setFocusPainted(false);
+        next.setForeground(Color.WHITE);
 
     }
 
@@ -71,6 +72,7 @@ public abstract class Box<E, T extends JPanel> extends JPanel {
         previous.setOpaque(false);
         previous.addActionListener(actionEvent -> this.previous());
         previous.setFocusPainted(false);
+        previous.setForeground(Color.WHITE);
     }
 
     public void setModels(List<E> models) {
