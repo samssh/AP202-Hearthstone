@@ -93,7 +93,6 @@ class Game {
         } else {
             gameHistory.getEvents().add(new DeleteCard(card));
             connector.save(new InGameLog(player.getUserName(), card.getName(), "delete card", mana));
-
         }
     }
 

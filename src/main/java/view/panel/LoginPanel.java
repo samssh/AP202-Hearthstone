@@ -1,10 +1,10 @@
 package view.panel;
 
 import client.Client;
-import util.Config;
-import util.ConfigFactory;
 import lombok.Getter;
 import lombok.Setter;
+import util.Config;
+import util.ConfigFactory;
 import util.ImageLoader;
 import view.util.Constant;
 

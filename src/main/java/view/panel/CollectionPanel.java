@@ -9,7 +9,7 @@ import view.model.CardOverview;
 import view.model.SmallDeckOverview;
 import view.util.CardBox;
 import view.util.Constant;
-import view.util.MyJTextField;
+import view.util.MyChangeListener;
 import view.util.SmallDeckBox;
 
 import javax.swing.*;
@@ -20,7 +20,7 @@ import java.util.List;
 
 public class CollectionPanel extends JPanel implements Updatable {
     private JLabel label;
-    private MyJTextField search;
+    private JTextField search;
     private JComboBox<String> mana, classOfCard, lockMode;
     private CardBox cards, deckCards;
     private SmallDeckBox decks;
@@ -81,10 +81,11 @@ public class CollectionPanel extends JPanel implements Updatable {
     }
 
     private void initializeSearch() {
-        search = new MyJTextField();
+        search = new JTextField();
         int x = filterX + filterWidth + filterSpace;
         search.setBounds(x, filterY, filterWidth, filterHeight);
-        search.setChangeListener(collectionAction::search);
+        search.getDocument().addDocumentListener((MyChangeListener)collectionAction::search);
+
     }
 
     private void initializeClassOfCard() {
@@ -209,9 +210,8 @@ public class CollectionPanel extends JPanel implements Updatable {
         collectionAction.sendRequest();
         this.heroNames = heroNames;
         classOfCard.removeAllItems();
-        for (String s : classOfCardNames) {
-            classOfCard.addItem(s);
-        }
+        classOfCard.addItem("All classes");
+        classOfCardNames.forEach(classOfCard::addItem);
     }
 
     public void setDetails(List<CardOverview> cards, List<SmallDeckOverview> decks,

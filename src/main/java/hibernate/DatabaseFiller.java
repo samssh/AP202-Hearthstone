@@ -1,8 +1,9 @@
 package hibernate;
 
-import util.ConfigFactory;
 import model.account.Player;
 import model.main.*;
+import util.ConfigFactory;
+import util.ResourceLoader;
 
 import java.util.List;
 
@@ -153,7 +154,7 @@ public class DatabaseFiller {
     private static Connector connector;
 
     public static void main(String[] args) {
-        ConfigFactory.setArgs(args);
+        ResourceLoader.setArgs(args);
         connector = new Connector("SERVER_HIBERNATE_CONFIG");
         fill();
         List<Hero> heroes = connector.fetchAll(Hero.class);

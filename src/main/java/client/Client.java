@@ -237,7 +237,8 @@ public class Client {
 
     void setPlayDetail(List<CardOverview> hand, List<CardOverview> ground, CardOverview weapon,
                        HeroOverview hero, HeroPowerOverview heroPower, String eventLog, int mana, int deckCards) {
-        ((PlayPanel) panels.get(PanelType.PLAY)).setDetails(hand, ground, weapon, hero, heroPower, eventLog, mana, deckCards);
+        ((PlayPanel) panels.get(PanelType.PLAY)).setDetails(hand, ground
+                , weapon, hero, heroPower, eventLog, mana, deckCards);
         if (now != PanelType.PLAY) {
             now = PanelType.PLAY;
             updateFrame();
