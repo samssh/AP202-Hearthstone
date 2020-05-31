@@ -12,7 +12,7 @@ import javax.persistence.ManyToOne;
 @Entity
 abstract public class Card extends Unit {
     @ManyToOne
-    @Cascade(CascadeType.SAVE_UPDATE)
+    @Cascade(CascadeType.ALL)
     @Setter
     @Getter
     protected ClassOfCard classOfCard;

@@ -16,7 +16,7 @@ public class PassiveBox extends Box<PassiveOverview, PassiveBox.PassiveViewer>{
     }
 
     @Override
-    PassiveViewer createNew(PassiveOverview passiveOverview) {
+    protected PassiveViewer createNew(PassiveOverview passiveOverview) {
         return new PassiveViewer(passiveOverview);
     }
 

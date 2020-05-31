@@ -1,6 +1,7 @@
 package model.main;
 
 import hibernate.SaveAble;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -10,15 +11,16 @@ import javax.persistence.Id;
 import java.util.Objects;
 
 @Entity
+@EqualsAndHashCode(of = "name")
 abstract public class Unit implements SaveAble {
     @Id
     @Setter
     @Getter
-    String name;
+    protected String name;
     @Setter
     @Getter
     @Column
-    String description;
+    protected String description;
 
     public Unit() {
     }
@@ -26,18 +28,5 @@ abstract public class Unit implements SaveAble {
     Unit(String name, String description) {
         this.name = name;
         this.description = description;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof Unit)) return false;
-        Unit unit = (Unit) o;
-        return Objects.equals(getName(), unit.getName());
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(name);
     }
 }

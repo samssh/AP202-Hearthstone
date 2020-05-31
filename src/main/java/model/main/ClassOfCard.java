@@ -1,6 +1,7 @@
 package model.main;
 
 import hibernate.SaveAble;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -9,6 +10,7 @@ import javax.persistence.Id;
 import java.util.Objects;
 
 @Entity
+@EqualsAndHashCode(of = "heroName")
 public class ClassOfCard implements SaveAble {
     @Id
     @Setter
@@ -27,13 +29,5 @@ public class ClassOfCard implements SaveAble {
         return "{" +
                 "heroName='" + heroName + '\'' +
                 '}';
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        ClassOfCard that = (ClassOfCard) o;
-        return Objects.equals(heroName, that.heroName);
     }
 }

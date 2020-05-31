@@ -4,53 +4,70 @@ import lombok.SneakyThrows;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.boot.MetadataSources;
+import org.hibernate.boot.registry.StandardServiceRegistry;
 import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
-import org.hibernate.service.ServiceRegistry;
-import util.ConfigFactory;
 import util.Loop;
 
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
-import java.io.File;
-import java.io.PrintStream;
-import java.io.Serializable;
+import java.io.*;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 public class Connector {
+    private final static Object staticLock = new Object();
     private final SessionFactory sessionFactory;
-    private final List<SaveAble> save, delete, tempSave, tempDelete;
+    private final PrintStream logFilePrintStream;
+    private final Set<SaveAble> save, delete, tempSave, tempDelete;
     private final Object lock;
     private final Loop worker;
 
     @SneakyThrows
-    private SessionFactory buildSessionFactory(File file) {
-        PrintStream err = System.err;
-        File log = new File("./log");
-        if (log.exists() || log.mkdirs()) {
-            PrintStream logStream = new PrintStream(new File("./log/hibernate log.txt"));
-            System.setErr(logStream);
-        }
-        final ServiceRegistry registry = new StandardServiceRegistryBuilder().configure(file).build();
-        SessionFactory sessionFactory = new MetadataSources(registry).buildMetadata().buildSessionFactory();
-        System.setErr(err);
-        return sessionFactory;
-    }
-
-    public Connector(String configName) {
-        sessionFactory = buildSessionFactory(ConfigFactory.getInstance().getConfigFile(configName));
-        save = new ArrayList<>();
-        delete = new ArrayList<>();
-        tempDelete =new ArrayList<>();
-        tempSave = new ArrayList<>();
+    public Connector(File configFile, String name, String password) {
+        File log = new File("./hibernate log");
+        String logPath = log.getPath() + File.separator + name + "log.txt";
+        if (log.exists() || log.mkdirs()) this.logFilePrintStream = new PrintStream(new File(logPath));
+        else this.logFilePrintStream = new PrintStream(new nullPrintStream());
+        sessionFactory = buildSessionFactory(addPassword(getServiceRegistryBuilder(configFile), password).build());
+        save = new HashSet<>();
+        delete = new HashSet<>();
+        tempDelete = new HashSet<>();
+        tempSave = new HashSet<>();
         lock = new Object();
         worker = new Loop(30, this::persist);
         worker.start();
     }
 
-    private void persist() {
+    public Connector(File file,String name){
+        this(file,name,null);
+    }
 
+    private SessionFactory buildSessionFactory(StandardServiceRegistry registry) {
+        return new MetadataSources(registry).buildMetadata().buildSessionFactory();
+    }
+
+    private StandardServiceRegistryBuilder getServiceRegistryBuilder(File file) {
+        PrintStream err = System.err;
+        System.setErr(logFilePrintStream);
+        StandardServiceRegistryBuilder registryBuilder = new StandardServiceRegistryBuilder().configure(file);
+        System.setErr(err);
+        return registryBuilder;
+    }
+
+    private StandardServiceRegistryBuilder addPassword(StandardServiceRegistryBuilder registryBuilder, String password) {
+        if (password != null) {
+            PrintStream err = System.err;
+            System.setErr(logFilePrintStream);
+            registryBuilder.applySetting("hibernate.connection.password", password);
+            System.setErr(err);
+        }
+        return registryBuilder;
+    }
+
+    private void persist() {
         synchronized (lock) {
             tempSave.addAll(save);
             this.save.clear();
@@ -58,7 +75,7 @@ public class Connector {
             this.delete.clear();
         }
         if (tempSave.size() > 0 || tempDelete.size() > 0)
-            synchronized (Connector.class) {
+            synchronized (staticLock) {
                 Session session = sessionFactory.openSession();
                 session.beginTransaction();
                 for (SaveAble saveAble : tempDelete) {
@@ -104,7 +121,7 @@ public class Connector {
 
 
     public <E extends SaveAble> List<E> fetchAll(Class<E> entity) {
-        synchronized (Connector.class) {
+        synchronized (staticLock) {
             Session session = sessionFactory.openSession();
             List<E> result = session.createQuery("from " + entity.getName(), entity).getResultList();
             session.close();
@@ -113,7 +130,7 @@ public class Connector {
     }
 
     public CriteriaBuilder getCriteriaBuilder() {
-        synchronized (Connector.class) {
+        synchronized (staticLock) {
             Session session = sessionFactory.openSession();
             CriteriaBuilder result = session.getCriteriaBuilder();
             session.close();
@@ -122,7 +139,7 @@ public class Connector {
     }
 
     public <E> TypedQuery<E> createQuery(CriteriaQuery<E> criteriaQuery) {
-        synchronized (Connector.class) {
+        synchronized (staticLock) {
             Session session = sessionFactory.openSession();
             TypedQuery<E> result = session.createQuery(criteriaQuery);
             session.close();
@@ -131,7 +148,7 @@ public class Connector {
     }
 
     public <E> CriteriaQuery<E> createCriteriaQuery(Class<E> entity) {
-        synchronized (Connector.class) {
+        synchronized (staticLock) {
             Session session = sessionFactory.openSession();
             CriteriaBuilder criteriaBuilder = session.getCriteriaBuilder();
             CriteriaQuery<E> result = criteriaBuilder.createQuery(entity);
@@ -141,12 +158,18 @@ public class Connector {
     }
 
     public <E extends SaveAble> List<E> fetchWithRestriction(Class<E> entity, String fieldName, Object value) {
-        synchronized (Connector.class) {
+        synchronized (staticLock) {
             Session session = sessionFactory.openSession();
             List<E> result = session.createQuery("from " + entity.getName() + " where " + fieldName
                     + "=" + "'" + value + "'", entity).getResultList();
             session.close();
             return result;
+        }
+    }
+
+    private static class nullPrintStream extends OutputStream {
+        @Override
+        public void write(int b) throws IOException {
         }
     }
 }

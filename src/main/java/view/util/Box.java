@@ -111,7 +111,7 @@ public abstract class Box<E, T extends JPanel> extends JPanel {
         items.add(t);
     }
 
-    abstract T createNew(E e);
+    protected abstract T createNew(E e);
 
     private void update() {
         this.removeAll();

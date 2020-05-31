@@ -1,6 +1,7 @@
 package model.account;
 
 import hibernate.SaveAble;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -9,17 +10,13 @@ import model.main.CardDetails;
 import model.main.Hero;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
-import org.hibernate.annotations.LazyCollection;
-import org.hibernate.annotations.LazyCollectionOption;
 
 import javax.persistence.*;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Entity
-@ToString
+@ToString()
+@EqualsAndHashCode(of = "userName")
 public class Player implements SaveAble {
     @Id
     @Setter
@@ -42,20 +39,17 @@ public class Player implements SaveAble {
     @Setter
     private int selectedDeckIndex;
     @ElementCollection
-    @LazyCollection(LazyCollectionOption.FALSE)
     @Setter
     @Getter
     @JoinTable(name = "Player_Card")
     private Map<Card, CardDetails> cards;
     @ManyToMany
-    @LazyCollection(LazyCollectionOption.FALSE)
     @Setter
     @Getter
     @JoinTable(name = "Player_Hero")
     private List<Hero> heroes;
     @OneToMany
-    @LazyCollection(LazyCollectionOption.FALSE)
-    @Cascade({CascadeType.SAVE_UPDATE, CascadeType.DELETE})
+    @Cascade(CascadeType.ALL)
     @Setter
     @Getter
     private List<Deck> decks;
@@ -64,7 +58,6 @@ public class Player implements SaveAble {
         cards = new HashMap<>();
         heroes = new ArrayList<>();
         decks = new ArrayList<>();
-//        gameHistories = new ArrayList<>();
     }
 
     public Player() {
@@ -81,6 +74,7 @@ public class Player implements SaveAble {
         this.cards = cards;
         this.heroes = heroes;
         this.decks = decks;
+        decks.forEach(deck->deck.setPlayer(this));
     }
 
     public void addCard(Card card) {
@@ -105,7 +99,7 @@ public class Player implements SaveAble {
     }
 
     @PostLoad
-    void postLoad() {
+    private void postLoad() {
         this.cards = new HashMap<>(this.cards);
         this.decks = new ArrayList<>(this.decks);
         this.heroes = new ArrayList<>(this.heroes);

@@ -1,6 +1,5 @@
 import client.Client;
 import server.Server;
-import util.ConfigFactory;
 import util.ImageLoader;
 import util.ResourceLoader;
 

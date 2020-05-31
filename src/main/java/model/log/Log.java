@@ -1,6 +1,7 @@
 package model.log;
 
 import hibernate.SaveAble;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -8,11 +9,12 @@ import javax.persistence.Entity;
 import javax.persistence.Id;
 
 @Entity
+@EqualsAndHashCode(of = "time")
 public abstract class Log implements SaveAble {
     @Id
     @Getter
     @Setter
-    private long time;
+    protected long time;
     @Getter
     @Setter
     private String username;

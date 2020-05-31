@@ -7,6 +7,7 @@ import model.log.InGameLog;
 import model.main.*;
 
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
@@ -17,8 +18,7 @@ class Game {
     private final List<Minion> ground;
     @Getter
     private final List<Card> handCard, deck;
-    @Getter
-    private final GameHistory gameHistory;
+    private final List<GameEvent> gameEvents;
     @Getter
     private final Hero hero;
     @Getter
@@ -36,7 +36,7 @@ class Game {
         this.ground = new ArrayList<>();
         this.deck = deckToList(deck);
         this.player = player;
-        this.gameHistory = new GameHistory(passive, hero, new ArrayList<>(this.deck));
+        this.gameEvents= new LinkedList<>();
         this.handCard = new ArrayList<>();
         for (int i = 0; i < STARTING_HAND_CARDS; i++) {
             drawCard();
@@ -58,7 +58,7 @@ class Game {
     }
 
     void endTurn() {
-        gameHistory.getEvents().add(new EndTurn(nextMana));
+        gameEvents.add(new EndTurn(nextMana));
         connector.save(new InGameLog(player.getUserName(), null, "next turn", nextMana));
         mana = nextMana;
         if (nextMana < MAX_MANA) {
@@ -69,7 +69,7 @@ class Game {
                 drawCard();
             }
         } else {
-            gameHistory.getEvents().add(new EndGame(EndGame.EndGameType.WIN));
+            gameEvents.add(new EndGame(EndGame.EndGameType.WIN));
             connector.save(new InGameLog(player.getUserName(), null, "game ended:win"));
             running = false;
         }
@@ -77,7 +77,7 @@ class Game {
 
     String getGameEvents() {
         StringBuilder result = new StringBuilder();
-        for (GameEvent g : gameHistory.getEvents()) {
+        for (GameEvent g : gameEvents) {
             result.append(g.toString());
             result.append("\n");
         }
@@ -88,10 +88,10 @@ class Game {
         Card card = deck.remove((int) (Math.random() * deck.size()));
         if (handCard.size() < 12) {
             handCard.add(card);
-            gameHistory.getEvents().add(new DrawCard(card));
+            gameEvents.add(new DrawCard(card));
             connector.save(new InGameLog(player.getUserName(), card.getName(), "draw card", mana));
         } else {
-            gameHistory.getEvents().add(new DeleteCard(card));
+            gameEvents.add(new DeleteCard(card));
             connector.save(new InGameLog(player.getUserName(), card.getName(), "delete card", mana));
         }
     }
@@ -110,27 +110,27 @@ class Game {
         if (ground.size() < 7) {
             ground.add(minion);
             connector.save(new InGameLog(player.getUserName(), minion.getName(), "play card", mana));
-            gameHistory.getEvents().add(new PlayCard(minion));
+            gameEvents.add(new PlayCard(minion));
         }else {
             connector.save(new InGameLog(player.getUserName(), minion.getName(), "delete card", mana));
-            gameHistory.getEvents().add(new DeleteCard(minion));
+            gameEvents.add(new DeleteCard(minion));
         }
     }
 
     private void playWeapon(Weapon weapon) {
         activeWeapon = weapon;
         connector.save(new InGameLog(player.getUserName(), weapon.getName(), "play card", mana));
-        gameHistory.getEvents().add(new PlayCard(weapon));
+        gameEvents.add(new PlayCard(weapon));
     }
 
     private void playSpell(Spell spell) {
         connector.save(new InGameLog(player.getUserName(), spell.getName(), "play card", mana));
-        gameHistory.getEvents().add(new PlayCard(spell));
+        gameEvents.add(new PlayCard(spell));
     }
 
     void exit() {
         if (running) {
-            gameHistory.getEvents().add(new EndGame(EndGame.EndGameType.LOSE));
+            gameEvents.add(new EndGame(EndGame.EndGameType.LOSE));
             connector.save(new InGameLog(player.getUserName(), null, "game ended:lose"));
         }
     }

@@ -5,10 +5,7 @@ import lombok.Getter;
 import model.account.Deck;
 import model.main.*;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class ModelLoader {
     @Getter
@@ -34,14 +31,15 @@ public class ModelLoader {
     }
 
     public void config(Config config,Connector connector) {
-        defaultHero = getHero(config.getProperty(String.class, "defaultHero"));
+        defaultHero = getHero(config.getProperty(String.class, "defaultHero"))
+                .orElseThrow(NullPointerException::new);
         List<String> heroName = config.getPropertyList(String.class, "firstHeroes");
         for (String s : heroName) {
-            firstHeroes.add(getHero(s));
+            firstHeroes.add(getHero(s).orElseThrow(NullPointerException::new));
         }
         List<String> cardsName = config.getPropertyList(String.class, "firstCards");
         for (String s : cardsName) {
-            firstCards.add(getCard(s));
+            firstCards.add(getCard(s).orElseThrow(NullPointerException::new));
         }
     }
 
@@ -67,41 +65,41 @@ public class ModelLoader {
         return map;
     }
 
-    public Card getCard(String s) {
+    public Optional<Card> getCard(String s) {
         for (Card c : cards)
             if (c.getName().equals(s))
-                return c;
-        return null;
+                return Optional.of(c);
+        return Optional.empty();
     }
 
-    public Hero getHero(String s) {
+    public Optional<Hero> getHero(String s) {
         for (Hero h : heroes)
             if (h.getName().equals(s))
-                return h;
-        return null;
+                return Optional.of(h);
+        return Optional.empty();
     }
 
-    public ClassOfCard getClassOfCard(String name){
+    public Optional<ClassOfCard> getClassOfCard(String name){
         for (ClassOfCard c : classOfCards)
             if (c.getHeroName().equals(name))
-                return c;
-        return null;
+                return Optional.of(c);
+        return Optional.empty();
     }
 
-    public Passive getPassive(String name){
+    public Optional<Passive> getPassive(String name){
         for (Passive p : firstPassives)
             if (p.getName().equals(name))
-                return p;
-        return null;
+                return Optional.of(p);
+        return Optional.empty();
     }
 
-    public Unit searchUnit(String s) {
+    public Optional<Unit> searchUnit(String s) {
         for (Hero h : heroes)
             if (h.getName().equals(s))
-                return h;
+                return Optional.of(h);
         for (Card c : cards)
             if (c.getName().equals(s))
-                return c;
-        return null;
+                return Optional.of(c);
+        return Optional.empty();
     }
 }

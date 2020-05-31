@@ -1,11 +1,13 @@
 package client;
 
 import hibernate.Connector;
-import model.log.AnswerLog;
+import model.log.ResponseLog;
 import model.log.ButtonLog;
 import model.log.RequestLog;
-import server.Request;
+import requests.*;
+import response.Response;
 import server.Server;
+import util.ConfigFactory;
 import util.Loop;
 import util.Updatable;
 import view.MyFrame;
@@ -28,7 +30,7 @@ public class Client {
     private final Stack<PanelType> history;
     private PanelType now;
     private final Connector connector;
-    private final List<Answer> tempAnswerList, answerList;
+    private final List<Response> tempResponseList, responseList;
     private final Loop executor;
     private String username;
     private final Server server;
@@ -47,11 +49,12 @@ public class Client {
         panels.put(PanelType.COLLECTION, new CollectionPanel(new CollectionAction()));
         panels.put(PanelType.PASSIVE, new PassivePanel(new PassiveAction()));
         panels.put(PanelType.PLAY, new PlayPanel(new PlayAction()));
-        tempAnswerList = new ArrayList<>();
-        answerList = new ArrayList<>();
+        tempResponseList = new ArrayList<>();
+        responseList = new ArrayList<>();
         executor = new Loop(60, this::executeAnswers);
         executor.start();
-        connector = new Connector("CLIENT_HIBERNATE_CONFIG");
+        connector =  new Connector(ConfigFactory.getInstance().getConfigFile("CLIENT_HIBERNATE_CONFIG")
+                ,"client");
     }
 
     public static Client getInstance() {
@@ -59,20 +62,20 @@ public class Client {
     }
 
     private void executeAnswers() {
-        synchronized (tempAnswerList) {
-            answerList.addAll(tempAnswerList);
-            tempAnswerList.clear();
+        synchronized (tempResponseList) {
+            responseList.addAll(tempResponseList);
+            tempResponseList.clear();
         }
-        answerList.forEach(Answer::execute);
-        answerList.clear();
+        responseList.forEach(Response::execute);
+        responseList.clear();
     }
 
-    public void putAnswer(Answer answer) {
-        if (answer != null) {
-            synchronized (tempAnswerList) {
-                tempAnswerList.add(answer);
+    public void putAnswer(Response response) {
+        if (response != null) {
+            synchronized (tempResponseList) {
+                tempResponseList.add(response);
             }
-            connector.save(new AnswerLog(answer, username));
+            connector.save(new ResponseLog(response, username));
         }
     }
 
@@ -92,7 +95,7 @@ public class Client {
         System.exit(0);
     }
 
-    void login(boolean success, String message) {
+    public void login(boolean success, String message) {
         LoginPanel panel = (LoginPanel) panels.get(PanelType.LOGIN);
         if (success) {
             panel.reset();
@@ -106,13 +109,13 @@ public class Client {
     }
 
     private void logout() {
-        Request request = new Request.LogoutRequest();
+        Request request = new LogoutRequest();
         server.addRequest(request);
         connector.save(new RequestLog(request, username));
     }
 
     private void deleteAccount() {
-        Request request = new Request.DeleteAccount();
+        Request request = new DeleteAccount();
         server.addRequest(request);
         connector.save(new RequestLog(request, username));
     }
@@ -133,36 +136,36 @@ public class Client {
     }
 
     private void sendLoginRequest(String username, String pass, int mode) {
-        Request request = new Request.LoginRequest(username, pass, mode);
+        Request request = new LoginRequest(username, pass, mode);
         server.addRequest(request);
         connector.save(new RequestLog(request, username));
     }
 
     private void sendShopRequest() {
-        Request request = new Request.Shop();
+        Request request = new Shop();
         server.addRequest(request);
         connector.save(new RequestLog(request, username));
     }
 
     private void sendStatusRequest() {
-        Request request = new Request.Status();
+        Request request = new Status();
         server.addRequest(request);
         connector.save(new RequestLog(request, username));
     }
 
     private void sendFirstCollectionRequest() {
-        Request request = new Request.FirstCollection();
+        Request request = new FirstCollection();
         server.addRequest(request);
         connector.save(new RequestLog(request, username));
     }
 
     private void sendCollectionRequest(String name, String classOfCard, int mana, int lockMode, String deckName) {
-        Request request = new Request.CollectionDetails(name, classOfCard, mana, lockMode, deckName);
+        Request request = new CollectionDetails(name, classOfCard, mana, lockMode, deckName);
         server.addRequest(request);
         connector.save(new RequestLog(request, username));
     }
 
-    void setShopDetails(List<CardOverview> sell, List<CardOverview> buy, int coin) {
+    public void setShopDetails(List<CardOverview> sell, List<CardOverview> buy, int coin) {
         if (now != PanelType.SHOP) {
             now = PanelType.SHOP;
             updateFrame();
@@ -173,7 +176,7 @@ public class Client {
         shopPanel.setCoin(coin);
     }
 
-    void setStatusDetails(List<BigDeckOverview> bigDeckOverviews) {
+    public void setStatusDetails(List<BigDeckOverview> bigDeckOverviews) {
         StatusPanel statusPanel = (StatusPanel) panels.get(PanelType.STATUS);
         statusPanel.setDeckBoxList(bigDeckOverviews);
         if (now != PanelType.STATUS) {
@@ -182,7 +185,7 @@ public class Client {
         }
     }
 
-    void setFirstCollectionDetail(List<String> heroNames, List<String> classOfCardNames) {
+    public void setFirstCollectionDetail(List<String> heroNames, List<String> classOfCardNames) {
         CollectionPanel collectionPanel = (CollectionPanel) panels.get(PanelType.COLLECTION);
         collectionPanel.setFirstDetails(heroNames, classOfCardNames);
         if (now != PanelType.COLLECTION) {
@@ -191,9 +194,9 @@ public class Client {
         }
     }
 
-    void setCollectionDetail(List<CardOverview> cards, List<SmallDeckOverview> decks,
-                             List<CardOverview> deckCards, boolean canAddDeck,
-                             boolean canChangeHero, String deckName) {
+    public void setCollectionDetail(List<CardOverview> cards, List<SmallDeckOverview> decks,
+                                    List<CardOverview> deckCards, boolean canAddDeck,
+                                    boolean canChangeHero, String deckName) {
         CollectionPanel collectionPanel = (CollectionPanel) panels.get(PanelType.COLLECTION);
         collectionPanel.setDetails(cards, decks, deckCards, canAddDeck, canChangeHero, deckName);
         if (now != PanelType.COLLECTION) {
@@ -202,11 +205,11 @@ public class Client {
         }
     }
 
-    void showMessage(String message) {
+    public void showMessage(String message) {
         JOptionPane.showMessageDialog(frame, message);
     }
 
-    void goTo(String panel, String message) {
+    public void goTo(String panel, String message) {
         try {
             PanelType p = PanelType.valueOf(panel);
             boolean flag = message == null || JOptionPane.showConfirmDialog(frame, message, "goto",
@@ -222,12 +225,12 @@ public class Client {
     }
 
     private void sendStartPlayRequest() {
-        Request request = new Request.StartPlaying();
+        Request request = new StartPlaying();
         server.addRequest(request);
         connector.save(new RequestLog(request, username));
     }
 
-    void setPassives(List<PassiveOverview> passives) {
+    public void setPassives(List<PassiveOverview> passives) {
         ((PassivePanel) panels.get(PanelType.PASSIVE)).setPassives(passives);
         if (now != PanelType.PASSIVE) {
             now = PanelType.PASSIVE;
@@ -235,8 +238,8 @@ public class Client {
         }
     }
 
-    void setPlayDetail(List<CardOverview> hand, List<CardOverview> ground, CardOverview weapon,
-                       HeroOverview hero, HeroPowerOverview heroPower, String eventLog, int mana, int deckCards) {
+    public void setPlayDetail(List<CardOverview> hand, List<CardOverview> ground, CardOverview weapon,
+                              HeroOverview hero, HeroPowerOverview heroPower, String eventLog, int mana, int deckCards) {
         ((PlayPanel) panels.get(PanelType.PLAY)).setDetails(hand, ground
                 , weapon, hero, heroPower, eventLog, mana, deckCards);
         if (now != PanelType.PLAY) {
@@ -325,14 +328,14 @@ public class Client {
     public class ShopAction {
         public void sell(String cardName) {
             connector.save(new ButtonLog(username, "sell:" + cardName, SHOP.toString()));
-            Request request = new Request.SellCard(cardName);
+            Request request = new SellCard(cardName);
             server.addRequest(request);
             connector.save(new RequestLog(request, Client.this.username));
         }
 
         public void buy(String cardName) {
             connector.save(new ButtonLog(username, "buy:" + cardName, SHOP.toString()));
-            Request request = new Request.BuyCard(cardName);
+            Request request = new BuyCard(cardName);
             server.addRequest(request);
             connector.save(new RequestLog(request, Client.this.username));
         }
@@ -448,7 +451,7 @@ public class Client {
         }
 
         public void newDeck(String deckName, String heroName) {
-            Request request = new Request.NewDeck(deckName, heroName);
+            Request request = new NewDeck(deckName, heroName);
             server.addRequest(request);
             connector.save(new RequestLog(request, Client.this.username));
             connector.save(new ButtonLog(username,"new deck:"+deckName+" hero:"+heroName
@@ -457,7 +460,7 @@ public class Client {
         }
 
         public void deleteDeck(String deckName) {
-            Request request = new Request.DeleteDeck(deckName);
+            Request request = new DeleteDeck(deckName);
             server.addRequest(request);
             connector.save(new RequestLog(request, Client.this.username));
             connector.save(new ButtonLog(username,"delete deck:"+deckName,COLLECTION.toString()));
@@ -465,7 +468,7 @@ public class Client {
         }
 
         public void changeDeckName(String oldDeckName, String newDeckName) {
-            Request request = new Request.ChangeDeckName(oldDeckName, newDeckName);
+            Request request = new ChangeDeckName(oldDeckName, newDeckName);
             server.addRequest(request);
             connector.save(new RequestLog(request, Client.this.username));
             connector.save(new ButtonLog(username,"change deck name:"+oldDeckName+" new:"+newDeckName,
@@ -474,7 +477,7 @@ public class Client {
         }
 
         public void changeHeroDeck(String deckName, String heroName) {
-            Request request = new Request.ChangeHeroDeck(deckName, heroName);
+            Request request = new ChangeHeroDeck(deckName, heroName);
             server.addRequest(request);
             connector.save(new RequestLog(request, Client.this.username));
             connector.save(new ButtonLog(username,"change hero deck:"+deckName+" hero:"+heroName
@@ -483,7 +486,7 @@ public class Client {
         }
 
         public void addCardToDeck(String cardName) {
-            Request request = new Request.AddCardToDeck(cardName, deckName);
+            Request request = new AddCardToDeck(cardName, deckName);
             server.addRequest(request);
             connector.save(new RequestLog(request, Client.this.username));
             connector.save(new ButtonLog(username,"add card to deck:"+deckName+"card:"+cardName
@@ -492,7 +495,7 @@ public class Client {
         }
 
         public void removeCardFromDeck(String cardName) {
-            Request request = new Request.RemoveCardFromDeck(cardName, deckName);
+            Request request = new RemoveCardFromDeck(cardName, deckName);
             server.addRequest(request);
             connector.save(new RequestLog(request, Client.this.username));
             connector.save(new ButtonLog(username,"remove card to deck:"+deckName+"card:"+cardName
@@ -537,7 +540,7 @@ public class Client {
         }
 
         public void selectPassive(String passiveName) {
-            Request request = new Request.SelectPassive(passiveName);
+            Request request = new SelectPassive(passiveName);
             server.addRequest(request);
             connector.save(new ButtonLog(username, "passive:"+passiveName, PASSIVE.toString()));
             connector.save(new RequestLog(request, Client.this.username));
@@ -547,21 +550,21 @@ public class Client {
 
     public class PlayAction {
         public void exit() {
-            Request request = new Request.ExitGame();
+            Request request = new ExitGame();
             server.addRequest(request);
             connector.save(new ButtonLog(username, "exit", PLAY.toString()));
             connector.save(new RequestLog(request, Client.this.username));
         }
 
         public void endTurn() {
-            Request request = new Request.EndTurn();
+            Request request = new EndTurn();
             server.addRequest(request);
             connector.save(new ButtonLog(username, "end turn", PLAY.toString()));
             connector.save(new RequestLog(request, Client.this.username));
         }
 
         public void playCard(String cardName) {
-            Request request = new Request.PlayCard(cardName);
+            Request request = new PlayCard(cardName);
             server.addRequest(request);
             connector.save(new ButtonLog(username, "playCard:"+cardName, PLAY.toString()));
             connector.save(new RequestLog(request, Client.this.username));
