@@ -1,5 +1,9 @@
 package response;
 
-public abstract class Response {
-    public abstract void execute();
+import client.Client;
+import util.ResponseLogInfoVisitor;
+import util.Visitable;
+
+public abstract class Response implements Visitable<ResponseLogInfoVisitor> {
+    public abstract void execute(Client client);
 }

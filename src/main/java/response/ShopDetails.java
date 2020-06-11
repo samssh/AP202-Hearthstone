@@ -2,6 +2,7 @@ package response;
 
 import client.Client;
 import lombok.Getter;
+import util.ResponseLogInfoVisitor;
 import view.model.CardOverview;
 
 import java.util.List;
@@ -19,7 +20,12 @@ public class ShopDetails extends Response {
     }
 
     @Override
-    public void execute() {
-        Client.getInstance().setShopDetails(sell, buy, coins);
+    public void execute(Client client) {
+        client.setShopDetails(sell, buy, coins);
+    }
+
+    @Override
+    public void accept(ResponseLogInfoVisitor visitor) {
+        visitor.setShopDetailsInfo(this);
     }
 }

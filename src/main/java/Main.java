@@ -8,7 +8,7 @@ public class Main {
         ResourceLoader.setArgs(args);
         ResourceLoader.getInstance().checkResources();
         ImageLoader imageLoader = ImageLoader.getInstance();
-        Server server = Server.getInstance();
         Client client = Client.getInstance();
+        Server server = Server.getInstance();
     }
 }

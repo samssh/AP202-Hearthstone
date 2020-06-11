@@ -4,24 +4,21 @@ import client.Client;
 import lombok.Getter;
 import util.ResponseLogInfoVisitor;
 
-public class LoginResponse extends Response {
-    @Getter
-    private final boolean success;
+public class ShowMessage extends Response {
     @Getter
     private final String message;
 
-    public LoginResponse(boolean success, String message) {
-        this.success = success;
+    public ShowMessage(String message) {
         this.message = message;
     }
 
     @Override
     public void execute(Client client) {
-        client.login(success, message);
+        client.showMessage(message);
     }
 
     @Override
     public void accept(ResponseLogInfoVisitor visitor) {
-        visitor.setLoginResponseInfo(this);
+        visitor.setShowMessageInfo(this);
     }
 }

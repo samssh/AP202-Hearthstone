@@ -4,6 +4,8 @@ import lombok.EqualsAndHashCode;
 import response.*;
 import lombok.Getter;
 import lombok.Setter;
+import util.ResponseLogInfoVisitor;
+import util.Visitable;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -40,46 +42,78 @@ public class ResponseLogInfo {
     public ResponseLogInfo() {
     }
 
-    public ResponseLogInfo(Response response,long id) {
+    public ResponseLogInfo(Visitable<ResponseLogInfoVisitor> response, long id) {
         this.id = id;
         type = response.getClass().getSimpleName();
-        if (response instanceof LoginResponse) {
-            success = ((LoginResponse) response).isSuccess();
-            message = ((LoginResponse) response).getMessage();
-        } else if (response instanceof ShopDetails) {
-            buy = ((ShopDetails) response).getBuy().toString();
-            sell = ((ShopDetails) response).getSell().toString();
-            coins = ((ShopDetails) response).getCoins();
-        } else if (response instanceof StatusDetails) {
-            bigDeckOverviews = ((StatusDetails) response).getBigDeckOverviews().toString();
-        } else if (response instanceof FirstCollectionDetails) {
-            classOfCardNames = ((FirstCollectionDetails) response).getClassOfCardNames().toString();
-            heroNames = ((FirstCollectionDetails) response).getHeroNames().toString();
-        } else if (response instanceof CollectionDetails) {
-            decks = ((CollectionDetails) response).getDecks().toString();
-            cards = ((CollectionDetails) response).getCards().toString();
-            if (((CollectionDetails) response).getDeckCards() != null)
-                deckCards = ((CollectionDetails) response).getDeckCards().toString();
-            deckName = ((CollectionDetails) response).getDeckName();
-            canAddDeck = ((CollectionDetails) response).isCanAddDeck();
-            canChangeHero = ((CollectionDetails) response).isCanChangeHero();
-        } else if (response instanceof showMessage) {
-            message = ((showMessage) response).getMessage();
-        } else if (response instanceof GoTo) {
-            message = ((GoTo) response).getMessage();
-            panel = ((GoTo) response).getPanel();
-        } else if (response instanceof PassiveDetails) {
-            passives = ((PassiveDetails) response).getPassives().toString();
-        } else if (response instanceof PlayDetails) {
-            hand = ((PlayDetails) response).getHand().toString();
-            ground = ((PlayDetails) response).getGround().toString();
-            if (((PlayDetails) response).getWeapon()!=null)
-            weapon = ((PlayDetails) response).getWeapon().toString();
-            hero = ((PlayDetails) response).getHero().toString();
-            heroPower = ((PlayDetails) response).getHeroPower().toString();
-            mana = ((PlayDetails) response).getMana();
-            deckCards = ((PlayDetails) response).getDeckCards() + "";
-            eventLog = ((PlayDetails) response).getEventLog();
+        response.accept(new Visitor());
+    }
+
+
+    public class Visitor implements ResponseLogInfoVisitor{
+
+        @Override
+        public void setPassiveDetailsInfo(PassiveDetails response) {
+            passives = response.getPassives().toString();
+
+        }
+
+        @Override
+        public void setPlayDetailsInfo(PlayDetails playDetails) {
+            hand = playDetails.getHand().toString();
+            ground = playDetails.getGround().toString();
+            if (playDetails.getWeapon() != null)
+                weapon = playDetails.getWeapon().toString();
+            hero = playDetails.getHero().toString();
+            heroPower = playDetails.getHeroPower().toString();
+            mana = playDetails.getMana();
+            deckCards = playDetails.getDeckCards() + "";
+            eventLog = playDetails.getEventLog();
+        }
+
+        @Override
+        public void setGoToInfo(GoTo goTo) {
+            message = goTo.getMessage();
+            panel = goTo.getPanel();
+        }
+
+        @Override
+        public void setShowMessageInfo(ShowMessage showMessage) {
+            message = showMessage.getMessage();
+        }
+
+        @Override
+        public void setCollectionDetailsInfo(CollectionDetails collectionDetails) {
+            decks = collectionDetails.getDecks().toString();
+            cards = collectionDetails.getCards().toString();
+            if (collectionDetails.getDeckCards() != null)
+                deckCards = collectionDetails.getDeckCards().toString();
+            deckName = collectionDetails.getDeckName();
+            canAddDeck = collectionDetails.isCanAddDeck();
+            canChangeHero = collectionDetails.isCanChangeHero();
+        }
+
+        @Override
+        public void setFirstCollectionDetailsInfo(FirstCollectionDetails firstCollectionDetails) {
+            classOfCardNames = firstCollectionDetails.getClassOfCardNames().toString();
+            heroNames = firstCollectionDetails.getHeroNames().toString();
+        }
+
+        @Override
+        public void setStatusDetailsInfo(StatusDetails statusDetails) {
+            bigDeckOverviews = statusDetails.getBigDeckOverviews().toString();
+        }
+
+        @Override
+        public void setShopDetailsInfo(ShopDetails shopDetails) {
+            buy = shopDetails.getBuy().toString();
+            sell = shopDetails.getSell().toString();
+            coins = shopDetails.getCoins();
+        }
+
+        @Override
+        public void setLoginResponseInfo(LoginResponse loginResponse) {
+            success = loginResponse.isSuccess();
+            message = loginResponse.getMessage();
         }
     }
 }

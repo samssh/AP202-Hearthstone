@@ -156,7 +156,7 @@ public class DatabaseFiller {
     public static void main(String[] args) {
         ResourceLoader.setArgs(args);
         connector =  new Connector(ConfigFactory.getInstance().getConfigFile("SERVER_HIBERNATE_CONFIG")
-                ,"server",System.getenv("HearthStone password"));
+                ,System.getenv("HearthStone password"));
         fill();
         List<Hero> heroes = connector.fetchAll(Hero.class);
         heroes.forEach(System.out::println);

@@ -2,6 +2,7 @@ package response;
 
 import client.Client;
 import lombok.Getter;
+import util.ResponseLogInfoVisitor;
 
 public class GoTo extends Response {
     @Getter
@@ -14,7 +15,12 @@ public class GoTo extends Response {
 
 
     @Override
-    public void execute() {
-        Client.getInstance().goTo(panel, message);
+    public void execute(Client client) {
+        client.goTo(panel, message);
+    }
+
+    @Override
+    public void accept(ResponseLogInfoVisitor visitor) {
+        visitor.setGoToInfo(this);
     }
 }

@@ -32,14 +32,16 @@ public class ModelLoader {
 
     public void config(Config config,Connector connector) {
         defaultHero = getHero(config.getProperty(String.class, "defaultHero"))
-                .orElseThrow(NullPointerException::new);
+                .orElseThrow(()->new NoSuchElementException("hero on config file not exist"));
         List<String> heroName = config.getPropertyList(String.class, "firstHeroes");
         for (String s : heroName) {
-            firstHeroes.add(getHero(s).orElseThrow(NullPointerException::new));
+            firstHeroes.add(getHero(s)
+                    .orElseThrow(()->new NoSuchElementException("hero on config file not exist")));
         }
         List<String> cardsName = config.getPropertyList(String.class, "firstCards");
         for (String s : cardsName) {
-            firstCards.add(getCard(s).orElseThrow(NullPointerException::new));
+            firstCards.add(getCard(s)
+                    .orElseThrow(()->new NoSuchElementException("hero on config file not exist")));
         }
     }
 

@@ -2,13 +2,16 @@ package response;
 
 import client.Client;
 import lombok.Getter;
+import model.log.ResponseLogInfo;
+import util.Visitable;
+import util.ResponseLogInfoVisitor;
 import view.model.CardOverview;
 import view.model.HeroOverview;
 import view.model.HeroPowerOverview;
 
 import java.util.List;
 
-public class PlayDetails extends Response {
+public class PlayDetails extends Response implements Visitable<ResponseLogInfoVisitor> {
     @Getter
     private final List<CardOverview> hand, ground;
     @Getter
@@ -35,7 +38,12 @@ public class PlayDetails extends Response {
     }
 
     @Override
-    public void execute() {
-        Client.getInstance().setPlayDetail(hand, ground, weapon, hero, heroPower, eventLog, mana, deckCards);
+    public void execute(Client client) {
+        client.setPlayDetail(hand, ground, weapon, hero, heroPower, eventLog, mana, deckCards);
+    }
+
+    @Override
+    public void accept(ResponseLogInfoVisitor visitor) {
+        visitor.setPlayDetailsInfo(this);
     }
 }

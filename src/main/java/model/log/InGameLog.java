@@ -18,7 +18,7 @@ public class InGameLog extends Log{
     private int mana;
 
     public InGameLog(String username, String cardName, String type, int mana) {
-        super(System.nanoTime(), username);
+        super(System.currentTimeMillis(), username);
         this.cardName = cardName;
         this.type = type;
         this.mana = mana;

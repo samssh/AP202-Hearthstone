@@ -21,7 +21,7 @@ public class BuySellLog extends Log{
     }
 
     public BuySellLog(String username, int lastCoin, int newCoin, String cardName,String type) {
-        super(System.nanoTime(), username);
+        super(System.currentTimeMillis(), username);
         this.lastCoin = lastCoin;
         this.newCoin = newCoin;
         this.cardName = cardName;

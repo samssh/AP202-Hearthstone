@@ -14,7 +14,7 @@ public class AccountLog extends Log{
     private String type;
 
     public AccountLog(String username, String type) {
-        super(System.nanoTime(), username);
+        super(System.currentTimeMillis(), username);
         this.type = type;
     }
 

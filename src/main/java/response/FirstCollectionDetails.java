@@ -2,6 +2,7 @@ package response;
 
 import client.Client;
 import lombok.Getter;
+import util.ResponseLogInfoVisitor;
 
 import java.util.List;
 
@@ -15,7 +16,12 @@ public class FirstCollectionDetails extends Response {
     }
 
     @Override
-    public void execute() {
-        Client.getInstance().setFirstCollectionDetail(heroNames, classOfCardNames);
+    public void execute(Client client) {
+        client.setFirstCollectionDetail(heroNames, classOfCardNames);
+    }
+
+    @Override
+    public void accept(ResponseLogInfoVisitor visitor) {
+        visitor.setFirstCollectionDetailsInfo(this);
     }
 }

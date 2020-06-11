@@ -12,25 +12,32 @@ import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import java.io.*;
-import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
 public class Connector {
     private final static Object staticLock = new Object();
+    private final static PrintStream logFilePrintStream;
+
+    static {
+        PrintStream temp;
+        String logPath = "./hibernate log" + File.separator + "hibernate log.txt";
+        try {
+            temp = new PrintStream(new File(logPath));
+        } catch (FileNotFoundException e) {
+            temp = System.err;
+        }
+        logFilePrintStream = temp;
+    }
+
     private final SessionFactory sessionFactory;
-    private final PrintStream logFilePrintStream;
     private final Set<SaveAble> save, delete, tempSave, tempDelete;
     private final Object lock;
     private final Loop worker;
 
     @SneakyThrows
-    public Connector(File configFile, String name, String password) {
-        File log = new File("./hibernate log");
-        String logPath = log.getPath() + File.separator + name + "log.txt";
-        if (log.exists() || log.mkdirs()) this.logFilePrintStream = new PrintStream(new File(logPath));
-        else this.logFilePrintStream = new PrintStream(new nullPrintStream());
+    public Connector(File configFile, String password) {
         sessionFactory = buildSessionFactory(addPassword(getServiceRegistryBuilder(configFile), password).build());
         save = new HashSet<>();
         delete = new HashSet<>();
@@ -41,8 +48,8 @@ public class Connector {
         worker.start();
     }
 
-    public Connector(File file,String name){
-        this(file,name,null);
+    public Connector(File file) {
+        this(file, null);
     }
 
     private SessionFactory buildSessionFactory(StandardServiceRegistry registry) {
@@ -164,12 +171,6 @@ public class Connector {
                     + "=" + "'" + value + "'", entity).getResultList();
             session.close();
             return result;
-        }
-    }
-
-    private static class nullPrintStream extends OutputStream {
-        @Override
-        public void write(int b) throws IOException {
         }
     }
 }

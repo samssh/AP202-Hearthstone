@@ -2,6 +2,7 @@ package response;
 
 import client.Client;
 import lombok.Getter;
+import util.ResponseLogInfoVisitor;
 import view.model.CardOverview;
 import view.model.SmallDeckOverview;
 
@@ -31,7 +32,12 @@ public class CollectionDetails extends Response {
     }
 
     @Override
-    public void execute() {
-        Client.getInstance().setCollectionDetail(cards, decks, deckCards, canAddDeck, canChangeHero, deckName);
+    public void execute(Client client) {
+        client.setCollectionDetail(cards, decks, deckCards, canAddDeck, canChangeHero, deckName);
+    }
+
+    @Override
+    public void accept(ResponseLogInfoVisitor visitor) {
+        visitor.setCollectionDetailsInfo(this);
     }
 }

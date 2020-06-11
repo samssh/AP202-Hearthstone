@@ -2,6 +2,7 @@ package response;
 
 import client.Client;
 import lombok.Getter;
+import util.ResponseLogInfoVisitor;
 import view.model.BigDeckOverview;
 
 import java.util.List;
@@ -15,7 +16,12 @@ public class StatusDetails extends Response {
     }
 
     @Override
-    public void execute() {
-        Client.getInstance().setStatusDetails(bigDeckOverviews);
+    public void execute(Client client) {
+        client.setStatusDetails(bigDeckOverviews);
+    }
+
+    @Override
+    public void accept(ResponseLogInfoVisitor visitor) {
+        visitor.setStatusDetailsInfo(this);
     }
 }

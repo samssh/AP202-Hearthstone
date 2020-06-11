@@ -120,21 +120,22 @@ public class Collection {
             return false;
         return deck.getCards().keySet().stream()
                 .anyMatch(c -> !c.getClassOfCard().equals(modelLoader.getClassOfCard("Neutral")
-                        .orElseThrow(NullPointerException::new)));
+                        .orElseThrow(()->new NoSuchElementException("Neutral class not loaded"))));
     }
 
     public void newDeck(String deckName, String heroName, Player player) {
         Response response;
         if (!containDeckName(deckName,player) && containHero(heroName,player)) {
-            Hero h = modelLoader.getHero(heroName).orElse(null);
-            player.getDecks().add(new Deck(h, deckName, player));
+            Hero hero = modelLoader.getHero(heroName)
+                    .orElseThrow(()->new NoSuchElementException("the saved hero name not exist"));
+            player.getDecks().add(new Deck(hero, deckName, player));
             connector.save(player);
             sendCollectionDetails(name, classOfCard, mana, lockMode, this.deckName,player);
             connector.save(new CollectionLog(player.getUserName(), null, heroName, deckName,
                     "create deck", null));
-            response = new showMessage("deck created");
+            response = new ShowMessage("deck created");
         } else {
-            response = new showMessage("deck not created");
+            response = new ShowMessage("deck not created");
         }
         Client.getInstance().putAnswer(response);
         connector.save(new ResponseLog(response, player.getUserName()));
@@ -156,10 +157,10 @@ public class Collection {
             connector.save(player);
             connector.delete(deck);
             sendCollectionDetails(name, classOfCard, mana, lockMode, null,player);
-            response = new showMessage("deck deleted");
+            response = new ShowMessage("deck deleted");
             connector.save(new CollectionLog(player.getUserName(), null, null,
                     deckName, "delete deck", null));
-        } else response = new showMessage("deck not deleted");
+        } else response = new ShowMessage("deck not deleted");
         Client.getInstance().putAnswer(response);
         connector.save(new ResponseLog(response, player.getUserName()));
     }
@@ -171,10 +172,10 @@ public class Collection {
             Objects.requireNonNull(deck).setName(newDeckName);
             connector.save(player);
             sendCollectionDetails(name, classOfCard, mana, lockMode, newDeckName,player);
-            response = new showMessage("deck name changed");
+            response = new ShowMessage("deck name changed");
             connector.save(new CollectionLog(player.getUserName(), null, null,
                     oldDeckName, "change deck name", newDeckName));
-        } else response = new showMessage("deck name not changed");
+        } else response = new ShowMessage("deck name not changed");
         Client.getInstance().putAnswer(response);
         connector.save(new ResponseLog(response, player.getUserName()));
     }
@@ -189,9 +190,9 @@ public class Collection {
             sendCollectionDetails(name, classOfCard, mana, lockMode, deckName,player);
             connector.save(new CollectionLog(player.getUserName(), null, heroName, deckName
                     , "change hero", null));
-            response = new showMessage("hero deck changed");
+            response = new ShowMessage("hero deck changed");
         } else {
-            response = new showMessage("hero deck not changed");
+            response = new ShowMessage("hero deck not changed");
         }
         Client.getInstance().putAnswer(response);
         connector.save(new ResponseLog(response, player.getUserName()));
@@ -227,22 +228,22 @@ public class Collection {
                                 sendCollectionDetails(name, classOfCard, mana, lockMode, deckName,player);
 
                             } else {
-                                response = new showMessage("cant add card to deck\ndeck is full!!!");
+                                response = new ShowMessage("cant add card to deck\ndeck is full!!!");
                             }
                         } else {
-                            response = new showMessage("cant add card to deck\nchange hero of deck");
+                            response = new ShowMessage("cant add card to deck\nchange hero of deck");
                         }
-                    } else response = new showMessage("cant add card to deck");
+                    } else response = new ShowMessage("cant add card to deck");
                 }
             } else {
                 if (shop.canBuy(optionalCard.get(),player)) {
                     response = new GoTo("SHOP", "you can buy this card in shop\ngoto shop?");
                 } else {
-                    response = new showMessage("you dont have this card\nyou cant buy card");
+                    response = new ShowMessage("you dont have this card\nyou cant buy card");
                 }
             }
         } else {
-            response = new showMessage("cant add card to deck");
+            response = new ShowMessage("cant add card to deck");
         }
         Client.getInstance().putAnswer(response);
         if (response != null)

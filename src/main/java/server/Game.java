@@ -33,11 +33,11 @@ class Game {
     Game(Deck deck, Passive passive, Player player, Connector connector) {
         this.connector = connector;
         this.hero = deck.getHero();
-        this.ground = new ArrayList<>();
+        this.ground = new LinkedList<>();
         this.deck = deckToList(deck);
         this.player = player;
         this.gameEvents= new LinkedList<>();
-        this.handCard = new ArrayList<>();
+        this.handCard = new LinkedList<>();
         for (int i = 0; i < STARTING_HAND_CARDS; i++) {
             drawCard();
         }

@@ -18,7 +18,7 @@ public class RequestLog extends Log {
     private RequestLogInfo requestInfo;
 
     public RequestLog(Request request, String username) {
-        super(System.nanoTime(), username);
+        super(System.currentTimeMillis(), username);
         this.requestInfo = new RequestLogInfo(request,time);
     }
 

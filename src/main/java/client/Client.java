@@ -49,12 +49,11 @@ public class Client {
         panels.put(PanelType.COLLECTION, new CollectionPanel(new CollectionAction()));
         panels.put(PanelType.PASSIVE, new PassivePanel(new PassiveAction()));
         panels.put(PanelType.PLAY, new PlayPanel(new PlayAction()));
-        tempResponseList = new ArrayList<>();
-        responseList = new ArrayList<>();
+        tempResponseList = new LinkedList<>();
+        responseList = new LinkedList<>();
         executor = new Loop(60, this::executeAnswers);
         executor.start();
-        connector =  new Connector(ConfigFactory.getInstance().getConfigFile("CLIENT_HIBERNATE_CONFIG")
-                ,"client");
+        connector =  new Connector(ConfigFactory.getInstance().getConfigFile("CLIENT_HIBERNATE_CONFIG"));
     }
 
     public static Client getInstance() {

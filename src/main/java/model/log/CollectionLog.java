@@ -15,7 +15,7 @@ public class CollectionLog extends Log {
 
     public CollectionLog(String username, String cardName
             , String heroName, String deckName, String type, String newDeckName) {
-        super(System.nanoTime(), username);
+        super(System.currentTimeMillis(), username);
         this.cardName = cardName;
         this.heroName = heroName;
         this.deckName = deckName;

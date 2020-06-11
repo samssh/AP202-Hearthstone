@@ -15,7 +15,6 @@ import util.ModelLoader;
 import view.model.*;
 
 import java.util.*;
-import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
 public class Server {
@@ -51,21 +50,21 @@ public class Server {
     private Game game;
     private final Collection collection;
     private final Shop shop;
-    // last filter of collection
-
+    private final Status status;
 
     public static Server getInstance() {
         return instance;
     }
 
     private Server() {
-        tempRequestList = new ArrayList<>();
-        requestList = new ArrayList<>();
+        tempRequestList = new LinkedList<>();
+        requestList = new LinkedList<>();
         connector = new Connector(ConfigFactory.getInstance().getConfigFile("SERVER_HIBERNATE_CONFIG")
-                , "server", System.getenv("HearthStone password"));
+                , System.getenv("HearthStone password"));
         modelLoader = new ModelLoader(connector);
         collection = new Collection(connector, modelLoader);
         shop = new Shop(connector, modelLoader);
+        status = new Status(connector);
         executor = new Loop(60, this::executeRequests);
         executor.start();
 
@@ -124,13 +123,13 @@ public class Server {
     }
 
     private void signUp(String username, String password) {
-        Player fetch = connector.fetch(Player.class, username);
-        if (fetch == null) {
-            fetch = new Player(username, password, System.currentTimeMillis(), STARTING_COINS, 0
+        Player player = connector.fetch(Player.class, username);
+        if (player == null) {
+            player = new Player(username, password, System.currentTimeMillis(), STARTING_COINS, 0
                     , modelLoader.getFirstCards(), modelLoader.getFirstHeroes(), modelLoader.getFirstDecks());
-            connector.save(new HeaderLog(fetch.getCreatTime(), fetch.getUserName(), fetch.getPassword()));
-            connector.save(fetch);
-            this.player = fetch;
+            connector.save(new HeaderLog(player.getCreatTime(), player.getUserName(), player.getPassword()));
+            connector.save(player);
+            this.player = player;
             Response response = new LoginResponse(true, this.player.getUserName());
             Client.getInstance().putAnswer(response);
             connector.save(new ResponseLog(response, this.player.getUserName()));
@@ -154,9 +153,9 @@ public class Server {
         if (this.player != null) {
             connector.delete(player);
             connector.save(new AccountLog(player.getUserName(), "delete account"));
-            HeaderLog h = connector.fetch(HeaderLog.class, player.getCreatTime());
-            h.setDeletedAt(System.currentTimeMillis() + "");
-            connector.save(h);
+            HeaderLog header = connector.fetch(HeaderLog.class, player.getCreatTime());
+            header.setDeletedAt(System.currentTimeMillis() + "");
+            connector.save(header);
             this.player = null;
         }
     }
@@ -173,38 +172,13 @@ public class Server {
         shop.buyCard(cardName,player);
     }
 
-
     public void sendStatus() {
-        Response response = new StatusDetails(makeStatusDetails());
-        Client.getInstance().putAnswer(response);
-        connector.save(new ResponseLog(response, player.getUserName()));
-    }
-
-    private List<BigDeckOverview> makeStatusDetails() {
-        return player.getDecks().stream().sorted(Comparator.comparing(Deck::getWinRate)
-                .thenComparing(Deck::getWins).thenComparing(Deck::getManaAverage).thenComparing(Deck::getName))
-                .map(this::createBigDeckOverview).collect(Collectors.toList());
-    }
-
-    private BigDeckOverview createBigDeckOverview(Deck deck) {
-        return new BigDeckOverview(deck, (getMVC(deck).map(Card::getName).orElse(null)));
-    }
-
-    private Optional<Card> getMVC(Deck deck) {
-        Map<Card, CardDetails> map = deck.getCards();
-        List<Card> result = new ArrayList<>();
-        AtomicInteger max = new AtomicInteger();
-        map.values().stream().max(Comparator.comparing(CardDetails::getRepeatedTimes))
-                .ifPresent(cardDetails -> max.set(cardDetails.getRepeatedTimes()));
-        map.keySet().stream().filter(c -> map.get(c).getUsage() == max.get()).forEach(result::add);
-        return result.stream().max(Comparator.comparing(Card::getRarity).thenComparing(Card::getManaFrz)
-                .thenComparing(Card::getInstanceValue).thenComparing(Card::getName));
+        status.sendStatus(player);
     }
 
     public void sendFirstCollection() {
         collection.sendFirstCollection(player);
     }
-
 
     public void sendCollectionDetails(String name, String classOfCard, int mana, int lockMode, String deckName) {
         collection.sendCollectionDetails(name, classOfCard, mana, lockMode, deckName, player);
