@@ -13,8 +13,13 @@ public class ChangeDeckName extends Request {
     }
 
     @Override
-    public void execute() {
-        Server.getInstance().changeDeckName(oldDeckName, newDeckName);
+    public void execute(Server server) {
+        server.changeDeckName(oldDeckName, newDeckName);
+    }
+
+    @Override
+    public void accept(RequestLogInfoVisitor requestLogInfoVisitor) {
+        requestLogInfoVisitor.setChangeDeckName(this);
     }
 }
 

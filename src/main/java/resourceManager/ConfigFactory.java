@@ -1,4 +1,4 @@
-package util;
+package resourceManager;
 
 import java.awt.*;
 import java.io.File;

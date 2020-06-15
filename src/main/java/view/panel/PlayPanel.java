@@ -1,9 +1,9 @@
 package view.panel;
 
 import client.Client;
-import util.Config;
-import util.ConfigFactory;
-import util.ImageLoader;
+import resourceManager.Config;
+import resourceManager.ConfigFactory;
+import resourceManager.ImageLoader;
 import view.model.CardOverview;
 import view.model.HeroOverview;
 import view.model.HeroPowerOverview;

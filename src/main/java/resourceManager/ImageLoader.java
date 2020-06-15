@@ -1,4 +1,4 @@
-package util;
+package resourceManager;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
@@ -64,6 +64,7 @@ public class ImageLoader {
                 String name = key.replace('-', ' ');
                 m.put(name, image);
             } catch (IOException e) {
+                System.out.println(file.toString());
                 e.printStackTrace();
             }
         }

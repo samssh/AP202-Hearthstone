@@ -18,7 +18,12 @@ public class CollectionDetails extends Request {
     }
 
     @Override
-    public void execute() {
-        Server.getInstance().sendCollectionDetails(name, classOfCard, mana, lockMode, deckName);
+    public void execute(Server server) {
+        server.sendCollectionDetails(name, classOfCard, mana, lockMode, deckName);
+    }
+
+    @Override
+    public void accept(RequestLogInfoVisitor requestLogInfoVisitor) {
+        requestLogInfoVisitor.setCollectionDetails(this);
     }
 }

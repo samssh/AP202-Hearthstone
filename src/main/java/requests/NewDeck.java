@@ -13,7 +13,12 @@ public class NewDeck extends Request {
     }
 
     @Override
-    public void execute() {
-        Server.getInstance().newDeck(deckName, heroName);
+    public void execute(Server server) {
+        server.newDeck(deckName, heroName);
+    }
+
+    @Override
+    public void accept(RequestLogInfoVisitor requestLogInfoVisitor) {
+        requestLogInfoVisitor.setNewDeck(this);
     }
 }

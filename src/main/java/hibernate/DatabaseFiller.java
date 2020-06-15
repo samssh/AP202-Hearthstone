@@ -2,8 +2,8 @@ package hibernate;
 
 import model.account.Player;
 import model.main.*;
-import util.ConfigFactory;
-import util.ResourceLoader;
+import resourceManager.ConfigFactory;
+import resourceManager.ResourceLoader;
 
 import java.util.List;
 

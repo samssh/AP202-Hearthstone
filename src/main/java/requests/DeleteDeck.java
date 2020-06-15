@@ -12,7 +12,12 @@ public class DeleteDeck extends Request {
     }
 
     @Override
-    public void execute() {
-        Server.getInstance().deleteDeck(deckName);
+    public void execute(Server server) {
+        server.deleteDeck(deckName);
+    }
+
+    @Override
+    public void accept(RequestLogInfoVisitor requestLogInfoVisitor) {
+        requestLogInfoVisitor.setDeleteDeck(this);
     }
 }

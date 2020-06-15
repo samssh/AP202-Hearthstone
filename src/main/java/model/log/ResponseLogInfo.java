@@ -4,7 +4,7 @@ import lombok.EqualsAndHashCode;
 import response.*;
 import lombok.Getter;
 import lombok.Setter;
-import util.ResponseLogInfoVisitor;
+import response.ResponseLogInfoVisitor;
 import util.Visitable;
 
 import javax.persistence.Column;
@@ -49,7 +49,7 @@ public class ResponseLogInfo {
     }
 
 
-    public class Visitor implements ResponseLogInfoVisitor{
+    private class Visitor implements ResponseLogInfoVisitor{
 
         @Override
         public void setPassiveDetailsInfo(PassiveDetails response) {

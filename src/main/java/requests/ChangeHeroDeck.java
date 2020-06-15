@@ -13,7 +13,12 @@ public class ChangeHeroDeck extends Request {
     }
 
     @Override
-    public void execute() {
-        Server.getInstance().changeHeroDeck(deckName, heroName);
+    public void execute(Server server) {
+        server.changeHeroDeck(deckName, heroName);
+    }
+
+    @Override
+    public void accept(RequestLogInfoVisitor requestLogInfoVisitor) {
+        requestLogInfoVisitor.setChangeHeroDeck(this);
     }
 }

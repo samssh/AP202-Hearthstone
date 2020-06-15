@@ -1,4 +1,4 @@
-package util;
+package resourceManager;
 
 import net.lingala.zip4j.ZipFile;
 

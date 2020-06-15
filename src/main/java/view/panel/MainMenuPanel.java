@@ -1,9 +1,9 @@
 package view.panel;
 
 import client.Client;
-import util.Config;
-import util.ConfigFactory;
-import util.ImageLoader;
+import resourceManager.Config;
+import resourceManager.ConfigFactory;
+import resourceManager.ImageLoader;
 import util.Updatable;
 import view.util.Constant;
 
@@ -133,8 +133,8 @@ public class MainMenuPanel extends JPanel implements Updatable {
                 panelConfig.getProperty(Integer.class, "y"),
                 panelConfig.getProperty(Integer.class, "width"),
                 panelConfig.getProperty(Integer.class, "height"));
-        exitX = panelConfig.getProperty(Integer.class, "exitX");
         exitY = panelConfig.getProperty(Integer.class, "exitY");
+        exitX = panelConfig.getProperty(Integer.class, "exitX");
         exitWidth = panelConfig.getProperty(Integer.class, "exitWidth");
         exitHeight = panelConfig.getProperty(Integer.class, "exitHeight");
         exitSpace = panelConfig.getProperty(Integer.class, "exitSpace");

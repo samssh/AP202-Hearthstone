@@ -12,7 +12,12 @@ public class PlayCard extends Request {
     }
 
     @Override
-    public void execute() {
-        Server.getInstance().playCard(cardName);
+    public void execute(Server server) {
+        server.playCard(cardName);
+    }
+
+    @Override
+    public void accept(RequestLogInfoVisitor requestLogInfoVisitor) {
+        requestLogInfoVisitor.setPlayCard(this);
     }
 }

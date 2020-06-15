@@ -1,4 +1,4 @@
-package util;
+package resourceManager;
 
 import hibernate.Connector;
 import lombok.Getter;
@@ -30,7 +30,7 @@ public class ModelLoader {
         config(ConfigFactory.getInstance().getConfig("MODEL_LOADER_CONFIG"),connector);
     }
 
-    public void config(Config config,Connector connector) {
+    public void config(Config config, Connector connector) {
         defaultHero = getHero(config.getProperty(String.class, "defaultHero"))
                 .orElseThrow(()->new NoSuchElementException("hero on config file not exist"));
         List<String> heroName = config.getPropertyList(String.class, "firstHeroes");

@@ -1,13 +1,14 @@
 package client;
 
+import Transmitters.RequestSender;
 import hibernate.Connector;
+import lombok.Setter;
 import model.log.ResponseLog;
 import model.log.ButtonLog;
 import model.log.RequestLog;
 import requests.*;
 import response.Response;
-import server.Server;
-import util.ConfigFactory;
+import resourceManager.ConfigFactory;
 import util.Loop;
 import util.Updatable;
 import view.MyFrame;
@@ -24,7 +25,6 @@ import java.util.*;
 import static view.PanelType.*;
 
 public class Client {
-    private static final Client instance = new Client();
     private final JFrame frame;
     private final Map<PanelType, JPanel> panels;
     private final Stack<PanelType> history;
@@ -33,10 +33,11 @@ public class Client {
     private final List<Response> tempResponseList, responseList;
     private final Loop executor;
     private String username;
-    private final Server server;
+//    @Setter
+    private final RequestSender requestSender;
 
-    public Client() {
-        server = Server.getInstance();
+    public Client(RequestSender requestSender) {
+        this.requestSender = requestSender;
         this.frame = new MyFrame();
         panels = new HashMap<>();
         history = new Stack<>();
@@ -56,20 +57,16 @@ public class Client {
         connector =  new Connector(ConfigFactory.getInstance().getConfigFile("CLIENT_HIBERNATE_CONFIG"));
     }
 
-    public static Client getInstance() {
-        return instance;
-    }
-
     private void executeAnswers() {
         synchronized (tempResponseList) {
             responseList.addAll(tempResponseList);
             tempResponseList.clear();
         }
-        responseList.forEach(Response::execute);
+        responseList.forEach(response->response.execute(this));
         responseList.clear();
     }
 
-    public void putAnswer(Response response) {
+    public void addResponse(Response response) {
         if (response != null) {
             synchronized (tempResponseList) {
                 tempResponseList.add(response);
@@ -89,7 +86,7 @@ public class Client {
     }
 
     private void exit() {
-        server.shutdown();
+        requestSender.sendRequest(new ShutdownRequest());
         this.shutdown();
         System.exit(0);
     }
@@ -109,13 +106,13 @@ public class Client {
 
     private void logout() {
         Request request = new LogoutRequest();
-        server.addRequest(request);
+        requestSender.sendRequest(request);
         connector.save(new RequestLog(request, username));
     }
 
     private void deleteAccount() {
         Request request = new DeleteAccount();
-        server.addRequest(request);
+        requestSender.sendRequest(request);
         connector.save(new RequestLog(request, username));
     }
 
@@ -136,31 +133,31 @@ public class Client {
 
     private void sendLoginRequest(String username, String pass, int mode) {
         Request request = new LoginRequest(username, pass, mode);
-        server.addRequest(request);
+        requestSender.sendRequest(request);
         connector.save(new RequestLog(request, username));
     }
 
     private void sendShopRequest() {
-        Request request = new Shop();
-        server.addRequest(request);
+        Request request = new ShopRequest();
+        requestSender.sendRequest(request);
         connector.save(new RequestLog(request, username));
     }
 
     private void sendStatusRequest() {
-        Request request = new Status();
-        server.addRequest(request);
+        Request request = new StatusRequest();
+        requestSender.sendRequest(request);
         connector.save(new RequestLog(request, username));
     }
 
     private void sendFirstCollectionRequest() {
         Request request = new FirstCollection();
-        server.addRequest(request);
+        requestSender.sendRequest(request);
         connector.save(new RequestLog(request, username));
     }
 
     private void sendCollectionRequest(String name, String classOfCard, int mana, int lockMode, String deckName) {
         Request request = new CollectionDetails(name, classOfCard, mana, lockMode, deckName);
-        server.addRequest(request);
+        requestSender.sendRequest(request);
         connector.save(new RequestLog(request, username));
     }
 
@@ -225,7 +222,7 @@ public class Client {
 
     private void sendStartPlayRequest() {
         Request request = new StartPlaying();
-        server.addRequest(request);
+        requestSender.sendRequest(request);
         connector.save(new RequestLog(request, username));
     }
 
@@ -328,14 +325,14 @@ public class Client {
         public void sell(String cardName) {
             connector.save(new ButtonLog(username, "sell:" + cardName, SHOP.toString()));
             Request request = new SellCard(cardName);
-            server.addRequest(request);
+            requestSender.sendRequest(request);
             connector.save(new RequestLog(request, Client.this.username));
         }
 
         public void buy(String cardName) {
             connector.save(new ButtonLog(username, "buy:" + cardName, SHOP.toString()));
             Request request = new BuyCard(cardName);
-            server.addRequest(request);
+            requestSender.sendRequest(request);
             connector.save(new RequestLog(request, Client.this.username));
         }
 
@@ -451,7 +448,7 @@ public class Client {
 
         public void newDeck(String deckName, String heroName) {
             Request request = new NewDeck(deckName, heroName);
-            server.addRequest(request);
+            requestSender.sendRequest(request);
             connector.save(new RequestLog(request, Client.this.username));
             connector.save(new ButtonLog(username,"new deck:"+deckName+" hero:"+heroName
                     ,COLLECTION.toString()));
@@ -460,7 +457,7 @@ public class Client {
 
         public void deleteDeck(String deckName) {
             Request request = new DeleteDeck(deckName);
-            server.addRequest(request);
+            requestSender.sendRequest(request);
             connector.save(new RequestLog(request, Client.this.username));
             connector.save(new ButtonLog(username,"delete deck:"+deckName,COLLECTION.toString()));
 
@@ -468,7 +465,7 @@ public class Client {
 
         public void changeDeckName(String oldDeckName, String newDeckName) {
             Request request = new ChangeDeckName(oldDeckName, newDeckName);
-            server.addRequest(request);
+            requestSender.sendRequest(request);
             connector.save(new RequestLog(request, Client.this.username));
             connector.save(new ButtonLog(username,"change deck name:"+oldDeckName+" new:"+newDeckName,
                     COLLECTION.toString()));
@@ -477,7 +474,7 @@ public class Client {
 
         public void changeHeroDeck(String deckName, String heroName) {
             Request request = new ChangeHeroDeck(deckName, heroName);
-            server.addRequest(request);
+            requestSender.sendRequest(request);
             connector.save(new RequestLog(request, Client.this.username));
             connector.save(new ButtonLog(username,"change hero deck:"+deckName+" hero:"+heroName
                     ,COLLECTION.toString()));
@@ -486,7 +483,7 @@ public class Client {
 
         public void addCardToDeck(String cardName) {
             Request request = new AddCardToDeck(cardName, deckName);
-            server.addRequest(request);
+            requestSender.sendRequest(request);
             connector.save(new RequestLog(request, Client.this.username));
             connector.save(new ButtonLog(username,"add card to deck:"+deckName+"card:"+cardName
                     ,COLLECTION.toString()));
@@ -495,7 +492,7 @@ public class Client {
 
         public void removeCardFromDeck(String cardName) {
             Request request = new RemoveCardFromDeck(cardName, deckName);
-            server.addRequest(request);
+            requestSender.sendRequest(request);
             connector.save(new RequestLog(request, Client.this.username));
             connector.save(new ButtonLog(username,"remove card to deck:"+deckName+"card:"+cardName
                     ,COLLECTION.toString()));
@@ -540,7 +537,7 @@ public class Client {
 
         public void selectPassive(String passiveName) {
             Request request = new SelectPassive(passiveName);
-            server.addRequest(request);
+            requestSender.sendRequest(request);
             connector.save(new ButtonLog(username, "passive:"+passiveName, PASSIVE.toString()));
             connector.save(new RequestLog(request, Client.this.username));
 
@@ -550,21 +547,21 @@ public class Client {
     public class PlayAction {
         public void exit() {
             Request request = new ExitGame();
-            server.addRequest(request);
+            requestSender.sendRequest(request);
             connector.save(new ButtonLog(username, "exit", PLAY.toString()));
             connector.save(new RequestLog(request, Client.this.username));
         }
 
         public void endTurn() {
             Request request = new EndTurn();
-            server.addRequest(request);
+            requestSender.sendRequest(request);
             connector.save(new ButtonLog(username, "end turn", PLAY.toString()));
             connector.save(new RequestLog(request, Client.this.username));
         }
 
         public void playCard(String cardName) {
             Request request = new PlayCard(cardName);
-            server.addRequest(request);
+            requestSender.sendRequest(request);
             connector.save(new ButtonLog(username, "playCard:"+cardName, PLAY.toString()));
             connector.save(new RequestLog(request, Client.this.username));
         }

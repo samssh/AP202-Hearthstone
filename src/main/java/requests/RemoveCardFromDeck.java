@@ -13,7 +13,12 @@ public class RemoveCardFromDeck extends Request {
     }
 
     @Override
-    public void execute() {
-        Server.getInstance().removeCardFromDeck(cardName, deckName);
+    public void execute(Server server) {
+        server.removeCardFromDeck(cardName, deckName);
+    }
+
+    @Override
+    public void accept(RequestLogInfoVisitor requestLogInfoVisitor) {
+        requestLogInfoVisitor.setRemoveCardFromDeck(this);
     }
 }

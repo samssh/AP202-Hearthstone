@@ -2,14 +2,14 @@ package requests;
 
 import server.Server;
 
-public class LogoutRequest extends Request {
+public class ShutdownRequest extends Request {
     @Override
     public void execute(Server server) {
-        server.logout();
+        server.shutdown();
     }
 
     @Override
     public void accept(RequestLogInfoVisitor requestLogInfoVisitor) {
-        requestLogInfoVisitor.setLogoutRequest(this);
+        requestLogInfoVisitor.setShutdownRequest(this);
     }
 }

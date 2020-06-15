@@ -3,9 +3,9 @@ package view.panel;
 import client.Client;
 import lombok.Getter;
 import lombok.Setter;
-import util.Config;
-import util.ConfigFactory;
-import util.ImageLoader;
+import resourceManager.Config;
+import resourceManager.ConfigFactory;
+import resourceManager.ImageLoader;
 import view.util.Constant;
 
 import javax.swing.*;

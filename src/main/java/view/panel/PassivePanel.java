@@ -1,9 +1,9 @@
 package view.panel;
 
 import client.Client;
-import util.Config;
-import util.ConfigFactory;
-import util.ImageLoader;
+import resourceManager.Config;
+import resourceManager.ConfigFactory;
+import resourceManager.ImageLoader;
 import view.model.PassiveOverview;
 import view.util.Constant;
 import view.util.PassiveBox;

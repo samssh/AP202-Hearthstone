@@ -16,7 +16,12 @@ public class LoginRequest extends Request {
     }
 
     @Override
-    public void execute() {
-        Server.getInstance().login(userName, password, mode);
+    public void execute(Server server) {
+        server.login(userName, password, mode);
+    }
+
+    @Override
+    public void accept(RequestLogInfoVisitor requestLogInfoVisitor) {
+        requestLogInfoVisitor.setLoginRequest(this);
     }
 }

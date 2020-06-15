@@ -15,16 +15,12 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 public class Status {
-    private final Connector connector;
 
-    public Status(Connector connector) {
-        this.connector = connector;
+    public Status() {
     }
 
-    public void sendStatus(Player player) {
-        Response response = new StatusDetails(makeStatusDetails(player));
-        Client.getInstance().putAnswer(response);
-        connector.save(new ResponseLog(response, player.getUserName()));
+    public Response sendStatus(Player player) {
+        return new StatusDetails(makeStatusDetails(player));
     }
 
     private List<BigDeckOverview> makeStatusDetails(Player player) {

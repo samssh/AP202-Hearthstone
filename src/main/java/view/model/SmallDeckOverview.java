@@ -1,7 +1,7 @@
 package view.model;
 
 import model.account.Deck;
-import util.ImageLoader;
+import resourceManager.ImageLoader;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;

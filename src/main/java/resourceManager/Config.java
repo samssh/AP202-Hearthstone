@@ -1,4 +1,4 @@
-package util;
+package resourceManager;
 
 import java.io.FileReader;
 import java.io.IOException;

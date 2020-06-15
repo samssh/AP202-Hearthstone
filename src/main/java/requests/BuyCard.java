@@ -12,7 +12,12 @@ public class BuyCard extends Request {
     }
 
     @Override
-    public void execute() {
-        Server.getInstance().buyCard(cardName);
+    public void execute(Server server) {
+        server.buyCard(cardName);
+    }
+
+    @Override
+    public void accept(RequestLogInfoVisitor requestLogInfoVisitor) {
+        requestLogInfoVisitor.setBuyCard(this);
     }
 }

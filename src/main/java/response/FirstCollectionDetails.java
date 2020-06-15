@@ -2,7 +2,6 @@ package response;
 
 import client.Client;
 import lombok.Getter;
-import util.ResponseLogInfoVisitor;
 
 import java.util.List;
 

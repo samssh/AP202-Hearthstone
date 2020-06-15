@@ -1,6 +1,4 @@
-package util;
-
-import response.*;
+package response;
 
 public interface ResponseLogInfoVisitor {
     void setPassiveDetailsInfo(PassiveDetails response);

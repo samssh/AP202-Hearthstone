@@ -4,7 +4,7 @@ import lombok.Getter;
 import model.main.Card;
 import model.main.Minion;
 import model.main.Weapon;
-import util.ImageLoader;
+import resourceManager.ImageLoader;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;

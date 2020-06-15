@@ -2,9 +2,9 @@ package view.panel;
 
 import client.Client;
 import lombok.Setter;
-import util.Config;
-import util.ConfigFactory;
-import util.ImageLoader;
+import resourceManager.Config;
+import resourceManager.ConfigFactory;
+import resourceManager.ImageLoader;
 import util.Updatable;
 import view.model.CardOverview;
 import view.util.CardBox;

@@ -2,11 +2,9 @@ package model.log;
 
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
-import response.*;
 import lombok.Getter;
 import lombok.Setter;
-import util.ResponseLogInfoVisitor;
-import util.Visitable;
+import response.Response;
 
 import javax.persistence.Entity;
 import javax.persistence.OneToOne;
@@ -22,7 +20,7 @@ public class ResponseLog extends Log {
     public ResponseLog() {
     }
 
-    public ResponseLog(Visitable<ResponseLogInfoVisitor> response, String username) {
+    public ResponseLog(Response response, String username) {
         super(System.currentTimeMillis(), username);
         this.responseInfo = new ResponseLogInfo(response, time);
     }

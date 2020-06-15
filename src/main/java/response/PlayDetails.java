@@ -2,9 +2,7 @@ package response;
 
 import client.Client;
 import lombok.Getter;
-import model.log.ResponseLogInfo;
 import util.Visitable;
-import util.ResponseLogInfoVisitor;
 import view.model.CardOverview;
 import view.model.HeroOverview;
 import view.model.HeroPowerOverview;

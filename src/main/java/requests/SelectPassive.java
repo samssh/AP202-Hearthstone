@@ -12,7 +12,12 @@ public class SelectPassive extends Request {
     }
 
     @Override
-    public void execute() {
-        Server.getInstance().selectPassive(passiveName);
+    public void execute(Server server) {
+        server.selectPassive(passiveName);
+    }
+
+    @Override
+    public void accept(RequestLogInfoVisitor requestLogInfoVisitor) {
+        requestLogInfoVisitor.setSelectPassive(this);
     }
 }

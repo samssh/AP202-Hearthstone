@@ -1,5 +1,7 @@
 package server;
 
+import Transmitters.ResponseSender;
+import lombok.Setter;
 import requests.Request;
 import response.*;
 import client.Client;
@@ -8,10 +10,10 @@ import model.account.Deck;
 import model.account.Player;
 import model.log.*;
 import model.main.*;
-import util.Config;
-import util.ConfigFactory;
+import resourceManager.Config;
+import resourceManager.ConfigFactory;
 import util.Loop;
-import util.ModelLoader;
+import resourceManager.ModelLoader;
 import view.model.*;
 
 import java.util.*;
@@ -41,7 +43,6 @@ public class Server {
         MAX_DECK_NUMBER = config.getProperty(Integer.class, "MAX_DECK_NUMBER");
     }
 
-    private static final Server instance = new Server();
     private final List<Request> tempRequestList, requestList;
     private final Connector connector;
     private final ModelLoader modelLoader;
@@ -51,12 +52,10 @@ public class Server {
     private final Collection collection;
     private final Shop shop;
     private final Status status;
+    private final ResponseSender responseSender;
 
-    public static Server getInstance() {
-        return instance;
-    }
-
-    private Server() {
+    public Server(ResponseSender responseSender) {
+        this.responseSender = responseSender;
         tempRequestList = new LinkedList<>();
         requestList = new LinkedList<>();
         connector = new Connector(ConfigFactory.getInstance().getConfigFile("SERVER_HIBERNATE_CONFIG")
@@ -64,10 +63,9 @@ public class Server {
         modelLoader = new ModelLoader(connector);
         collection = new Collection(connector, modelLoader);
         shop = new Shop(connector, modelLoader);
-        status = new Status(connector);
+        status = new Status();
         executor = new Loop(60, this::executeRequests);
         executor.start();
-
     }
 
     private void executeRequests() {
@@ -75,7 +73,7 @@ public class Server {
             requestList.addAll(tempRequestList);
             tempRequestList.clear();
         }
-        requestList.forEach(Request::execute);
+        requestList.forEach(request -> request.execute(this));
         requestList.clear();
     }
 
@@ -90,8 +88,15 @@ public class Server {
 
     public void shutdown() {
         executor.stop();
-        executeRequests();
         connector.close();
+    }
+
+    private void sendResponse(Response... responses) {
+        for (Response response : responses)
+            if (response != null) {
+                responseSender.sendResponse(response);
+                connector.save(new ResponseLog(response, player.getUserName()));
+            }
     }
 
     public void login(String username, String password, int mode) {
@@ -107,17 +112,17 @@ public class Server {
             if (p.getPassword().equals(password)) {
                 this.player = p;
                 Response response = new LoginResponse(true, player.getUserName());
-                Client.getInstance().putAnswer(response);
-                connector.save(new ResponseLog(response, player.getUserName()));
+                sendResponse(response);
+//                connector.save(new ResponseLog(response, player.getUserName()));
                 connector.save(new AccountLog(player.getUserName(), "sign in"));
             } else {
                 Response response = new LoginResponse(false, "wrong password");
-                Client.getInstance().putAnswer(response);
+                responseSender.sendResponse(response);
                 connector.save(new ResponseLog(response, p.getUserName()));
             }
         } else {
             Response response = new LoginResponse(false, "username not exist");
-            Client.getInstance().putAnswer(response);
+            responseSender.sendResponse(response);
             connector.save(new ResponseLog(response, null));
         }
     }
@@ -131,12 +136,12 @@ public class Server {
             connector.save(player);
             this.player = player;
             Response response = new LoginResponse(true, this.player.getUserName());
-            Client.getInstance().putAnswer(response);
-            connector.save(new ResponseLog(response, this.player.getUserName()));
+            sendResponse(response);
+//            connector.save(new ResponseLog(response, this.player.getUserName()));
             connector.save(new AccountLog(this.player.getUserName(), "sign up"));
         } else {
             Response response = new LoginResponse(false, "username already exist");
-            Client.getInstance().putAnswer(response);
+            responseSender.sendResponse(response);
             connector.save(new ResponseLog(response, null));
         }
     }
@@ -161,51 +166,51 @@ public class Server {
     }
 
     public void sendShop() {
-        shop.sendShop(player);
+        sendResponse(shop.sendShop(player));
     }
 
     public void sellCard(String cardName) {
-        shop.sellCard(cardName,player);
+        sendResponse(shop.sellCard(cardName, player));
     }
 
     public void buyCard(String cardName) {
-        shop.buyCard(cardName,player);
+        sendResponse(shop.buyCard(cardName, player));
     }
 
     public void sendStatus() {
-        status.sendStatus(player);
+        sendResponse(status.sendStatus(player));
     }
 
     public void sendFirstCollection() {
-        collection.sendFirstCollection(player);
+        sendResponse(collection.sendFirstCollection(player));
     }
 
     public void sendCollectionDetails(String name, String classOfCard, int mana, int lockMode, String deckName) {
-        collection.sendCollectionDetails(name, classOfCard, mana, lockMode, deckName, player);
+        sendResponse(collection.sendCollectionDetails(name, classOfCard, mana, lockMode, deckName, player));
     }
 
     public void newDeck(String deckName, String heroName) {
-        collection.newDeck(deckName, heroName, player);
+        sendResponse(collection.newDeck(deckName, heroName, player));
     }
 
     public void deleteDeck(String deckName) {
-        collection.deleteDeck(deckName, player);
+        sendResponse(collection.deleteDeck(deckName, player));
     }
 
     public void changeDeckName(String oldDeckName, String newDeckName) {
-        collection.changeDeckName(oldDeckName, newDeckName, player);
+        sendResponse(collection.changeDeckName(oldDeckName, newDeckName, player));
     }
 
     public void changeHeroDeck(String deckName, String heroName) {
-        collection.changeHeroDeck(deckName, heroName, player);
+        sendResponse(collection.changeHeroDeck(deckName, heroName, player));
     }
 
     public void removeCardFromDeck(String cardName, String deckName) {
-        collection.removeCardFromDeck(cardName, deckName, player);
+        sendResponse(collection.removeCardFromDeck(cardName, deckName, player));
     }
 
     public void addCardToDeck(String cardName, String deckName) {
-        collection.addCardToDeck(cardName, deckName, player, shop);
+        sendResponse(collection.addCardToDeck(cardName, deckName, player, shop));
     }
 
     public void startPlay() {
@@ -216,9 +221,7 @@ public class Server {
         } else {
             response = new GoTo("COLLECTION", "your deck is not ready\ngoto collection?");
         }
-        Client.getInstance().putAnswer(response);
-        connector.save(new ResponseLog(response, player.getUserName()));
-
+        sendResponse(response);
     }
 
     private boolean canStartGame() {
@@ -262,8 +265,7 @@ public class Server {
         String eventLog = game.getGameEvents();
         Response response = new PlayDetails(hand, ground, weapon, hero
                 , heroPower, eventLog, game.getMana(), game.getDeck().size());
-        Client.getInstance().putAnswer(response);
-        connector.save(new ResponseLog(response, player.getUserName()));
+        sendResponse(response);
     }
 
     public void endTurn() {
@@ -287,8 +289,7 @@ public class Server {
         if (game != null) {
             game.exit();
             Response response = new GoTo("MAIN_MENU", null);
-            Client.getInstance().putAnswer(response);
-            connector.save(new ResponseLog(response, player.getUserName()));
+            sendResponse(response);
             connector.save(player);
         }
     }

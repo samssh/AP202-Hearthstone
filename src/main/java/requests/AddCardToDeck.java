@@ -13,7 +13,12 @@ public class AddCardToDeck extends Request {
     }
 
     @Override
-    public void execute() {
-        Server.getInstance().addCardToDeck(cardName, deckName);
+    public void execute(Server server) {
+        server.addCardToDeck(cardName, deckName);
+    }
+
+    @Override
+    public void accept(RequestLogInfoVisitor requestLogInfoVisitor) {
+        requestLogInfoVisitor.setAddCardToDeck(this);
     }
 }

@@ -1,7 +1,7 @@
 package view;
 
-import util.Config;
-import util.ConfigFactory;
+import resourceManager.Config;
+import resourceManager.ConfigFactory;
 import util.Loop;
 
 import javax.swing.*;

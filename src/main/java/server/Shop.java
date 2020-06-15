@@ -8,7 +8,7 @@ import model.log.BuySellLog;
 import model.main.Card;
 import response.Response;
 import response.ShopDetails;
-import util.ModelLoader;
+import resourceManager.ModelLoader;
 import view.model.CardOverview;
 
 import java.util.ArrayList;
@@ -24,10 +24,8 @@ public class Shop {
         this.modelLoader = modelLoader;
     }
 
-    public void sendShop(Player player) {
-        Response response = new ShopDetails(makeSellList(player), makeBuyList(player), player.getCoin());
-        Client.getInstance().putAnswer(response);
-        connector.save(new ResponseLog(response, player.getUserName()));
+    public Response sendShop(Player player) {
+        return new ShopDetails(makeSellList(player), makeBuyList(player), player.getCoin());
     }
 
     private List<CardOverview> makeSellList(Player player) {
@@ -66,7 +64,7 @@ public class Shop {
         return player.getHeroes().contains(modelLoader.getHero(heroName).orElse(null));
     }
 
-    public void sellCard(String cardName, Player player) {
+    public Response sellCard(String cardName, Player player) {
         Optional<Card> optionalCard = modelLoader.getCard(cardName);
         if (optionalCard.isPresent()) {
             Card card = optionalCard.get();
@@ -77,15 +75,16 @@ public class Shop {
                 connector.save(new BuySellLog(player.getUserName()
                         , player.getCoin() - card.getPrice(), player.getCoin(), cardName, "sell"));
             }
-            sendShop(player);
+            return sendShop(player);
         }
+        return null;
     }
 
     private boolean canSell(Card card, Player player) {
         return player.getCards().containsKey(card);
     }
 
-    public void buyCard(String cardName, Player player) {
+    public Response buyCard(String cardName, Player player) {
         Optional<Card> optionalCard = modelLoader.getCard(cardName);
         if (optionalCard.isPresent()) {
             Card card = optionalCard.get();
@@ -96,8 +95,9 @@ public class Shop {
                 connector.save(new BuySellLog(player.getUserName()
                         , player.getCoin() + card.getPrice(), player.getCoin(), cardName, "buy"));
             }
-            sendShop(player);
+            return sendShop(player);
         }
+        return null;
     }
 
     public boolean canBuy(Card card, Player player) {

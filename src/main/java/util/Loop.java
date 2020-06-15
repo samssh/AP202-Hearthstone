@@ -66,6 +66,8 @@ public class Loop implements Runnable, Updatable {
     @SneakyThrows
     public void stop() {
         running = false;
+        if (Thread.currentThread().equals(thread))
+            return;
         thread.join();
     }
 }
