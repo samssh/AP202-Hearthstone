@@ -2,11 +2,11 @@ package ir.sam.hearthstone.view.graphics_engine.effects;
 
 import java.awt.*;
 
-public class Translator implements PaintByTime {
+public class TranslatorByTime implements PaintByTime{
     private final PaintByTime painter;
     private final int x, y;
 
-    public Translator(PaintByTime painter, int x, int y) {
+    public TranslatorByTime(PaintByTime painter, int x, int y) {
         this.painter = painter;
         this.x = x;
         this.y = y;

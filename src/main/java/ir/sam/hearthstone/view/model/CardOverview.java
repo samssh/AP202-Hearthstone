@@ -45,7 +45,7 @@ public class CardOverview extends UnitOverview {
     }
 
     @Override
-    public void paint(Graphics g) {
+    public void paint(Graphics2D g) {
         if (number == 2)
             g.drawImage(small, 15, 0, null);
         g.drawImage(small, 0, 0, null);
@@ -64,6 +64,16 @@ public class CardOverview extends UnitOverview {
             g.setColor(Color.RED);
             g.drawString("\u0024" + price, 60 * w / 120, 155 * h / 170);
         }
+    }
+
+    @Override
+    public int getWidth() {
+        return small.getWidth();
+    }
+
+    @Override
+    public int getHeight() {
+        return small.getHeight();
     }
 
     private void paintBig(Graphics g) {
@@ -87,7 +97,8 @@ public class CardOverview extends UnitOverview {
     @Override
     public BufferedImage getBigImage() {
         ColorModel cm = big.getColorModel();
-        BufferedImage image = new BufferedImage(cm, big.copyData(null), cm.isAlphaPremultiplied(), null);
+        BufferedImage image = new BufferedImage(cm, big.copyData(null), cm.isAlphaPremultiplied()
+                , null);
         Graphics g = image.createGraphics();
         this.paintBig(g);
         return image;

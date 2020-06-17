@@ -2,10 +2,11 @@ package ir.sam.hearthstone.view.model;
 
 import ir.sam.hearthstone.model.main.Passive;
 import ir.sam.hearthstone.resource_manager.ImageLoader;
+import lombok.ToString;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
-
+@ToString(exclude = {"image"})
 public class PassiveOverview extends Overview{
     private final BufferedImage image;
 
@@ -15,15 +16,17 @@ public class PassiveOverview extends Overview{
     }
 
     @Override
-    public void paint(Graphics g) {
+    public void paint(Graphics2D g) {
         g.drawImage(image,0,0,null);
     }
 
     @Override
-    public String toString() {
-        return "PassiveOverview(" +
-                "name='" + name + '\'' +
-                ", imageName='" + imageName + '\'' +
-                ')';
+    public int getWidth() {
+        return image.getWidth();
+    }
+
+    @Override
+    public int getHeight() {
+        return image.getHeight();
     }
 }

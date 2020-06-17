@@ -2,11 +2,13 @@ package ir.sam.hearthstone.view.model;
 
 import ir.sam.hearthstone.model.main.Hero;
 import ir.sam.hearthstone.resource_manager.ImageLoader;
+import lombok.ToString;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.awt.image.ColorModel;
 
+@ToString(exclude = {"big","small"})
 public class HeroOverview extends UnitOverview {
     private final int hp;
     private final BufferedImage big, small;
@@ -19,7 +21,7 @@ public class HeroOverview extends UnitOverview {
     }
 
     @Override
-    public void paint(Graphics g) {
+    public void paint(Graphics2D g) {
         g.drawImage(small,0,0,null);
         g.setColor(Color.WHITE);
         g.setFont(g.getFont().deriveFont(Font.BOLD));
@@ -27,6 +29,16 @@ public class HeroOverview extends UnitOverview {
         int w = small.getWidth();
         int h = small.getHeight();
         g.drawString(hp+"",93*w/120,122*h/170);
+    }
+
+    @Override
+    public int getWidth() {
+        return small.getWidth();
+    }
+
+    @Override
+    public int getHeight() {
+        return small.getHeight();
     }
 
     @Override
@@ -45,14 +57,5 @@ public class HeroOverview extends UnitOverview {
         g.setFont(g.getFont().deriveFont(Font.BOLD));
         g.setFont(g.getFont().deriveFont(40.0F));
         g.drawString(hp+"",192*w/250,250*h/350);
-    }
-
-    @Override
-    public String toString() {
-        return "HeroOverview(" +
-                "name='" + name + '\'' +
-                ", imageName='" + imageName + '\'' +
-                ", hp=" + hp +
-                ')';
     }
 }

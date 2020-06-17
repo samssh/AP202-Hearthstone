@@ -1,7 +1,5 @@
 package ir.sam.hearthstone.model.log;
 
-import ir.SAM.hearthstone.response.*;
-import ir.sa.hearthstone.response.*;
 import ir.sam.hearthstone.response.*;
 import ir.sam.hearthstone.util.Visitable;
 import lombok.EqualsAndHashCode;

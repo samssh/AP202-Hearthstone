@@ -2,11 +2,12 @@ package ir.sam.hearthstone.view.model;
 
 import ir.sam.hearthstone.model.account.Deck;
 import ir.sam.hearthstone.resource_manager.ImageLoader;
+import lombok.ToString;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.text.DecimalFormat;
-
+@ToString(exclude = {"image"})
 public class BigDeckOverview extends Overview {
     private final String cardName;
     private final int games,wins;
@@ -24,7 +25,7 @@ public class BigDeckOverview extends Overview {
     }
 
     @Override
-    public void paint(Graphics g) {
+    public void paint(Graphics2D g) {
         g.drawImage(image, 0, 0, null);
         g.setFont(new Font("War Priest Expanded", Font.PLAIN, 20));
         g.setColor(Color.yellow);
@@ -43,15 +44,12 @@ public class BigDeckOverview extends Overview {
     }
 
     @Override
-    public String toString() {
-        return "BigDeckOverview(" +
-                "name='" + name + '\'' +
-                ", imageName='" + imageName + '\'' +
-                ", cardName='" + cardName + '\'' +
-                ", games=" + games +
-                ", wins=" + wins +
-                ", winRate=" + winRate +
-                ", manaAverage=" + manaAverage +
-                ')';
+    public int getWidth() {
+        return image.getWidth();
+    }
+
+    @Override
+    public int getHeight() {
+        return image.getHeight();
     }
 }

@@ -1,6 +1,7 @@
 package ir.sam.hearthstone.view.util;
 
 import ir.sam.hearthstone.view.model.BigDeckOverview;
+import lombok.Setter;
 
 import javax.swing.*;
 import java.awt.*;
@@ -13,16 +14,21 @@ public class BigDeckBox extends Box<BigDeckOverview, BigDeckBox.BigDeckViewer> {
     }
 
     @Override
-    protected BigDeckViewer createNew(BigDeckOverview overview) {
-        return new BigDeckViewer(overview);
+    protected BigDeckViewer createNew() {
+        return new BigDeckViewer();
+    }
+
+    @Override
+    protected void set(BigDeckViewer bigDeckViewer, BigDeckOverview bigDeckOverview) {
+        bigDeckViewer.setBigDeckOverview(bigDeckOverview);
     }
 
 
     class BigDeckViewer extends JPanel implements MouseListener {
-        private final BigDeckOverview bigDeckOverview;
+        @Setter
+        private BigDeckOverview bigDeckOverview;
 
-        private BigDeckViewer(BigDeckOverview bigDeckOverview) {
-            this.bigDeckOverview = bigDeckOverview;
+        private BigDeckViewer() {
             this.setSize(Constant.BIG_DECK_WIDTH, Constant.BIG_DECK_HEIGHT);
             this.setOpaque(false);
             this.addMouseListener(this);
@@ -31,13 +37,14 @@ public class BigDeckBox extends Box<BigDeckOverview, BigDeckBox.BigDeckViewer> {
         @Override
         protected void paintComponent(Graphics g) {
             super.paintComponent(g);
-            bigDeckOverview.paint(g);
+            if (bigDeckOverview != null)
+                bigDeckOverview.paint((Graphics2D) g);
         }
 
         @Override
         public void mouseClicked(MouseEvent e) {
             if (e.getButton() == MouseEvent.BUTTON1) {
-                if (action != null)
+                if (action != null && bigDeckOverview != null)
                     action.action(bigDeckOverview.getName());
             }
         }

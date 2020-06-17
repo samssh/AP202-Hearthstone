@@ -29,8 +29,8 @@ public class UnitViewer extends JPanel implements MouseListener {
             setToolTipText(unitOverview.getToolkit());
     }
 
-    public UnitViewer(UnitOverview unitOverview, JPanel parent, MyActionListener actionListener) {
-        this(unitOverview, parent);
+    public UnitViewer(JPanel parent, MyActionListener actionListener) {
+        this(parent);
         this.actionListener = actionListener;
     }
     public void setUnitOverview(UnitOverview unitOverview) {
@@ -44,7 +44,7 @@ public class UnitViewer extends JPanel implements MouseListener {
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
         if (unitOverview != null)
-            unitOverview.paint(g);
+            unitOverview.paint((Graphics2D) g);
     }
 
     @Override
@@ -53,7 +53,7 @@ public class UnitViewer extends JPanel implements MouseListener {
             if (e.getButton() == MouseEvent.BUTTON3) JOptionPane.showMessageDialog(this.parent, null,
                     "card information", JOptionPane.INFORMATION_MESSAGE, new ImageIcon(unitOverview.getBigImage()));
             if (e.getButton() == MouseEvent.BUTTON1) {
-                if (actionListener != null) {
+                if (actionListener != null && unitOverview!=null) {
                     actionListener.action(unitOverview.getName());
                 }
             }

@@ -2,23 +2,14 @@ package ir.sam.hearthstone.client;
 
 import ir.sam.hearthstone.Transmitters.RequestSender;
 import ir.sam.hearthstone.hibernate.Connector;
-import ir.SAM.hearthstone.model.log.*;
-import ir.SAM.hearthstone.requests.*;
-import ir.sam.hearthstone.model.log.ButtonLog;
-import ir.sam.hearthstone.model.log.RequestLog;
-import ir.sam.hearthstone.model.log.ResponseLog;
+import ir.sam.hearthstone.model.log.*;
+import ir.sam.hearthstone.requests.*;
 import ir.sam.hearthstone.response.Response;
 import ir.sam.hearthstone.resource_manager.ConfigFactory;
 import ir.sam.hearthstone.util.Loop;
 import ir.sam.hearthstone.util.Updatable;
 import ir.sam.hearthstone.view.MyFrame;
 import ir.sam.hearthstone.view.PanelType;
-import ir.SAM.hearthstone.view.model.*;
-import ir.SAM.hearthstone.view.panel.*;
-import ir.sa.hearthstone.requests.*;
-import ir.sa.hearthstone.view.model.*;
-import ir.sa.hearthstone.view.panel.*;
-import ir.sam.hearthstone.requests.*;
 import ir.sam.hearthstone.view.model.*;
 import ir.sam.hearthstone.view.panel.*;
 
@@ -39,7 +30,7 @@ public class Client {
     private final List<Response> tempResponseList, responseList;
     private final Loop executor;
     private String username;
-//    @Setter
+    //    @Setter
     private final RequestSender requestSender;
 
     public Client(RequestSender requestSender) {
@@ -60,7 +51,7 @@ public class Client {
         responseList = new LinkedList<>();
         executor = new Loop(60, this::executeAnswers);
         executor.start();
-        connector =  new Connector(ConfigFactory.getInstance().getConfigFile("CLIENT_HIBERNATE_CONFIG"));
+        connector = new Connector(ConfigFactory.getInstance().getConfigFile("CLIENT_HIBERNATE_CONFIG"));
     }
 
     private void executeAnswers() {
@@ -68,7 +59,7 @@ public class Client {
             responseList.addAll(tempResponseList);
             tempResponseList.clear();
         }
-        responseList.forEach(response->response.execute(this));
+        responseList.forEach(response -> response.execute(this));
         responseList.clear();
     }
 
@@ -410,7 +401,7 @@ public class Client {
                 if (e.getItem().equals("all")) mana = 0;
                 else mana = Integer.parseInt((String) e.getItem());
                 sendRequest();
-                connector.save(new ButtonLog(username, "mana to:"+mana, COLLECTION.toString()));
+                connector.save(new ButtonLog(username, "mana to:" + mana, COLLECTION.toString()));
             }
         }
 
@@ -421,14 +412,14 @@ public class Client {
                 if (item.equals("locked cards")) lockMode = 1;
                 if (item.equals("unlocked cards")) lockMode = 2;
                 sendRequest();
-                connector.save(new ButtonLog(username, "lock made to:"+lockMode, COLLECTION.toString()));
+                connector.save(new ButtonLog(username, "lock made to:" + lockMode, COLLECTION.toString()));
             }
         }
 
         public void search(DocumentEvent e) {
             try {
                 name = e.getDocument().getText(0, e.getDocument().getLength());
-                connector.save(new ButtonLog(username,"name to:"+name,COLLECTION.toString()));
+                connector.save(new ButtonLog(username, "name to:" + name, COLLECTION.toString()));
             } catch (BadLocationException ignore) {
             }
             sendRequest();
@@ -440,15 +431,15 @@ public class Client {
                 if (item.equals("All classes")) classOfCard = null;
                 else classOfCard = (String) item;
                 sendRequest();
-                connector.save(new ButtonLog(username,"class of card to:"+classOfCard
-                        ,COLLECTION.toString()));
+                connector.save(new ButtonLog(username, "class of card to:" + classOfCard
+                        , COLLECTION.toString()));
             }
         }
 
         public void selectDeck(String deckName) {
             if (deckName.equals(this.deckName)) this.deckName = null;
             else this.deckName = deckName;
-            connector.save(new ButtonLog(username,"select deck:"+deckName,COLLECTION.toString()));
+            connector.save(new ButtonLog(username, "select deck:" + deckName, COLLECTION.toString()));
             sendRequest();
         }
 
@@ -456,53 +447,47 @@ public class Client {
             Request request = new NewDeck(deckName, heroName);
             requestSender.sendRequest(request);
             connector.save(new RequestLog(request, Client.this.username));
-            connector.save(new ButtonLog(username,"new deck:"+deckName+" hero:"+heroName
-                    ,COLLECTION.toString()));
-
+            connector.save(new ButtonLog(username, "new deck:" + deckName + " hero:" + heroName
+                    , COLLECTION.toString()));
         }
 
         public void deleteDeck(String deckName) {
             Request request = new DeleteDeck(deckName);
             requestSender.sendRequest(request);
             connector.save(new RequestLog(request, Client.this.username));
-            connector.save(new ButtonLog(username,"delete deck:"+deckName,COLLECTION.toString()));
-
+            connector.save(new ButtonLog(username, "delete deck:" + deckName, COLLECTION.toString()));
         }
 
         public void changeDeckName(String oldDeckName, String newDeckName) {
             Request request = new ChangeDeckName(oldDeckName, newDeckName);
             requestSender.sendRequest(request);
             connector.save(new RequestLog(request, Client.this.username));
-            connector.save(new ButtonLog(username,"change deck name:"+oldDeckName+" new:"+newDeckName,
+            connector.save(new ButtonLog(username, "change deck name:" + oldDeckName + " new:" + newDeckName,
                     COLLECTION.toString()));
-
         }
 
         public void changeHeroDeck(String deckName, String heroName) {
             Request request = new ChangeHeroDeck(deckName, heroName);
             requestSender.sendRequest(request);
             connector.save(new RequestLog(request, Client.this.username));
-            connector.save(new ButtonLog(username,"change hero deck:"+deckName+" hero:"+heroName
-                    ,COLLECTION.toString()));
-
+            connector.save(new ButtonLog(username, "change hero deck:" + deckName + " hero:" + heroName
+                    , COLLECTION.toString()));
         }
 
         public void addCardToDeck(String cardName) {
             Request request = new AddCardToDeck(cardName, deckName);
             requestSender.sendRequest(request);
             connector.save(new RequestLog(request, Client.this.username));
-            connector.save(new ButtonLog(username,"add card to deck:"+deckName+"card:"+cardName
-                    ,COLLECTION.toString()));
-
+            connector.save(new ButtonLog(username, "add card to deck:" + deckName + "card:" + cardName
+                    , COLLECTION.toString()));
         }
 
         public void removeCardFromDeck(String cardName) {
             Request request = new RemoveCardFromDeck(cardName, deckName);
             requestSender.sendRequest(request);
             connector.save(new RequestLog(request, Client.this.username));
-            connector.save(new ButtonLog(username,"remove card to deck:"+deckName+"card:"+cardName
-                    ,COLLECTION.toString()));
-
+            connector.save(new ButtonLog(username, "remove card to deck:" + deckName + "card:" + cardName
+                    , COLLECTION.toString()));
         }
 
         public void reset() {
@@ -544,9 +529,8 @@ public class Client {
         public void selectPassive(String passiveName) {
             Request request = new SelectPassive(passiveName);
             requestSender.sendRequest(request);
-            connector.save(new ButtonLog(username, "passive:"+passiveName, PASSIVE.toString()));
+            connector.save(new ButtonLog(username, "passive:" + passiveName, PASSIVE.toString()));
             connector.save(new RequestLog(request, Client.this.username));
-
         }
     }
 
@@ -568,7 +552,7 @@ public class Client {
         public void playCard(String cardName) {
             Request request = new PlayCard(cardName);
             requestSender.sendRequest(request);
-            connector.save(new ButtonLog(username, "playCard:"+cardName, PLAY.toString()));
+            connector.save(new ButtonLog(username, "playCard:" + cardName, PLAY.toString()));
             connector.save(new RequestLog(request, Client.this.username));
         }
 

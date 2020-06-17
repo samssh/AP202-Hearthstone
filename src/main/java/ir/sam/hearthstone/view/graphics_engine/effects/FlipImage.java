@@ -7,7 +7,7 @@ public class FlipImage implements PaintByTime {
     private final PaintByTime back, front;
     private final int mode;
 
-    public FlipImage(PaintByTime back, PaintByTime front, int mode) {
+    public FlipImage(PaintByTime front, PaintByTime back, int mode) {
         this.back = back;
         this.front = front;
         this.mode = mode;
@@ -18,10 +18,10 @@ public class FlipImage implements PaintByTime {
         PaintByTime gear;
         if (time < 0.5) {
             scale = (1 - 2 * time);
-            gear = front;
+            gear = back;
         } else {
             scale = 2 * time - 1;
-            gear = back;
+            gear = front;
         }
         int translateX = ((mode & X) > 0) ? (int) ((gear.getWidth() * (1 - scale)) / 2) : 0;
         int translateY = ((mode & Y) > 0) ? (int) ((gear.getHeight() * (1 - scale)) / 2) : 0;

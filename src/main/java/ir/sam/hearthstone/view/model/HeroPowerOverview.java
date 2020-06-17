@@ -2,11 +2,13 @@ package ir.sam.hearthstone.view.model;
 
 import ir.sam.hearthstone.model.main.HeroPower;
 import ir.sam.hearthstone.resource_manager.ImageLoader;
+import lombok.ToString;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.awt.image.ColorModel;
 
+@ToString(exclude = {"big", "small"})
 public class HeroPowerOverview extends UnitOverview {
     private final int mana;
     private final BufferedImage big, small;
@@ -19,7 +21,7 @@ public class HeroPowerOverview extends UnitOverview {
     }
 
     @Override
-    public void paint(Graphics g) {
+    public void paint(Graphics2D g) {
         g.drawImage(small, 0, 0, null);
         if (mana > 0) {
             g.setColor(Color.WHITE);
@@ -29,6 +31,16 @@ public class HeroPowerOverview extends UnitOverview {
             int h = small.getHeight();
             g.drawString(mana + "", 55 * w / 120, 23 * h / 170);
         }
+    }
+
+    @Override
+    public int getWidth() {
+        return small.getWidth();
+    }
+
+    @Override
+    public int getHeight() {
+        return small.getHeight();
     }
 
     @Override
