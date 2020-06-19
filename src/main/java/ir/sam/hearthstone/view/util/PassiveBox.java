@@ -26,6 +26,11 @@ public class PassiveBox extends Box<PassiveOverview, PassiveBox.PassiveViewer> {
         passiveViewer.setPassiveOverview(passiveOverview);
     }
 
+    @Override
+    protected PassiveViewer[][] createTArray(int i, int j) {
+        return new PassiveViewer[i][j];
+    }
+
     class PassiveViewer extends JPanel implements MouseListener {
         @Setter
         private PassiveOverview passiveOverview;

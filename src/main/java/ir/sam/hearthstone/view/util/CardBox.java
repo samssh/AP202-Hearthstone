@@ -21,5 +21,10 @@ public class CardBox extends Box<CardOverview, UnitViewer> {
         unitViewer.setUnitOverview(cardOverview);
     }
 
+    @Override
+    protected UnitViewer[][] createTArray(int i, int j) {
+        return new UnitViewer[i][j];
+    }
+
 
 }

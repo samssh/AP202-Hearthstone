@@ -78,7 +78,7 @@ public class Deck implements SaveAble {
             sum += card.getManaFrz();
         }
 
-        return n != 0 ? (sum) / n : -1;
+        return n != 0 ? (sum) / n : 1000;
     }
 
     public void removeCard(Card card) {

@@ -127,8 +127,9 @@ public class PlayPanel extends JPanel {
     public void setDetails(List<CardOverview> hand, List<CardOverview> ground, CardOverview weapon,
                            HeroOverview hero, HeroPowerOverview heroPower, String eventLog, int mana, int deckCards) {
         this.hand.setModels(hand);
-        this.ground.setModels(ground);
         this.weapon.setUnitOverview(weapon);
+        if (weapon!=null) this.ground.addModel(1,weapon);
+        else this.ground.setModels(ground);
         this.hero.setUnitOverview(hero);
         this.heroPower.setUnitOverview(heroPower);
         this.eventLog.setText(eventLog);

@@ -23,6 +23,10 @@ public class BigDeckBox extends Box<BigDeckOverview, BigDeckBox.BigDeckViewer> {
         bigDeckViewer.setBigDeckOverview(bigDeckOverview);
     }
 
+    @Override
+    protected BigDeckViewer[][] createTArray(int i, int j) {
+        return new BigDeckViewer[i][j];
+    }
 
     class BigDeckViewer extends JPanel implements MouseListener {
         @Setter

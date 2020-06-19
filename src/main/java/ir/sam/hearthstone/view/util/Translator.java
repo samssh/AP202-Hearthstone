@@ -4,11 +4,11 @@ import ir.sam.hearthstone.view.Painter;
 
 import java.awt.*;
 
-public class TranslatorByTime implements Painter {
+public class Translator implements Painter {
     private final Painter painter;
     private final int x, y;
 
-    public TranslatorByTime(Painter painter, int x, int y) {
+    public Translator(Painter painter, int x, int y) {
         this.painter = painter;
         this.x = x;
         this.y = y;

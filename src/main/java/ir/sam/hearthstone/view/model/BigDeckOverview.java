@@ -36,7 +36,7 @@ public class BigDeckOverview extends Overview {
         else s = "--";
         g.drawString("wins:" + wins + " games:" + games + " winRate:" + s, 0, 120);
         String p;
-        if (manaAverage != -1) {
+        if (manaAverage != 1000) {
             p = new DecimalFormat("#.##").format(manaAverage);
             g.drawString("mana average:" + p, 0, 160);
             g.drawString("MVC:" + cardName, 0, 200);

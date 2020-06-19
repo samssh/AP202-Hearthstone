@@ -23,6 +23,11 @@ public class SmallDeckBox extends Box<SmallDeckOverview, SmallDeckBox.SmallDeckV
         smallDeckViewer.smallDeckOverview = smallDeckOverview;
     }
 
+    @Override
+    protected SmallDeckViewer[][] createTArray(int i, int j) {
+        return new SmallDeckViewer[i][j];
+    }
+
 
     public class SmallDeckViewer extends JPanel implements MouseListener {
         private SmallDeckOverview smallDeckOverview;
