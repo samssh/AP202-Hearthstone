@@ -111,12 +111,12 @@ public class CollectionPanel extends JPanel implements Updatable {
     }
 
     private void initializeCards() {
-        cards = new CardBox(cardsWidth, cardsHeight, this, collectionAction::addCardToDeck);
+        cards = new CardBox(cardsWidth, cardsHeight, this, collectionAction::addCardToDeck, true);
         cards.setLocation(cardsX, cardsY);
     }
 
     private void initializeDeckCard() {
-        deckCards = new CardBox(deckCardsWidth, deckCardsHeight, this, collectionAction::removeCardFromDeck);
+        deckCards = new CardBox(deckCardsWidth, deckCardsHeight, this, collectionAction::removeCardFromDeck, true);
         deckCards.setLocation(deckCardsX, deckCardsY);
     }
 

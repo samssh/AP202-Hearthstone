@@ -3,6 +3,11 @@ package ir.sam.hearthstone.view.panel;
 import ir.sam.hearthstone.client.Client;
 import ir.sam.hearthstone.resource_manager.Config;
 import ir.sam.hearthstone.resource_manager.ImageLoader;
+import ir.sam.hearthstone.view.graphics_engine.AnimationManger;
+import ir.sam.hearthstone.view.graphics_engine.effects.LinearMotion;
+import ir.sam.hearthstone.view.graphics_engine.effects.OverviewPainter;
+import ir.sam.hearthstone.view.graphics_engine.effects.Rotary;
+import ir.sam.hearthstone.view.graphics_engine.effects.SimplePainter;
 import ir.sam.hearthstone.view.model.CardOverview;
 import ir.sam.hearthstone.view.util.CardBox;
 import ir.sam.hearthstone.view.util.Constant;
@@ -26,6 +31,7 @@ public class ShopPanel extends JPanel implements Updatable {
     private int buyX, buyY, buyWidth, buyHeight;
     private int exitX, exitY, exitWidth, exitHeight, exitSpace;
     private final Client.ShopAction shopAction;
+    private final AnimationManger animationManger;
 
     public ShopPanel(Client.ShopAction shopAction) {
         setLayout(null);
@@ -38,6 +44,7 @@ public class ShopPanel extends JPanel implements Updatable {
         this.add(exit);
         this.add(back);
         this.add(backMainMenu);
+        animationManger = new AnimationManger();
     }
 
     private void initialize() {
@@ -49,13 +56,13 @@ public class ShopPanel extends JPanel implements Updatable {
     }
 
     private void initializeSell() {
-        sell = new CardBox(sellWidth, sellHeight, this, shopAction::sell);
+        sell = new CardBox(sellWidth, sellHeight, this, shopAction::sell, true);
         sell.setLocation(sellX, sellY);
         sell.setTitle("card you can sell");
     }
 
     private void initializeBuy() {
-        buy = new CardBox(buyWidth, buyHeight, this, shopAction::buy);
+        buy = new CardBox(buyWidth, buyHeight, this, shopAction::buy, true);
         buy.setLocation(buyX, buyY);
         buy.setTitle("card you can buy");
     }
@@ -91,6 +98,7 @@ public class ShopPanel extends JPanel implements Updatable {
         g.setColor(Color.WHITE);
         g.setFont(g.getFont().deriveFont(17F));
         g.drawString("\u0024" + coin, coinX, coinY);
+        animationManger.paint((Graphics2D) g);
     }
 
     private void config() {
@@ -122,6 +130,24 @@ public class ShopPanel extends JPanel implements Updatable {
 
     public void setBuy(List<CardOverview> buyList) {
         buy.setModels(buyList);
+    }
+
+    public void putShopEvent(String cardName,String type){
+        if ("buy".equalsIgnoreCase(type)) moveCard(cardName,buy,sell);
+        else if ("sell".equalsIgnoreCase(type)) moveCard(cardName,sell,buy);
+    }
+
+    private void moveCard(String card,CardBox origin,CardBox dest){
+        Point org = origin.getPosition(card);
+        org.translate(origin.getX(),origin.getY());
+        CardOverview cardOverview = origin.removeModel(card,false);
+        dest.addModel(cardOverview,false);
+        Point des = dest.getPosition(card);
+        des.translate(dest.getX(),dest.getY());
+        animationManger.clear();
+        animationManger.addPainter(new LinearMotion(org.x,org.y,des.x,des.y,
+                new Rotary(new OverviewPainter(cardOverview)), x->Math.pow(x,1/2.)));
+        animationManger.start();
     }
 
     @Override

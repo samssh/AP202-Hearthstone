@@ -7,6 +7,7 @@ import ir.sam.hearthstone.model.main.Card;
 import ir.sam.hearthstone.response.Response;
 import ir.sam.hearthstone.response.ShopDetails;
 import ir.sam.hearthstone.resource_manager.ModelLoader;
+import ir.sam.hearthstone.response.ShopEvent;
 import ir.sam.hearthstone.view.model.CardOverview;
 
 import java.util.ArrayList;
@@ -72,8 +73,8 @@ public class Shop {
                 connector.save(player);
                 connector.save(new BuySellLog(player.getUserName()
                         , player.getCoin() - card.getPrice(), player.getCoin(), cardName, "sell"));
+                return new ShopEvent(cardName,"sell");
             }
-            return sendShop(player);
         }
         return null;
     }
@@ -92,14 +93,16 @@ public class Shop {
                 connector.save(player);
                 connector.save(new BuySellLog(player.getUserName()
                         , player.getCoin() + card.getPrice(), player.getCoin(), cardName, "buy"));
+                return new ShopEvent(cardName,"buy");
             }
-            return sendShop(player);
+//            return sendShop(player);
         }
         return null;
     }
 
     public boolean canBuy(Card card, Player player) {
-        return availableCards(player).contains(card) && player.getCoin() >= card.getPrice() && player.numberOfCard(card) < 2;
+        return availableCards(player).contains(card) && player.getCoin() >= card.getPrice()
+                && player.numberOfCard(card) < 2;
     }
 
 }

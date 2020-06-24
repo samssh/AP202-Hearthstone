@@ -40,7 +40,7 @@ public class PlayPanel extends JPanel {
         this.image = ImageLoader.getInstance().getBackground("play");
         config();
         initialize();
-        this.setBounds(x,y,width,height);
+        this.setBounds(x, y, width, height);
         this.add(hand);
         this.add(ground);
         this.add(hero);
@@ -63,13 +63,13 @@ public class PlayPanel extends JPanel {
     }
 
     private void initializeHand() {
-        hand = new CardBox(handWidth, handHeight, this, playAction::playCard);
+        hand = new CardBox(handWidth, handHeight, this, playAction::playCard, false);
         hand.setTitle("Hand cards");
         hand.setLocation(handX, handY);
     }
 
     private void initializeGround() {
-        ground = new CardBox(groundWidth, groundHeight, this, null);
+        ground = new CardBox(groundWidth, groundHeight, this, null, false);
         ground.setLocation(groundX, groundY);
         ground.setTitle("Ground cards");
     }
@@ -99,7 +99,7 @@ public class PlayPanel extends JPanel {
         exit.setBounds(exitX, exitY, exitWidth, exitHeight);
         exit.addActionListener(e -> playAction.exit());
         Constant.makeTransparent(exit);
-        exit.setBackground(new Color(240,240,240,100));
+        exit.setBackground(new Color(240, 240, 240, 100));
     }
 
     private void initializeNext() {
@@ -107,7 +107,7 @@ public class PlayPanel extends JPanel {
         next.setBounds(nextX, nextY, nextWidth, nextHeight);
         next.addActionListener(e -> playAction.endTurn());
         Constant.makeTransparent(next);
-        next.setBackground(new Color(240,240,240,100));
+        next.setBackground(new Color(240, 240, 240, 100));
     }
 
     private void initializeEventLog() {
@@ -128,8 +128,8 @@ public class PlayPanel extends JPanel {
                            HeroOverview hero, HeroPowerOverview heroPower, String eventLog, int mana, int deckCards) {
         this.hand.setModels(hand);
         this.weapon.setUnitOverview(weapon);
-        if (weapon!=null) this.ground.addModel(1,weapon);
-        else this.ground.setModels(ground);
+        /*if (weapon!=null) this.ground.addModel(1,weapon);
+        else*/ this.ground.setModels(ground);
         this.hero.setUnitOverview(hero);
         this.heroPower.setUnitOverview(heroPower);
         this.eventLog.setText(eventLog);
@@ -140,7 +140,7 @@ public class PlayPanel extends JPanel {
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
-        g.drawImage(image,0,0,null);
+        g.drawImage(image, 0, 0, null);
         g.setColor(Color.WHITE);
         g.drawString("Mana:" + mana, manaX, manaY);
         g.drawString("Deck Cards:" + deckCards, manaX, manaY + manaSpace);

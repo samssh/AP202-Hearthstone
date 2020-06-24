@@ -24,6 +24,10 @@ public class AnimationManger {
 
     public void clear() {
         lastPaint = 0;
+        if (endAnimationAction!=null) {
+            endAnimationAction.action();
+            endAnimationAction = null;
+        }
         synchronized (painters) {
             painters.clear();
         }
@@ -42,8 +46,6 @@ public class AnimationManger {
         if (lastPaint == 0) return;
         double time = (System.nanoTime() - lastPaint) / (1e9);
         if (time >= 1) {
-            if (endAnimationAction != null)
-                endAnimationAction.action();
             clear();
             return;
         }

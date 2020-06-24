@@ -51,7 +51,7 @@ public class UnitViewer extends JPanel implements MouseListener {
     public void mouseClicked(MouseEvent e) {
         if (unitOverview != null) {
             if (e.getButton() == MouseEvent.BUTTON3) JOptionPane.showMessageDialog(this.parent, null,
-                    "card information", JOptionPane.INFORMATION_MESSAGE, new ImageIcon(unitOverview.getBigImage()));
+                    "information", JOptionPane.INFORMATION_MESSAGE, new ImageIcon(unitOverview.getBigImage()));
             if (e.getButton() == MouseEvent.BUTTON1) {
                 if (actionListener != null && unitOverview!=null) {
                     actionListener.action(unitOverview.getName());

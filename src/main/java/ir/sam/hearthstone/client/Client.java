@@ -36,7 +36,7 @@ public class Client {
     public Client(RequestSender requestSender) {
         this.requestSender = requestSender;
         this.frame = new MyFrame();
-        panels = new HashMap<>();
+        panels = new EnumMap<>(PanelType.class);
         history = new Stack<>();
         panels.put(PanelType.LOGIN, new LoginPanel(new LoginPanelAction()));
         now = PanelType.LOGIN;
@@ -168,6 +168,12 @@ public class Client {
         shopPanel.setBuy(buy);
         shopPanel.setCoin(coin);
     }
+
+    public void putShopEvent(String cardName,String type){
+        ShopPanel shopPanel = (ShopPanel) panels.get(PanelType.SHOP);
+        shopPanel.putShopEvent(cardName,type);
+    }
+
 
     public void setStatusDetails(List<BigDeckOverview> bigDeckOverviews) {
         StatusPanel statusPanel = (StatusPanel) panels.get(PanelType.STATUS);

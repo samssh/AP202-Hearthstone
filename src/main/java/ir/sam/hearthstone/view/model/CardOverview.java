@@ -5,6 +5,7 @@ import ir.sam.hearthstone.model.main.Weapon;
 import ir.sam.hearthstone.resource_manager.ImageLoader;
 import lombok.Getter;
 import ir.sam.hearthstone.model.main.Minion;
+import lombok.Setter;
 import lombok.ToString;
 
 import java.awt.*;
@@ -13,7 +14,8 @@ import java.awt.image.ColorModel;
 @ToString(exclude = {"big","small"})
 public class CardOverview extends UnitOverview {
     @Getter
-    private final int number;
+    @Setter
+    private int number;
     private final int price, mana, att, hp;
     private final boolean showPrice;
     private final BufferedImage big, small;
@@ -34,7 +36,6 @@ public class CardOverview extends UnitOverview {
             this.att = -1;
             this.hp = -1;
         }
-
         if (this.number > 0) {
             big = ImageLoader.getInstance().getBigCard(imageName);
             small = ImageLoader.getInstance().getSmallCard(imageName);
@@ -43,6 +44,24 @@ public class CardOverview extends UnitOverview {
             small = ImageLoader.getInstance().getSmallGrayCard(imageName);
         }
     }
+
+    public CardOverview(String name, String imageName, String toolkit,int number, int price, int mana, int att,
+                        int hp, boolean showPrice, BufferedImage big, BufferedImage small) {
+        super(name, imageName, toolkit);
+        this.number = number;
+        this.price = price;
+        this.mana = mana;
+        this.att = att;
+        this.hp = hp;
+        this.showPrice = showPrice;
+        this.big = big;
+        this.small = small;
+    }
+
+    public CardOverview getClone(){
+        return new CardOverview(name,imageName,getToolkit(),number,price,mana,att,hp,showPrice,big,small);
+    }
+
 
     @Override
     public void paint(Graphics2D g) {

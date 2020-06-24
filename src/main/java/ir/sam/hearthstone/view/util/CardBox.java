@@ -7,8 +7,11 @@ import javax.swing.*;
 import static ir.sam.hearthstone.view.util.Constant.*;
 
 public class CardBox extends Box<CardOverview, UnitViewer> {
-    public CardBox(int width, int height, JPanel parent, MyActionListener cardActionListener) {
+    private final boolean distinct;
+
+    public CardBox(int width, int height, JPanel parent, MyActionListener cardActionListener, boolean distinct) {
         super(width, height, parent, cardActionListener, CARD_WIDTH, CARD_HEIGHT, CARD_SPACE);
+        this.distinct = distinct;
     }
 
     @Override
@@ -26,5 +29,27 @@ public class CardBox extends Box<CardOverview, UnitViewer> {
         return new UnitViewer[i][j];
     }
 
+    @Override
+    public void addModel(int index, CardOverview cardOverview, boolean animationOnNew) {
+        if (distinct && models.contains(cardOverview)) {
+            animationManger.clear();
+            animationManger.start(() -> {
+                CardOverview c = models.get(models.indexOf(cardOverview));
+                c.setNumber(c.getNumber() + 1);
+            });
+        } else {
+            super.addModel(index, cardOverview, animationOnNew);
+        }
+    }
 
+    @Override
+    public CardOverview removeModel(int index, boolean animationOnNew) {
+        CardOverview cardOverview = models.get(index);
+        if (distinct && cardOverview.getNumber()>1) {
+            cardOverview.setNumber(cardOverview.getNumber()-1);
+            return cardOverview.getClone();
+        } else {
+            return super.removeModel(index, animationOnNew);
+        }
+    }
 }
