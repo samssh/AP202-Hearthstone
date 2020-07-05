@@ -49,7 +49,7 @@ public class ResponseLogInfo {
     }
 
 
-    private class Visitor implements ResponseLogInfoVisitor{
+    private class Visitor implements ResponseLogInfoVisitor {
 
         @Override
         public void setPassiveDetailsInfo(PassiveDetails response) {
@@ -82,20 +82,14 @@ public class ResponseLogInfo {
         }
 
         @Override
-        public void setCollectionDetailsInfo(CollectionDetails collectionDetails) {
-            decks = collectionDetails.getDecks().toString();
-            cards = collectionDetails.getCards().toString();
-            if (collectionDetails.getDeckCards() != null)
-                deckCards = collectionDetails.getDeckCards().toString();
-            deckName = collectionDetails.getDeckName();
-            canAddDeck = collectionDetails.isCanAddDeck();
-            canChangeHero = collectionDetails.isCanChangeHero();
-        }
-
-        @Override
-        public void setFirstCollectionDetailsInfo(FirstCollectionDetails firstCollectionDetails) {
-            classOfCardNames = firstCollectionDetails.getClassOfCardNames().toString();
-            heroNames = firstCollectionDetails.getHeroNames().toString();
+        public void setCollectionDetailsInfo(AllCollectionDetails allCollectionDetails) {
+            decks = allCollectionDetails.getDecks().toString();
+            cards = allCollectionDetails.getCards().toString();
+            if (allCollectionDetails.getDeckCards() != null)
+                deckCards = allCollectionDetails.getDeckCards().toString();
+            deckName = allCollectionDetails.getDeckName();
+            canAddDeck = allCollectionDetails.isCanAddDeck();
+            canChangeHero = allCollectionDetails.isCanChangeHero();
         }
 
         @Override

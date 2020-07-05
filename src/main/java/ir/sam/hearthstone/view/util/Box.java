@@ -11,9 +11,9 @@ import java.util.List;
 
 import static ir.sam.hearthstone.view.util.Constant.*;
 
-public abstract class Box<E extends Overview, T extends JPanel> extends JPanel {
-    protected List<E> models;
-    private final LinkedList<E> showing;
+public abstract class Box<Model extends Overview, T extends JPanel> extends JPanel {
+    protected List<Model> models;
+    private final LinkedList<Model> showing;
     private final T[][] items;
     private final int a, b, height, width;
     private int begin, end;
@@ -91,17 +91,38 @@ public abstract class Box<E extends Overview, T extends JPanel> extends JPanel {
         previous.setForeground(Color.WHITE);
     }
 
-    public void addModel(int index, E e, boolean animationOnNew) {
-        models.add(index, e);
-        if (begin <= index && index < end) {
+    public void changeModel(int index, Model model){
+            Model backOve = models.remove(index);
+            models.add(index, model);
+        if (begin<=index && index<end){
+            PaintByTime back = new OverviewPainter(backOve);
+            PaintByTime front = new OverviewPainter(model);
+            int indexOnShow = index - begin;
+            T t = items[indexOnShow%a][index/a];
+            set(t, null);
+            animationManger.addPainter(new TranslatorByTime(new DoublePictureScale(front, back, ScaleOnCenter.X)
+                    ,t.getX(),t.getY()));
+            animationManger.start(()->set(items[indexOnShow%a][index/a], model));
+            showing.remove(index);
+            showing.add(index, model);
+        }
+    }
+
+    public void changeModel(String name,Model model){
+        changeModel(indexOf(name),model);
+    }
+
+    public void addModel(int index, Model model, boolean animationOnNew) {
+        models.add(index, model);
+        if ((begin <= index && index < end)||(begin==end)) {
             animationManger.clear();
             clear(index - begin);
             for (int k = index - begin, showingSize = showing.size(); k < showingSize && k + 1 < a * b; k++) {
                 moveTo(k, k + 1);
             }
-            showing.add(index - begin, e);
+            showing.add(index - begin, model);
             checkLastForAdd();
-            finalizeAdd(index, e, animationOnNew);
+            finalizeAdd(index, model, animationOnNew);
         }
     }
 
@@ -113,9 +134,9 @@ public abstract class Box<E extends Overview, T extends JPanel> extends JPanel {
         } else end++;
     }
 
-    private void finalizeAdd(int index, E e, boolean animationOnNew) {
+    private void finalizeAdd(int index, Model model, boolean animationOnNew) {
         if (animationOnNew) animationManger.addPainter(new TranslatorByTime(new SinglePictureScale
-                (new OverviewPainter(e), false, ScaleOnCenter.ALL)
+                (new OverviewPainter(model), false, ScaleOnCenter.ALL)
                 , items[index % a][index / a].getX(), items[index % a][index / a].getY()));
         setButtons();
         animationManger.start(() -> endAnimation(index - begin));
@@ -125,20 +146,20 @@ public abstract class Box<E extends Overview, T extends JPanel> extends JPanel {
         return models.size();
     }
 
-    public void addModel(int index, E e) {
-        addModel(index, e, false);
+    public void addModel(int index, Model model) {
+        addModel(index, model, false);
     }
 
-    public void addModel(E e) {
-        addModel(begin, e, false);
+    public void addModel(Model model) {
+        addModel(begin, model, false);
     }
 
-    public void addModel(E e, boolean animationOnNew) {
-        addModel(begin, e, animationOnNew);
+    public void addModel(Model model, boolean animationOnNew) {
+        addModel(begin, model, animationOnNew);
     }
 
-    public E removeModel(int index, boolean animationOnNew) {
-        E e = models.remove(index);
+    public Model removeModel(int index, boolean animationOnOld) {
+        Model model = models.remove(index);
         if (begin <= index && index < end) {
             animationManger.clear();
             clear(index - begin);
@@ -147,14 +168,14 @@ public abstract class Box<E extends Overview, T extends JPanel> extends JPanel {
             }
             showing.remove(index - begin);
             checkLastForRemove();
-            finalizeRemove(index, e, animationOnNew);
+            finalizeRemove(index, model, animationOnOld);
         }
-        return e;
+        return model;
     }
 
     private void checkLastForRemove() {
         if (end <= models.size()) {
-            E newTOShow = models.get(end-1);
+            Model newTOShow = models.get(end-1);
             showing.addLast(newTOShow);
             animationManger.addPainter(new TranslatorByTime(new SinglePictureScale(
                     new OverviewPainter(newTOShow), false, ScaleOnCenter.ALL)
@@ -162,23 +183,23 @@ public abstract class Box<E extends Overview, T extends JPanel> extends JPanel {
         } else end--;
     }
 
-    private void finalizeRemove(int index, E e, boolean animationOnNew) {
+    private void finalizeRemove(int index, Model model, boolean animationOnNew) {
         if (animationOnNew) animationManger.addPainter(new TranslatorByTime(new SinglePictureScale
-                (new OverviewPainter(e), true, ScaleOnCenter.ALL)
+                (new OverviewPainter(model), true, ScaleOnCenter.ALL)
                 , items[index % a][index / a].getX(), items[index % a][index / a].getY()));
         setButtons();
         animationManger.start(() -> endAnimation(index - begin));
     }
 
-    public E removeModel(String name) {
+    public Model removeModel(String name) {
         return removeModel(indexOf(name), false);
     }
 
-    public E removeModel(String name, boolean animationOnNew) {
-        return removeModel(indexOf(name), animationOnNew);
+    public Model removeModel(String name, boolean animationOnOld) {
+        return removeModel(indexOf(name), animationOnOld);
     }
 
-    public E removeModel(int index) {
+    public Model removeModel(int index) {
         return removeModel(index, false);
     }
 
@@ -202,14 +223,18 @@ public abstract class Box<E extends Overview, T extends JPanel> extends JPanel {
 
     public Point getPosition(String name) {
         int index = indexOf(name) - begin;
-        if (index >= a * b || index < 0) {
+        if (index >= a * b) {
             Rectangle rectangle =items[a-1][b-1].getBounds();
             return new Point(rectangle.x + rectangle.width/2,rectangle.y);
+        }
+        if( index < 0){
+            Rectangle rectangle =items[0][0].getBounds();
+            return new Point(rectangle.x - rectangle.width/2,rectangle.y);
         }
         return new Point(items[index % a][index / a].getLocation());
     }
 
-    public void setModels(List<E> models) {
+    public void setModels(List<Model> models) {
         this.models = models;
         end = 0;
         next();
@@ -237,15 +262,15 @@ public abstract class Box<E extends Overview, T extends JPanel> extends JPanel {
 
     protected abstract T createNew();
 
-    protected abstract void set(T t, E e);
+    protected abstract void set(T t, Model model);
 
     protected abstract T[][] createTArray(int i, int j);
 
     private void update() {
         this.clear(0);
         for (int i = 0, showingSize = showing.size(); i < showingSize; i++) {
-            E e = showing.get(i);
-            PaintByTime front = new OverviewPainter(e);
+            Model model = showing.get(i);
+            PaintByTime front = new OverviewPainter(model);
             animationManger.addPainter(new TranslatorByTime(
                     new SinglePictureScale(front, false, DoublePictureScale.RANDOM)
                     , items[i % a][i / a].getX(), items[i % a][i / a].getY()));
@@ -272,8 +297,8 @@ public abstract class Box<E extends Overview, T extends JPanel> extends JPanel {
 
     private void endAnimation(int begin) {
         for (int i = begin, showingSize = showing.size(); i < showingSize; i++) {
-            E e = showing.get(i);
-            set(items[i % a][i / a], e);
+            Model model = showing.get(i);
+            set(items[i % a][i / a], model);
         }
     }
 

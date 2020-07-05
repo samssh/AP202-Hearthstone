@@ -30,7 +30,6 @@ public class Client {
     private final List<Response> tempResponseList, responseList;
     private final Loop executor;
     private String username;
-    //    @Setter
     private final RequestSender requestSender;
 
     public Client(RequestSender requestSender) {
@@ -146,14 +145,14 @@ public class Client {
         connector.save(new RequestLog(request, username));
     }
 
-    private void sendFirstCollectionRequest() {
-        Request request = new FirstCollection();
+    private void sendCollectionRequest(String name, String classOfCard, int mana, int lockMode) {
+        Request request = new CollectionFilter(name, classOfCard, mana, lockMode);
         requestSender.sendRequest(request);
         connector.save(new RequestLog(request, username));
     }
 
-    private void sendCollectionRequest(String name, String classOfCard, int mana, int lockMode, String deckName) {
-        Request request = new CollectionDetails(name, classOfCard, mana, lockMode, deckName);
+    private void sendAllCollectionDetailsRequest(String name, String classOfCard, int mana, int lockMode) {
+        Request request = new AllCollectionDetails(name, classOfCard, mana, lockMode);
         requestSender.sendRequest(request);
         connector.save(new RequestLog(request, username));
     }
@@ -184,24 +183,24 @@ public class Client {
         }
     }
 
-    public void setFirstCollectionDetail(List<String> heroNames, List<String> classOfCardNames) {
+    public void setCollectionDetail(List<CardOverview> cards, List<SmallDeckOverview> decks,
+                                    List<CardOverview> deckCards, boolean canAddDeck,
+                                    boolean canChangeHero, String deckName,
+                                    List<String> heroNames, List<String> classOfCardNames) {
         CollectionPanel collectionPanel = (CollectionPanel) panels.get(PanelType.COLLECTION);
-        collectionPanel.setFirstDetails(heroNames, classOfCardNames);
+        collectionPanel.setDetails(cards, decks, deckCards, canAddDeck, canChangeHero, deckName,heroNames,classOfCardNames);
         if (now != PanelType.COLLECTION) {
             now = PanelType.COLLECTION;
             updateFrame();
         }
     }
 
-    public void setCollectionDetail(List<CardOverview> cards, List<SmallDeckOverview> decks,
-                                    List<CardOverview> deckCards, boolean canAddDeck,
-                                    boolean canChangeHero, String deckName) {
-        CollectionPanel collectionPanel = (CollectionPanel) panels.get(PanelType.COLLECTION);
-        collectionPanel.setDetails(cards, decks, deckCards, canAddDeck, canChangeHero, deckName);
-        if (now != PanelType.COLLECTION) {
-            now = PanelType.COLLECTION;
-            updateFrame();
-        }
+    public void putCollectionDeckEvent(String type,String deckName,SmallDeckOverview newDeck){
+        ((CollectionPanel)panels.get(COLLECTION)).putDeckEvent(type, deckName, newDeck);
+    }
+
+    public void putCollectionCardEvent(String type, String cardName,boolean canAddDeck, boolean canChangeHero){
+        ((CollectionPanel)panels.get(COLLECTION)).putCardEvent(type,cardName,canAddDeck,canChangeHero);
     }
 
     public void showMessage(String message) {
@@ -311,7 +310,7 @@ public class Client {
 
         public void collection() {
             connector.save(new ButtonLog(username, "collection", MAIN_MENU.toString()));
-            sendFirstCollectionRequest();
+            ((Updatable)panels.get(COLLECTION)).update();
         }
 
         public void play() {
@@ -386,6 +385,10 @@ public class Client {
         private String name = null, classOfCard = null, deckName = null;
         private int mana = 0, lockMode = 0;
 
+        public void setDeckName(String deckName) {
+            this.deckName = deckName;
+        }
+
         public void exit() {
             connector.save(new ButtonLog(username, "exit", COLLECTION.toString()));
             Client.this.logout();
@@ -406,7 +409,7 @@ public class Client {
             if (e.getStateChange() == ItemEvent.SELECTED) {
                 if (e.getItem().equals("all")) mana = 0;
                 else mana = Integer.parseInt((String) e.getItem());
-                sendRequest();
+                sendFilterRequest();
                 connector.save(new ButtonLog(username, "mana to:" + mana, COLLECTION.toString()));
             }
         }
@@ -417,7 +420,7 @@ public class Client {
                 if (item.equals("all cards")) lockMode = 0;
                 if (item.equals("locked cards")) lockMode = 1;
                 if (item.equals("unlocked cards")) lockMode = 2;
-                sendRequest();
+                sendFilterRequest();
                 connector.save(new ButtonLog(username, "lock made to:" + lockMode, COLLECTION.toString()));
             }
         }
@@ -428,7 +431,7 @@ public class Client {
                 connector.save(new ButtonLog(username, "name to:" + name, COLLECTION.toString()));
             } catch (BadLocationException ignore) {
             }
-            sendRequest();
+            sendFilterRequest();
         }
 
         public void classOfCard(ItemEvent e) {
@@ -436,7 +439,7 @@ public class Client {
                 Object item = e.getItem();
                 if (item.equals("All classes")) classOfCard = null;
                 else classOfCard = (String) item;
-                sendRequest();
+                sendFilterRequest();
                 connector.save(new ButtonLog(username, "class of card to:" + classOfCard
                         , COLLECTION.toString()));
             }
@@ -445,8 +448,10 @@ public class Client {
         public void selectDeck(String deckName) {
             if (deckName.equals(this.deckName)) this.deckName = null;
             else this.deckName = deckName;
+            Request request = new SelectDeck(deckName);
+            requestSender.sendRequest(request);
+            connector.save(new RequestLog(request, Client.this.username));
             connector.save(new ButtonLog(username, "select deck:" + deckName, COLLECTION.toString()));
-            sendRequest();
         }
 
         public void newDeck(String deckName, String heroName) {
@@ -504,14 +509,16 @@ public class Client {
             lockMode = 0;
         }
 
-        public void sendRequest() {
-            sendCollectionRequest(name, classOfCard, mana, lockMode, deckName);
+        public void sendFilterRequest() {
+            sendCollectionRequest(name, classOfCard, mana, lockMode);
+        }
+
+        public void sendAllCollectionDetailsRequest() {
+            Client.this.sendAllCollectionDetailsRequest(name, classOfCard, mana, lockMode);
         }
 
         public void update() {
-            if (!((CollectionPanel) panels.get(PanelType.COLLECTION)).hasFirst())
-                Client.this.sendFirstCollectionRequest();
-            sendRequest();
+            sendAllCollectionDetailsRequest();
         }
     }
 

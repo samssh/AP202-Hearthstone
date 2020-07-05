@@ -9,7 +9,7 @@ public interface RequestLogInfoVisitor {
 
     void setChangeHeroDeck(ChangeHeroDeck changeHeroDeck);
 
-    void setCollectionDetails(CollectionDetails collectionDetails);
+    void setCollectionDetails(CollectionFilter collectionFilter);
 
     void setDeleteAccount(DeleteAccount deleteAccount);
 
@@ -19,7 +19,7 @@ public interface RequestLogInfoVisitor {
 
     void setExitGame(ExitGame exitGame);
 
-    void setFirstCollection(FirstCollection firstCollection);
+//    void setFirstCollection(FirstCollection firstCollection);
 
     void setLoginRequest(LoginRequest loginRequest);
 

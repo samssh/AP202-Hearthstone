@@ -43,13 +43,13 @@ public class CardBox extends Box<CardOverview, UnitViewer> {
     }
 
     @Override
-    public CardOverview removeModel(int index, boolean animationOnNew) {
+    public CardOverview removeModel(int index, boolean animationOnOld) {
         CardOverview cardOverview = models.get(index);
         if (distinct && cardOverview.getNumber()>1) {
             cardOverview.setNumber(cardOverview.getNumber()-1);
             return cardOverview.getClone();
         } else {
-            return super.removeModel(index, animationOnNew);
+            return super.removeModel(index, animationOnOld);
         }
     }
 }

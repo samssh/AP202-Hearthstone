@@ -9,9 +9,9 @@ public interface ResponseLogInfoVisitor {
 
     void setShowMessageInfo(ShowMessage showMessage);
 
-    void setCollectionDetailsInfo(CollectionDetails collectionDetails);
+    void setCollectionDetailsInfo(AllCollectionDetails allCollectionDetails);
 
-    void setFirstCollectionDetailsInfo(FirstCollectionDetails firstCollectionDetails);
+//    void setFirstCollectionDetailsInfo(FirstCollectionDetails firstCollectionDetails);
 
     void setStatusDetailsInfo(StatusDetails statusDetails);
 

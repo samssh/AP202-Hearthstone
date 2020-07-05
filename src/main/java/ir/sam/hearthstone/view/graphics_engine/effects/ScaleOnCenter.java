@@ -14,7 +14,7 @@ public abstract class ScaleOnCenter implements PaintByTime {
         if (mode == RANDOM)
             mode = (int)(Math.random()*3) + 1;
         this.mode = mode;
-    }
+    } 
 
     protected void paint0(Graphics2D graphics2D, double time, PaintByTime painter, double scale) {
         int translateX = ((mode & X) > 0) ? (int) ((painter.getWidth() * (1 - scale)) / 2) : 0;

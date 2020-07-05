@@ -179,12 +179,16 @@ public class Server {
         sendResponse(status.sendStatus(player));
     }
 
-    public void sendFirstCollection() {
-        sendResponse(collection.sendFirstCollection(player));
+    public void selectDeck(String deckName) {
+        sendResponse(collection.selectDeck(player,deckName));
     }
 
-    public void sendCollectionDetails(String name, String classOfCard, int mana, int lockMode, String deckName) {
-        sendResponse(collection.sendCollectionDetails(name, classOfCard, mana, lockMode, deckName, player));
+    public void sendAllCollectionDetails(String name, String classOfCard, int mana, int lockMode) {
+        sendResponse(collection.sendAllCollectionDetails(name, classOfCard, mana, lockMode,player));
+    }
+
+    public void applyCollectionFilter(String name, String classOfCard, int mana, int lockMode) {
+        sendResponse(collection.applyCollectionFilter(name, classOfCard, mana, lockMode,player));
     }
 
     public void newDeck(String deckName, String heroName) {

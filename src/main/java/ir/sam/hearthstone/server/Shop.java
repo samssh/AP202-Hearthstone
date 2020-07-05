@@ -95,7 +95,6 @@ public class Shop {
                         , player.getCoin() + card.getPrice(), player.getCoin(), cardName, "buy"));
                 return new ShopEvent(cardName,"buy");
             }
-//            return sendShop(player);
         }
         return null;
     }

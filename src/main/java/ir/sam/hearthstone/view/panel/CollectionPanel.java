@@ -5,6 +5,10 @@ import ir.sam.hearthstone.resource_manager.Config;
 import ir.sam.hearthstone.resource_manager.ConfigFactory;
 import ir.sam.hearthstone.resource_manager.ImageLoader;
 import ir.sam.hearthstone.util.Updatable;
+import ir.sam.hearthstone.view.graphics_engine.AnimationManger;
+import ir.sam.hearthstone.view.graphics_engine.effects.LinearMotion;
+import ir.sam.hearthstone.view.graphics_engine.effects.OverviewPainter;
+import ir.sam.hearthstone.view.graphics_engine.effects.Rotary;
 import ir.sam.hearthstone.view.model.CardOverview;
 import ir.sam.hearthstone.view.model.SmallDeckOverview;
 import ir.sam.hearthstone.view.util.CardBox;
@@ -15,6 +19,7 @@ import ir.sam.hearthstone.view.util.SmallDeckBox;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
+import java.awt.event.ItemListener;
 import java.awt.image.BufferedImage;
 import java.util.List;
 
@@ -28,6 +33,7 @@ public class CollectionPanel extends JPanel implements Updatable {
     private JButton back, backMainMenu, exit;
     private List<String> heroNames;
     private String deckName;
+    private final AnimationManger animationManger;
     private final BufferedImage image;
     private final Client.CollectionAction collectionAction;
     private int x, y, width, height;
@@ -55,6 +61,7 @@ public class CollectionPanel extends JPanel implements Updatable {
         this.add(exit);
         this.add(back);
         this.add(backMainMenu);
+        animationManger = new AnimationManger();
     }
 
     private void initialize() {
@@ -84,7 +91,7 @@ public class CollectionPanel extends JPanel implements Updatable {
         search = new JTextField();
         int x = filterX + filterWidth + filterSpace;
         search.setBounds(x, filterY, filterWidth, filterHeight);
-        search.getDocument().addDocumentListener((MyChangeListener)collectionAction::search);
+        search.getDocument().addDocumentListener((MyChangeListener) collectionAction::search);
 
     }
 
@@ -178,8 +185,8 @@ public class CollectionPanel extends JPanel implements Updatable {
     private void changeHeroDeck(ActionEvent event) {
         String newHeroName = (String) JOptionPane.showInputDialog(this, "select hero",
                 "new deck", JOptionPane.INFORMATION_MESSAGE, null, heroNames.toArray(), heroNames.get(0));
-        if (newHeroName!=null){
-            collectionAction.changeHeroDeck(deckName,newHeroName);
+        if (newHeroName != null) {
+            collectionAction.changeHeroDeck(deckName, newHeroName);
         }
     }
 
@@ -206,18 +213,100 @@ public class CollectionPanel extends JPanel implements Updatable {
         Constant.makeTransparent(backMainMenu);
     }
 
-    public void setFirstDetails(List<String> heroNames, List<String> classOfCardNames) {
-        collectionAction.sendRequest();
-        this.heroNames = heroNames;
-        classOfCard.removeAllItems();
-        classOfCard.addItem("All classes");
-        classOfCardNames.forEach(classOfCard::addItem);
+    public void putDeckEvent(String type,String deckName,SmallDeckOverview newDeck){
+        switch (type) {
+            case "change":
+                decks.changeModel(deckName, newDeck);
+                break;
+            case "delete":
+                decks.removeModel(deckName, true);
+                break;
+            case "new":
+                decks.addModel(newDeck);
+                break;
+            default:
+                System.err.println("shit");
+                break;
+        }
+    }
+
+    public void putCardEvent(String type,String cardName,boolean canAddDeck, boolean canChangeHero){
+        switch (type) {
+            case "add":
+                moveCard(cardName, cards, deckCards);
+                break;
+            case "move":
+                moveCard(cardName, deckCards, cards);
+                break;
+            case "remove":
+                deckCards.removeModel(cardName, true);
+                break;
+            default:
+                System.err.println("shit");
+                break;
+        }
+        setButtons(canAddDeck,canChangeHero);
+    }
+
+    private void moveCard(String cardName,CardBox origin,CardBox dest){
+        Point org = origin.getPosition(cardName);
+        org.translate(origin.getX(),origin.getY());
+        CardOverview cardOverview = origin.removeModel(cardName,false);
+        dest.addModel(cardOverview,false);
+        Point des = dest.getPosition(cardName);
+        des.translate(dest.getX(),dest.getY());
+        animationManger.clear();
+        animationManger.addPainter(new LinearMotion(org.x,org.y,des.x,des.y,
+                new Rotary(new OverviewPainter(cardOverview)), x->Math.pow(x,1/2.5)));
+        animationManger.start();
     }
 
     public void setDetails(List<CardOverview> cards, List<SmallDeckOverview> decks,
-                           List<CardOverview> deckCards, boolean canAddDeck, boolean canChangeHero, String deckName) {
-        this.cards.setModels(cards);
-        this.decks.setModels(decks);
+                           List<CardOverview> deckCards, boolean canAddDeck, boolean canChangeHero,
+                           String deckName, List<String> heroNames, List<String> classOfCardNames) {
+        setCards(cards);
+        setDecks(decks);
+        setDeckCards(deckName, deckCards);
+        setButtons(canAddDeck, canChangeHero);
+        setHeroNames(heroNames);
+        setClassOfCard(classOfCardNames);
+        collectionAction.setDeckName(deckName);
+    }
+
+    private void setClassOfCard(List<String> classOfCardNames) {
+        if (classOfCardNames != null) {
+            classOfCard.removeAllItems();
+            ItemListener itemListener = classOfCard.getItemListeners()[0];
+            classOfCard.removeItemListener(itemListener);
+            classOfCard.addItem("All classes");
+            classOfCard.addItemListener(itemListener);
+            classOfCardNames.forEach(classOfCard::addItem);
+        }
+    }
+
+    private void setHeroNames(List<String> heroNames) {
+        if (heroNames != null)
+            this.heroNames = heroNames;
+    }
+
+    private void setButtons(boolean canAddDeck, boolean canChangeHero) {
+        if (canAddDeck) this.add(newDeck);
+        else this.remove(newDeck);
+        if (canChangeHero) this.add(changeHeroDeck);
+        else this.remove(changeHeroDeck);
+    }
+
+    private void setCards(List<CardOverview> cards) {
+        if (cards != null)
+            this.cards.setModels(cards);
+    }
+
+    private void setDecks(List<SmallDeckOverview> decks) {
+        if (decks != null)
+            this.decks.setModels(decks);
+    }
+
+    private void setDeckCards(String deckName, List<CardOverview> deckCards) {
         this.deckName = deckName;
         if (deckCards != null) {
             this.add(this.deckCards);
@@ -230,10 +319,6 @@ public class CollectionPanel extends JPanel implements Updatable {
             this.remove(changeDeckName);
             this.remove(deleteDeck);
         }
-        if (canAddDeck) this.add(newDeck);
-        else this.remove(newDeck);
-        if (canChangeHero) this.add(changeHeroDeck);
-        else this.remove(changeHeroDeck);
     }
 
     private void config() {
@@ -280,13 +365,10 @@ public class CollectionPanel extends JPanel implements Updatable {
         collectionAction.update();
     }
 
-    public boolean hasFirst(){
-        return classOfCard.getItemCount()>0;
-    }
-
     @Override
     public void paintComponent(Graphics g) {
         super.paintComponent(g);
-        g.drawImage(image,0,0,null);
+        g.drawImage(image, 0, 0, null);
+        animationManger.paint((Graphics2D) g);
     }
 }

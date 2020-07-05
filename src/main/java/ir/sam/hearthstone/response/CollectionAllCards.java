@@ -2,16 +2,13 @@ package ir.sam.hearthstone.response;
 
 import ir.sam.hearthstone.client.Client;
 import ir.sam.hearthstone.view.model.CardOverview;
-import ir.sam.hearthstone.view.model.SmallDeckOverview;
 import lombok.Getter;
 
 import java.util.List;
 
-public class CollectionDetails extends Response {
+public class CollectionAllCards extends Response{
     @Getter
     private final List<CardOverview> cards;
-    @Getter
-    private final List<SmallDeckOverview> decks;
     @Getter
     private final List<CardOverview> deckCards;
     @Getter
@@ -19,11 +16,9 @@ public class CollectionDetails extends Response {
     @Getter
     private final String deckName;
 
-    public CollectionDetails(List<CardOverview> cards, List<SmallDeckOverview> decks,
-                             List<CardOverview> deckCards, boolean canAddDeck,
-                             boolean canChangeHero, String deckName) {
+    public CollectionAllCards(List<CardOverview> cards, List<CardOverview> deckCards,
+                              boolean canAddDeck, boolean canChangeHero, String deckName) {
         this.cards = cards;
-        this.decks = decks;
         this.deckCards = deckCards;
         this.canAddDeck = canAddDeck;
         this.canChangeHero = canChangeHero;
@@ -32,11 +27,12 @@ public class CollectionDetails extends Response {
 
     @Override
     public void execute(Client client) {
-        client.setCollectionDetail(cards, decks, deckCards, canAddDeck, canChangeHero, deckName);
+        client.setCollectionDetail(cards,null,deckCards,canAddDeck,canChangeHero,deckName,
+                null,null);
     }
 
     @Override
-    public void accept(ResponseLogInfoVisitor visitor) {
-        visitor.setCollectionDetailsInfo(this);
+    public void accept(ResponseLogInfoVisitor responseLogInfoVisitor) {
+
     }
 }

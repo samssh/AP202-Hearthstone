@@ -64,12 +64,11 @@ public class RequestLogInfo {
         }
 
         @Override
-        public void setCollectionDetails(CollectionDetails collectionDetails) {
-            name = collectionDetails.getName();
-            classOfCard = collectionDetails.getClassOfCard();
-            deckName = collectionDetails.getDeckName();
-            mana = collectionDetails.getMana();
-            lockMode = collectionDetails.getLockMode();
+        public void setCollectionDetails(CollectionFilter collectionFilter) {
+            name = collectionFilter.getName();
+            classOfCard = collectionFilter.getClassOfCard();
+            mana = collectionFilter.getMana();
+            lockMode = collectionFilter.getLockMode();
         }
 
         @Override
@@ -91,10 +90,10 @@ public class RequestLogInfo {
 
         }
 
-        @Override
-        public void setFirstCollection(FirstCollection firstCollection) {
-
-        }
+//        @Override
+//        public void setFirstCollection(FirstCollection firstCollection) {
+//
+//        }
 
         @Override
         public void setLoginRequest(LoginRequest loginRequest) {

@@ -146,7 +146,7 @@ public class ShopPanel extends JPanel implements Updatable {
         des.translate(dest.getX(),dest.getY());
         animationManger.clear();
         animationManger.addPainter(new LinearMotion(org.x,org.y,des.x,des.y,
-                new Rotary(new OverviewPainter(cardOverview)), x->Math.pow(x,1/2.)));
+                new Rotary(new OverviewPainter(cardOverview)), x->Math.pow(x,1/2.5)));
         animationManger.start();
     }
 

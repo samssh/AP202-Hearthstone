@@ -3,23 +3,22 @@ package ir.sam.hearthstone.requests;
 import lombok.Getter;
 import ir.sam.hearthstone.server.Server;
 
-public class CollectionDetails extends Request {
+public class CollectionFilter extends Request {
     @Getter
-    private final String name, classOfCard, deckName;
+    private final String name, classOfCard;
     @Getter
     private final int mana, lockMode;
 
-    public CollectionDetails(String name, String classOfCard, int mana, int lockMode, String deckName) {
+    public CollectionFilter(String name, String classOfCard, int mana, int lockMode) {
         this.name = name;
         this.classOfCard = classOfCard;
-        this.deckName = deckName;
         this.mana = mana;
         this.lockMode = lockMode;
     }
 
     @Override
     public void execute(Server server) {
-        server.sendCollectionDetails(name, classOfCard, mana, lockMode, deckName);
+        server.applyCollectionFilter(name, classOfCard, mana, lockMode);
     }
 
     @Override
