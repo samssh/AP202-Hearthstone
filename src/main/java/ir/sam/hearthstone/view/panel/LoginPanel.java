@@ -1,5 +1,6 @@
 package ir.sam.hearthstone.view.panel;
 
+import ir.sam.hearthstone.client.Actions.LoginPanelAction;
 import ir.sam.hearthstone.client.Client;
 import ir.sam.hearthstone.resource_manager.Config;
 import ir.sam.hearthstone.resource_manager.ImageLoader;
@@ -24,10 +25,10 @@ public class LoginPanel extends JPanel {
     private int componentWidth, componentHeight, componentSpace;
     private int exitWidth, exitHeight, exitX, exitY, shiftX, shiftY;
     private final Dimension dimension;
-    private final Client.LoginPanelAction loginPanelAction;
+    private final LoginPanelAction loginPanelAction;
     private Image bg;
 
-    public LoginPanel(Client.LoginPanelAction loginPanelAction) {
+    public LoginPanel(LoginPanelAction loginPanelAction) {
         setLayout(null);
         config();
         dimension = new Dimension(componentWidth, componentHeight);

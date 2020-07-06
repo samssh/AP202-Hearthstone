@@ -73,7 +73,7 @@ public class Shop {
                 connector.save(player);
                 connector.save(new BuySellLog(player.getUserName()
                         , player.getCoin() - card.getPrice(), player.getCoin(), cardName, "sell"));
-                return new ShopEvent(cardName,"sell");
+                return new ShopEvent(cardName,"sell",player.getCoin());
             }
         }
         return null;
@@ -93,7 +93,7 @@ public class Shop {
                 connector.save(player);
                 connector.save(new BuySellLog(player.getUserName()
                         , player.getCoin() + card.getPrice(), player.getCoin(), cardName, "buy"));
-                return new ShopEvent(cardName,"buy");
+                return new ShopEvent(cardName,"buy",player.getCoin());
             }
         }
         return null;

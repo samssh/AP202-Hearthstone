@@ -1,13 +1,12 @@
 package ir.sam.hearthstone.view.panel;
 
-import ir.sam.hearthstone.client.Client;
+import ir.sam.hearthstone.client.Actions.ShopAction;
 import ir.sam.hearthstone.resource_manager.Config;
 import ir.sam.hearthstone.resource_manager.ImageLoader;
 import ir.sam.hearthstone.view.graphics_engine.AnimationManger;
 import ir.sam.hearthstone.view.graphics_engine.effects.LinearMotion;
 import ir.sam.hearthstone.view.graphics_engine.effects.OverviewPainter;
 import ir.sam.hearthstone.view.graphics_engine.effects.Rotary;
-import ir.sam.hearthstone.view.graphics_engine.effects.SimplePainter;
 import ir.sam.hearthstone.view.model.CardOverview;
 import ir.sam.hearthstone.view.util.CardBox;
 import ir.sam.hearthstone.view.util.Constant;
@@ -23,17 +22,17 @@ import java.util.List;
 public class ShopPanel extends JPanel implements Updatable {
     private CardBox sell, buy;
     @Setter
-    private int coin;
+    private int coins;
     private JButton exit, back, backMainMenu;
     private final BufferedImage image;
     private int coinX, coinY;
     private int sellX, sellY, sellWidth, sellHeight;
     private int buyX, buyY, buyWidth, buyHeight;
     private int exitX, exitY, exitWidth, exitHeight, exitSpace;
-    private final Client.ShopAction shopAction;
+    private final ShopAction shopAction;
     private final AnimationManger animationManger;
 
-    public ShopPanel(Client.ShopAction shopAction) {
+    public ShopPanel(ShopAction shopAction) {
         setLayout(null);
         this.shopAction = shopAction;
         this.image = ImageLoader.getInstance().getBackground("shop");
@@ -97,7 +96,7 @@ public class ShopPanel extends JPanel implements Updatable {
         g.drawImage(image,0,0,null);
         g.setColor(Color.WHITE);
         g.setFont(g.getFont().deriveFont(17F));
-        g.drawString("\u0024" + coin, coinX, coinY);
+        g.drawString("\u0024" + coins, coinX, coinY);
         animationManger.paint((Graphics2D) g);
     }
 
@@ -132,9 +131,10 @@ public class ShopPanel extends JPanel implements Updatable {
         buy.setModels(buyList);
     }
 
-    public void putShopEvent(String cardName,String type){
+    public void putShopEvent(String cardName,String type,int coins){
         if ("buy".equalsIgnoreCase(type)) moveCard(cardName,buy,sell);
         else if ("sell".equalsIgnoreCase(type)) moveCard(cardName,sell,buy);
+        this.coins = coins;
     }
 
     private void moveCard(String card,CardBox origin,CardBox dest){

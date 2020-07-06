@@ -1,6 +1,6 @@
 package ir.sam.hearthstone.view.panel;
 
-import ir.sam.hearthstone.client.Client;
+import ir.sam.hearthstone.client.Actions.StatusAction;
 import ir.sam.hearthstone.resource_manager.Config;
 import ir.sam.hearthstone.resource_manager.ConfigFactory;
 import ir.sam.hearthstone.resource_manager.ImageLoader;
@@ -20,9 +20,9 @@ public class StatusPanel extends JPanel implements Updatable {
     private final BufferedImage image;
     private int deckBoxX,deckBoxY,deckBoxWidth,deckBoxHeight;
     private int exitX,exitY,exitWidth,exitHeight,exitSpace;
-    private final Client.StatusAction statusAction;
+    private final StatusAction statusAction;
 
-    public StatusPanel(Client.StatusAction statusAction) {
+    public StatusPanel(StatusAction statusAction) {
         setLayout(null);
         this.statusAction = statusAction;
         this.image = ImageLoader.getInstance().getBackground("status");

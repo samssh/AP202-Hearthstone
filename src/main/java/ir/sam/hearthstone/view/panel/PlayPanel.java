@@ -1,6 +1,6 @@
 package ir.sam.hearthstone.view.panel;
 
-import ir.sam.hearthstone.client.Client;
+import ir.sam.hearthstone.client.Actions.PlayAction;
 import ir.sam.hearthstone.resource_manager.Config;
 import ir.sam.hearthstone.resource_manager.ConfigFactory;
 import ir.sam.hearthstone.resource_manager.ImageLoader;
@@ -23,7 +23,7 @@ public class PlayPanel extends JPanel {
     private JTextArea eventLog;
     private JScrollPane scrollPane;
     private int mana, deckCards;
-    private final Client.PlayAction playAction;
+    private final PlayAction playAction;
     private final BufferedImage image;
     private int x, y, width, height;
     private int manaX, manaY, manaSpace;
@@ -34,7 +34,7 @@ public class PlayPanel extends JPanel {
     private int exitX, exitY, exitWidth, exitHeight;
     private int eventLogX, eventLogY, eventLogWidth, eventLogHeight;
 
-    public PlayPanel(Client.PlayAction playAction) {
+    public PlayPanel(PlayAction playAction) {
         setLayout(null);
         this.playAction = playAction;
         this.image = ImageLoader.getInstance().getBackground("play");

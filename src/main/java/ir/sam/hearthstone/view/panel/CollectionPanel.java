@@ -1,6 +1,6 @@
 package ir.sam.hearthstone.view.panel;
 
-import ir.sam.hearthstone.client.Client;
+import ir.sam.hearthstone.client.Actions.CollectionAction;
 import ir.sam.hearthstone.resource_manager.Config;
 import ir.sam.hearthstone.resource_manager.ConfigFactory;
 import ir.sam.hearthstone.resource_manager.ImageLoader;
@@ -35,7 +35,7 @@ public class CollectionPanel extends JPanel implements Updatable {
     private String deckName;
     private final AnimationManger animationManger;
     private final BufferedImage image;
-    private final Client.CollectionAction collectionAction;
+    private final CollectionAction collectionAction;
     private int x, y, width, height;
     private int exitX, exitY, exitWidth, exitHeight, exitSpace;
     private int cardsX, cardsY, cardsWidth, cardsHeight;
@@ -44,7 +44,7 @@ public class CollectionPanel extends JPanel implements Updatable {
     private int deckButtonX, deckButtonY, deckButtonWidth, deckButtonHeight, deckButtonSpace;
     private int filterX, filterY, filterWidth, filterHeight, filterSpace;
 
-    public CollectionPanel(Client.CollectionAction collectionAction) {
+    public CollectionPanel(CollectionAction collectionAction) {
         this.collectionAction = collectionAction;
         this.setLayout(null);
         this.config();

@@ -1,6 +1,6 @@
 package ir.sam.hearthstone.view.panel;
 
-import ir.sam.hearthstone.client.Client;
+import ir.sam.hearthstone.client.Actions.MainMenuAction;
 import ir.sam.hearthstone.resource_manager.Config;
 import ir.sam.hearthstone.resource_manager.ConfigFactory;
 import ir.sam.hearthstone.resource_manager.ImageLoader;
@@ -21,9 +21,9 @@ public class MainMenuPanel extends JPanel implements Updatable {
     int startX;
     int startY;
     private final Dimension dimension;
-    private final Client.MainMenuAction mainMenuAction;
+    private final MainMenuAction mainMenuAction;
 
-    public MainMenuPanel(Client.MainMenuAction mainMenuAction) {
+    public MainMenuPanel(MainMenuAction mainMenuAction) {
         setLayout(null);
         config();
         sumHeight = componentHeight + componentSpace;

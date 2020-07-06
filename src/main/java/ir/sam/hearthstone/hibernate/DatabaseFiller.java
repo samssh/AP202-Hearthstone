@@ -56,11 +56,11 @@ public class DatabaseFiller {
                 2, rogue, Rarity.Common, 1));
         connector.save(new Spell("Preparation", "The next spell you cast this turn costs (2) less.",
                 6, rogue, Rarity.Epic, 0));
-        connector.save(new Minion("Crazed Chemist", "Combo: Give a friendly minion +4 Attack.",
+        connector.save(new Minion("Crazed Chemist", "Battlecry: Give a random friendly minion +4 Attack.",
                 4, rogue, Rarity.Common, 5, 4, 4));
 
 
-        connector.save(new Minion("Ratcatcher", "Rush Battlecry: Destroy a friendly minion and gain its Attack and Health.",
+        connector.save(new Minion("Ratcatcher", "Rush Battlecry: Destroy a random friendly minion and gain its Attack and Health.",
                 5, warlock, Rarity.Epic, 3, 2, 2));
         connector.save(new Minion("Dreadscale", "At the end of your turn, deal 1 damage to all other minions.",
                 7, warlock, Rarity.Legendary, 3, 4, 2));
@@ -78,11 +78,11 @@ public class DatabaseFiller {
                 , 5, neutral, Rarity.Rare, 3, 2, 2));
         connector.save(new Minion("Arena Patron", "Overkill: Summon another Arena Patron.",
                 4, neutral, Rarity.Rare, 5, 3, 3));
-        connector.save(new Minion("Khartut Defender", "Taunt, Reborn Deathrattle:Restore 3 Health to your hero.",
+        connector.save(new Minion("Khartut Defender", "Taunt Deathrattle:Restore 3 Health to your hero.",
                 3, neutral, Rarity.Rare, 6, 3, 4));
         connector.save(new Minion("Weaponized Pinata", "Deathrattle: add a random Legendary minion to your hand",
                 5, neutral, Rarity.Epic, 4, 4, 3));
-        connector.save(new Minion("Big Game Hunter", "Battlecry: Destroy a minion with 7 or more attack.",
+        connector.save(new Minion("Big Game Hunter", "Battlecry: Destroy a random minion with 7 or more attack.",
                 6, neutral, Rarity.Epic, 5, 4, 2));
         connector.save(new Minion("Baron Geddon", "At the end of your turn, deal 2 damage to all other characters.",
                 6, neutral, Rarity.Legendary, 7, 7, 5));
@@ -92,14 +92,14 @@ public class DatabaseFiller {
 
         connector.save(new Spell("Deadly Shot", "Destroy a random enemy minion.",
                 3, neutral, Rarity.Common, 3));
-        connector.save(new Spell("Starfall", "Choose One -Deal 5 damage to a minion; or 2 damage to all enemy minions.",
-                5, neutral, Rarity.Rare, 5));
+        connector.save(new Spell("Starfall", "Deal 2 damage to all enemy minions.",
+                5, neutral, Rarity.Rare, 4));
         connector.save(new Spell("Overflow", "Restore 5 Health to all characters. Draw 5 cards.",
                 6, neutral, Rarity.Rare, 7));
         connector.save(new Spell("The Boomship", "Summon 3 random minions from your hand. Give them Rush",
                 7, neutral, Rarity.Legendary, 9));
-        connector.save(new Spell("Blessing of the Ancients","Twinspell. Give your minions +1/+1.",
-                5,neutral,Rarity.Common,3));
+        connector.save(new Spell("Divine Hymn","Restore 6 Health to all friendly characters.",
+                4,neutral,Rarity.Common,2));
 
         connector.save(new Quest("Strength in Numbers", "Sidequest: Spend 10 Mana on minions." +
                 "Reward: Summon a minion from your deck.", 3, neutral, Rarity.Common, 1));
@@ -119,7 +119,7 @@ public class DatabaseFiller {
         connector.save(new Minion("Swamp King Dred", "After your opponent plays a minion, attack it.",
                 7, hunter, Rarity.Legendary, 7, 9, 9));
 
-        connector.save(new Spell("Sand Breath", "Give a minion +1/+2. Give it Divine Shield if you're holding a Dragon.",
+        connector.save(new Spell("Sand Breath", "Give a minion +1/+2. Give it Divine Shield.",
                 4, priest, Rarity.Common, 1));
         connector.save(new Minion("High Priest Amet", "Whenever you summon a minion, set its Health equal to this minion's.",
                 6, priest, Rarity.Legendary, 4, 2, 7));
@@ -163,7 +163,7 @@ public class DatabaseFiller {
         System.out.println();
         System.out.println();
         List<Minion> minions = connector.fetchAll(Minion.class);
-        minions.forEach(System.out::println);
+        minions.stream().map(Unit::getName).forEach(System.out::println);
         System.out.println();
         System.out.println();
         List<Spell> spells = connector.fetchAll(Spell.class);
@@ -176,7 +176,8 @@ public class DatabaseFiller {
         System.out.println();
         List<Passive> passives = connector.fetchAll(Passive.class);
         passives.forEach(System.out::println);
+        List<Weapon> weapons = connector.fetchAll(Weapon.class);
+        weapons.stream().map(Unit::getName).forEach(System.out::println);
         connector.close();
-        System.exit(0);
     }
 }

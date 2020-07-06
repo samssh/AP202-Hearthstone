@@ -1,6 +1,6 @@
 package ir.sam.hearthstone.view.panel;
 
-import ir.sam.hearthstone.client.Client;
+import ir.sam.hearthstone.client.Actions.PassiveAction;
 import ir.sam.hearthstone.resource_manager.Config;
 import ir.sam.hearthstone.resource_manager.ConfigFactory;
 import ir.sam.hearthstone.resource_manager.ImageLoader;
@@ -15,14 +15,14 @@ import java.util.List;
 
 public class PassivePanel extends JPanel {
     private PassiveBox passiveBox;
-    private final Client.PassiveAction passiveAction;
+    private final PassiveAction passiveAction;
     private JButton exit, back, backMainMenu;
     private final BufferedImage image;
     private int exitX, exitY, exitWidth, exitHeight, exitSpace;
     private int x, y, width, height;
     private int passiveBoxX, passiveBoxY, passiveBoxWidth, passiveBoxHeight;
 
-    public PassivePanel(Client.PassiveAction passiveAction) {
+    public PassivePanel(PassiveAction passiveAction) {
         setLayout(null);
         this.passiveAction = passiveAction;
         config();
