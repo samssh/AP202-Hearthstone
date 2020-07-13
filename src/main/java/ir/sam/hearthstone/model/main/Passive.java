@@ -14,7 +14,7 @@ import javax.persistence.Id;
 @Entity
 @ToString
 @EqualsAndHashCode(of = "name")
-public class Passive implements SaveAble {
+public class Passive implements SaveAble, Cloneable {
     @Id
     @Getter
     @Setter
@@ -30,5 +30,15 @@ public class Passive implements SaveAble {
     public Passive(String name, String description) {
         this.name = name;
         this.description = description;
+    }
+
+    @Override
+    public Passive clone() {
+        try {
+            return (Passive) super.clone();
+        } catch (CloneNotSupportedException e) {
+            // this shouldn't happen, since we are Cloneable
+        }
+        return null;
     }
 }

@@ -2,15 +2,14 @@ package ir.sam.hearthstone.requests;
 
 import ir.sam.hearthstone.server.Server;
 
-public class ExitGame extends Request {
-
+public class ConfirmOnPassive extends Request{
     @Override
     public void execute(Server server) {
-//        server.exitGame();
+        server.confirm();
     }
 
     @Override
     public void accept(RequestLogInfoVisitor requestLogInfoVisitor) {
-        requestLogInfoVisitor.setExitGame(this);
+
     }
 }

@@ -6,7 +6,6 @@ import lombok.Setter;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
 
 public class BigDeckBox extends Box<BigDeckOverview, BigDeckBox.BigDeckViewer> {
     public BigDeckBox(int width, int height, JPanel parent, MyActionListener deckActionListener) {
@@ -28,7 +27,7 @@ public class BigDeckBox extends Box<BigDeckOverview, BigDeckBox.BigDeckViewer> {
         return new BigDeckViewer[i][j];
     }
 
-    class BigDeckViewer extends JPanel implements MouseListener {
+    class BigDeckViewer extends JPanel implements MyMouseListener {
         @Setter
         private BigDeckOverview bigDeckOverview;
 
@@ -51,22 +50,6 @@ public class BigDeckBox extends Box<BigDeckOverview, BigDeckBox.BigDeckViewer> {
                 if (action != null && bigDeckOverview != null)
                     action.action(bigDeckOverview.getName());
             }
-        }
-
-        @Override
-        public void mousePressed(MouseEvent e) {
-        }
-
-        @Override
-        public void mouseReleased(MouseEvent e) {
-        }
-
-        @Override
-        public void mouseEntered(MouseEvent e) {
-        }
-
-        @Override
-        public void mouseExited(MouseEvent e) {
         }
     }
 }

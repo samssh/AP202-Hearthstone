@@ -6,7 +6,7 @@ public class EndTurn extends Request {
 
     @Override
     public void execute(Server server) {
-        server.endTurn();
+//        server.endTurn();
     }
 
     @Override

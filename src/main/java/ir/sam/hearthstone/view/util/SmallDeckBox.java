@@ -29,7 +29,7 @@ public class SmallDeckBox extends Box<SmallDeckOverview, SmallDeckBox.SmallDeckV
     }
 
 
-    public class SmallDeckViewer extends JPanel implements MouseListener {
+    public class SmallDeckViewer extends JPanel implements MyMouseListener {
         private SmallDeckOverview smallDeckOverview;
 
         SmallDeckViewer() {
@@ -51,22 +51,6 @@ public class SmallDeckBox extends Box<SmallDeckOverview, SmallDeckBox.SmallDeckV
                 if (action != null && smallDeckOverview!=null)
                     action.action(smallDeckOverview.getName());
             }
-        }
-
-        @Override
-        public void mousePressed(MouseEvent e) {
-        }
-
-        @Override
-        public void mouseReleased(MouseEvent e) {
-        }
-
-        @Override
-        public void mouseEntered(MouseEvent e) {
-        }
-
-        @Override
-        public void mouseExited(MouseEvent e) {
         }
     }
 }

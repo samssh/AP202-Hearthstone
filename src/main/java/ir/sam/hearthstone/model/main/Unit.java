@@ -11,7 +11,7 @@ import javax.persistence.Id;
 
 @Entity
 @EqualsAndHashCode(of = "name")
-abstract public class Unit implements SaveAble {
+public abstract class Unit implements SaveAble, Cloneable {
     @Id
     @Setter
     @Getter
@@ -27,5 +27,15 @@ abstract public class Unit implements SaveAble {
     Unit(String name, String description) {
         this.name = name;
         this.description = description;
+    }
+
+    @Override
+    public Unit clone() {
+        try {
+            return (Unit) super.clone();
+        } catch (CloneNotSupportedException ignore) {
+            // this shouldn't happen, since we are Cloneable
+        }
+        return null;
     }
 }

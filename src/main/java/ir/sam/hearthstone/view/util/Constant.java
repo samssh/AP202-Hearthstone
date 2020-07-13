@@ -26,6 +26,11 @@ public class Constant {
     public static int HERO_HEIGHT;
     public static int HERO_POWER_WIDTH;
     public static int HERO_POWER_HEIGHT;
+    public static int MINION_WIDTH;
+    public static int MINION_HEIGHT;
+    public static int MINION_SPACE;
+    public static int WEAPON_WIDTH;
+    public static int WEAPON_HEIGHT;
 
     static {
         Config config = ConfigFactory.getInstance().getConfig("CONSTANT_CONFIG");
@@ -48,6 +53,11 @@ public class Constant {
         HERO_HEIGHT = config.getProperty(Integer.class, "HERO_HEIGHT");
         HERO_POWER_WIDTH = config.getProperty(Integer.class, "HERO_POWER_WIDTH");
         HERO_POWER_HEIGHT = config.getProperty(Integer.class, "HERO_POWER_HEIGHT");
+        MINION_WIDTH = config.getProperty(Integer.class, "MINION_WIDTH");
+        MINION_HEIGHT = config.getProperty(Integer.class, "MINION_HEIGHT");
+        MINION_SPACE = config.getProperty(Integer.class, "MINION_SPACE");
+        WEAPON_WIDTH = config.getProperty(Integer.class, "WEAPON_WIDTH");
+        WEAPON_HEIGHT = config.getProperty(Integer.class, "WEAPON_HEIGHT");
     }
 
     public static void makeTransparent(JButton button){

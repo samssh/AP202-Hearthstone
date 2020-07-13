@@ -6,7 +6,6 @@ import lombok.Setter;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
 
 import static ir.sam.hearthstone.view.util.Constant.*;
 
@@ -31,7 +30,7 @@ public class PassiveBox extends Box<PassiveOverview, PassiveBox.PassiveViewer> {
         return new PassiveViewer[i][j];
     }
 
-    class PassiveViewer extends JPanel implements MouseListener {
+    class PassiveViewer extends JPanel implements MyMouseListener {
         @Setter
         private PassiveOverview passiveOverview;
 
@@ -54,22 +53,6 @@ public class PassiveBox extends Box<PassiveOverview, PassiveBox.PassiveViewer> {
                 if (action != null && passiveOverview!=null)
                     action.action(passiveOverview.getName());
             }
-        }
-
-        @Override
-        public void mousePressed(MouseEvent e) {
-        }
-
-        @Override
-        public void mouseReleased(MouseEvent e) {
-        }
-
-        @Override
-        public void mouseEntered(MouseEvent e) {
-        }
-
-        @Override
-        public void mouseExited(MouseEvent e) {
         }
     }
 }

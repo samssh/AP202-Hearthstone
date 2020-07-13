@@ -39,4 +39,26 @@ public class PassiveAction {
         connector.save(new ButtonLog(client.getUsername(), "passive:" + passiveName, PASSIVE.toString()));
         connector.save(new RequestLog(request, client.getUsername()));
     }
+
+    public void selectDeck(String deckName) {
+        Request request = new SelectOpponentDeck(deckName);
+        client.getRequestSender().sendRequest(request);
+        connector.save(new ButtonLog(client.getUsername(), "deck:" + deckName, PASSIVE.toString()));
+        connector.save(new RequestLog(request, client.getUsername()));
+    }
+
+    public void selectCard(String cardNumber) {
+        int index = Integer.parseInt(cardNumber);
+        Request request = new SelectCardOnPassive(index);
+        client.getRequestSender().sendRequest(request);
+        connector.save(new ButtonLog(client.getUsername(), "Card number:" + cardNumber, PASSIVE.toString()));
+        connector.save(new RequestLog(request, client.getUsername()));
+    }
+
+    public void confirm() {
+        Request request = new ConfirmOnPassive();
+        client.getRequestSender().sendRequest(request);
+        connector.save(new ButtonLog(client.getUsername(), "Confirm", PASSIVE.toString()));
+        connector.save(new RequestLog(request, client.getUsername()));
+    }
 }

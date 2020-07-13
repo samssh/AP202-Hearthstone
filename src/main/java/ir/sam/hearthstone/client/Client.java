@@ -39,20 +39,24 @@ public class Client {
     private final RequestSender requestSender;
 
     public Client(RequestSender requestSender) {
+        SwingUtilities.invokeLater(() -> {
+        });
         this.requestSender = requestSender;
         this.frame = new MyFrame();
         panels = new EnumMap<>(PanelType.class);
         history = new Stack<>();
-        connector = new Connector(ConfigFactory.getInstance().getConfigFile("CLIENT_HIBERNATE_CONFIG"));
-        panels.put(PanelType.LOGIN, new LoginPanel(new LoginPanelAction(this)));
-        now = PanelType.LOGIN;
+        panels.put(LOGIN, new LoginPanel(new LoginPanelAction(this)));
+        now = LOGIN;
         updateFrame();
-        panels.put(PanelType.MAIN_MENU, new MainMenuPanel(new MainMenuAction(connector, this)));
-        panels.put(PanelType.SHOP, new ShopPanel(new ShopAction(connector, this)));
-        panels.put(PanelType.STATUS, new StatusPanel(new StatusAction(connector, this)));
-        panels.put(PanelType.COLLECTION, new CollectionPanel(new CollectionAction(connector, this)));
-        panels.put(PanelType.PASSIVE, new PassivePanel(new PassiveAction(connector, this)));
-        panels.put(PanelType.PLAY, new PlayPanel(new PlayAction(connector, this)));
+        connector = new Connector(
+                ConfigFactory.getInstance().getConfigFile("CLIENT_HIBERNATE_CONFIG"));
+        panels.put(MAIN_MENU, new MainMenuPanel(new MainMenuAction(connector, this)));
+        panels.put(SHOP, new ShopPanel(new ShopAction(connector, this)));
+        panels.put(STATUS, new StatusPanel(new StatusAction(connector, this)));
+        panels.put(COLLECTION, new CollectionPanel(new CollectionAction(connector, this)));
+        panels.put(PASSIVE, new PassivePanel(new PassiveAction(connector, this)));
+        panels.put(PLAY_MODE, new PlayModePanel(new PlayModeAction(connector, this)));
+        panels.put(PLAY, new PlayPanel(new PlayAction(connector, this)));
         tempResponseList = new LinkedList<>();
         responseList = new LinkedList<>();
         executor = new Loop(60, this::executeAnswers);
@@ -94,13 +98,13 @@ public class Client {
     }
 
     public void login(boolean success, String message) {
-        LoginPanel panel = (LoginPanel) panels.get(PanelType.LOGIN);
+        LoginPanel panel = (LoginPanel) panels.get(LOGIN);
         if (success) {
             panel.reset();
-            now = PanelType.MAIN_MENU;
+            now = MAIN_MENU;
             updateFrame();
             username = message;
-            ((MainMenuPanel) panels.get(PanelType.MAIN_MENU)).update();
+            ((MainMenuPanel) panels.get(MAIN_MENU)).update();
         } else {
             panel.setMessage(message);
         }
@@ -127,7 +131,7 @@ public class Client {
     }
 
     public void backMainMenu() {
-        while (history.peek() != PanelType.MAIN_MENU)
+        while (history.peek() != MAIN_MENU)
             history.pop();
         now = history.peek();
         frame.setContentPane(panels.get(now));
@@ -164,27 +168,27 @@ public class Client {
     }
 
     public void setShopDetails(List<CardOverview> sell, List<CardOverview> buy, int coin) {
-        if (now != PanelType.SHOP) {
-            now = PanelType.SHOP;
+        if (now != SHOP) {
+            now = SHOP;
             updateFrame();
         }
-        ShopPanel shopPanel = (ShopPanel) panels.get(PanelType.SHOP);
+        ShopPanel shopPanel = (ShopPanel) panels.get(SHOP);
         shopPanel.setSell(sell);
         shopPanel.setBuy(buy);
         shopPanel.setCoins(coin);
     }
 
     public void putShopEvent(String cardName, String type, int coins) {
-        ShopPanel shopPanel = (ShopPanel) panels.get(PanelType.SHOP);
+        ShopPanel shopPanel = (ShopPanel) panels.get(SHOP);
         shopPanel.putShopEvent(cardName, type, coins);
     }
 
 
     public void setStatusDetails(List<BigDeckOverview> bigDeckOverviews) {
-        StatusPanel statusPanel = (StatusPanel) panels.get(PanelType.STATUS);
+        StatusPanel statusPanel = (StatusPanel) panels.get(STATUS);
         statusPanel.setDeckBoxList(bigDeckOverviews);
-        if (now != PanelType.STATUS) {
-            now = PanelType.STATUS;
+        if (now != STATUS) {
+            now = STATUS;
             updateFrame();
         }
     }
@@ -193,10 +197,10 @@ public class Client {
                                     List<CardOverview> deckCards, boolean canAddDeck,
                                     boolean canChangeHero, String deckName,
                                     List<String> heroNames, List<String> classOfCardNames) {
-        CollectionPanel collectionPanel = (CollectionPanel) panels.get(PanelType.COLLECTION);
+        CollectionPanel collectionPanel = (CollectionPanel) panels.get(COLLECTION);
         collectionPanel.setDetails(cards, decks, deckCards, canAddDeck, canChangeHero, deckName, heroNames, classOfCardNames);
-        if (now != PanelType.COLLECTION) {
-            now = PanelType.COLLECTION;
+        if (now != COLLECTION) {
+            now = COLLECTION;
             updateFrame();
         }
     }
@@ -205,7 +209,8 @@ public class Client {
         ((CollectionPanel) panels.get(COLLECTION)).putDeckEvent(type, deckName, newDeck);
     }
 
-    public void putCollectionCardEvent(String type, String cardName, boolean canAddDeck, boolean canChangeHero) {
+    public void putCollectionCardEvent(String type, String cardName, boolean canAddDeck
+            , boolean canChangeHero) {
         ((CollectionPanel) panels.get(COLLECTION)).putCardEvent(type, cardName, canAddDeck, canChangeHero);
     }
 
@@ -215,7 +220,7 @@ public class Client {
 
     public void goTo(String panel, String message) {
         try {
-            PanelType p = PanelType.valueOf(panel);
+            PanelType p = valueOf(panel);
             boolean flag = message == null || JOptionPane.showConfirmDialog(frame, message, "goto",
                     JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION;
             if (flag) {
@@ -234,21 +239,27 @@ public class Client {
         connector.save(new RequestLog(request, username));
     }
 
-    public void setPassives(List<PassiveOverview> passives) {
-        ((PassivePanel) panels.get(PanelType.PASSIVE)).setPassives(passives);
-        if (now != PanelType.PASSIVE) {
-            now = PanelType.PASSIVE;
+    public void setPassives(List<PassiveOverview> passives, List<SmallDeckOverview> decks
+            , List<CardOverview> cards, String message, boolean showButton) {
+        ((PassivePanel) panels.get(PASSIVE)).setDetails(passives, decks, cards, message,showButton);
+        if (now != PASSIVE) {
+            now = PASSIVE;
+            updateFrame();
+        }
+    }
+    public void changeCardOnPassive(CardOverview cardOverview,int index){
+        ((PassivePanel) panels.get(PASSIVE)).changeCard(cardOverview,index);
+    }
+
+    public void setPlayDetail(List<CardOverview> hand, List<CardOverview> ground, CardOverview weapon
+            , HeroOverview hero, HeroPowerOverview heroPower, String eventLog
+            , int mana, int deckCards) {
+        ((PlayPanel) panels.get(PLAY)).setDetails(hand, ground
+                , weapon, hero, heroPower, eventLog, mana, deckCards);
+        if (now != PLAY) {
+            now = PLAY;
             updateFrame();
         }
     }
 
-    public void setPlayDetail(List<CardOverview> hand, List<CardOverview> ground, CardOverview weapon,
-                              HeroOverview hero, HeroPowerOverview heroPower, String eventLog, int mana, int deckCards) {
-        ((PlayPanel) panels.get(PanelType.PLAY)).setDetails(hand, ground
-                , weapon, hero, heroPower, eventLog, mana, deckCards);
-        if (now != PanelType.PLAY) {
-            now = PanelType.PLAY;
-            updateFrame();
-        }
-    }
 }

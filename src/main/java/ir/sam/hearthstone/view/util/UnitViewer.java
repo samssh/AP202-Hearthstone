@@ -8,11 +8,11 @@ import java.awt.*;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 
-public class UnitViewer extends JPanel implements MouseListener {
-    private UnitOverview unitOverview;
+public class UnitViewer extends JPanel implements MyMouseListener {
+    protected UnitOverview unitOverview;
     @Setter
-    private MyActionListener actionListener;
-    private final JPanel parent;
+    protected MyActionListener actionListener;
+    protected final JPanel parent;
 
 
     public UnitViewer(JPanel parent) {
@@ -33,10 +33,10 @@ public class UnitViewer extends JPanel implements MouseListener {
         this(parent);
         this.actionListener = actionListener;
     }
+
     public void setUnitOverview(UnitOverview unitOverview) {
         this.unitOverview = unitOverview;
-
-        if (unitOverview!=null&&unitOverview.getToolkit() != null)
+        if (unitOverview != null && unitOverview.getToolkit() != null)
             setToolTipText(unitOverview.getToolkit());
     }
 
@@ -53,26 +53,10 @@ public class UnitViewer extends JPanel implements MouseListener {
             if (e.getButton() == MouseEvent.BUTTON3) JOptionPane.showMessageDialog(this.parent, null,
                     "information", JOptionPane.INFORMATION_MESSAGE, new ImageIcon(unitOverview.getBigImage()));
             if (e.getButton() == MouseEvent.BUTTON1) {
-                if (actionListener != null && unitOverview!=null) {
+                if (actionListener != null && unitOverview != null) {
                     actionListener.action(unitOverview.getName());
                 }
             }
         }
-    }
-
-    @Override
-    public void mousePressed(MouseEvent e) {
-    }
-
-    @Override
-    public void mouseReleased(MouseEvent e) {
-    }
-
-    @Override
-    public void mouseEntered(MouseEvent e) {
-    }
-
-    @Override
-    public void mouseExited(MouseEvent e) {
     }
 }

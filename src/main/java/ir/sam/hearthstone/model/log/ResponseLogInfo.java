@@ -53,7 +53,8 @@ public class ResponseLogInfo {
 
         @Override
         public void setPassiveDetailsInfo(PassiveDetails response) {
-            passives = response.getPassives().toString();
+            if (response.getPassives() != null)
+                passives = response.getPassives().toString();
 
         }
 

@@ -13,7 +13,7 @@ import javax.persistence.Id;
 @Entity
 @ToString
 @EqualsAndHashCode(of = "name")
-public class HeroPower implements SaveAble {
+public class HeroPower implements SaveAble, Cloneable {
     @Id
     @Getter
     @Setter
@@ -35,5 +35,15 @@ public class HeroPower implements SaveAble {
         this.name = name;
         this.description = description;
         this.manaFrz = manaFrz;
+    }
+
+    @Override
+    public HeroPower clone() {
+        try {
+            return (HeroPower) super.clone();
+        } catch (CloneNotSupportedException ignore) {
+            // this shouldn't happen, since we are Cloneable
+        }
+        return null;
     }
 }

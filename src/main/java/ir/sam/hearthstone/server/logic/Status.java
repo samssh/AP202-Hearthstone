@@ -1,4 +1,4 @@
-package ir.sam.hearthstone.server;
+package ir.sam.hearthstone.server.logic;
 
 import ir.sam.hearthstone.model.account.Deck;
 import ir.sam.hearthstone.model.account.Player;

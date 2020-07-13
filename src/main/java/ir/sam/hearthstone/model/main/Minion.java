@@ -42,4 +42,9 @@ public class Minion extends Card {
                 ", rarity=" + rarity +
                 '}';
     }
+
+    @Override
+    public Minion clone() {
+        return (Minion) super.clone();
+    }
 }

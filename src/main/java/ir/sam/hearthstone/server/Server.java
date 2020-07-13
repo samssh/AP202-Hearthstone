@@ -10,6 +10,12 @@ import ir.sam.hearthstone.model.main.*;
 import ir.sam.hearthstone.resource_manager.Config;
 import ir.sam.hearthstone.resource_manager.ConfigFactory;
 import ir.sam.hearthstone.response.*;
+import ir.sam.hearthstone.server.logic.Collection;
+import ir.sam.hearthstone.server.logic.game.AbstractGame;
+import ir.sam.hearthstone.server.logic.Shop;
+import ir.sam.hearthstone.server.logic.Status;
+import ir.sam.hearthstone.server.logic.game.GameBuilder;
+import ir.sam.hearthstone.server.logic.game.MultiplayerGameBuilder;
 import ir.sam.hearthstone.util.Loop;
 import ir.sam.hearthstone.resource_manager.ModelLoader;
 import ir.sam.hearthstone.view.model.*;
@@ -17,16 +23,18 @@ import ir.sam.hearthstone.view.model.*;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import static ir.sam.hearthstone.server.logic.game.PlayMode.MULTIPLAYER;
+
 public class Server {
-    static int STARTING_MANA;
-    static int MANA_PER_TURN;
-    static int CARD_PER_TURN;
-    static int MAX_DECK_SIZE;
-    static int STARTING_PASSIVES;
-    static int STARTING_HAND_CARDS;
-    static int MAX_MANA;
-    static int STARTING_COINS;
-    static int MAX_DECK_NUMBER;
+    public static int STARTING_MANA;
+    public static int MANA_PER_TURN;
+    public static int CARD_PER_TURN;
+    public static int MAX_DECK_SIZE;
+    public static int STARTING_PASSIVES;
+    public static int STARTING_HAND_CARDS;
+    public static int MAX_MANA;
+    public static int STARTING_COINS;
+    public static int MAX_DECK_NUMBER;
 
     static {
         Config config = ConfigFactory.getInstance().getConfig("SERVER_CONFIG");
@@ -46,8 +54,9 @@ public class Server {
     private final ModelLoader modelLoader;
     private final Loop executor;
     private Player player;
-    private Game game;
-    private final Collection collection;
+    private AbstractGame game;
+    private GameBuilder gameBuilder;
+    private final ir.sam.hearthstone.server.logic.Collection collection;
     private final Shop shop;
     private final Status status;
     private final ResponseSender responseSender;
@@ -105,18 +114,18 @@ public class Server {
     }
 
     private void signIn(String userName, String password) {
-        Player p = connector.fetch(Player.class, userName);
-        if (p != null) {
-            if (p.getPassword().equals(password)) {
-                this.player = p;
+        Player fetched = connector.fetch(Player.class, userName);
+        if (fetched != null) {
+            if (fetched.getPassword().equals(password)) {
+                this.player = fetched;
                 Response response = new LoginResponse(true, player.getUserName());
                 sendResponse(response);
-//                connector.save(new ResponseLog(ir.SAM.hearthstone.response, player.getUserName()));
+                connector.save(new ResponseLog(response, player.getUserName()));
                 connector.save(new AccountLog(player.getUserName(), "sign in"));
             } else {
                 Response response = new LoginResponse(false, "wrong password");
                 responseSender.sendResponse(response);
-                connector.save(new ResponseLog(response, p.getUserName()));
+                connector.save(new ResponseLog(response, fetched.getUserName()));
             }
         } else {
             Response response = new LoginResponse(false, "username not exist");
@@ -180,15 +189,15 @@ public class Server {
     }
 
     public void selectDeck(String deckName) {
-        sendResponse(collection.selectDeck(player,deckName));
+        sendResponse(collection.selectDeck(player, deckName));
     }
 
     public void sendAllCollectionDetails(String name, String classOfCard, int mana, int lockMode) {
-        sendResponse(collection.sendAllCollectionDetails(name, classOfCard, mana, lockMode,player));
+        sendResponse(collection.sendAllCollectionDetails(name, classOfCard, mana, lockMode, player));
     }
 
     public void applyCollectionFilter(String name, String classOfCard, int mana, int lockMode) {
-        sendResponse(collection.applyCollectionFilter(name, classOfCard, mana, lockMode,player));
+        sendResponse(collection.applyCollectionFilter(name, classOfCard, mana, lockMode, player));
     }
 
     public void newDeck(String deckName, String heroName) {
@@ -217,82 +226,103 @@ public class Server {
 
     public void startPlay() {
         Response response;
-        if (canStartGame()) {
-            List<Passive> passives = chooseRandom(modelLoader.getFirstPassives(), STARTING_PASSIVES);
-            response = new PassiveDetails(turnToPassiveOverview(passives));
+        if (canStartGame(player.getSelectedDeck())) {
+            response = new GoTo("PLAY_MODE", null);
         } else {
             response = new GoTo("COLLECTION", "your deck is not ready\ngoto collection?");
         }
         sendResponse(response);
     }
 
-    private boolean canStartGame() {
-        Deck d = player.getSelectedDeck();
-        return d != null && d.getSize() == MAX_DECK_SIZE;
-    }
-
-    private <T> List<T> chooseRandom(List<T> list, int n) {
-        int k = list.size() - n;
-        for (int i = 0; i < k; i++) {
-            list.remove((int) (Math.random() * list.size()));
-
+    public void selectPlayMode(String modeName) {
+        Response response = null;
+        switch (modeName) {
+            case "multiplayer":
+                gameBuilder = new MultiplayerGameBuilder(MULTIPLAYER, modelLoader.getFirstPassives());
+                response = gameBuilder.setDeckP1(player.getSelectedDeck());
+                break;
+            case "AI":
+                response = new GoTo("MAIN_MENU", "AI add soon\ngoto main menu?");
+                break;
+            case "deck reader":
+                response = new GoTo("MAIN_MENU", "deck reader add soon\ngoto main menu?");
+                break;
+            case "online":
+                response = new GoTo("MAIN_MENU", "online add in next phase\ngoto main menu?");
+                break;
         }
-        return list;
-    }
-
-    private List<PassiveOverview> turnToPassiveOverview(List<Passive> passives) {
-        List<PassiveOverview> result = new ArrayList<>();
-        passives.forEach(p -> result.add(new PassiveOverview(p)));
-        return result;
-    }
-
-    public void selectPassive(String passiveName) {
-        Optional<Passive> optionalPassive = modelLoader.getPassive(passiveName);
-        if (optionalPassive.isPresent() && canStartGame()) {
-            game = new Game(player.getSelectedDeck(), optionalPassive.get(), player, connector);
-            connector.save(player);
-            sendPlayDetails();
-        }
-    }
-
-    private void sendPlayDetails() {
-        List<CardOverview> hand = game.getHandCard().stream()
-                .map(card -> new CardOverview(card, 1, false)).collect(Collectors.toList());
-        List<CardOverview> ground = game.getGround().stream()
-                .map(card -> new CardOverview(card, 1, false)).collect(Collectors.toList());
-        CardOverview weapon = game.getActiveWeapon() == null ?
-                null : new CardOverview(game.getActiveWeapon(), 1, false);
-        HeroOverview hero = new HeroOverview(game.getHero());
-        HeroPowerOverview heroPower = new HeroPowerOverview(game.getHero().getPower());
-        String eventLog = game.getGameEvents();
-        Response response = new PlayDetails(hand, ground, weapon, hero
-                , heroPower, eventLog, game.getMana(), game.getDeck().size());
         sendResponse(response);
     }
 
-    public void endTurn() {
-        if (game != null && game.isRunning()) {
-            game.endTurn();
-            sendPlayDetails();
-            connector.save(player);
+    private boolean canStartGame(Deck deck) {
+        return deck != null && deck.getSize() == MAX_DECK_SIZE;
+    }
+
+
+    public void selectPassive(String passiveName) {
+        Optional<Passive> optionalPassive = modelLoader.getPassive(passiveName);
+        optionalPassive.ifPresent(passive -> sendResponse(gameBuilder.setPassive(passive, this)));
+    }
+
+    public Response sendDecksForSelection(String message) {
+        List<SmallDeckOverview> decks = player.getDecks().stream().filter(this::canStartGame)
+                .map(SmallDeckOverview::new).collect(Collectors.toList());
+        return new PassiveDetails(null, decks, null, message);
+    }
+
+    public void selectOpponentDeck(String deckName) {
+        Optional<Deck> optionalDeck = collection.getDeck(deckName, player);
+        if (optionalDeck.isPresent() && canStartGame(optionalDeck.get())) {
+            sendResponse(gameBuilder.setDeckP2(optionalDeck.get()));
         }
     }
 
-    public void playCard(String cardName) {
-        Optional<Card> optionalCard = modelLoader.getCard(cardName);
-        if (optionalCard.isPresent() && game != null && game.isRunning()) {
-            game.playCard(optionalCard.get());
-            sendPlayDetails();
-            connector.save(player);
-        }
+    public void selectCadOnPassive(int index){
+        sendResponse(gameBuilder.selectCard(index));
     }
 
-    public void exitGame() {
-        if (game != null) {
-            game.exit();
-            Response response = new GoTo("MAIN_MENU", null);
-            sendResponse(response);
-            connector.save(player);
-        }
+    public void confirm(){
+        sendResponse(gameBuilder.confirm());
     }
+
+//    private void sendPlayDetails() {
+//        List<CardOverview> hand = gameState.getHandCard().stream()
+//                .map(card -> new CardOverview(card, 1, false)).collect(Collectors.toList());
+//        List<CardOverview> ground = gameState.getGround().stream()
+//                .map(card -> new CardOverview(card, 1, false)).collect(Collectors.toList());
+//        CardOverview weapon = gameState.getActiveWeapon() == null ?
+//                null : new CardOverview(gameState.getActiveWeapon(), 1, false);
+//        HeroOverview hero = new HeroOverview(gameState.getHero());
+//        HeroPowerOverview heroPower = new HeroPowerOverview(gameState.getHero().getPower());
+//        String eventLog = gameState.getGameEvents();
+//        Response response = new PlayDetails(hand, ground, weapon, hero
+//                , heroPower, eventLog, gameState.getMana(), gameState.getDeck().size());
+//        sendResponse(response);
+//    }
+//
+//    public void endTurn() {
+//        if (gameState != null && gameState.isRunning()) {
+//            gameState.endTurn();
+//            sendPlayDetails();
+//            connector.save(player);
+//        }
+//    }
+//
+//    public void playCard(String cardName) {
+//        Optional<Card> optionalCard = modelLoader.getCard(cardName);
+//        if (optionalCard.isPresent() && gameState != null && gameState.isRunning()) {
+//            gameState.playCard(optionalCard.get());
+//            sendPlayDetails();
+//            connector.save(player);
+//        }
+//    }
+//
+//    public void exitGame() {
+//        if (gameState != null) {
+//            gameState.exit();
+//            Response response = new GoTo("MAIN_MENU", null);
+//            sendResponse(response);
+//            connector.save(player);
+//        }
+//    }
 }

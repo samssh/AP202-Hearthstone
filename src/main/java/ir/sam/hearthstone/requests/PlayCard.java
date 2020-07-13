@@ -13,7 +13,7 @@ public class PlayCard extends Request {
 
     @Override
     public void execute(Server server) {
-        server.playCard(cardName);
+//        server.playCard(cardName);
     }
 
     @Override

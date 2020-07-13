@@ -10,7 +10,7 @@ import java.util.Map;
 public class ImageLoader {
     private static final ImageLoader instance = new ImageLoader();
     private final Map<String, BufferedImage> big, bigGray, smallGray, small, bg, bigDeck, smallDeck,
-            passive,smallHero,bigHero,smallHeroPower,bigHeroPower;
+            passive, smallHero, bigHero, smallHeroPower, bigHeroPower, minions, weapons,playModes;
 
     private ImageLoader() {
         Config bigConfig = ConfigFactory.getInstance().getConfig("BIG_CARDS");
@@ -42,13 +42,22 @@ public class ImageLoader {
         load(bigHeroConfig, bigHero);
         Config smallHeroConfig = ConfigFactory.getInstance().getConfig("SMALL_HEROES");
         smallHero = new HashMap<>();
-        load(smallHeroConfig,smallHero);
+        load(smallHeroConfig, smallHero);
         Config bigHeroPowerConfig = ConfigFactory.getInstance().getConfig("BIG_HERO_POWERS");
         bigHeroPower = new HashMap<>();
         load(bigHeroPowerConfig, bigHeroPower);
         Config smallHeroPowerConfig = ConfigFactory.getInstance().getConfig("SMALL_HERO_POWERS");
         smallHeroPower = new HashMap<>();
-        load(smallHeroPowerConfig,smallHeroPower);
+        load(smallHeroPowerConfig, smallHeroPower);
+        Config minionsConfig = ConfigFactory.getInstance().getConfig("MINIONS");
+        minions = new HashMap<>();
+        load(minionsConfig, minions);
+        Config weaponsConfig = ConfigFactory.getInstance().getConfig("WEAPONS");
+        weapons = new HashMap<>();
+        load(weaponsConfig, weapons);
+        Config playModesConfig = ConfigFactory.getInstance().getConfig("PLAY_MODES");
+        playModes = new HashMap<>();
+        load(playModesConfig,playModes);
     }
 
     public static ImageLoader getInstance() {
@@ -70,52 +79,64 @@ public class ImageLoader {
         }
     }
 
-    public BufferedImage getBigCard(String name) {
+    public synchronized BufferedImage getBigCard(String name) {
         return big.get(name);
     }
 
-    public BufferedImage getSmallCard(String name) {
+    public synchronized BufferedImage getSmallCard(String name) {
         return small.get(name);
     }
 
-    public BufferedImage getBackground(String name) {
+    public synchronized BufferedImage getBackground(String name) {
         return bg.get(name);
     }
 
-    public BufferedImage getBigGrayCard(String name) {
+    public synchronized BufferedImage getBigGrayCard(String name) {
         return bigGray.get(name);
     }
 
-    public BufferedImage getSmallGrayCard(String name) {
+    public synchronized BufferedImage getSmallGrayCard(String name) {
         return smallGray.get(name);
     }
 
-    public BufferedImage getBigDeck(String heroName) {
+    public synchronized BufferedImage getBigDeck(String heroName) {
         return bigDeck.get(heroName);
     }
 
-    public BufferedImage getSmallDeck(String heroName) {
+    public synchronized BufferedImage getSmallDeck(String heroName) {
         return smallDeck.get(heroName);
     }
 
-    public BufferedImage getPassive(String name) {
+    public synchronized BufferedImage getPassive(String name) {
         return passive.get(name);
     }
 
-    public BufferedImage getSmallHero(String name) {
+    public synchronized BufferedImage getSmallHero(String name) {
         return smallHero.get(name);
     }
 
-    public BufferedImage getBigHero(String name) {
+    public synchronized BufferedImage getBigHero(String name) {
         return bigHero.get(name);
     }
 
-    public BufferedImage getSmallHeroPower(String name) {
+    public synchronized BufferedImage getSmallHeroPower(String name) {
         return smallHeroPower.get(name);
     }
 
-    public BufferedImage getBigHeroPower(String name) {
+    public synchronized BufferedImage getBigHeroPower(String name) {
         return bigHeroPower.get(name);
+    }
+
+    public synchronized BufferedImage getMinion(String name) {
+        return minions.get(name);
+    }
+
+    public synchronized BufferedImage getWeapon(String name) {
+        return weapons.get(name);
+    }
+
+    public synchronized BufferedImage getPlayMode(String name) {
+        return playModes.get(name);
     }
 }
 

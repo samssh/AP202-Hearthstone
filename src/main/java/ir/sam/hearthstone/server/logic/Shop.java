@@ -1,4 +1,4 @@
-package ir.sam.hearthstone.server;
+package ir.sam.hearthstone.server.logic;
 
 import ir.sam.hearthstone.hibernate.Connector;
 import ir.sam.hearthstone.model.account.Player;

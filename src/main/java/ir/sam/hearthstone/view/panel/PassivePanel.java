@@ -4,9 +4,12 @@ import ir.sam.hearthstone.client.Actions.PassiveAction;
 import ir.sam.hearthstone.resource_manager.Config;
 import ir.sam.hearthstone.resource_manager.ConfigFactory;
 import ir.sam.hearthstone.resource_manager.ImageLoader;
+import ir.sam.hearthstone.view.model.CardOverview;
+import ir.sam.hearthstone.view.model.Overview;
 import ir.sam.hearthstone.view.model.PassiveOverview;
-import ir.sam.hearthstone.view.util.Constant;
-import ir.sam.hearthstone.view.util.PassiveBox;
+import ir.sam.hearthstone.view.model.SmallDeckOverview;
+import ir.sam.hearthstone.view.util.*;
+import ir.sam.hearthstone.view.util.Box;
 
 import javax.swing.*;
 import java.awt.*;
@@ -15,12 +18,18 @@ import java.util.List;
 
 public class PassivePanel extends JPanel {
     private PassiveBox passiveBox;
+    private SmallDeckBox deckBox;
+    private IndexedCardBox cardBox;
+    private JButton button;
     private final PassiveAction passiveAction;
     private JButton exit, back, backMainMenu;
     private final BufferedImage image;
     private int exitX, exitY, exitWidth, exitHeight, exitSpace;
     private int x, y, width, height;
     private int passiveBoxX, passiveBoxY, passiveBoxWidth, passiveBoxHeight;
+    private int deckBoxX, deckBoxY, deckBoxWidth, deckBoxHeight;
+    private int cardBoxX, cardBoxY, cardBoxWidth, cardBoxHeight;
+    private int buttonX, buttonY, buttonWidth, buttonHeight;
 
     public PassivePanel(PassiveAction passiveAction) {
         setLayout(null);
@@ -29,7 +38,6 @@ public class PassivePanel extends JPanel {
         this.setBounds(x, y, width, height);
         this.image = ImageLoader.getInstance().getBackground("passive");
         initialize();
-        this.add(passiveBox);
         this.add(exit);
         this.add(back);
         this.add(backMainMenu);
@@ -38,32 +46,48 @@ public class PassivePanel extends JPanel {
     @Override
     public void paintComponent(Graphics g) {
         super.paintComponent(g);
-        g.drawImage(image,0,0,null);
+        g.drawImage(image, 0, 0, null);
     }
 
     private void initialize() {
         initializePassiveBox();
+        initializeDeckBox();
+        initializeCardBox();
+        initializeButton();
         initializeBack();
         initializeExit();
         initializeBackMainMenu();
     }
 
-    private void initializePassiveBox() {
-        passiveBox = new PassiveBox(passiveBoxWidth, passiveBoxHeight,this,passiveAction::selectPassive);
-        passiveBox.setLocation(passiveBoxX, passiveBoxY);
-        passiveBox.setTitle("choose one:");
+    private void initializeButton() {
+        button = new JButton("Confirm");
+        button.setBounds(buttonX, buttonY, buttonWidth, buttonHeight);
+        button.addActionListener(e -> passiveAction.confirm());
     }
 
+    private void initializeCardBox() {
+        cardBox = new IndexedCardBox(cardBoxWidth, cardBoxHeight, this, passiveAction::selectCard);
+        cardBox.setLocation(cardBoxX, cardBoxY);
+    }
 
+    private void initializePassiveBox() {
+        passiveBox = new PassiveBox(passiveBoxWidth, passiveBoxHeight, this, passiveAction::selectPassive);
+        passiveBox.setLocation(passiveBoxX, passiveBoxY);
+    }
 
-    private void initializeExit(){
+    private void initializeDeckBox() {
+        deckBox = new SmallDeckBox(deckBoxWidth, deckBoxHeight, this, passiveAction::selectDeck);
+        deckBox.setLocation(deckBoxX, deckBoxY);
+    }
+
+    private void initializeExit() {
         exit = new JButton("exit");
         exit.setBounds(exitX, exitY, exitWidth, exitHeight);
         exit.addActionListener(e -> passiveAction.exit());
         Constant.makeTransparent(exit);
     }
 
-    private void initializeBack(){
+    private void initializeBack() {
         back = new JButton("back");
         int x = exitX - 2 * (exitWidth + exitSpace);
         back.setBounds(x, exitY, exitWidth, exitHeight);
@@ -71,7 +95,7 @@ public class PassivePanel extends JPanel {
         Constant.makeTransparent(back);
     }
 
-    private void initializeBackMainMenu(){
+    private void initializeBackMainMenu() {
         backMainMenu = new JButton("back to main menu");
         int x = exitX - (exitWidth + exitSpace);
         backMainMenu.setBounds(x, exitY, exitWidth, exitHeight);
@@ -79,8 +103,27 @@ public class PassivePanel extends JPanel {
         Constant.makeTransparent(backMainMenu);
     }
 
-    public void setPassives(List<PassiveOverview> passives){
-        passiveBox.setModels(passives);
+    public void setDetails(List<PassiveOverview> passives, List<SmallDeckOverview> decks
+            , List<CardOverview> cards, String message, boolean showButton) {
+        setModels(passiveBox, passives, message);
+        setModels(deckBox, decks, message);
+        setModels(cardBox, cards, message);
+        if (showButton) this.add(button);
+        else this.remove(button);
+    }
+
+    public void changeCard(CardOverview cardOverview,int index) {
+        cardBox.changeModel(index,cardOverview);
+    }
+
+    private <Model extends Overview> void setModels(Box<Model, ?> box, List<Model> mode, String message) {
+        if (mode != null) {
+            box.setModels(mode);
+            box.setTitle(message);
+            this.add(box);
+        } else {
+            this.remove(box);
+        }
     }
 
     void config() {
@@ -98,5 +141,17 @@ public class PassivePanel extends JPanel {
         passiveBoxY = config.getProperty(Integer.class, "passiveBoxY");
         passiveBoxWidth = config.getProperty(Integer.class, "passiveBoxWidth");
         passiveBoxHeight = config.getProperty(Integer.class, "passiveBoxHeight");
+        deckBoxX = config.getProperty(Integer.class, "deckBoxX");
+        deckBoxY = config.getProperty(Integer.class, "deckBoxY");
+        deckBoxWidth = config.getProperty(Integer.class, "deckBoxWidth");
+        deckBoxHeight = config.getProperty(Integer.class, "deckBoxHeight");
+        cardBoxX = config.getProperty(Integer.class, "cardBoxX");
+        cardBoxY = config.getProperty(Integer.class, "cardBoxY");
+        cardBoxWidth = config.getProperty(Integer.class, "cardBoxWidth");
+        cardBoxHeight = config.getProperty(Integer.class, "cardBoxHeight");
+        buttonX = config.getProperty(Integer.class, "buttonX");
+        buttonY = config.getProperty(Integer.class, "buttonY");
+        buttonWidth = config.getProperty(Integer.class, "buttonWidth");
+        buttonHeight = config.getProperty(Integer.class, "buttonHeight");
     }
 }

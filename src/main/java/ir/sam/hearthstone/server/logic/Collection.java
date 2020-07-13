@@ -1,4 +1,4 @@
-package ir.sam.hearthstone.server;
+package ir.sam.hearthstone.server.logic;
 
 import ir.sam.hearthstone.hibernate.Connector;
 import ir.sam.hearthstone.model.main.*;
@@ -62,15 +62,15 @@ public class Collection {
     }
 
     public Response selectDeck(Player player, String deckName) {
-        Deck d = getDeck(deckName, player);
-        if (d != null) {
-            if (player.getSelectedDeckIndex() != player.getDecks().indexOf(d)) {
-                player.setSelectedDeckIndex(player.getDecks().indexOf(d));
+        Optional<Deck> deck = getDeck(deckName, player);
+        if (deck.isPresent()) {
+            if (player.getSelectedDeckIndex() != player.getDecks().indexOf(deck.get())) {
+                player.setSelectedDeckIndex(player.getDecks().indexOf(deck.get()));
                 connector.save(player);
                 connector.save(new CollectionLog(player.getUserName(), null, null, deckName,
                         "selected deck", null));
-                return new CollectionAllCards(null, getDeckCards(d), canAddDeck(player),
-                        canChangeHero(d), deckName);
+                return new CollectionAllCards(null, getDeckCards(deck.get()), canAddDeck(player),
+                        canChangeHero(deck.get()), deckName);
             }
         }
         return null;
@@ -124,8 +124,8 @@ public class Collection {
                 .collect(Collectors.toList());
     }
 
-    private Deck getDeck(String deckName, Player player) {
-        return player.getDecks().stream().filter(d -> d.getName().equals(deckName)).findAny().orElse(null);
+    public Optional<Deck> getDeck(String deckName, Player player) {
+        return player.getDecks().stream().filter(d -> d.getName().equals(deckName)).findAny();
     }
 
     private boolean canAddDeck(Player player) {
@@ -142,7 +142,7 @@ public class Collection {
 
     public Response[] newDeck(String deckName, String heroName, Player player) {
         Response[] responses = new Response[2];
-        if (!containDeckName(deckName, player) && containHero(heroName, player)) {
+        if (notContainDeckName(deckName, player) && containHero(heroName, player)) {
             Hero hero = modelLoader.getHero(heroName)
                     .orElseThrow(() -> new NoSuchElementException("the saved hero name not exist"));
             Deck newDeck = new Deck(hero, deckName, player);
@@ -162,17 +162,17 @@ public class Collection {
         return player.getHeroes().contains(modelLoader.getHero(heroName).orElse(null));
     }
 
-    private boolean containDeckName(String deckName, Player player) {
-        return player.getDecks().stream().anyMatch(d -> d.getName().equals(deckName));
+    private boolean notContainDeckName(String deckName, Player player) {
+        return player.getDecks().stream().noneMatch(d -> d.getName().equals(deckName));
     }
 
     public Response[] deleteDeck(String deckName, Player player) {
-        Deck deck = getDeck(deckName, player);
+        Optional<Deck> optionalDeck = getDeck(deckName, player);
         Response[] responses = new Response[2];
-        if (deck != null) {
-            player.getDecks().remove(deck);
+        if (optionalDeck.isPresent()) {
+            player.getDecks().remove(optionalDeck.get());
             connector.save(player);
-            connector.delete(deck);
+            connector.delete(optionalDeck.get());
             responses[0] = new CollectionDeckEvent("delete", null, deckName);
             responses[1] = new ShowMessage("deck deleted");
             connector.save(new CollectionLog(player.getUserName(), null, null,
@@ -183,11 +183,12 @@ public class Collection {
 
     public Response[] changeDeckName(String oldDeckName, String newDeckName, Player player) {
         Response[] responses = new Response[2];
-        if (containDeckName(oldDeckName, player) && !containDeckName(newDeckName, player)) {
-            Deck deck = getDeck(oldDeckName, player);
-            Objects.requireNonNull(deck).setName(newDeckName);
+        Optional<Deck> optionalDeck = getDeck(oldDeckName, player);
+        if (optionalDeck.isPresent() && notContainDeckName(newDeckName, player)) {
+            optionalDeck.get().setName(newDeckName);
             connector.save(player);
-            responses[0] = new CollectionDeckEvent("change", new SmallDeckOverview(deck), oldDeckName);
+            responses[0] = new CollectionDeckEvent("change", new SmallDeckOverview(optionalDeck.get())
+                    , oldDeckName);
             responses[1] = new ShowMessage("deck name changed");
             connector.save(new CollectionLog(player.getUserName(), null, null,
                     oldDeckName, "change deck name", newDeckName));
@@ -197,13 +198,13 @@ public class Collection {
 
     public Response[] changeHeroDeck(String deckName, String heroName, Player player) {
         Response[] responses = new Response[2];
-        if (containDeckName(deckName, player) && containHero(heroName, player)) {
+        Optional<Deck> optionalDeck = getDeck(deckName, player);
+        if (optionalDeck.isPresent() && containHero(heroName, player)) {
             Hero h = modelLoader.getHero(heroName).orElse(null);
-            Deck deck = getDeck(deckName, player);
-            if (!deck.getHero().equals(h)) {
-                deck.setHero(h);
+            if (!optionalDeck.get().getHero().equals(h)) {
+                optionalDeck.get().setHero(h);
                 connector.save(player);
-                responses[0] = new CollectionDeckEvent("change", new SmallDeckOverview(deck), deckName);
+                responses[0] = new CollectionDeckEvent("change", new SmallDeckOverview(optionalDeck.get()), deckName);
                 connector.save(new CollectionLog(player.getUserName(), null, heroName, deckName
                         , "change hero", null));
                 responses[1] = new ShowMessage("hero deck changed");
@@ -216,16 +217,17 @@ public class Collection {
 
     public Response removeCardFromDeck(String cardName, String deckName, Player player) {
         Optional<Card> optionalCard = modelLoader.getCard(cardName);
-        Deck deck = getDeck(deckName, player);
+        Optional<Deck> optionalDeck = getDeck(deckName, player);
         Response response = null;
-        if (optionalCard.isPresent() && deck != null) {
-            deck.removeCard(optionalCard.get());
+        if (optionalCard.isPresent() && optionalDeck.isPresent()) {
+            optionalDeck.get().removeCard(optionalCard.get());
             List<String> cards = makeCardsList(name, modelLoader.getClassOfCard(classOfCard).orElse(null),
-                    mana, lockMode, deck, player).stream().map(Overview::getName)
+                    mana, lockMode, optionalDeck.get(), player).stream().map(Overview::getName)
                     .collect(Collectors.toList());
             if (cards.contains(cardName)) response = new CollectionCardEvent("move", cardName,
-                    canAddDeck(player), canChangeHero(deck));
-            else response = new CollectionCardEvent("remove", cardName, canAddDeck(player), canChangeHero(deck));
+                    canAddDeck(player), canChangeHero(optionalDeck.get()));
+            else response = new CollectionCardEvent("remove", cardName, canAddDeck(player)
+                    , canChangeHero(optionalDeck.get()));
             connector.save(player);
             connector.save(new CollectionLog(player.getUserName(), cardName, null
                     , deckName, "remove Card", null));
@@ -239,18 +241,18 @@ public class Collection {
         if (optionalCard.isPresent()) {
             Map<Card, CardDetails> playerCards = player.getCards();
             if (playerCards.containsKey(optionalCard.get())) {
-                Deck deck = getDeck(deckName, player);
-                if (deck != null) {
+                Optional<Deck> optionalDeck = getDeck(deckName, player);
+                if (optionalDeck.isPresent()) {
                     if (playerCards.get(optionalCard.get()).getRepeatedTimes() >
-                            deck.numberOfCard(optionalCard.get())) {
-                        if (isForHero(optionalCard.get().getClassOfCard(), deck.getHero())) {
-                            if (deck.getSize() < MAX_DECK_SIZE) {
-                                deck.addCard(optionalCard.get());
+                            optionalDeck.get().numberOfCard(optionalCard.get())) {
+                        if (isForHero(optionalCard.get().getClassOfCard(), optionalDeck.get().getHero())) {
+                            if (optionalDeck.get().getSize() < MAX_DECK_SIZE) {
+                                optionalDeck.get().addCard(optionalCard.get());
                                 connector.save(player);
                                 connector.save(new CollectionLog(player.getUserName(), cardName, null
                                         , deckName, "add Card", null));
                                 responses[0] = new CollectionCardEvent("add", cardName,
-                                        canAddDeck(player), canChangeHero(deck));
+                                        canAddDeck(player), canChangeHero(optionalDeck.get()));
 
                             } else {
                                 responses[1] = new ShowMessage("cant add card to deck\ndeck is full!!!");

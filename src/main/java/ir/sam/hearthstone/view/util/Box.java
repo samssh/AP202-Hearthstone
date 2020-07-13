@@ -14,9 +14,9 @@ import static ir.sam.hearthstone.view.util.Constant.*;
 public abstract class Box<Model extends Overview, T extends JPanel> extends JPanel {
     protected List<Model> models;
     private final LinkedList<Model> showing;
-    private final T[][] items;
-    private final int a, b, height, width;
-    private int begin, end;
+    protected final T[][] items;
+    protected final int a, b, height, width;
+    protected int begin, end;
     private JLabel title;
     private JButton next, previous;
     protected final AnimationManger animationManger;
@@ -100,6 +100,7 @@ public abstract class Box<Model extends Overview, T extends JPanel> extends JPan
             int indexOnShow = index - begin;
             T t = items[indexOnShow%a][index/a];
             set(t, null);
+            animationManger.clear();
             animationManger.addPainter(new TranslatorByTime(new DoublePictureScale(front, back, ScaleOnCenter.X)
                     ,t.getX(),t.getY()));
             animationManger.start(()->set(items[indexOnShow%a][index/a], model));
@@ -268,11 +269,13 @@ public abstract class Box<Model extends Overview, T extends JPanel> extends JPan
 
     private void update() {
         this.clear(0);
+        animationManger.clear();
         for (int i = 0, showingSize = showing.size(); i < showingSize; i++) {
             Model model = showing.get(i);
             PaintByTime front = new OverviewPainter(model);
+            int randomMode = DoublePictureScale.getRandomMode();
             animationManger.addPainter(new TranslatorByTime(
-                    new SinglePictureScale(front, false, DoublePictureScale.RANDOM)
+                    new SinglePictureScale(front, false, randomMode)
                     , items[i % a][i / a].getX(), items[i % a][i / a].getY()));
         }
         animationManger.start(this::endAnimation);

@@ -39,4 +39,9 @@ public class  Hero extends Unit {
                 ", power=" + power +
                 '}';
     }
+
+    @Override
+    public Hero clone() {
+        return (Hero) super.clone();
+    }
 }

@@ -137,12 +137,12 @@ public class ShopPanel extends JPanel implements Updatable {
         this.coins = coins;
     }
 
-    private void moveCard(String card,CardBox origin,CardBox dest){
-        Point org = origin.getPosition(card);
+    private void moveCard(String cardName,CardBox origin,CardBox dest){
+        Point org = origin.getPosition(cardName);
         org.translate(origin.getX(),origin.getY());
-        CardOverview cardOverview = origin.removeModel(card,false);
+        CardOverview cardOverview = origin.removeModel(cardName,false);
         dest.addModel(cardOverview,false);
-        Point des = dest.getPosition(card);
+        Point des = dest.getPosition(cardName);
         des.translate(dest.getX(),dest.getY());
         animationManger.clear();
         animationManger.addPainter(new LinearMotion(org.x,org.y,des.x,des.y,

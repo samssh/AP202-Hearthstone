@@ -16,9 +16,11 @@ public class CardOverview extends UnitOverview {
     @Getter
     @Setter
     private int number;
-    private final int price, mana, att, hp;
+    private final int price, mana;
+    protected final int att, hp;
     private final boolean showPrice;
-    private final BufferedImage big, small;
+    private final BufferedImage big;
+    protected BufferedImage small;
 
     public CardOverview(Card card, int number, boolean showPrice) {
         super(card.getName(), card.getName(), "class of card: " + card.getClassOfCard().getHeroName());

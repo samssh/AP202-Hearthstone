@@ -25,4 +25,9 @@ public class Spell extends Card {
                 ", rarity=" + rarity +
                 '}';
     }
+
+    @Override
+    public Spell clone() {
+        return (Spell) super.clone();
+    }
 }

@@ -7,11 +7,14 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class AnimationManger {
+    private final static EndAnimationAction dummyAction = () -> {
+    };
     private final List<PaintByTime> painters;
     private volatile long lastPaint;
     private EndAnimationAction endAnimationAction;
 
     public AnimationManger() {
+        endAnimationAction = dummyAction;
         painters = new ArrayList<>();
         lastPaint = 0;
     }
@@ -24,22 +27,21 @@ public class AnimationManger {
 
     public void clear() {
         lastPaint = 0;
-        if (endAnimationAction!=null) {
-            endAnimationAction.action();
-            endAnimationAction = null;
-        }
+        endAnimationAction.action();
+        endAnimationAction = dummyAction;
         synchronized (painters) {
             painters.clear();
         }
     }
 
     public void start(EndAnimationAction endAnimationAction) {
+        this.endAnimationAction.action();
         this.endAnimationAction = endAnimationAction;
         lastPaint = System.nanoTime();
     }
 
-    public void start(){
-        start(null);
+    public void start() {
+        start(dummyAction);
     }
 
     public void paint(Graphics2D graphics2D) {

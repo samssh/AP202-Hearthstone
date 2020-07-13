@@ -9,4 +9,9 @@ public class Quest extends Spell {
     }
 
     public Quest(){}
+
+    @Override
+    public Quest clone() {
+        return (Quest) super.clone();
+    }
 }

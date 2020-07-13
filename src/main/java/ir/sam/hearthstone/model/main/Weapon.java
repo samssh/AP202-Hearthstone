@@ -42,4 +42,9 @@ public class Weapon extends Card {
                 ", price=" + price +
                 '}';
     }
+
+    @Override
+    public Weapon clone() {
+        return (Weapon) super.clone();
+    }
 }

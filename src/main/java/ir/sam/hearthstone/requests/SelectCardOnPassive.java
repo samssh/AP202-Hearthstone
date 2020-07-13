@@ -2,15 +2,20 @@ package ir.sam.hearthstone.requests;
 
 import ir.sam.hearthstone.server.Server;
 
-public class ExitGame extends Request {
+public class SelectCardOnPassive extends Request{
+    private final int index;
+
+    public SelectCardOnPassive(int index) {
+        this.index = index;
+    }
 
     @Override
     public void execute(Server server) {
-//        server.exitGame();
+        server.selectCadOnPassive(index);
     }
 
     @Override
     public void accept(RequestLogInfoVisitor requestLogInfoVisitor) {
-        requestLogInfoVisitor.setExitGame(this);
+
     }
 }
