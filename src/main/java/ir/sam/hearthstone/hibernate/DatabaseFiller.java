@@ -18,7 +18,7 @@ public class DatabaseFiller {
         connector.save(new Hero("Mage", "She is a skilled wizard who has special skills in using spells."
                 , 30,magePower));
         HeroPower roguePower = new HeroPower("Rubbery","Steal a card from opponent's hand and add it to your hand",3);
-        connector.save(new Hero("Rogue", "He is a thief and most of his abilities are in stealing from the enemy!"
+        connector.save(new Hero("Rogue", "SHe is a thief and most of her abilities are in stealing from the enemy!"
                 , 30,roguePower));
         HeroPower warlockPower = new HeroPower("Life Tap","Draw a card and take 2 damage Or add a random minion  1/1.",0);
         connector.save(new Hero("Warlock",

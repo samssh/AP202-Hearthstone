@@ -1,10 +1,14 @@
 package ir.sam.hearthstone.server.logic.game;
 
+import ir.sam.hearthstone.response.PlayDetails;
 import ir.sam.hearthstone.server.logic.game.behavioral_models.*;
+import ir.sam.hearthstone.server.logic.game.events.GameEvent;
 import lombok.Getter;
 import lombok.Setter;
 
 import java.util.*;
+import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
 
 import static ir.sam.hearthstone.server.logic.game.Side.*;
 
@@ -16,11 +20,17 @@ public class GameState {
     @Setter
     private int turnNumber;
     private final Map<Side, SideState> sideStateMap;
+    @Getter
+    private final List<PlayDetails.Event> events;
+    @Getter
+    private final List<GameEvent> gameEvents;
 
     GameState() {
         sideStateMap = new EnumMap<>(Side.class);
-        sideStateMap.put(PLAYER_ONE,new SideState(PLAYER_ONE));
-        sideStateMap.put(PLAYER_TWO,new SideState(PLAYER_TWO));
+        sideStateMap.put(PLAYER_ONE, new SideState(PLAYER_ONE));
+        sideStateMap.put(PLAYER_TWO, new SideState(PLAYER_TWO));
+        events = new LinkedList<>();
+        gameEvents = new LinkedList<>();
     }
 
     public int getMana(Side side) {
@@ -52,27 +62,39 @@ public class GameState {
     }
 
     public WeaponLogic getActiveWeapon(Side side) {
-        return sideStateMap.get(side).weaponLogicOptional;
+        return sideStateMap.get(side).weaponLogic;
     }
 
-    public void setMana(Side side,int mana) {
+    public void setMana(Side side, int mana) {
         sideStateMap.get(side).mana = mana;
     }
 
-    public void setHero(Side side,HeroLogic hero) {
+    public void setHero(Side side, HeroLogic hero) {
         sideStateMap.get(side).hero = hero;
     }
 
-    void setHeroPower(Side side,HeroPowerLogic heroPower) {
+    void setHeroPower(Side side, HeroPowerLogic heroPower) {
         sideStateMap.get(side).heroPower = heroPower;
     }
 
-    void setPassive(Side side,PassiveLogic passive) {
+    void setPassive(Side side, PassiveLogic passive) {
         sideStateMap.get(side).passive = passive;
     }
 
-    public void setActiveWeapon(Side side,WeaponLogic activeWeapon) {
-        sideStateMap.get(side).weaponLogicOptional = activeWeapon;
+    public Stream<ComplexLogic> getSideStream(Side side) {
+        return sideStateMap.get(side).getStream();
+    }
+
+    public int[] getMana(){
+        int[] mana = new int[2];
+        mana[0]= getMana(PLAYER_ONE);
+        mana[1]= getMana(PLAYER_TWO);
+        return mana;
+    }
+
+
+    public void setActiveWeapon(Side side, WeaponLogic activeWeapon) {
+        sideStateMap.get(side).weaponLogic = activeWeapon;
     }
 
     private static class SideState {
@@ -81,17 +103,17 @@ public class GameState {
         @Getter
         private int mana;
         @Getter
-        private HeroLogic hero;
+        private HeroLogic hero;//0
         @Getter
-        private HeroPowerLogic heroPower;
+        private HeroPowerLogic heroPower;//1
         @Getter
-        private PassiveLogic passive;
+        private PassiveLogic passive;//2
         @Getter
         private final List<CardLogic> hand, deck;
         @Getter
-        private final List<MinionLogic> ground;
+        private final List<MinionLogic> ground;//4 + index
         @Getter
-        private WeaponLogic weaponLogicOptional;
+        private WeaponLogic weaponLogic;// 3
 
         private SideState(Side side) {
             this.side = side;
@@ -99,7 +121,48 @@ public class GameState {
             deck = new ArrayList<>();
             ground = new ArrayList<>();
         }
+
+        Stream<ComplexLogic> getStream() {
+            return StreamSupport.stream(Spliterators.spliterator(new Iterator()
+                    , 3 + ground.size() + (weaponLogic == null ? 0 : 1),
+                    Spliterator.NONNULL & Spliterator.DISTINCT), false);
+        }
+
+        private class Iterator implements java.util.Iterator<ComplexLogic> {
+            private int mode = 0;
+
+            @Override
+            public boolean hasNext() {
+                if (mode < 3)
+                    return true;
+                if (mode == 3)
+                    return weaponLogic != null || ground.size() != 0;
+                return mode - 3 <= ground.size();
+            }
+
+            @Override
+            public ComplexLogic next() {
+                mode++;
+                switch (mode) {
+                    case 1:
+                        return hero;
+                    case 2:
+                        return heroPower;
+                    case 3:
+                        return passive;
+                    case 4:
+                        if (weaponLogic != null) return weaponLogic;
+                        else {
+                            mode++;
+                            return ground.get(0);
+                        }
+                    default:
+                        return ground.get(mode - 5);
+                }
+            }
+        }
     }
+
 
 }
 

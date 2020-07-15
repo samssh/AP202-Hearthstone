@@ -1,5 +1,7 @@
 package ir.sam.hearthstone.hibernate;
 
 
-public interface SaveAble {
+import java.io.Serializable;
+
+public interface SaveAble extends Serializable {
 }

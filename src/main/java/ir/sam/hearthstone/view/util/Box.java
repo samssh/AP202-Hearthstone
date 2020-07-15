@@ -15,10 +15,11 @@ public abstract class Box<Model extends Overview, T extends JPanel> extends JPan
     protected List<Model> models;
     private final LinkedList<Model> showing;
     protected final T[][] items;
-    protected final int a, b, height, width;
+    protected final int a, b;
+    protected int height, width;
     protected int begin, end;
-    private JLabel title;
-    private JButton next, previous;
+    protected JLabel title;
+    protected JButton next, previous;
     protected final AnimationManger animationManger;
     protected final JPanel parent;
     protected final MyActionListener action;
@@ -39,7 +40,13 @@ public abstract class Box<Model extends Overview, T extends JPanel> extends JPan
         this.setOpaque(false);
         this.items = createTArray(a, b);
         this.showing = new LinkedList<>();
+        this.models = new LinkedList<>();
         this.animationManger = new AnimationManger();
+        initializeItems(itemWidth, itemHeight, itemSpace);
+        this.add(title);
+    }
+
+    protected void initializeItems(int itemWidth, int itemHeight, int itemSpace) {
         for (int i = 0; i < a; i++) {
             for (int j = 0; j < b; j++) {
                 T t = createNew();
@@ -49,7 +56,6 @@ public abstract class Box<Model extends Overview, T extends JPanel> extends JPan
                 this.add(t);
             }
         }
-        this.add(title);
     }
 
     private void initializeTitle() {
@@ -91,31 +97,31 @@ public abstract class Box<Model extends Overview, T extends JPanel> extends JPan
         previous.setForeground(Color.WHITE);
     }
 
-    public void changeModel(int index, Model model){
-            Model backOve = models.remove(index);
-            models.add(index, model);
-        if (begin<=index && index<end){
+    public void changeModel(int index, Model model) {
+        Model backOve = models.remove(index);
+        models.add(index, model);
+        if (begin <= index && index < end) {
             PaintByTime back = new OverviewPainter(backOve);
             PaintByTime front = new OverviewPainter(model);
             int indexOnShow = index - begin;
-            T t = items[indexOnShow%a][index/a];
+            T t = items[indexOnShow % a][index / a];
             set(t, null);
             animationManger.clear();
             animationManger.addPainter(new TranslatorByTime(new DoublePictureScale(front, back, ScaleOnCenter.X)
-                    ,t.getX(),t.getY()));
-            animationManger.start(()->set(items[indexOnShow%a][index/a], model));
+                    , t.getX(), t.getY()));
+            animationManger.start(() -> set(items[indexOnShow % a][index / a], model));
             showing.remove(index);
             showing.add(index, model);
         }
     }
 
-    public void changeModel(String name,Model model){
-        changeModel(indexOf(name),model);
+    public void changeModel(String name, Model model) {
+        changeModel(indexOf(name), model);
     }
 
     public void addModel(int index, Model model, boolean animationOnNew) {
         models.add(index, model);
-        if ((begin <= index && index < end)||(begin==end)) {
+        if ((begin <= index && index < end) || (begin == end)) {
             animationManger.clear();
             clear(index - begin);
             for (int k = index - begin, showingSize = showing.size(); k < showingSize && k + 1 < a * b; k++) {
@@ -176,7 +182,7 @@ public abstract class Box<Model extends Overview, T extends JPanel> extends JPan
 
     private void checkLastForRemove() {
         if (end <= models.size()) {
-            Model newTOShow = models.get(end-1);
+            Model newTOShow = models.get(end - 1);
             showing.addLast(newTOShow);
             animationManger.addPainter(new TranslatorByTime(new SinglePictureScale(
                     new OverviewPainter(newTOShow), false, ScaleOnCenter.ALL)
@@ -223,14 +229,18 @@ public abstract class Box<Model extends Overview, T extends JPanel> extends JPan
     }
 
     public Point getPosition(String name) {
-        int index = indexOf(name) - begin;
+        return getPosition(indexOf(name));
+    }
+
+    public Point getPosition(int index) {
+        index -= begin;
         if (index >= a * b) {
-            Rectangle rectangle =items[a-1][b-1].getBounds();
-            return new Point(rectangle.x + rectangle.width/2,rectangle.y);
+            Rectangle rectangle = items[a - 1][b - 1].getBounds();
+            return new Point(rectangle.x + rectangle.width / 2, rectangle.y);
         }
-        if( index < 0){
-            Rectangle rectangle =items[0][0].getBounds();
-            return new Point(rectangle.x - rectangle.width/2,rectangle.y);
+        if (index < 0) {
+            Rectangle rectangle = items[0][0].getBounds();
+            return new Point(rectangle.x - rectangle.width / 2, rectangle.y);
         }
         return new Point(items[index % a][index / a].getLocation());
     }
