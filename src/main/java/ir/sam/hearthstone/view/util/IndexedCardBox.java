@@ -6,7 +6,7 @@ import java.util.OptionalInt;
 
 public class IndexedCardBox extends CardBox {
     public IndexedCardBox(int width, int height, JPanel parent, MyActionListener cardActionListener) {
-        super(width, height, parent, cardActionListener, false);
+        super(width, height, parent, cardActionListener);
     }
 
     @Override
@@ -22,15 +22,15 @@ public class IndexedCardBox extends CardBox {
         @Override
         public void mouseClicked(MouseEvent e) {
             if (unitOverview != null) {
-                if (e.getButton() == MouseEvent.BUTTON3) JOptionPane.showMessageDialog(this.parent, null,
-                        "information", JOptionPane.INFORMATION_MESSAGE
-                        , new ImageIcon(unitOverview.getBigImage()));
                 if (e.getButton() == MouseEvent.BUTTON1) {
                     if (actionListener != null && unitOverview != null) {
                         OptionalInt optionalInt = getShowingIndex();
                         if (optionalInt.isPresent()) actionListener.action(optionalInt.getAsInt() + "");
                     }
                 }
+                if (e.getButton() == MouseEvent.BUTTON3) JOptionPane.showMessageDialog(this.parent, null,
+                        "information", JOptionPane.INFORMATION_MESSAGE
+                        , new ImageIcon(unitOverview.getBigImage()));
             }
         }
 
@@ -45,5 +45,4 @@ public class IndexedCardBox extends CardBox {
             return OptionalInt.empty();
         }
     }
-
 }

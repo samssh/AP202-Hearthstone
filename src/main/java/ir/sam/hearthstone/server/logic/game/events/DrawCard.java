@@ -1,28 +1,23 @@
-package ir.sam.hearthstone.model.account;
+package ir.sam.hearthstone.server.logic.game.events;
 
 import ir.sam.hearthstone.model.main.Card;
+import ir.sam.hearthstone.server.logic.game.Side;
 import lombok.Getter;
 import lombok.Setter;
 
-import javax.persistence.Entity;
-import javax.persistence.ManyToOne;
-
-@Entity
-public class DrawCard extends GameEvent{
-    @ManyToOne
+public class DrawCard extends GameEvent {
     @Getter
     @Setter
     private Card card;
 
-    public DrawCard(Card card) {
+    public DrawCard(Side side, Card card) {
+        super(side);
         this.card = card;
     }
 
-    public DrawCard() {}
-
     @Override
     public String toString() {
-        return "DrawCard(" +
+        return side.toString() + ": DrawCard(" +
                 "card=" + card.getName() +
                 ')';
     }

@@ -4,6 +4,7 @@ import ir.sam.hearthstone.model.account.Deck;
 import ir.sam.hearthstone.model.main.Card;
 import ir.sam.hearthstone.model.main.CardDetails;
 import ir.sam.hearthstone.model.main.Passive;
+import ir.sam.hearthstone.resource_manager.ModelLoader;
 import ir.sam.hearthstone.response.PassiveDetails;
 import ir.sam.hearthstone.response.Response;
 import ir.sam.hearthstone.server.Server;
@@ -23,11 +24,13 @@ public abstract class GameBuilder {
     protected List<Passive> sentPassives;
     protected final List<Card> handP1, handP2, deckP1, deckP2;
     protected final List<Boolean> handP1state, handP2state;
+    protected final ModelLoader modelLoader;
 
 
-    public GameBuilder(PlayMode playMode, List<Passive> allPassives) {
+    public GameBuilder(PlayMode playMode, ModelLoader modelLoader) {
         this.playMode = playMode;
-        this.allPassives = allPassives;
+        this.modelLoader = modelLoader;
+        this.allPassives = modelLoader.getFirstPassives();
         gameStateBuilder = new GameStateBuilder();
         handP1 = new ArrayList<>();
         handP2 = new ArrayList<>();
@@ -38,9 +41,6 @@ public abstract class GameBuilder {
     }
 
     public AbstractGame build() {
-        if (result == null) {
-            build0();
-        }
         return result;
     }
 
@@ -115,7 +115,7 @@ public abstract class GameBuilder {
     }
 
     protected CardOverview changeState(List<Card> hand, List<Boolean> state, int index) {
-        state.add(index, !state.get(index));
+        state.add(index, !state.remove(index));
         return new CardOverview(hand.get(index), state.get(index) ? 1 : 0, false);
     }
 }

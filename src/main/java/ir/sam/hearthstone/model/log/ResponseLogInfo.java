@@ -60,15 +60,15 @@ public class ResponseLogInfo {
 
         @Override
         public void setPlayDetailsInfo(PlayDetails playDetails) {
-            hand = playDetails.getHand().toString();
-            ground = playDetails.getGround().toString();
-            if (playDetails.getWeapon() != null)
-                weapon = playDetails.getWeapon().toString();
-            hero = playDetails.getHero().toString();
-            heroPower = playDetails.getHeroPower().toString();
-            mana = playDetails.getMana();
-            deckCards = playDetails.getDeckCards() + "";
-            eventLog = playDetails.getEventLog();
+//            hand = playDetails.getHand().toString();
+//            ground = playDetails.getGround().toString();
+//            if (playDetails.getWeapon() != null)
+//                weapon = playDetails.getWeapon().toString();
+//            hero = playDetails.getHero().toString();
+//            heroPower = playDetails.getHeroPower().toString();
+//            mana = playDetails.getMana();
+//            deckCards = playDetails.getDeckCards() + "";
+//            eventLog = playDetails.getEventLog();
         }
 
         @Override

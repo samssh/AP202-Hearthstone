@@ -14,6 +14,11 @@ public class CardBox extends Box<CardOverview, UnitViewer> {
         this.distinct = distinct;
     }
 
+    public CardBox(int width, int height, JPanel parent, MyActionListener action) {
+        super(width, height, parent, action, SINGLE_CARD_WIDTH, CARD_HEIGHT, CARD_SPACE);
+        this.distinct = false;
+    }
+
     @Override
     protected UnitViewer createNew() {
         return new UnitViewer(parent, action);

@@ -16,6 +16,7 @@ import ir.sam.hearthstone.server.logic.Shop;
 import ir.sam.hearthstone.server.logic.Status;
 import ir.sam.hearthstone.server.logic.game.GameBuilder;
 import ir.sam.hearthstone.server.logic.game.MultiplayerGameBuilder;
+import ir.sam.hearthstone.server.logic.game.Side;
 import ir.sam.hearthstone.util.Loop;
 import ir.sam.hearthstone.resource_manager.ModelLoader;
 import ir.sam.hearthstone.view.model.*;
@@ -238,7 +239,7 @@ public class Server {
         Response response = null;
         switch (modeName) {
             case "multiplayer":
-                gameBuilder = new MultiplayerGameBuilder(MULTIPLAYER, modelLoader.getFirstPassives());
+                gameBuilder = new MultiplayerGameBuilder(MULTIPLAYER, modelLoader);
                 response = gameBuilder.setDeckP1(player.getSelectedDeck());
                 break;
             case "AI":
@@ -277,12 +278,18 @@ public class Server {
         }
     }
 
-    public void selectCadOnPassive(int index){
+    public void selectCadOnPassive(int index) {
         sendResponse(gameBuilder.selectCard(index));
     }
 
-    public void confirm(){
+    public void confirm() {
         sendResponse(gameBuilder.confirm());
+        game = gameBuilder.build();
+    }
+
+    public void endTurn() {
+        game.nextTurn();
+        sendResponse(game.getResponse(Side.PLAYER_ONE));
     }
 
 //    private void sendPlayDetails() {

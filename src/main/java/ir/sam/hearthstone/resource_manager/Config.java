@@ -3,8 +3,10 @@ package ir.sam.hearthstone.resource_manager;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.Reader;
+import java.lang.reflect.Array;
 import java.lang.reflect.Constructor;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Properties;
 
@@ -30,6 +32,15 @@ public class Config extends Properties {
             list.add(getObject(c, value));
         }
         return list;
+    }
+
+    public <E> E[] getPropertyArray(Class<E> c, String propertyName) {
+        String[] values = getProperty(propertyName).split(",");
+        E[] result= (E[]) Array.newInstance(c,values.length);
+        for (int i = 0, valuesLength = values.length; i < valuesLength; i++) {
+            result[i] = getObject(c, values[i]);
+        }
+        return result;
     }
 
     private <E> E getObject(Class<E> c, String value) {

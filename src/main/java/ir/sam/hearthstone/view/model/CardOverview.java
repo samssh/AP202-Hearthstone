@@ -11,7 +11,8 @@ import lombok.ToString;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.awt.image.ColorModel;
-@ToString(exclude = {"big","small"})
+
+@ToString(exclude = {"big", "small"})
 public class CardOverview extends UnitOverview {
     @Getter
     @Setter
@@ -21,6 +22,10 @@ public class CardOverview extends UnitOverview {
     private final boolean showPrice;
     private final BufferedImage big;
     protected BufferedImage small;
+
+    public CardOverview(Card card) {
+        this(card, 1, false);
+    }
 
     public CardOverview(Card card, int number, boolean showPrice) {
         super(card.getName(), card.getName(), "class of card: " + card.getClassOfCard().getHeroName());
@@ -47,7 +52,7 @@ public class CardOverview extends UnitOverview {
         }
     }
 
-    public CardOverview(String name, String imageName, String toolkit,int number, int price, int mana, int att,
+    public CardOverview(String name, String imageName, String toolkit, int number, int price, int mana, int att,
                         int hp, boolean showPrice, BufferedImage big, BufferedImage small) {
         super(name, imageName, toolkit);
         this.number = number;
@@ -60,8 +65,8 @@ public class CardOverview extends UnitOverview {
         this.small = small;
     }
 
-    public CardOverview getClone(){
-        return new CardOverview(name,imageName,getToolkit(),number,price,mana,att,hp,showPrice,big,small);
+    public CardOverview getClone() {
+        return new CardOverview(name, imageName, getToolkit(), number, price, mana, att, hp, showPrice, big, small);
     }
 
 

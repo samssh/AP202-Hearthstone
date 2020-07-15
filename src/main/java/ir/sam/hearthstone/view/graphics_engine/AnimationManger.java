@@ -11,10 +11,10 @@ public class AnimationManger {
     };
     private final List<PaintByTime> painters;
     private volatile long lastPaint;
-    private EndAnimationAction endAnimationAction;
+    private final List<EndAnimationAction> endAnimationActions;
 
     public AnimationManger() {
-        endAnimationAction = dummyAction;
+        endAnimationActions = new ArrayList<>();
         painters = new ArrayList<>();
         lastPaint = 0;
     }
@@ -27,21 +27,26 @@ public class AnimationManger {
 
     public void clear() {
         lastPaint = 0;
-        endAnimationAction.action();
-        endAnimationAction = dummyAction;
+        endAnimationActions.forEach(EndAnimationAction::action);
+        endAnimationActions.clear();
         synchronized (painters) {
             painters.clear();
         }
     }
 
     public void start(EndAnimationAction endAnimationAction) {
-        this.endAnimationAction.action();
-        this.endAnimationAction = endAnimationAction;
+        this.endAnimationActions.forEach(EndAnimationAction::action);
+        this.endAnimationActions.clear();
+        this.endAnimationActions.add(endAnimationAction);
         lastPaint = System.nanoTime();
     }
 
     public void start() {
         start(dummyAction);
+    }
+
+    public void addEndAnimationAction(EndAnimationAction endAnimationAction){
+        this.endAnimationActions.add(endAnimationAction);
     }
 
     public void paint(Graphics2D graphics2D) {

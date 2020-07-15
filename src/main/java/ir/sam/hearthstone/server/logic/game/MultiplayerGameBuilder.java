@@ -2,22 +2,23 @@ package ir.sam.hearthstone.server.logic.game;
 
 import ir.sam.hearthstone.model.account.Deck;
 import ir.sam.hearthstone.model.main.Passive;
+import ir.sam.hearthstone.resource_manager.ModelLoader;
 import ir.sam.hearthstone.response.ChangeCardOnPassive;
+import ir.sam.hearthstone.response.PlayDetails;
 import ir.sam.hearthstone.response.Response;
 import ir.sam.hearthstone.server.Server;
 
-import java.util.List;
-
 import static ir.sam.hearthstone.server.Server.STARTING_HAND_CARDS;
+import static ir.sam.hearthstone.server.logic.game.Side.*;
 
 public class MultiplayerGameBuilder extends GameBuilder {
-    public MultiplayerGameBuilder(PlayMode playMode, List<Passive> allPassives) {
-        super(playMode, allPassives);
+    public MultiplayerGameBuilder(PlayMode playMode, ModelLoader modelLoader) {
+        super(playMode, modelLoader);
     }
 
     @Override
     protected void build0() {
-        result = new MultiPlayerGame(gameStateBuilder.build());
+        result = new MultiPlayerGame(gameStateBuilder.build(),modelLoader);
     }
 
     @Override
@@ -68,9 +69,11 @@ public class MultiplayerGameBuilder extends GameBuilder {
         }else {
             finalizeHand(handP2,handP2state,deckP2);
             gameStateBuilder.setHandP2(handP2).setDeckCardsP2(deckP2);
-            build();
-            //return play panel details
+            build0();
+            result.nextTurn();
+            PlayDetails playDetails = new PlayDetails(result.getEventLog(PLAYER_ONE),result.getGameState().getMana());
+            playDetails.getEvents().addAll(result.getEvents(PLAYER_ONE));
+            return playDetails;
         }
-        return null;
     }
 }

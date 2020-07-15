@@ -8,4 +8,9 @@ public class HeroLogic extends CharacterLogic{
     public HeroLogic(Hero hero) {
         this.hero = hero.clone();
     }
+
+    @Override
+    public String getName() {
+        return hero.getName();
+    }
 }

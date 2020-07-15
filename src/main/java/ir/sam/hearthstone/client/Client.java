@@ -5,6 +5,7 @@ import ir.sam.hearthstone.client.Actions.*;
 import ir.sam.hearthstone.hibernate.Connector;
 import ir.sam.hearthstone.model.log.*;
 import ir.sam.hearthstone.requests.*;
+import ir.sam.hearthstone.response.PlayDetails;
 import ir.sam.hearthstone.response.Response;
 import ir.sam.hearthstone.resource_manager.ConfigFactory;
 import ir.sam.hearthstone.util.Loop;
@@ -251,11 +252,9 @@ public class Client {
         ((PassivePanel) panels.get(PASSIVE)).changeCard(cardOverview,index);
     }
 
-    public void setPlayDetail(List<CardOverview> hand, List<CardOverview> ground, CardOverview weapon
-            , HeroOverview hero, HeroPowerOverview heroPower, String eventLog
-            , int mana, int deckCards) {
-        ((PlayPanel) panels.get(PLAY)).setDetails(hand, ground
-                , weapon, hero, heroPower, eventLog, mana, deckCards);
+    public void setPlayDetail(List<PlayDetails.Event> events, String eventLog
+            , int[] mana) {
+        ((PlayPanel) panels.get(PLAY)).setDetails(events,eventLog,mana);
         if (now != PLAY) {
             now = PLAY;
             updateFrame();

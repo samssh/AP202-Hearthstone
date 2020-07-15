@@ -1,5 +1,6 @@
 package ir.sam.hearthstone.model.main;
 
+import ir.sam.hearthstone.hibernate.MapToStringConverter;
 import ir.sam.hearthstone.hibernate.SaveAble;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -7,13 +8,16 @@ import lombok.Setter;
 import lombok.ToString;
 
 import javax.persistence.Column;
+import javax.persistence.Convert;
 import javax.persistence.Entity;
 import javax.persistence.Id;
+import java.util.HashMap;
+import java.util.Map;
 
 @Entity
 @ToString
 @EqualsAndHashCode(of = "name")
-public class HeroPower implements SaveAble, Cloneable {
+public class HeroPower implements SaveAble, Cloneable,HasAction {
     @Id
     @Getter
     @Setter
@@ -26,6 +30,15 @@ public class HeroPower implements SaveAble, Cloneable {
     @Getter
     @Setter
     private int manaFrz;
+    @Getter
+    @Setter
+    @Column
+    protected String className;
+    @Setter
+    @Getter
+    @Column
+    @Convert(converter = MapToStringConverter.class)
+    protected Map<ActionType,String> methods;
 
 
     public HeroPower() {
@@ -35,6 +48,7 @@ public class HeroPower implements SaveAble, Cloneable {
         this.name = name;
         this.description = description;
         this.manaFrz = manaFrz;
+        this.methods = new HashMap<>();
     }
 
     @Override
