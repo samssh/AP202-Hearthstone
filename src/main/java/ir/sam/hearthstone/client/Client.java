@@ -253,8 +253,8 @@ public class Client {
     }
 
     public void setPlayDetail(List<PlayDetails.Event> events, String eventLog
-            , int[] mana) {
-        ((PlayPanel) panels.get(PLAY)).setDetails(events,eventLog,mana);
+            , int[] mana,long time) {
+        ((PlayPanel) panels.get(PLAY)).setDetails(events,eventLog,mana,time);
         if (now != PLAY) {
             now = PLAY;
             updateFrame();

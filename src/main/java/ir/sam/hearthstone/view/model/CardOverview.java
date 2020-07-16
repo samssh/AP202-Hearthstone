@@ -20,8 +20,7 @@ public class CardOverview extends UnitOverview {
     private final int price, mana;
     protected final int att, hp;
     private final boolean showPrice;
-    private final BufferedImage big;
-    protected BufferedImage small;
+    protected BufferedImage big, small;
 
     public CardOverview(Card card) {
         this(card, 1, false);
@@ -63,6 +62,19 @@ public class CardOverview extends UnitOverview {
         this.showPrice = showPrice;
         this.big = big;
         this.small = small;
+    }
+
+    public CardOverview(String name, String imageName, String toolkit, int number, int price, int mana, int att,
+                        int hp, boolean showPrice) {
+        this(name, imageName, toolkit, number, price, mana, att, hp
+                , showPrice, null, null);
+        if (this.number > 0) {
+            big = ImageLoader.getInstance().getBigCard(imageName);
+            small = ImageLoader.getInstance().getSmallCard(imageName);
+        } else {
+            big = ImageLoader.getInstance().getBigGrayCard(imageName);
+            small = ImageLoader.getInstance().getSmallGrayCard(imageName);
+        }
     }
 
     public CardOverview getClone() {

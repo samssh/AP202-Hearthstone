@@ -12,6 +12,7 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
 
+import java.util.Collections;
 import java.util.List;
 
 import static ir.sam.hearthstone.server.logic.game.Side.*;
@@ -41,26 +42,27 @@ public class GameStateBuilder {
 
     private void buildSideState(Side side, Passive passive, Deck deck, List<Card> deckCards
             , List<Card> hand, GameState gameState) {
-        gameState.setPassive(side, new PassiveLogic(passive));
-        gameState.setHero(side, new HeroLogic(deck.getHero()));
+        gameState.setPassive(side, new PassiveLogic(passive, side));
+        gameState.setHero(side, new HeroLogic(side, deck.getHero()));
         gameState.getEvents().add(new PlayDetails.Event(PlayDetails.EventType.SET_HERO,
-                new HeroOverview(deck.getHero()),side.getIndex()));
-        gameState.setHeroPower(side, new HeroPowerLogic(deck.getHero().getPower()));
+                new HeroOverview(deck.getHero()), side.getIndex()));
+        gameState.setHeroPower(side, new HeroPowerLogic(side, deck.getHero().getPower()));
         gameState.getEvents().add(new PlayDetails.Event(PlayDetails.EventType.SET_HERO_POWER,
-                new HeroPowerOverview(deck.getHero().getPower()),side.getIndex()));
+                new HeroPowerOverview(deck.getHero().getPower()), side.getIndex()));
         gameState.setMana(side, 0);
-        deckCards.forEach(card -> gameState.getDeck(side).add(buildCardLogic(card)));
-        hand.forEach(card -> gameState.getHand(side).add(buildCardLogic(card)));
+        deckCards.forEach(card -> gameState.getDeck(side).add(buildCardLogic(side,card)));
+        hand.forEach(card -> gameState.getHand(side).add(buildCardLogic(side,card)));
+        hand.forEach(card -> gameState.getGameEvents().add(new DrawCard(side, card)));
+        Collections.reverse(hand);
         hand.forEach(card -> gameState.getEvents().add(new PlayDetails.Event(PlayDetails.EventType.ADD_TO_HAND
-                , new CardOverview(card, 1, false), side.getIndex())));
-        hand.forEach(card->gameState.getGameEvents().add(new DrawCard(side,card)));
+                , new CardOverview(card), side.getIndex())));
     }
 
-    private CardLogic buildCardLogic(Card card) {
-        if (card instanceof Minion) return new MinionLogic((Minion) card);
-        else if (card instanceof Weapon) return new WeaponLogic((Weapon) card);
-        else if (card instanceof Quest) return new QuestLogic((Quest) card);
-        else if (card instanceof Spell) return new SpellLogic((Spell) card);
+    private CardLogic buildCardLogic(Side side, Card card) {
+        if (card instanceof Minion) return new MinionLogic(side, (Minion) card);
+        else if (card instanceof Weapon) return new WeaponLogic(side, (Weapon) card);
+        else if (card instanceof Quest) return new QuestLogic(side, (Quest) card);
+        else if (card instanceof Spell) return new SpellLogic(side, (Spell) card);
         else return null;
     }
 

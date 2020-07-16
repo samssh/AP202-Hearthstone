@@ -27,15 +27,18 @@ import java.util.stream.Collectors;
 import static ir.sam.hearthstone.server.logic.game.PlayMode.MULTIPLAYER;
 
 public class Server {
-    public static int STARTING_MANA;
-    public static int MANA_PER_TURN;
-    public static int CARD_PER_TURN;
-    public static int MAX_DECK_SIZE;
-    public static int STARTING_PASSIVES;
-    public static int STARTING_HAND_CARDS;
-    public static int MAX_MANA;
-    public static int STARTING_COINS;
-    public static int MAX_DECK_NUMBER;
+    public final static int STARTING_MANA;
+    public final static int MANA_PER_TURN;
+    public final static int CARD_PER_TURN;
+    public final static int MAX_DECK_SIZE;
+    public final static int STARTING_PASSIVES;
+    public final static int STARTING_HAND_CARDS;
+    public final static int MAX_MANA;
+    public final static int STARTING_COINS;
+    public final static int MAX_DECK_NUMBER;
+    public final static int TURN_TIME;// to millisecond
+    public final static int MAX_HAND_SIZE;
+    public final static int MAX_GROUND_SIZE;
 
     static {
         Config config = ConfigFactory.getInstance().getConfig("SERVER_CONFIG");
@@ -48,6 +51,9 @@ public class Server {
         MAX_MANA = config.getProperty(Integer.class, "MAX_MANA");
         STARTING_COINS = config.getProperty(Integer.class, "STARTING_COINS");
         MAX_DECK_NUMBER = config.getProperty(Integer.class, "MAX_DECK_NUMBER");
+        TURN_TIME = config.getProperty(Integer.class, "TURN_TIME");
+        MAX_HAND_SIZE = config.getProperty(Integer.class, "MAX_HAND_SIZE");
+        MAX_GROUND_SIZE = config.getProperty(Integer.class, "MAX_GROUND_SIZE");
     }
 
     private final List<Request> tempRequestList, requestList;
@@ -239,7 +245,7 @@ public class Server {
         Response response = null;
         switch (modeName) {
             case "multiplayer":
-                gameBuilder = new MultiplayerGameBuilder(MULTIPLAYER, modelLoader);
+                gameBuilder = new MultiplayerGameBuilder(MULTIPLAYER, modelLoader,this);
                 response = gameBuilder.setDeckP1(player.getSelectedDeck());
                 break;
             case "AI":

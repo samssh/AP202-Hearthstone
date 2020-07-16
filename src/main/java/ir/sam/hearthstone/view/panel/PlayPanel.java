@@ -11,27 +11,15 @@ import ir.sam.hearthstone.view.model.CardOverview;
 import ir.sam.hearthstone.view.util.*;
 import ir.sam.hearthstone.view.util.Box;
 
-import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.image.BufferedImage;
-import java.io.File;
-import java.io.IOException;
 import java.util.List;
 
 import static ir.sam.hearthstone.view.util.Constant.*;
 
 public class PlayPanel extends JPanel {
-    static BufferedImage manaImage;
-
-    static {
-        try {
-            manaImage = ImageIO.read(new File("C:\\Users\\HP\\Downloads\\mana (1).png"));
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
+    private final BufferedImage manaImage;
     private CardBox[] hand;
     private MinionBox[] ground;
     private UnitViewer[] hero, weapon, heroPower;
@@ -41,7 +29,9 @@ public class PlayPanel extends JPanel {
     private final AnimationManger animationManger;
     private final int[] mana = new int[2];
     private final PlayAction playAction;
-    private final BufferedImage backgound;
+    private final BufferedImage background;
+    private JProgressBar progressBar;
+    private long time;
     private int x, y, width, height;
     private Integer[] manaX, manaY;
     private Integer manaSpace;
@@ -55,7 +45,7 @@ public class PlayPanel extends JPanel {
     public PlayPanel(PlayAction playAction) {
         setLayout(null);
         this.playAction = playAction;
-        this.backgound = ImageLoader.getInstance().getBackground("play");
+        this.background = ImageLoader.getInstance().getBackground("play");
         config();
         initialize();
         this.setBounds(x, y, width, height);
@@ -69,12 +59,12 @@ public class PlayPanel extends JPanel {
         this.add(hero[1]);
         this.add(weapon[1]);
         this.add(heroPower[1]);
-        mana[0] = 4;
-        mana[1] = 10;
+        this.add(progressBar);
         this.add(scrollPane);
         this.add(exit);
         this.add(next);
         animationManger = new AnimationManger();
+        manaImage = ImageLoader.getInstance().getEffect("mana");
     }
 
     private void initialize() {
@@ -86,6 +76,15 @@ public class PlayPanel extends JPanel {
         initializeExit();
         initializeNext();
         initializeEventLog();
+        initializeProgressBar();
+    }
+
+    private void initializeProgressBar() {
+        progressBar = new JProgressBar(0, 60000);
+        progressBar.setBounds(groundX[1], groundY[1] + ground[1].getHeight()
+                , ground[1].getWidth(), groundY[0] - groundY[1] - ground[1].getHeight());
+        progressBar.setOpaque(false);
+
     }
 
     private void initializeBox(Box<?, ?> box, String title, int x, int y) {
@@ -95,18 +94,22 @@ public class PlayPanel extends JPanel {
 
     private void initializeHands() {
         hand = new CardBox[2];
-        hand[0] = new IndexedCardBox(handWidth[0], handHeight[0], this, playAction::playCard);
-        hand[1] = new IndexedCardBox(handWidth[1], handHeight[1], this, playAction::playCard);
+        hand[0] = new IndexedCardBox(handWidth[0], handHeight[0], this
+                , cardName -> playAction.selectCardInHand(0, cardName));
+        hand[1] = new IndexedCardBox(handWidth[1], handHeight[1], this
+                , cardName -> playAction.selectCardInHand(1, cardName));
         initializeBox(hand[0], "Your hand card", handX[0], handY[0]);
         initializeBox(hand[1], "Opponent hand card", handX[1], handY[1]);
     }
 
     private void initializeGrounds() {
         ground = new MinionBox[2];
-        ground[0] = new MinionBox(groundWidth[0], groundHeight[0], this, null);
-        ground[1] = new MinionBox(groundWidth[1], groundHeight[1], this, null);
-        initializeBox(ground[0], "your battleground minions", groundX[0], groundY[0]);
-        initializeBox(ground[1], "Opponent battleground minions", groundX[1], groundY[1]);
+        ground[0] = new MinionBox(groundWidth[0], groundHeight[0], this
+                , cardName -> playAction.selectMinion(0, cardName));
+        ground[1] = new MinionBox(groundWidth[1], groundHeight[1], this
+                , cardName -> playAction.selectMinion(1, cardName));
+        initializeBox(ground[0], "", groundX[0], groundY[0]);
+        initializeBox(ground[1], "", groundX[1], groundY[1]);
     }
 
     private void initializeViewer(UnitViewer unitViewer, int x, int y, int width, int height) {
@@ -116,8 +119,10 @@ public class PlayPanel extends JPanel {
     private void initializeHero() {
         hero = new UnitViewer[2];
         hero[0] = new UnitViewer(this);
+        hero[0].setActionListener(cardName -> playAction.selectHero(0));
         initializeViewer(hero[0], heroX[0], heroY[0], HERO_WIDTH, HERO_HEIGHT);
         hero[1] = new UnitViewer(this);
+        hero[1].setActionListener(cardName -> playAction.selectHero(1));
         initializeViewer(hero[1], heroX[1], heroY[1], HERO_WIDTH, HERO_HEIGHT);
     }
 
@@ -134,9 +139,11 @@ public class PlayPanel extends JPanel {
     private void initializeHeroPower() {
         heroPower = new UnitViewer[2];
         heroPower[0] = new UnitViewer(this);
+        heroPower[0].setActionListener(cardName -> playAction.selectHeroPower(0));
         int x = heroX[0] + heroSpace[0] + HERO_WIDTH;
         initializeViewer(heroPower[0], x, heroY[0], HERO_POWER_WIDTH, HERO_POWER_HEIGHT);
         heroPower[1] = new UnitViewer(this);
+        heroPower[1].setActionListener(cardName -> playAction.selectHeroPower(1));
         x = heroX[1] + heroSpace[1] + HERO_WIDTH;
         initializeViewer(heroPower[1], x, heroY[1], HERO_POWER_WIDTH, HERO_POWER_HEIGHT);
     }
@@ -172,13 +179,14 @@ public class PlayPanel extends JPanel {
         scrollPane.getViewport().setOpaque(false);
     }
 
-    public void setDetails(List<PlayDetails.Event> events, String eventLog, int[] mana) {
+    public void setDetails(List<PlayDetails.Event> events, String eventLog, int[] mana, long time) {
         animationManger.clear();
         events.forEach(this::executeEvent);
         animationManger.start();
         this.eventLog.setText(eventLog);
         this.mana[0] = mana[0];
         this.mana[1] = mana[1];
+        this.time = time;
     }
 
     private void executeEvent(PlayDetails.Event event) {
@@ -205,7 +213,7 @@ public class PlayPanel extends JPanel {
 
                 break;
             case ADD_TO_HAND:
-                hand[event.getSide()].addModel((CardOverview) event.getOverview(),true);
+                hand[event.getSide()].addModel((CardOverview) event.getOverview(), true);
                 break;
             case MOVE_FROM_HAND_TO_GROUND:
                 break;
@@ -227,15 +235,21 @@ public class PlayPanel extends JPanel {
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
-        g.drawImage(backgound, 0, 0, null);
+        g.drawImage(this.background, 0, 0, null);
         animationManger.paint((Graphics2D) g);
         g.setColor(Color.WHITE);
         for (int i = 0; i < this.mana[0]; i++) {
-            g.drawImage(manaImage, manaX[0], manaY[0] + i * (manaImage.getHeight() + manaSpace), null);
+            g.drawImage(manaImage, manaX[0], manaY[0] - i * (manaImage.getHeight() + manaSpace), null);
         }
         for (int i = 0; i < mana[1]; i++) {
-            g.drawImage(manaImage, manaX[1], manaY[1] - i * (manaImage.getHeight() + manaSpace), null);
+            g.drawImage(manaImage, manaX[1], manaY[1] + i * (manaImage.getHeight() + manaSpace), null);
         }
+
+        int t = (int) (System.currentTimeMillis() - time);
+        if (t < 1000) progressBar.setForeground(Color.GREEN);
+        else if (40000 < t && t < 41000) progressBar.setForeground(Color.RED);
+        progressBar.setValue(t);
+
     }
 
     private void config() {

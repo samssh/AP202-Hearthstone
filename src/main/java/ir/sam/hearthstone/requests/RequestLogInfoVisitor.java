@@ -27,7 +27,7 @@ public interface RequestLogInfoVisitor {
 
     void setNewDeck(NewDeck newDeck);
 
-    void setPlayCard(PlayCard playCard);
+    void setPlayCard(SelectCardInHand selectCardInHand);
 
     void setRemoveCardFromDeck(RemoveCardFromDeck removeCardFromDeck);
 

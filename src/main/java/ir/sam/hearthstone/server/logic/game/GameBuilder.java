@@ -25,12 +25,14 @@ public abstract class GameBuilder {
     protected final List<Card> handP1, handP2, deckP1, deckP2;
     protected final List<Boolean> handP1state, handP2state;
     protected final ModelLoader modelLoader;
+    protected final Server server;
 
 
-    public GameBuilder(PlayMode playMode, ModelLoader modelLoader) {
+    public GameBuilder(PlayMode playMode, ModelLoader modelLoader, Server server) {
         this.playMode = playMode;
         this.modelLoader = modelLoader;
         this.allPassives = modelLoader.getFirstPassives();
+        this.server = server;
         gameStateBuilder = new GameStateBuilder();
         handP1 = new ArrayList<>();
         handP2 = new ArrayList<>();

@@ -8,7 +8,6 @@ import lombok.Setter;
 
 import java.util.*;
 import java.util.stream.Stream;
-import java.util.stream.StreamSupport;
 
 import static ir.sam.hearthstone.server.logic.game.Side.*;
 
@@ -27,8 +26,8 @@ public class GameState {
 
     GameState() {
         sideStateMap = new EnumMap<>(Side.class);
-        sideStateMap.put(PLAYER_ONE, new SideState(PLAYER_ONE));
-        sideStateMap.put(PLAYER_TWO, new SideState(PLAYER_TWO));
+        sideStateMap.put(PLAYER_ONE, new SideState());
+        sideStateMap.put(PLAYER_TWO, new SideState());
         events = new LinkedList<>();
         gameEvents = new LinkedList<>();
     }
@@ -62,7 +61,11 @@ public class GameState {
     }
 
     public WeaponLogic getActiveWeapon(Side side) {
-        return sideStateMap.get(side).weaponLogic;
+        return sideStateMap.get(side).weapon;
+    }
+
+    public QuestLogic getActiveQuest(Side side) {
+        return sideStateMap.get(side).quest;
     }
 
     public void setMana(Side side, int mana) {
@@ -85,84 +88,84 @@ public class GameState {
         return sideStateMap.get(side).getStream();
     }
 
-    public int[] getMana(){
+    public int[] getMana() {
         int[] mana = new int[2];
-        mana[0]= getMana(PLAYER_ONE);
-        mana[1]= getMana(PLAYER_TWO);
+        mana[0] = getMana(PLAYER_ONE);
+        mana[1] = getMana(PLAYER_TWO);
         return mana;
     }
 
-
     public void setActiveWeapon(Side side, WeaponLogic activeWeapon) {
-        sideStateMap.get(side).weaponLogic = activeWeapon;
+        sideStateMap.get(side).weapon = activeWeapon;
+    }
+
+    public void setActiveQuest(Side side, QuestLogic quest) {
+        sideStateMap.get(side).quest = quest;
+    }
+
+    public void changeTaunts(Side side,int diff){
+        sideStateMap.get(side).taunts+=diff;
+    }
+
+    public int getTaunts(Side side){
+        return sideStateMap.get(side).taunts;
+    }
+
+    public MinionLogic getSelectedMinion(Side side){
+        return sideStateMap.get(side).selectedMinion;
+    }
+
+    public boolean isHeroSelected(Side side){
+        return sideStateMap.get(side).heroSelected;
+    }
+
+    public void setSelectedMinion(Side side,MinionLogic minionLogic){
+        sideStateMap.get(side).selectedMinion = minionLogic;
+    }
+
+    public void setHeroSelected(Side side, boolean heroSelected){
+        sideStateMap.get(side).heroSelected = heroSelected;
+    }
+
+    public List<ComplexLogic> getActiveUnits(Side side){
+        return sideStateMap.get(side).activeUnits;
     }
 
     private static class SideState {
-        @Getter
-        private final Side side;
-        @Getter
         private int mana;
-        @Getter
-        private HeroLogic hero;//0
-        @Getter
-        private HeroPowerLogic heroPower;//1
-        @Getter
-        private PassiveLogic passive;//2
-        @Getter
+        private HeroLogic hero;
+        private HeroPowerLogic heroPower;
+        private PassiveLogic passive;
         private final List<CardLogic> hand, deck;
-        @Getter
-        private final List<MinionLogic> ground;//4 + index
-        @Getter
-        private WeaponLogic weaponLogic;// 3
+        private final List<MinionLogic> ground;
+        private final List<ComplexLogic> activeUnits;
+        private WeaponLogic weapon;
+        private QuestLogic quest;
+        private MinionLogic selectedMinion;
+        private boolean heroSelected;
+        private int taunts;
 
-        private SideState(Side side) {
-            this.side = side;
+
+        private SideState() {
             hand = new ArrayList<>();
             deck = new ArrayList<>();
             ground = new ArrayList<>();
+            activeUnits = new ArrayList<>();
         }
 
-        Stream<ComplexLogic> getStream() {
-            return StreamSupport.stream(Spliterators.spliterator(new Iterator()
-                    , 3 + ground.size() + (weaponLogic == null ? 0 : 1),
-                    Spliterator.NONNULL & Spliterator.DISTINCT), false);
-        }
-
-        private class Iterator implements java.util.Iterator<ComplexLogic> {
-            private int mode = 0;
-
-            @Override
-            public boolean hasNext() {
-                if (mode < 3)
-                    return true;
-                if (mode == 3)
-                    return weaponLogic != null || ground.size() != 0;
-                return mode - 3 <= ground.size();
-            }
-
-            @Override
-            public ComplexLogic next() {
-                mode++;
-                switch (mode) {
-                    case 1:
-                        return hero;
-                    case 2:
-                        return heroPower;
-                    case 3:
-                        return passive;
-                    case 4:
-                        if (weaponLogic != null) return weaponLogic;
-                        else {
-                            mode++;
-                            return ground.get(0);
-                        }
-                    default:
-                        return ground.get(mode - 5);
-                }
-            }
+        private Stream<ComplexLogic> getStream() {
+            ArrayList<ComplexLogic> complexLogicList = new ArrayList<>(hand.size() + 5);
+            complexLogicList.add(hero);
+            complexLogicList.add(heroPower);
+            complexLogicList.add(passive);
+            if (weapon != null)
+                complexLogicList.add(weapon);
+            if (quest != null)
+                complexLogicList.add(quest);
+            complexLogicList.addAll(hand);
+            complexLogicList.addAll(activeUnits);
+            return complexLogicList.stream();
         }
     }
-
-
 }
 

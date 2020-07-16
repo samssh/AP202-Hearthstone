@@ -21,7 +21,7 @@ public class MyFrame extends JFrame {
         Config frameConfig = ConfigFactory.getInstance().getConfig("FRAME_CONFIG");
         setSize(new Dimension(frameConfig.getProperty(Integer.class, "width")
                 , frameConfig.getProperty(Integer.class, "height")));
-        setDefaultCloseOperation(frameConfig.getProperty(Integer.class, "closeOperation"));
+        setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         setResizable(frameConfig.getProperty(Boolean.class, "resizable"));
         setUndecorated(frameConfig.getProperty(Boolean.class, "undecorated"));
         setTitle(frameConfig.getProperty(String.class, "title"));

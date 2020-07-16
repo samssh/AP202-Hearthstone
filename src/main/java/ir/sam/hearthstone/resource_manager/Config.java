@@ -34,6 +34,7 @@ public class Config extends Properties {
         return list;
     }
 
+    @SuppressWarnings("unchecked")
     public <E> E[] getPropertyArray(Class<E> c, String propertyName) {
         String[] values = getProperty(propertyName).split(",");
         E[] result= (E[]) Array.newInstance(c,values.length);

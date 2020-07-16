@@ -1,6 +1,5 @@
 package ir.sam.hearthstone.view.util;
 
-import ir.sam.hearthstone.model.main.Minion;
 import ir.sam.hearthstone.view.model.MinionOverview;
 
 import javax.swing.*;
@@ -9,7 +8,7 @@ import java.util.OptionalInt;
 
 import static ir.sam.hearthstone.view.util.Constant.*;
 
-public class MinionBox extends Box<MinionOverview, MinionBox.Viewer>{
+public class MinionBox extends Box<MinionOverview, MinionBox.Viewer> {
 
     public MinionBox(int width, int height, JPanel parent, MyActionListener action) {
         super(width, height, parent, action, Constant.MINION_WIDTH, Constant.MINION_HEIGHT, Constant.MINION_SPACE);
@@ -33,7 +32,7 @@ public class MinionBox extends Box<MinionOverview, MinionBox.Viewer>{
 
     @Override
     protected Viewer createNew() {
-        return new Viewer(parent,action);
+        return new Viewer(parent, action);
     }
 
     @Override
@@ -53,17 +52,24 @@ public class MinionBox extends Box<MinionOverview, MinionBox.Viewer>{
 
         @Override
         public void mouseClicked(MouseEvent e) {
+            System.out.println("popop");
             if (unitOverview != null) {
                 if (e.getButton() == MouseEvent.BUTTON3) JOptionPane.showMessageDialog(this.parent, null,
                         "information", JOptionPane.INFORMATION_MESSAGE
                         , new ImageIcon(unitOverview.getBigImage()));
-                if (e.getButton() == MouseEvent.BUTTON1) {
-                    if (actionListener != null && unitOverview != null) {
-                        OptionalInt optionalInt = getShowingIndex();
-                        if (optionalInt.isPresent()) actionListener.action(optionalInt.getAsInt() + "");
+            }
+            if (e.getButton() == MouseEvent.BUTTON1) {
+                if (actionListener != null /*&& unitOverview != null*/) {
+                    OptionalInt optionalInt = getShowingIndex();
+                    if (optionalInt.isPresent()) {
+                        int x = 0;
+                        if (e.getX() > this.getWidth() / 2)
+                            x = 1;
+                        actionListener.action(optionalInt.getAsInt() + "," + x);
                     }
                 }
             }
+//            }
         }
 
         private OptionalInt getShowingIndex() {

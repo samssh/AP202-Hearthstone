@@ -12,13 +12,13 @@ import static ir.sam.hearthstone.server.Server.STARTING_HAND_CARDS;
 import static ir.sam.hearthstone.server.logic.game.Side.*;
 
 public class MultiplayerGameBuilder extends GameBuilder {
-    public MultiplayerGameBuilder(PlayMode playMode, ModelLoader modelLoader) {
-        super(playMode, modelLoader);
+    public MultiplayerGameBuilder(PlayMode playMode, ModelLoader modelLoader,Server server) {
+        super(playMode, modelLoader, server);
     }
 
     @Override
     protected void build0() {
-        result = new MultiPlayerGame(gameStateBuilder.build(),modelLoader);
+        result = new MultiPlayerGame(server,gameStateBuilder.build(),modelLoader);
     }
 
     @Override
@@ -71,7 +71,8 @@ public class MultiplayerGameBuilder extends GameBuilder {
             gameStateBuilder.setHandP2(handP2).setDeckCardsP2(deckP2);
             build0();
             result.nextTurn();
-            PlayDetails playDetails = new PlayDetails(result.getEventLog(PLAYER_ONE),result.getGameState().getMana());
+            PlayDetails playDetails = new PlayDetails(result.getEventLog(PLAYER_ONE),result.getGameState().getMana()
+                    , result.getTurnStartTime());
             playDetails.getEvents().addAll(result.getEvents(PLAYER_ONE));
             return playDetails;
         }

@@ -10,7 +10,7 @@ import java.util.Map;
 public class ImageLoader {
     private static final ImageLoader instance = new ImageLoader();
     private final Map<String, BufferedImage> big, bigGray, smallGray, small, bg, bigDeck, smallDeck,
-            passive, smallHero, bigHero, smallHeroPower, bigHeroPower, minions, weapons,playModes;
+            passive, smallHero, bigHero, smallHeroPower, bigHeroPower, minions, weapons, playModes, effects;
 
     private ImageLoader() {
         Config bigConfig = ConfigFactory.getInstance().getConfig("BIG_CARDS");
@@ -57,7 +57,10 @@ public class ImageLoader {
         load(weaponsConfig, weapons);
         Config playModesConfig = ConfigFactory.getInstance().getConfig("PLAY_MODES");
         playModes = new HashMap<>();
-        load(playModesConfig,playModes);
+        load(playModesConfig, playModes);
+        Config effectsConfig = ConfigFactory.getInstance().getConfig("EFFECTS");
+        effects = new HashMap<>();
+        load(effectsConfig, effects);
     }
 
     public static ImageLoader getInstance() {
@@ -137,6 +140,10 @@ public class ImageLoader {
 
     public synchronized BufferedImage getPlayMode(String name) {
         return playModes.get(name);
+    }
+
+    public synchronized BufferedImage getEffect(String name) {
+        return effects.get(name);
     }
 }
 

@@ -3,17 +3,18 @@ package ir.sam.hearthstone.requests;
 import ir.sam.hearthstone.server.Server;
 import lombok.Getter;
 
-public class PlayCard extends Request {
+public class SelectCardInHand extends Request {
     @Getter
-    private final String cardName;
+    private final int side,index;
 
-    public PlayCard(String cardName) {
-        this.cardName = cardName;
+    public SelectCardInHand(int side, int index) {
+        this.side = side;
+        this.index = index;
     }
 
     @Override
     public void execute(Server server) {
-//        server.playCard(cardName);
+
     }
 
     @Override

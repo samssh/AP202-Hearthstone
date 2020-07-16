@@ -30,10 +30,40 @@ public class PlayAction {
         connector.save(new RequestLog(request, client.getUsername()));
     }
 
-    public void playCard(String cardName) {
-        Request request = new PlayCard(cardName);
+    public void selectCardInHand(int side, String index) {
+        int index1 = Integer.parseInt(index);
+        Request request = new SelectCardInHand(side, index1);
         client.getRequestSender().sendRequest(request);
-        connector.save(new ButtonLog(client.getUsername(), "playCard:" + cardName, PLAY.toString()));
+        connector.save(new ButtonLog(client.getUsername()
+                , "selectCardInHand,side:" + side + " index:" + index, PLAY.toString()));
+        connector.save(new RequestLog(request, client.getUsername()));
+    }
+
+    public void selectMinion(int side, String index) {
+        String[] indexes = index.split(",");
+        int index1 = Integer.parseInt(indexes[0]);
+        int emptyIndex = Integer.parseInt(indexes[1]);
+        Request request = new SelectMinion(side, index1, emptyIndex);
+        client.getRequestSender().sendRequest(request);
+        connector.save(new ButtonLog(client.getUsername()
+                , "selectMinion,side:" + side + " index:" + index, PLAY.toString()));
+        connector.save(new RequestLog(request, client.getUsername()));
+    }
+
+    public void selectHeroPower(int side) {
+        Request request = new SelectHeroPower(side);
+        client.getRequestSender().sendRequest(request);
+        connector.save(new ButtonLog(client.getUsername()
+                , "selectHeroPower,side:" + side, PLAY.toString()));
+        connector.save(new RequestLog(request, client.getUsername()));
+
+    }
+
+    public void selectHero(int side) {
+        Request request = new SelectHero(side);
+        client.getRequestSender().sendRequest(request);
+        connector.save(new ButtonLog(client.getUsername()
+                , "selectHero,side:" + side, PLAY.toString()));
         connector.save(new RequestLog(request, client.getUsername()));
     }
 }

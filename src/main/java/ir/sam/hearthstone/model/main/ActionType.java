@@ -6,6 +6,7 @@ public enum ActionType {
     DRAW_CARD,
     PLAY_WEAPON,
     PLAY_MINION,
+    ENEMY_PLAY_MINION,
     PLAY_SPELL,
     SUMMON_MINION,
     SPELL_DAMAGE,

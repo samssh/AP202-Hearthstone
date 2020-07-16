@@ -153,6 +153,10 @@ public abstract class Box<Model extends Overview, T extends JPanel> extends JPan
         return models.size();
     }
 
+    public List<Model> getModels(){
+        return models;
+    }
+
     public void addModel(int index, Model model) {
         addModel(index, model, false);
     }

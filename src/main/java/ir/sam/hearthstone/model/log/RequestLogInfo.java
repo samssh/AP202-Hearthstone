@@ -114,8 +114,8 @@ public class RequestLogInfo {
         }
 
         @Override
-        public void setPlayCard(PlayCard playCard) {
-            cardName = playCard.getCardName();
+        public void setPlayCard(SelectCardInHand selectCardInHand) {
+//            cardName = selectCardInHand.getCardName();
         }
 
         @Override
