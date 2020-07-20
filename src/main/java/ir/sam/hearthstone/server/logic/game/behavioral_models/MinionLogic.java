@@ -20,7 +20,7 @@ public class MinionLogic extends CardLogic {
     private Minion minion;
     @Getter
     @Setter
-    private int hp, attack, lastAttckTurn;
+    private int hp, attack, lastAttackTurn;
     @Getter
     @Setter
     private boolean hasRush, hasTaunt, hasDivineShield, hasAttack;
@@ -28,7 +28,7 @@ public class MinionLogic extends CardLogic {
     public MinionLogic(Side side, Minion minion) {
         super(side);
         this.minion = minion.clone();
-        lastAttckTurn = 0;
+        lastAttackTurn = 0;
         hasAttack = false;
         hasDivineShield = false;
         hasTaunt = false;
@@ -40,15 +40,15 @@ public class MinionLogic extends CardLogic {
         return minion.getName();
     }
 
-    private boolean dealDamage(int damage, AbstractGame game) {
+    private boolean dealDamage(int damage, AbstractGame game, boolean sendEvent) {
         if (hasDivineShield) {
             hasDivineShield = false;
         } else {
             if (damage > hp) {
-                overkill(game);
+                overkill(game, sendEvent);
                 return false;
             } else if (damage == hp) {
-                kill(game);
+                kill(game, sendEvent);
                 return false;
             } else {
                 hp -= damage;
@@ -57,25 +57,38 @@ public class MinionLogic extends CardLogic {
         return true;
     }
 
-    public void dealSpellDamage(int damage, AbstractGame game) {
+    public void dealSpellDamage(int damage, AbstractGame game, boolean sendEvent) {
         boolean ds = hasDivineShield;
-        dealDamage(damage, game);
-        if (!ds)
-            AbstractGame.visitAll(game, ActionType.SPELL_DAMAGE, this, side.getOther());
-        addChangeEvent(game.getGameState());
+        if (dealDamage(damage, game, sendEvent)) {
+            if (!ds)
+                AbstractGame.visitAll(game, ActionType.SPELL_DAMAGE, this, side.getOther());
+            if (sendEvent)
+                addChangeEvent(game.getGameState());
+        }
     }
 
-    public void kill(AbstractGame game) {
+    public void giveTaunt(AbstractGame game) {
+        if (!hasTaunt) {
+            hasTaunt = true;
+            game.getGameState().changeTaunts(side, 1);
+        }
+    }
+
+    public void kill(AbstractGame game, boolean sendEvent) {
         int indexOnGround = game.getGameState().getGround(side).indexOf(this);
-        PlayDetails.Event event = new PlayDetails.Event(PlayDetails.EventType.REMOVE_FROM_GROUND
-                , null, indexOnGround, side.getIndex());
-        game.getGameState().getEvents().add(event);
+        game.getGameState().getGround(side).remove(indexOnGround);
+        if (hasTaunt)
+            game.getGameState().changeTaunts(side, -1);
+        PlayDetails.Event event = new PlayDetails.EventBuilder(PlayDetails.EventType.REMOVE_FROM_GROUND)
+        .setSide(side.getIndex()).setIndex(indexOnGround).build();
+        if (sendEvent)
+            game.getGameState().getEvents().add(event);
         game.getActionHolderMap().get(ActionType.DEATH_RATTLE).doAction(getName(), this, game);
         AbstractGame.visitAll(game, ActionType.KILL_MINION, this, side);
     }
 
-    public void overkill(AbstractGame game) {
-        kill(game);
+    public void overkill(AbstractGame game, boolean sendEvent) {
+        kill(game, sendEvent);
         game.getActionHolderMap().get(ActionType.OVERKILL).doAction(this.getName(), this, game);
     }
 
@@ -86,30 +99,21 @@ public class MinionLogic extends CardLogic {
      *
      * @param damage damage that deals to this minion
      */
-    public void dealMinionDamage(int damage, AbstractGame game) {
+    public void dealMinionDamage(int damage, AbstractGame game, boolean sendEvent) {
         boolean ds = hasDivineShield;
-        if (hasDivineShield) {
-            hasDivineShield = false;
-        } else {
-            if (damage > hp) {
-                overkill(game);
-                return;
-            } else if (damage == hp) {
-                kill(game);
-                return;
-            } else {
-                hp -= damage;
-            }
-        }
+        if (dealDamage(damage, game, sendEvent)) {
+            if (!ds)
                 game.getActionHolderMap().get(ActionType.MINION_TAKE_DAMAGE)
                         .doAction(getName(), this, game);
-        addChangeEvent(game.getGameState());
+            if (sendEvent)
+                addChangeEvent(game.getGameState());
+        }else hp=0;
     }
 
     private void addChangeEvent(GameState gameState) {
         int indexOnGround = gameState.getGround(side).indexOf(this);
-        PlayDetails.Event event = new PlayDetails.Event(PlayDetails.EventType.CHANGE_IN_GROUND
-                , getMinionOverview(), indexOnGround, side.getIndex());
+        PlayDetails.Event event = new PlayDetails.EventBuilder(PlayDetails.EventType.CHANGE_IN_GROUND)
+                .setOverview(getMinionOverview()).setSide(side.getIndex()).setIndex(indexOnGround).build();
         gameState.getEvents().add(event);
     }
 
@@ -127,12 +131,12 @@ public class MinionLogic extends CardLogic {
         summon0(game, indexOnGround);
         GameState gameState = game.getGameState();
         gameState.getHand(side).remove(indexOnHand);
-        PlayDetails.Event event = new PlayDetails.Event(PlayDetails.EventType.MOVE_FROM_HAND_TO_GROUND
-                , getMinionOverview(), indexOnHand, side.getIndex());
+        PlayDetails.Event event = new PlayDetails.EventBuilder(PlayDetails.EventType.MOVE_FROM_HAND_TO_GROUND)
+        .setOverview(getMinionOverview()).setSide(side.getIndex()).setIndex(indexOnGround)
+                .setSecondIndex(indexOnHand).build();
         gameState.getEvents().add(event);
         AbstractGame.visitAll(game, ActionType.SUMMON_MINION, this, side);
     }
-
 
     /**
      * summon minion without playing this
@@ -140,8 +144,8 @@ public class MinionLogic extends CardLogic {
     public void summon(AbstractGame game, int indexOnGround) {
         summon0(game, indexOnGround);
         GameState gameState = game.getGameState();
-        PlayDetails.Event event = new PlayDetails.Event(PlayDetails.EventType.ADD_TO_GROUND
-                , getMinionOverview(), side.getIndex());
+        PlayDetails.Event event = new PlayDetails.EventBuilder(PlayDetails.EventType.ADD_TO_GROUND)
+                .setOverview(getMinionOverview()).setSide(side.getIndex()).build();
         gameState.getEvents().add(event);
         GameEvent gameEvent = new SummonMinion(side, minion);
         gameState.getGameEvents().add(gameEvent);
@@ -152,12 +156,24 @@ public class MinionLogic extends CardLogic {
         hp = minion.getHpFrz();
         attack = minion.getAttFrz();
         GameState gameState = abstractGame.getGameState();
-        lastAttckTurn = gameState.getTurnNumber();
+        lastAttackTurn = gameState.getTurnNumber();
         gameState.getGround(side).add(indexOnGround, this);
     }
 
+    public boolean canAttackToMinion(GameState gameState) {
+        if (gameState.getTurnNumber() > lastAttackTurn)
+            return true;
+        return hasRush;
+    }
+
+    public boolean canAttackToHero(GameState gameState) {
+        if (gameState.getTurnNumber() > lastAttackTurn)
+            return gameState.getTaunts(side.getOther())==0;
+        return false;
+    }
+
     public MinionOverview getMinionOverview() {
-        return new MinionOverview(this);
+        return this.hp > 0 ? new MinionOverview(this) : null;
     }
 
     @Override
@@ -180,10 +196,8 @@ public class MinionLogic extends CardLogic {
             gameState.getGameEvents().add(gameEvent);
             game.getActionHolderMap().get(ActionType.BATTLE_CRY).doAction(getName(), this, game);
             AbstractGame.visitAll(game, ActionType.PLAY_MINION, this, side);
-            AbstractGame.visitAll(game, ActionType.ENEMY_PLAY_MINION, this, side.getOther());
             this.summon(game, indexOnGround, indexOnHand);
-        } else {
-            System.out.println("cant play spell because of mana");
+            AbstractGame.visitAll(game, ActionType.ENEMY_PLAY_MINION, this, side.getOther());
         }
     }
 

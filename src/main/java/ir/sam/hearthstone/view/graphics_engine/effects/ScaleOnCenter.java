@@ -16,11 +16,11 @@ public abstract class ScaleOnCenter implements PaintByTime {
         this.mode = mode;
     } 
 
-    protected void paint0(Graphics2D graphics2D, double time, PaintByTime painter, double scale) {
-        int translateX = ((mode & X) > 0) ? (int) ((painter.getWidth() * (1 - scale)) / 2) : 0;
-        int translateY = ((mode & Y) > 0) ? (int) ((painter.getHeight() * (1 - scale)) / 2) : 0;
-        double scaleX = ((mode & X) > 0) ? scale : 1;
-        double scaleY = ((mode & Y) > 0) ? scale : 1;
+    protected void paint0(Graphics2D graphics2D, double time, PaintByTime painter) {
+        int translateX = ((mode & X) > 0) ? (int) ((painter.getWidth() * (1 - time)) / 2) : 0;
+        int translateY = ((mode & Y) > 0) ? (int) ((painter.getHeight() * (1 - time)) / 2) : 0;
+        double scaleX = ((mode & X) > 0) ? time : 1;
+        double scaleY = ((mode & Y) > 0) ? time : 1;
         graphics2D.translate(translateX, translateY);
         graphics2D.scale(scaleX, scaleY);
         painter.paint(graphics2D, time);

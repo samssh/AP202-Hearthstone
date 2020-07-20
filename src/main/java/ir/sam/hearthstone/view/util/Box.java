@@ -106,7 +106,6 @@ public abstract class Box<Model extends Overview, T extends JPanel> extends JPan
             int indexOnShow = index - begin;
             T t = items[indexOnShow % a][index / a];
             set(t, null);
-            animationManger.clear();
             animationManger.addPainter(new TranslatorByTime(new DoublePictureScale(front, back, ScaleOnCenter.X)
                     , t.getX(), t.getY()));
             animationManger.start(() -> set(items[indexOnShow % a][index / a], model));
@@ -121,15 +120,14 @@ public abstract class Box<Model extends Overview, T extends JPanel> extends JPan
 
     public void addModel(int index, Model model, boolean animationOnNew) {
         models.add(index, model);
-        if ((begin <= index && index < end) || (begin == end)) {
-            animationManger.clear();
+        if ((begin <= index && index < end) || (begin == end) || (index == end && showing.size() < a * b)) {
             clear(index - begin);
             for (int k = index - begin, showingSize = showing.size(); k < showingSize && k + 1 < a * b; k++) {
                 moveTo(k, k + 1);
             }
             showing.add(index - begin, model);
             checkLastForAdd();
-            finalizeAdd(index, model, animationOnNew);
+            finalizeAdd(index - begin, model, animationOnNew);
         }
     }
 
@@ -153,7 +151,7 @@ public abstract class Box<Model extends Overview, T extends JPanel> extends JPan
         return models.size();
     }
 
-    public List<Model> getModels(){
+    public List<Model> getModels() {
         return models;
     }
 
@@ -172,7 +170,6 @@ public abstract class Box<Model extends Overview, T extends JPanel> extends JPan
     public Model removeModel(int index, boolean animationOnOld) {
         Model model = models.remove(index);
         if (begin <= index && index < end) {
-            animationManger.clear();
             clear(index - begin);
             for (int k = index - begin + 1, showingSize = showing.size(); k < showingSize; k++) {
                 moveTo(k, k - 1);
@@ -283,7 +280,6 @@ public abstract class Box<Model extends Overview, T extends JPanel> extends JPan
 
     private void update() {
         this.clear(0);
-        animationManger.clear();
         for (int i = 0, showingSize = showing.size(); i < showingSize; i++) {
             Model model = showing.get(i);
             PaintByTime front = new OverviewPainter(model);

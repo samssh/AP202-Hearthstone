@@ -13,7 +13,7 @@ public class SelectMinion extends Request {
 
     @Override
     public void execute(Server server) {
-
+        server.selectMinion(side,index,emptyIndex);
     }
 
     @Override

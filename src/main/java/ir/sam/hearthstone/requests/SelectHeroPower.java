@@ -11,7 +11,7 @@ public class SelectHeroPower extends Request{
 
     @Override
     public void execute(Server server) {
-
+        server.selectHeroPower(side);
     }
 
     @Override

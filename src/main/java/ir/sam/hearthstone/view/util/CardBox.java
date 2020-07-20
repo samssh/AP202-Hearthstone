@@ -37,7 +37,6 @@ public class CardBox extends Box<CardOverview, UnitViewer> {
     @Override
     public void addModel(int index, CardOverview cardOverview, boolean animationOnNew) {
         if (distinct && models.contains(cardOverview)) {
-            animationManger.clear();
             animationManger.start(() -> {
                 CardOverview c = models.get(models.indexOf(cardOverview));
                 c.setNumber(c.getNumber() + 1);

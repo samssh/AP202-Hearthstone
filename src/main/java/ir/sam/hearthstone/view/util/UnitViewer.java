@@ -2,6 +2,7 @@ package ir.sam.hearthstone.view.util;
 
 import ir.sam.hearthstone.view.graphics_engine.AnimationManger;
 import ir.sam.hearthstone.view.graphics_engine.effects.*;
+import lombok.Getter;
 import lombok.Setter;
 import ir.sam.hearthstone.view.model.UnitOverview;
 
@@ -11,6 +12,7 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 
 public class UnitViewer extends JPanel {
+    @Getter
     protected UnitOverview unitOverview;
     @Setter
     protected MyActionListener actionListener;
@@ -23,7 +25,7 @@ public class UnitViewer extends JPanel {
         this.setLayout(null);
         this.parent = parent;
         this.setOpaque(false);
-        this.addMouseListener((MyMouseListener)this::mouseClicked);
+        this.addMouseListener((MyMouseListener) this::mouseClicked);
         animationManger = new AnimationManger();
     }
 
@@ -46,15 +48,17 @@ public class UnitViewer extends JPanel {
     }
 
     public void setUnitOverviewAnimated(UnitOverview unitOverview) {
-        animationManger.clear();
-        PaintByTime painter,ove = new OverviewPainter(unitOverview);
-        if (this.unitOverview==null) painter = new SinglePictureScale(ove,false,ScaleOnCenter.ALL);
+        PaintByTime painter;
+        PaintByTime neW = new OverviewPainter(unitOverview);
+        PaintByTime old = new OverviewPainter(this.unitOverview);
+        if (this.unitOverview == null) painter = new SinglePictureScale(neW, false, ScaleOnCenter.ALL);
+        else if (unitOverview == null) painter = new SinglePictureScale(old, true, ScaleOnCenter.ALL);
         else {
-            PaintByTime old = new OverviewPainter(this.unitOverview);
-            painter = new DoublePictureScale(ove,old,ScaleOnCenter.X);
+            painter = new DoublePictureScale(neW, old, ScaleOnCenter.X);
         }
+        setUnitOverview(null);
         animationManger.addPainter(painter);
-        animationManger.start(()->setUnitOverview(unitOverview));
+        animationManger.start(() -> setUnitOverview(unitOverview));
     }
 
     @Override

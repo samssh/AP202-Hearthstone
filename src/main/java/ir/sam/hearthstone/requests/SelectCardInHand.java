@@ -14,7 +14,7 @@ public class SelectCardInHand extends Request {
 
     @Override
     public void execute(Server server) {
-
+        server.selectCardInHand(side,index);
     }
 
     @Override

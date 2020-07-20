@@ -12,16 +12,15 @@ public class DoublePictureScale extends ScaleOnCenter {
     }
 
     public void paint(Graphics2D graphics2D, double time) {
-        double scale;
         PaintByTime painter;
         if (time < 0.5) {
-            scale = (1 - 2 * time);
+            time = (1 - 2 * time);
             painter = back;
         } else {
-            scale = 2 * time - 1;
+            time = 2 * time - 1;
             painter = front;
         }
-        paint0(graphics2D, time, painter, scale);
+        paint0(graphics2D, time, painter);
     }
 
     @Override

@@ -33,13 +33,11 @@ public class SpellLogic extends CardLogic {
             gameState.getHand(side).remove(indexOnHand);
             GameEvent gameEvent = new PlayCard(side, spell);
             gameState.getGameEvents().add(gameEvent);
-            PlayDetails.Event event = new PlayDetails.Event(PlayDetails.EventType.PLAY_SPELL
-                    , null, indexOnHand, side.getIndex());
+            PlayDetails.Event event = new PlayDetails.EventBuilder(PlayDetails.EventType.PLAY_SPELL)
+            .setSide(side.getIndex()).setIndex(indexOnHand).build();
             gameState.getEvents().add(event);
-            game.getActionHolderMap().get(ActionType.DO_ACTION).doAction(getName(),this,game);
-            AbstractGame.visitAll(game,ActionType.PLAY_SPELL,this,side);
-        } else {
-            System.out.println("cant play spell because of mana");
+            game.getActionHolderMap().get(ActionType.DO_ACTION).doAction(getName(), this, game);
+            AbstractGame.visitAll(game, ActionType.PLAY_SPELL, this, side);
         }
     }
 

@@ -52,7 +52,6 @@ public class MinionBox extends Box<MinionOverview, MinionBox.Viewer> {
 
         @Override
         public void mouseClicked(MouseEvent e) {
-            System.out.println("popop");
             if (unitOverview != null) {
                 if (e.getButton() == MouseEvent.BUTTON3) JOptionPane.showMessageDialog(this.parent, null,
                         "information", JOptionPane.INFORMATION_MESSAGE
@@ -69,7 +68,6 @@ public class MinionBox extends Box<MinionOverview, MinionBox.Viewer> {
                     }
                 }
             }
-//            }
         }
 
         private OptionalInt getShowingIndex() {

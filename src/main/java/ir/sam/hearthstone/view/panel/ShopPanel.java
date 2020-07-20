@@ -93,7 +93,7 @@ public class ShopPanel extends JPanel implements Updatable {
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
-        g.drawImage(image,0,0,null);
+        g.drawImage(image, 0, 0, null);
         g.setColor(Color.WHITE);
         g.setFont(g.getFont().deriveFont(17F));
         g.drawString("\u0024" + coins, coinX, coinY);
@@ -131,23 +131,10 @@ public class ShopPanel extends JPanel implements Updatable {
         buy.setModels(buyList);
     }
 
-    public void putShopEvent(String cardName,String type,int coins){
-        if ("buy".equalsIgnoreCase(type)) moveCard(cardName,buy,sell);
-        else if ("sell".equalsIgnoreCase(type)) moveCard(cardName,sell,buy);
+    public void putShopEvent(String cardName, String type, int coins) {
+        if ("buy".equalsIgnoreCase(type)) AnimationManger.moveCard(cardName, buy, sell, animationManger);
+        else if ("sell".equalsIgnoreCase(type)) AnimationManger.moveCard(cardName, sell, buy, animationManger);
         this.coins = coins;
-    }
-
-    private void moveCard(String cardName,CardBox origin,CardBox dest){
-        Point org = origin.getPosition(cardName);
-        org.translate(origin.getX(),origin.getY());
-        CardOverview cardOverview = origin.removeModel(cardName,false);
-        dest.addModel(cardOverview,false);
-        Point des = dest.getPosition(cardName);
-        des.translate(dest.getX(),dest.getY());
-        animationManger.clear();
-        animationManger.addPainter(new LinearMotion(org.x,org.y,des.x,des.y,
-                new Rotary(new OverviewPainter(cardOverview)), x->Math.pow(x,1/2.5)));
-        animationManger.start();
     }
 
     @Override

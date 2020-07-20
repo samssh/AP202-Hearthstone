@@ -70,7 +70,7 @@ public class MultiplayerGameBuilder extends GameBuilder {
             finalizeHand(handP2,handP2state,deckP2);
             gameStateBuilder.setHandP2(handP2).setDeckCardsP2(deckP2);
             build0();
-            result.nextTurn();
+            result.startGame();
             PlayDetails playDetails = new PlayDetails(result.getEventLog(PLAYER_ONE),result.getGameState().getMana()
                     , result.getTurnStartTime());
             playDetails.getEvents().addAll(result.getEvents(PLAYER_ONE));

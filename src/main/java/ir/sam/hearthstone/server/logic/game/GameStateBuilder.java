@@ -44,18 +44,18 @@ public class GameStateBuilder {
             , List<Card> hand, GameState gameState) {
         gameState.setPassive(side, new PassiveLogic(passive, side));
         gameState.setHero(side, new HeroLogic(side, deck.getHero()));
-        gameState.getEvents().add(new PlayDetails.Event(PlayDetails.EventType.SET_HERO,
-                new HeroOverview(deck.getHero()), side.getIndex()));
+        gameState.getEvents().add(new PlayDetails.EventBuilder(PlayDetails.EventType.SET_HERO)
+                .setOverview(new HeroOverview(gameState.getHero(side))).setSide(side.getIndex()).build());
         gameState.setHeroPower(side, new HeroPowerLogic(side, deck.getHero().getPower()));
-        gameState.getEvents().add(new PlayDetails.Event(PlayDetails.EventType.SET_HERO_POWER,
-                new HeroPowerOverview(deck.getHero().getPower()), side.getIndex()));
+        gameState.getEvents().add(new PlayDetails.EventBuilder(PlayDetails.EventType.SET_HERO_POWER)
+        .setOverview(new HeroPowerOverview(deck.getHero().getPower())).setSide(side.getIndex()).build());
         gameState.setMana(side, 0);
         deckCards.forEach(card -> gameState.getDeck(side).add(buildCardLogic(side,card)));
         hand.forEach(card -> gameState.getHand(side).add(buildCardLogic(side,card)));
         hand.forEach(card -> gameState.getGameEvents().add(new DrawCard(side, card)));
         Collections.reverse(hand);
-        hand.forEach(card -> gameState.getEvents().add(new PlayDetails.Event(PlayDetails.EventType.ADD_TO_HAND
-                , new CardOverview(card), side.getIndex())));
+        hand.forEach(card -> gameState.getEvents().add(new PlayDetails.EventBuilder(PlayDetails.EventType.ADD_TO_HAND)
+        .setOverview(new CardOverview(card)).setSide(side.getIndex()).build()));
     }
 
     private CardLogic buildCardLogic(Side side, Card card) {

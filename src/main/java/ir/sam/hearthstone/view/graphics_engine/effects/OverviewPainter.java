@@ -4,7 +4,7 @@ import ir.sam.hearthstone.view.model.Overview;
 
 import java.awt.*;
 
-public class OverviewPainter implements PaintByTime{
+public class OverviewPainter implements PaintByTime {
     private final Overview overview;
 
     public OverviewPainter(Overview overview) {
@@ -13,7 +13,8 @@ public class OverviewPainter implements PaintByTime{
 
     @Override
     public void paint(Graphics2D graphics2D, double time) {
-        overview.paint(graphics2D);
+        if (overview != null)
+            overview.paint(graphics2D);
     }
 
     @Override

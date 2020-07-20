@@ -1,5 +1,6 @@
 package ir.sam.hearthstone.server.logic.game;
 
+import ir.sam.hearthstone.model.main.ActionType;
 import ir.sam.hearthstone.response.PlayDetails;
 import ir.sam.hearthstone.server.logic.game.behavioral_models.*;
 import ir.sam.hearthstone.server.logic.game.events.GameEvent;
@@ -14,17 +15,17 @@ import static ir.sam.hearthstone.server.logic.game.Side.*;
 public class GameState {
     @Getter
     @Setter
-    private Side sideTurn;
+    protected Side sideTurn;
     @Getter
     @Setter
-    private int turnNumber;
-    private final Map<Side, SideState> sideStateMap;
+    protected int turnNumber;
+    protected final Map<Side, SideState> sideStateMap;
     @Getter
-    private final List<PlayDetails.Event> events;
+    protected final List<PlayDetails.Event> events;
     @Getter
-    private final List<GameEvent> gameEvents;
+    protected final List<GameEvent> gameEvents;
 
-    GameState() {
+    protected GameState() {
         sideStateMap = new EnumMap<>(Side.class);
         sideStateMap.put(PLAYER_ONE, new SideState());
         sideStateMap.put(PLAYER_TWO, new SideState());
@@ -76,11 +77,11 @@ public class GameState {
         sideStateMap.get(side).hero = hero;
     }
 
-    void setHeroPower(Side side, HeroPowerLogic heroPower) {
+    public void setHeroPower(Side side, HeroPowerLogic heroPower) {
         sideStateMap.get(side).heroPower = heroPower;
     }
 
-    void setPassive(Side side, PassiveLogic passive) {
+    public void setPassive(Side side, PassiveLogic passive) {
         sideStateMap.get(side).passive = passive;
     }
 
@@ -103,57 +104,93 @@ public class GameState {
         sideStateMap.get(side).quest = quest;
     }
 
-    public void changeTaunts(Side side,int diff){
-        sideStateMap.get(side).taunts+=diff;
+    public void changeTaunts(Side side, int diff) {
+        sideStateMap.get(side).taunts += diff;
     }
 
-    public int getTaunts(Side side){
+    public int getTaunts(Side side) {
         return sideStateMap.get(side).taunts;
     }
 
-    public MinionLogic getSelectedMinion(Side side){
-        return sideStateMap.get(side).selectedMinion;
+    public MinionLogic getSelectedMinionOnHand(Side side) {
+        return sideStateMap.get(side).selectedMinionOnHand;
     }
 
-    public boolean isHeroSelected(Side side){
+    public void setSelectedMinionOnHand(Side side, MinionLogic minionLogic) {
+        sideStateMap.get(side).selectedMinionOnHand = minionLogic;
+    }
+
+    public MinionLogic getSelectedMinionOnGround(Side side) {
+        return sideStateMap.get(side).selectedMinionOnGround;
+    }
+
+    public void setSelectedMinionOnGround(Side side, MinionLogic minionLogic) {
+        sideStateMap.get(side).selectedMinionOnGround = minionLogic;
+    }
+
+    public ComplexLogic getWaitForTarget(Side side) {
+        return sideStateMap.get(side).waitForTarget;
+    }
+
+    public void setWaitForTarget(Side side, ComplexLogic waitForTarget) {
+        sideStateMap.get(side).waitForTarget = waitForTarget;
+    }
+
+    public boolean isHeroSelected(Side side) {
         return sideStateMap.get(side).heroSelected;
     }
 
-    public void setSelectedMinion(Side side,MinionLogic minionLogic){
-        sideStateMap.get(side).selectedMinion = minionLogic;
-    }
-
-    public void setHeroSelected(Side side, boolean heroSelected){
+    public void setHeroSelected(Side side, boolean heroSelected) {
         sideStateMap.get(side).heroSelected = heroSelected;
     }
 
-    public List<ComplexLogic> getActiveUnits(Side side){
+    public boolean isHeroPowerSelected(Side side) {
+        return sideStateMap.get(side).heroPowerSelected;
+    }
+
+    public void setHeroPowerSelected(Side side, boolean heroPowerSelected) {
+        sideStateMap.get(side).heroPowerSelected = heroPowerSelected;
+    }
+
+    public List<ComplexLogic> getActiveUnits(Side side) {
         return sideStateMap.get(side).activeUnits;
     }
 
-    private static class SideState {
-        private int mana;
-        private HeroLogic hero;
-        private HeroPowerLogic heroPower;
-        private PassiveLogic passive;
-        private final List<CardLogic> hand, deck;
-        private final List<MinionLogic> ground;
-        private final List<ComplexLogic> activeUnits;
-        private WeaponLogic weapon;
-        private QuestLogic quest;
-        private MinionLogic selectedMinion;
-        private boolean heroSelected;
-        private int taunts;
+    public void resetSelected(Side side) {
+        sideStateMap.get(side).resetSelected();
+    }
+
+    protected static class SideState {
+        protected int mana;
+        protected HeroLogic hero;
+        protected HeroPowerLogic heroPower;
+        protected PassiveLogic passive;
+        protected final List<CardLogic> hand, deck;
+        protected final List<MinionLogic> ground;
+        protected final List<ComplexLogic> activeUnits;
+        protected WeaponLogic weapon;
+        protected QuestLogic quest;
+        protected MinionLogic selectedMinionOnGround,selectedMinionOnHand; // in hand or ground
+        protected ComplexLogic waitForTarget; // some thing special
+        protected boolean heroSelected, heroPowerSelected;
+        protected int taunts;
 
 
-        private SideState() {
+        protected SideState() {
             hand = new ArrayList<>();
             deck = new ArrayList<>();
             ground = new ArrayList<>();
             activeUnits = new ArrayList<>();
         }
 
-        private Stream<ComplexLogic> getStream() {
+        protected void resetSelected() {
+            selectedMinionOnGround = null;
+            selectedMinionOnHand = null;
+            heroSelected = false;
+            heroPowerSelected = false;
+        }
+
+        protected Stream<ComplexLogic> getStream() {
             ArrayList<ComplexLogic> complexLogicList = new ArrayList<>(hand.size() + 5);
             complexLogicList.add(hero);
             complexLogicList.add(heroPower);
@@ -168,4 +205,3 @@ public class GameState {
         }
     }
 }
-

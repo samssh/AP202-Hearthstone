@@ -20,6 +20,8 @@ import lombok.Getter;
 import java.util.List;
 import java.util.Map;
 
+import static ir.sam.hearthstone.response.PlayDetails.EventType.*;
+
 public abstract class AbstractGame {
     public static void visitAll(AbstractGame game, ActionType actionType, CharacterLogic characterLogic, Side side) {
         game.getGameState().getSideStream(side).forEach(complexLogic ->
@@ -41,11 +43,21 @@ public abstract class AbstractGame {
         actionHolderMap = ActionHolderBuilder.getAllActionHolders(modelLoader);
     }
 
-    public abstract void nextTurn();
+    public abstract void selectHero(Side client,Side side);
 
-    public abstract String getEventLog(Side side);
+    public abstract void selectHeroPower(Side client,Side side);
 
-    public abstract List<PlayDetails.Event> getEvents(Side side);
+    public abstract void selectMinion(Side client,Side side, int index, int emptyIndex);
+
+    public abstract void selectCardInHand(Side client,Side side, int index);
+
+    public abstract void nextTurn(Side client);
+
+    public abstract void startGame();
+
+    public abstract String getEventLog(Side client);
+
+    public abstract List<PlayDetails.Event> getEvents(Side client);
 
     public void drawCard(Side side) {
         int randomIndex = (int) (Math.random() * gameState.getDeck(side).size());
@@ -57,14 +69,14 @@ public abstract class AbstractGame {
         gameState.getDeck(side).remove(cardLogic);
         if (gameState.getHand(side).size() < Server.MAX_HAND_SIZE) {
             gameState.getHand(side).add(0, cardLogic);
-            PlayDetails.Event event = new PlayDetails.Event(PlayDetails.EventType.ADD_TO_HAND
-                    , new CardOverview(cardLogic.getCard()), side.getIndex());
+            PlayDetails.Event event = new PlayDetails.EventBuilder(ADD_TO_HAND)
+                    .setOverview(new CardOverview(cardLogic.getCard())).setSide(side.getIndex()).build();
             GameEvent gameEvent = new DrawCard(side, cardLogic.getCard());
             gameState.getEvents().add(event);
             gameState.getGameEvents().add(gameEvent);
         }else {
-            PlayDetails.Event event = new PlayDetails.Event(PlayDetails.EventType.SHOW_MESSAGE
-                    ,"your Hand is full!!!!!");
+            PlayDetails.Event event = new PlayDetails.EventBuilder(SHOW_MESSAGE)
+                    .setMessage("your Hand is full!!!!!").build();
             GameEvent gameEvent = new DeleteCard(side,cardLogic.getCard());
             gameState.getEvents().add(event);
             gameState.getGameEvents().add(gameEvent);
@@ -74,22 +86,20 @@ public abstract class AbstractGame {
     public void playMinion(MinionLogic minionLogic) {
         Side side = minionLogic.getSide();
         Minion minion = minionLogic.getMinion();
-        if (gameState.getGround(side).size() < Server.MAX_HAND_SIZE) {
+        if (gameState.getGround(side).size() < Server.MAX_GROUND_SIZE) {
             if (minion.getManaFrz() <= gameState.getMana(side)) {
-                gameState.setSelectedMinion(side, minionLogic);
-            } else {
-                System.out.println("cant play minion because of mana");
+                gameState.setSelectedMinionOnHand(side, minionLogic);
             }
         }else {
-            PlayDetails.Event event = new PlayDetails.Event(PlayDetails.EventType.SHOW_MESSAGE
-                    , "ground is full!!!!");
+            PlayDetails.Event event = new PlayDetails.EventBuilder(SHOW_MESSAGE)
+                    .setMessage("ground is full!!!!").build();
             gameState.getEvents().add(event);
         }
     }
 
-    public Response getResponse(Side side) {
-        PlayDetails response = new PlayDetails(getEventLog(side), gameState.getMana(), turnStartTime);
-        response.getEvents().addAll(getEvents(side));
+    public Response getResponse(Side client) {
+        PlayDetails response = new PlayDetails(getEventLog(client), gameState.getMana(), turnStartTime);
+        response.getEvents().addAll(getEvents(client));
         return response;
     }
 }

@@ -14,9 +14,8 @@ public class SinglePictureScale extends ScaleOnCenter {
 
     @Override
     public void paint(Graphics2D graphics2D, double time) {
-        double scale = time;
-        if (out) scale = 1-scale;
-        paint0(graphics2D,time,painter,scale);
+        if (out) time = 1-time;
+        paint0(graphics2D,time,painter);
     }
 
     @Override

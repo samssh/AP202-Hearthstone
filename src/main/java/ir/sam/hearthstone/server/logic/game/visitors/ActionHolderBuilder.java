@@ -4,7 +4,8 @@ import ir.sam.hearthstone.model.main.ActionType;
 import ir.sam.hearthstone.model.main.HasAction;
 import ir.sam.hearthstone.model.main.Hero;
 import ir.sam.hearthstone.resource_manager.ModelLoader;
-import lombok.SneakyThrows;
+import ir.sam.hearthstone.server.logic.game.AbstractGame;
+import ir.sam.hearthstone.server.logic.game.behavioral_models.CharacterLogic;
 
 import java.lang.invoke.*;
 import java.lang.reflect.InvocationTargetException;
@@ -39,13 +40,17 @@ public class ActionHolderBuilder {
         return this;
     }
 
-    @SneakyThrows
     public void insert(HasAction hasAction) {
         Action action = Action.dummyAction;
         if (hasAction.getMethods().containsKey(actionName)) {
-            Class<?> clazz = Class.forName(hasAction.getClassName());
-            Method method = clazz.getDeclaredMethod(hasAction.getMethods().get(actionName));
-            action = toAction(clazz, method, getLookup(clazz));
+            try {
+                Class<?> clazz = Class.forName(hasAction.getClassName());
+                Method method = clazz.getDeclaredMethod(hasAction.getMethods().get(actionName)
+                        , CharacterLogic.class, AbstractGame.class);
+                action = toAction(clazz, method, getLookup(clazz));
+            } catch (Throwable e) {
+                new FindActionException(hasAction.getName(), e).printStackTrace();
+            }
         }
         actions.put(hasAction.getName(), action);
     }
@@ -67,15 +72,12 @@ public class ActionHolderBuilder {
         return result;
     }
 
-    private Action toAction(Class<?> clazz, Method method, MethodHandles.Lookup lookup) {
-        try {
-            MethodType actionType = MethodType.methodType(method.getReturnType(), method.getParameterTypes());
-            MethodHandle handle = lookup.findStatic(clazz, method.getName(), actionType);
-            CallSite site = LambdaMetafactory.metafactory(lookup, "doAction",
-                    MethodType.methodType(Action.class, clazz), actionType, handle, actionType);
-            return (Action) site.getTarget().invoke();
-        } catch (Throwable throwable) {
-            throw new RuntimeException(throwable);
-        }
+    private Action toAction(Class<?> clazz, Method method, MethodHandles.Lookup lookup) throws Throwable {
+        MethodType actionType = MethodType.methodType(method.getReturnType(), method.getParameterTypes());
+        MethodHandle handle = lookup.findStatic(clazz, method.getName(), actionType);
+        CallSite site = LambdaMetafactory.metafactory(lookup, "doAction",
+                MethodType.methodType(Action.class), actionType, handle, actionType);
+        return (Action) site.getTarget().invoke();
+
     }
 }

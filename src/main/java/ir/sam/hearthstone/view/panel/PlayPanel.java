@@ -6,10 +6,9 @@ import ir.sam.hearthstone.resource_manager.ConfigFactory;
 import ir.sam.hearthstone.resource_manager.ImageLoader;
 import ir.sam.hearthstone.response.PlayDetails;
 import ir.sam.hearthstone.view.graphics_engine.AnimationManger;
-import ir.sam.hearthstone.view.graphics_engine.effects.*;
-import ir.sam.hearthstone.view.model.CardOverview;
 import ir.sam.hearthstone.view.util.*;
 import ir.sam.hearthstone.view.util.Box;
+import lombok.Getter;
 
 import javax.swing.*;
 import java.awt.*;
@@ -20,23 +19,31 @@ import static ir.sam.hearthstone.view.util.Constant.*;
 
 public class PlayPanel extends JPanel {
     private final BufferedImage manaImage;
+    @Getter
     private CardBox[] hand;
+    @Getter
     private MinionBox[] ground;
+    @Getter
     private UnitViewer[] hero, weapon, heroPower;
     private JButton exit, next;
     private JTextArea eventLog;
     private JScrollPane scrollPane;
+    @Getter
     private final AnimationManger animationManger;
     private final int[] mana = new int[2];
     private final PlayAction playAction;
     private final BufferedImage background;
     private JProgressBar progressBar;
+    private final PlayEventExecutor executor;
     private long time;
     private int x, y, width, height;
     private Integer[] manaX, manaY;
     private Integer manaSpace;
+    @Getter
     private Integer[] handX, handY, handWidth, handHeight;
+    @Getter
     private Integer[] groundX, groundY, groundWidth, groundHeight;
+    @Getter
     private Integer[] heroX, heroY, heroSpace;
     private int nextX, nextY, nextWidth, nextHeight;
     private int exitX, exitY, exitWidth, exitHeight;
@@ -65,6 +72,7 @@ public class PlayPanel extends JPanel {
         this.add(next);
         animationManger = new AnimationManger();
         manaImage = ImageLoader.getInstance().getEffect("mana");
+        executor = new PlayEventExecutor(this);
     }
 
     private void initialize() {
@@ -129,11 +137,11 @@ public class PlayPanel extends JPanel {
     private void initializeWeapon() {
         weapon = new UnitViewer[2];
         weapon[0] = new UnitViewer(this);
-        int x = heroX[0] - heroSpace[0] - CARD_WIDTH;
-        initializeViewer(weapon[0], x, heroY[0], CARD_WIDTH, CARD_HEIGHT);
+        int x = heroX[0] - heroSpace[0] - WEAPON_WIDTH;
+        initializeViewer(weapon[0], x, heroY[0], WEAPON_WIDTH, WEAPON_HEIGHT);
         weapon[1] = new UnitViewer(this);
-        x = heroX[1] - heroSpace[1] - CARD_WIDTH;
-        initializeViewer(weapon[1], x, heroY[1], CARD_WIDTH, CARD_HEIGHT);
+        x = heroX[1] - heroSpace[1] - WEAPON_WIDTH;
+        initializeViewer(weapon[1], x, heroY[1], WEAPON_WIDTH, WEAPON_HEIGHT);
     }
 
     private void initializeHeroPower() {
@@ -172,6 +180,8 @@ public class PlayPanel extends JPanel {
         scrollPane.setOpaque(false);
         scrollPane.getViewport().setBorder(null);
         scrollPane.setBorder(null);
+        scrollPane.getVerticalScrollBar().setPreferredSize(new Dimension(0, 0));
+        scrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
         eventLog.setBorder(null);
         eventLog.setOpaque(false);
         eventLog.setForeground(Color.WHITE);
@@ -180,56 +190,12 @@ public class PlayPanel extends JPanel {
     }
 
     public void setDetails(List<PlayDetails.Event> events, String eventLog, int[] mana, long time) {
-        animationManger.clear();
-        events.forEach(this::executeEvent);
+        events.forEach(executor::execute);
         animationManger.start();
         this.eventLog.setText(eventLog);
         this.mana[0] = mana[0];
         this.mana[1] = mana[1];
         this.time = time;
-    }
-
-    private void executeEvent(PlayDetails.Event event) {
-        switch (event.getType()) {
-            case SET_HERO:
-                hero[event.getSide()].setUnitOverviewAnimated(event.getOverview());
-                break;
-            case SET_HERO_POWER:
-                heroPower[event.getSide()].setUnitOverviewAnimated(event.getOverview());
-                break;
-            case PLAY_WEAPON:
-                Point point = hand[event.getSide()].getPosition(event.getIndex());
-                point.translate(hand[event.getSide()].getX(), hand[event.getSide()].getY());
-                PaintByTime old = new OverviewPainter(hand[event.getSide()].removeModel(event.getIndex()));
-                PaintByTime neW = new OverviewPainter(event.getOverview());
-                PaintByTime painter = new DoublePictureScale(neW, old, ScaleOnCenter.ALL);
-                painter = new LinearMotion(point.x, point.y, weapon[event.getSide()].getX()
-                        , weapon[event.getSide()].getY(), painter, x -> Math.pow(x, 1.2));
-                animationManger.addPainter(painter);
-                animationManger.addEndAnimationAction(
-                        () -> weapon[event.getSide()].setUnitOverviewAnimated(event.getOverview()));
-                break;
-            case ADD_TO_GROUND:
-
-                break;
-            case ADD_TO_HAND:
-                hand[event.getSide()].addModel((CardOverview) event.getOverview(), true);
-                break;
-            case MOVE_FROM_HAND_TO_GROUND:
-                break;
-            case MOVE_FROM_GROUND_TO_HAND:
-                break;
-            case ATTACK_MINION_TO_HERO:
-                break;
-            case ATTACK_MINION_TO_MINION:
-                break;
-            case ATTACK_HERO_TO_MINION:
-                break;
-            case ATTACK_HERO_TO_HERO:
-                break;
-            case PLAY_SPELL:
-                break;
-        }
     }
 
     @Override

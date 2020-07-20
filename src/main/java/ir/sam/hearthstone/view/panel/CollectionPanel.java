@@ -6,9 +6,6 @@ import ir.sam.hearthstone.resource_manager.ConfigFactory;
 import ir.sam.hearthstone.resource_manager.ImageLoader;
 import ir.sam.hearthstone.util.Updatable;
 import ir.sam.hearthstone.view.graphics_engine.AnimationManger;
-import ir.sam.hearthstone.view.graphics_engine.effects.LinearMotion;
-import ir.sam.hearthstone.view.graphics_engine.effects.OverviewPainter;
-import ir.sam.hearthstone.view.graphics_engine.effects.Rotary;
 import ir.sam.hearthstone.view.model.CardOverview;
 import ir.sam.hearthstone.view.model.SmallDeckOverview;
 import ir.sam.hearthstone.view.util.CardBox;
@@ -233,10 +230,10 @@ public class CollectionPanel extends JPanel implements Updatable {
     public void putCardEvent(String type,String cardName,boolean canAddDeck, boolean canChangeHero){
         switch (type) {
             case "add":
-                moveCard(cardName, cards, deckCards);
+                AnimationManger.moveCard(cardName, cards, deckCards,animationManger);
                 break;
             case "move":
-                moveCard(cardName, deckCards, cards);
+                AnimationManger.moveCard(cardName, deckCards, cards,animationManger);
                 break;
             case "remove":
                 deckCards.removeModel(cardName, true);
@@ -246,19 +243,6 @@ public class CollectionPanel extends JPanel implements Updatable {
                 break;
         }
         setButtons(canAddDeck,canChangeHero);
-    }
-
-    private void moveCard(String cardName,CardBox origin,CardBox dest){
-        Point org = origin.getPosition(cardName);
-        org.translate(origin.getX(),origin.getY());
-        CardOverview cardOverview = origin.removeModel(cardName,false);
-        dest.addModel(cardOverview,false);
-        Point des = dest.getPosition(cardName);
-        des.translate(dest.getX(),dest.getY());
-        animationManger.clear();
-        animationManger.addPainter(new LinearMotion(org.x,org.y,des.x,des.y,
-                new Rotary(new OverviewPainter(cardOverview)), x->Math.pow(x,1/2.5)));
-        animationManger.start();
     }
 
     public void setDetails(List<CardOverview> cards, List<SmallDeckOverview> decks,

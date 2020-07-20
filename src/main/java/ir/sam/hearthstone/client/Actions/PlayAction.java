@@ -42,7 +42,7 @@ public class PlayAction {
     public void selectMinion(int side, String index) {
         String[] indexes = index.split(",");
         int index1 = Integer.parseInt(indexes[0]);
-        int emptyIndex = Integer.parseInt(indexes[1]);
+        int emptyIndex = Integer.parseInt(indexes[1]) + index1;
         Request request = new SelectMinion(side, index1, emptyIndex);
         client.getRequestSender().sendRequest(request);
         connector.save(new ButtonLog(client.getUsername()

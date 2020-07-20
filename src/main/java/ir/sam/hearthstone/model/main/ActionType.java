@@ -2,6 +2,7 @@ package ir.sam.hearthstone.model.main;
 
 public enum ActionType {
     START_TURN,
+    Do_ACTION_FOR_TARGET,
     END_TURN,
     DRAW_CARD,
     PLAY_WEAPON,

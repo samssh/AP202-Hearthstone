@@ -16,7 +16,6 @@ import ir.sam.hearthstone.server.logic.Shop;
 import ir.sam.hearthstone.server.logic.Status;
 import ir.sam.hearthstone.server.logic.game.GameBuilder;
 import ir.sam.hearthstone.server.logic.game.MultiplayerGameBuilder;
-import ir.sam.hearthstone.server.logic.game.Side;
 import ir.sam.hearthstone.util.Loop;
 import ir.sam.hearthstone.resource_manager.ModelLoader;
 import ir.sam.hearthstone.view.model.*;
@@ -25,6 +24,8 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 import static ir.sam.hearthstone.server.logic.game.PlayMode.MULTIPLAYER;
+import static ir.sam.hearthstone.server.logic.game.Side.PLAYER_ONE;
+import static ir.sam.hearthstone.server.logic.game.Side.PLAYER_TWO;
 
 public class Server {
     public final static int STARTING_MANA;
@@ -245,7 +246,7 @@ public class Server {
         Response response = null;
         switch (modeName) {
             case "multiplayer":
-                gameBuilder = new MultiplayerGameBuilder(MULTIPLAYER, modelLoader,this);
+                gameBuilder = new MultiplayerGameBuilder(MULTIPLAYER, modelLoader, this);
                 response = gameBuilder.setDeckP1(player.getSelectedDeck());
                 break;
             case "AI":
@@ -256,7 +257,6 @@ public class Server {
                 break;
             case "online":
                 response = new GoTo("MAIN_MENU", "online add in next phase\ngoto main menu?");
-                break;
         }
         sendResponse(response);
     }
@@ -267,8 +267,10 @@ public class Server {
 
 
     public void selectPassive(String passiveName) {
-        Optional<Passive> optionalPassive = modelLoader.getPassive(passiveName);
-        optionalPassive.ifPresent(passive -> sendResponse(gameBuilder.setPassive(passive, this)));
+        if (gameBuilder != null) {
+            Optional<Passive> optionalPassive = modelLoader.getPassive(passiveName);
+            optionalPassive.ifPresent(passive -> sendResponse(gameBuilder.setPassive(passive, this)));
+        }
     }
 
     public Response sendDecksForSelection(String message) {
@@ -278,64 +280,58 @@ public class Server {
     }
 
     public void selectOpponentDeck(String deckName) {
-        Optional<Deck> optionalDeck = collection.getDeck(deckName, player);
-        if (optionalDeck.isPresent() && canStartGame(optionalDeck.get())) {
-            sendResponse(gameBuilder.setDeckP2(optionalDeck.get()));
+        if (gameBuilder != null) {
+            Optional<Deck> optionalDeck = collection.getDeck(deckName, player);
+            if (optionalDeck.isPresent() && canStartGame(optionalDeck.get())) {
+                sendResponse(gameBuilder.setDeckP2(optionalDeck.get()));
+            }
         }
     }
 
     public void selectCadOnPassive(int index) {
-        sendResponse(gameBuilder.selectCard(index));
+        if (gameBuilder != null)
+            sendResponse(gameBuilder.selectCard(index));
     }
 
     public void confirm() {
-        sendResponse(gameBuilder.confirm());
-        game = gameBuilder.build();
+        if (gameBuilder != null) {
+            sendResponse(gameBuilder.confirm());
+            game = gameBuilder.build();
+        }
     }
 
     public void endTurn() {
-        game.nextTurn();
-        sendResponse(game.getResponse(Side.PLAYER_ONE));
+        if (game != null) {
+            game.nextTurn(PLAYER_ONE);
+            sendResponse(game.getResponse(PLAYER_ONE));
+        }
     }
 
-//    private void sendPlayDetails() {
-//        List<CardOverview> hand = gameState.getHandCard().stream()
-//                .map(card -> new CardOverview(card, 1, false)).collect(Collectors.toList());
-//        List<CardOverview> ground = gameState.getGround().stream()
-//                .map(card -> new CardOverview(card, 1, false)).collect(Collectors.toList());
-//        CardOverview weapon = gameState.getActiveWeapon() == null ?
-//                null : new CardOverview(gameState.getActiveWeapon(), 1, false);
-//        HeroOverview hero = new HeroOverview(gameState.getHero());
-//        HeroPowerOverview heroPower = new HeroPowerOverview(gameState.getHero().getPower());
-//        String eventLog = gameState.getGameEvents();
-//        Response response = new PlayDetails(hand, ground, weapon, hero
-//                , heroPower, eventLog, gameState.getMana(), gameState.getDeck().size());
-//        sendResponse(response);
-//    }
-//
-//    public void endTurn() {
-//        if (gameState != null && gameState.isRunning()) {
-//            gameState.endTurn();
-//            sendPlayDetails();
-//            connector.save(player);
-//        }
-//    }
-//
-//    public void playCard(String cardName) {
-//        Optional<Card> optionalCard = modelLoader.getCard(cardName);
-//        if (optionalCard.isPresent() && gameState != null && gameState.isRunning()) {
-//            gameState.playCard(optionalCard.get());
-//            sendPlayDetails();
-//            connector.save(player);
-//        }
-//    }
-//
-//    public void exitGame() {
-//        if (gameState != null) {
-//            gameState.exit();
-//            Response response = new GoTo("MAIN_MENU", null);
-//            sendResponse(response);
-//            connector.save(player);
-//        }
-//    }
+    public void selectHero(int side) {
+        if (game != null) {
+            game.selectHero(PLAYER_ONE, side == 0 ? PLAYER_ONE : PLAYER_TWO);
+            sendResponse(game.getResponse(PLAYER_ONE));
+        }
+    }
+
+    public void selectHeroPower(int side) {
+        if (game != null) {
+            game.selectHeroPower(PLAYER_ONE, side == 0 ? PLAYER_ONE : PLAYER_TWO);
+            sendResponse(game.getResponse(PLAYER_ONE));
+        }
+    }
+
+    public void selectMinion(int side, int index, int emptyIndex) {
+        if (game != null) {
+            game.selectMinion(PLAYER_ONE, side == 0 ? PLAYER_ONE : PLAYER_TWO, index, emptyIndex);
+            sendResponse(game.getResponse(PLAYER_ONE));
+        }
+    }
+
+    public void selectCardInHand(int side, int index) {
+        if (game != null) {
+            game.selectCardInHand(PLAYER_ONE, side == 0 ? PLAYER_ONE : PLAYER_TWO, index);
+            sendResponse(game.getResponse(PLAYER_ONE));
+        }
+    }
 }
