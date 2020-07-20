@@ -6,7 +6,7 @@ public class ExitGame extends Request {
 
     @Override
     public void execute(Server server) {
-//        server.exitGame();
+        server.exitGame();
     }
 
     @Override

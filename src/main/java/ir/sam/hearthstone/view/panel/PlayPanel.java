@@ -56,6 +56,13 @@ public class PlayPanel extends JPanel {
         config();
         initialize();
         this.setBounds(x, y, width, height);
+        addComponents();
+        animationManger = new AnimationManger();
+        manaImage = ImageLoader.getInstance().getEffect("mana");
+        executor = new PlayEventExecutor(this);
+    }
+
+    private void addComponents(){
         this.add(hand[0]);
         this.add(ground[0]);
         this.add(hero[0]);
@@ -70,9 +77,6 @@ public class PlayPanel extends JPanel {
         this.add(scrollPane);
         this.add(exit);
         this.add(next);
-        animationManger = new AnimationManger();
-        manaImage = ImageLoader.getInstance().getEffect("mana");
-        executor = new PlayEventExecutor(this);
     }
 
     private void initialize() {
@@ -215,7 +219,10 @@ public class PlayPanel extends JPanel {
         if (t < 1000) progressBar.setForeground(Color.GREEN);
         else if (40000 < t && t < 41000) progressBar.setForeground(Color.RED);
         progressBar.setValue(t);
+    }
 
+    public void exit() {
+        playAction.exit();
     }
 
     private void config() {

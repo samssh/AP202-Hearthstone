@@ -83,8 +83,15 @@ public class PlayEventExecutor {
             case ATTACK_HERO_TO_HERO:
                 attackHeroToHero(event);
                 break;
+            case CHANGE_WEAPON:
+                playPanel.getWeapon()[side].setUnitOverviewAnimated(event.getOverview());
+                break;
             case SHOW_MESSAGE:
                 SwingUtilities.invokeLater(() -> JOptionPane.showMessageDialog(playPanel, event.getMessage()));
+                break;
+            case END_GAME:
+                JOptionPane.showMessageDialog(playPanel, event.getMessage());
+                playPanel.exit();
                 break;
         }
     }

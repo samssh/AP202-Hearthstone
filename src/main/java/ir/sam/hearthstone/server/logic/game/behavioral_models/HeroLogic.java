@@ -23,7 +23,14 @@ public class HeroLogic extends CharacterLogic implements AttackAble {
         super(side);
         this.hero = hero.clone();
         hp = hero.getHpFrz();
-        defence=4;
+        defence=0;
+    }
+
+    public void setDefence(int defence,GameState gameState){
+        if (defence!=this.defence){
+            setDefence(defence);
+            addChangeEvent(gameState);
+        }
     }
 
     private void dealDamage(int damage, AbstractGame game, boolean sendEvent) {
@@ -33,6 +40,11 @@ public class HeroLogic extends CharacterLogic implements AttackAble {
             defence = 0;
         }
         if (sendEvent)addChangeEvent(game.getGameState());
+        if (hp<0){
+            PlayDetails.Event event = new PlayDetails.EventBuilder(PlayDetails.EventType.END_GAME)
+                    .setMessage(side+" lose").build();
+            game.getGameState().getEvents().add(event);
+        }
     }
 
     /**

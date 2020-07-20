@@ -53,9 +53,6 @@ public class GameStateBuilder {
         deckCards.forEach(card -> gameState.getDeck(side).add(buildCardLogic(side,card)));
         hand.forEach(card -> gameState.getHand(side).add(buildCardLogic(side,card)));
         hand.forEach(card -> gameState.getGameEvents().add(new DrawCard(side, card)));
-        Collections.reverse(hand);
-        hand.forEach(card -> gameState.getEvents().add(new PlayDetails.EventBuilder(PlayDetails.EventType.ADD_TO_HAND)
-        .setOverview(new CardOverview(card)).setSide(side.getIndex()).build()));
     }
 
     private CardLogic buildCardLogic(Side side, Card card) {

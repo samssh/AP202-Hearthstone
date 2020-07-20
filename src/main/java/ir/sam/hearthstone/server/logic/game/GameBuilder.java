@@ -17,7 +17,6 @@ import static ir.sam.hearthstone.server.Server.STARTING_PASSIVES;
 
 
 public abstract class GameBuilder {
-    protected final PlayMode playMode;
     protected AbstractGame result;
     protected final GameStateBuilder gameStateBuilder;
     protected final List<Passive> allPassives;
@@ -28,8 +27,7 @@ public abstract class GameBuilder {
     protected final Server server;
 
 
-    public GameBuilder(PlayMode playMode, ModelLoader modelLoader, Server server) {
-        this.playMode = playMode;
+    public GameBuilder(ModelLoader modelLoader, Server server) {
         this.modelLoader = modelLoader;
         this.allPassives = modelLoader.getFirstPassives();
         this.server = server;
@@ -107,10 +105,10 @@ public abstract class GameBuilder {
 
     protected void finalizeHand(List<Card> hand, List<Boolean> state, List<Card> deck) {
         for (int i = 0, handSize = hand.size(); i < handSize; i++) {
-            if (!state.get(i)){
+            if (!state.get(i)) {
                 int randomIndex = (int) (Math.random() * deck.size());
                 Card card = hand.remove(i);
-                hand.add(i,deck.remove(randomIndex));
+                hand.add(i, deck.remove(randomIndex));
                 deck.add(card);
             }
         }

@@ -14,18 +14,37 @@ import lombok.Getter;
 import lombok.Setter;
 
 public class WeaponLogic extends CardLogic {
+    @Getter
+    @Setter
     protected Weapon weapon;
     @Getter
     @Setter
-    private int attack, usage, lastAttackTurn;
+    private int attack, usage;
+    @Getter
+    @Setter
+    private boolean hasAttack;
 
     public WeaponLogic(Side side, Weapon weapon) {
         super(side);
         this.weapon = weapon.clone();
     }
 
+    public void setHasAttack(boolean hasAttack, GameState gameState) {
+        boolean temp = hasAttack!=this.hasAttack;
+        setHasAttack(hasAttack);
+        if (temp)
+            addChangeEvent(gameState);
+    }
+
+    private void addChangeEvent(GameState gameState) {
+        PlayDetails.Event event = new PlayDetails.EventBuilder(PlayDetails.EventType.CHANGE_WEAPON)
+                .setOverview(getOverview()).setSide(side.getIndex()).build();
+        gameState.getEvents().add(event);
+    }
+
+
     public void use(GameState gameState) {
-        this.lastAttackTurn = gameState.getTurnNumber();
+        hasAttack = false;
         usage--;
         if (usage == 0) {
             gameState.setActiveWeapon(side, null);
@@ -45,7 +64,7 @@ public class WeaponLogic extends CardLogic {
             gameState.setMana(side, mana - weapon.getManaFrz());
             attack = weapon.getAttFrz();
             usage = weapon.getUsage();
-            lastAttackTurn = gameState.getTurnNumber();
+            hasAttack = false;
             int indexOnHand = gameState.getHand(side).indexOf(this);
             gameState.getHand(side).remove(indexOnHand);
             gameState.setActiveWeapon(side, this);

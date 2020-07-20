@@ -60,35 +60,6 @@ public class PlayDetails extends Response {
             this.side = side;
             this.message = message;
         }
-
-//        public Event(EventType type, UnitOverview overview, UnitOverview overview1
-//                , int index, int side, int secondIndex) {
-//            this(type, overview, overview1, index, side, secondIndex, null);
-//        }
-//
-//        public Event(EventType type, UnitOverview overview, int index, int side, int secondIndex, String message) {
-//            this(type, overview, null, index, side, secondIndex, message);
-//        }
-//
-//        public Event(EventType type, UnitOverview overview, int index, int side, int secondIndex) {
-//            this(type, overview, index, side, secondIndex, null);
-//        }
-//
-//        public Event(EventType type, UnitOverview overview, int index, int side, String message) {
-//            this(type, overview, index, -1, side, message);
-//        }
-//
-//        public Event(EventType type, UnitOverview overview, int index, int side) {
-//            this(type, overview, index, -1, side, null);
-//        }
-//
-//        public Event(EventType type, UnitOverview overview, int side) {
-//            this(type, overview, -1, side, null);
-//        }
-//
-//        public Event(EventType type, String message) {
-//            this(type, null, -1, -1, message);
-//        }
     }
 
     public static class EventBuilder{
@@ -135,6 +106,8 @@ public class PlayDetails extends Response {
         ATTACK_HERO_TO_HERO,
         PLAY_SPELL,
         PLAY_WEAPON,
-        SHOW_MESSAGE;
+        CHANGE_WEAPON,
+        SHOW_MESSAGE,
+        END_GAME
     }
 }

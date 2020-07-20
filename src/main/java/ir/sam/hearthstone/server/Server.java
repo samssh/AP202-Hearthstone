@@ -64,7 +64,7 @@ public class Server {
     private Player player;
     private AbstractGame game;
     private GameBuilder gameBuilder;
-    private final ir.sam.hearthstone.server.logic.Collection collection;
+    private final Collection collection;
     private final Shop shop;
     private final Status status;
     private final ResponseSender responseSender;
@@ -152,7 +152,6 @@ public class Server {
             this.player = player;
             Response response = new LoginResponse(true, this.player.getUserName());
             sendResponse(response);
-//            connector.save(new ResponseLog(ir.SAM.hearthstone.response, this.player.getUserName()));
             connector.save(new AccountLog(this.player.getUserName(), "sign up"));
         } else {
             Response response = new LoginResponse(false, "username already exist");
@@ -246,7 +245,7 @@ public class Server {
         Response response = null;
         switch (modeName) {
             case "multiplayer":
-                gameBuilder = new MultiplayerGameBuilder(MULTIPLAYER, modelLoader, this);
+                gameBuilder = new MultiplayerGameBuilder(modelLoader, this);
                 response = gameBuilder.setDeckP1(player.getSelectedDeck());
                 break;
             case "AI":
@@ -333,5 +332,12 @@ public class Server {
             game.selectCardInHand(PLAYER_ONE, side == 0 ? PLAYER_ONE : PLAYER_TWO, index);
             sendResponse(game.getResponse(PLAYER_ONE));
         }
+    }
+
+    public void exitGame() {
+        game.getTimer().cancelTask();
+        gameBuilder = null;
+        game = null;
+        sendResponse(new GoTo("MAIN_MENU",null));
     }
 }

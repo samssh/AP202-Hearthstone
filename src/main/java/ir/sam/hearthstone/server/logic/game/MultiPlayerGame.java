@@ -17,11 +17,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class MultiPlayerGame extends AbstractGame {
-    private final TaskTimer timer;
-
     public MultiPlayerGame(Server server, GameState gameState, ModelLoader modelLoader) {
         super(server, gameState, modelLoader);
-        timer = new TaskTimer();
     }
 
     @Override
@@ -44,10 +41,12 @@ public class MultiPlayerGame extends AbstractGame {
             } else if (gameState.isHeroSelected(side.getOther())) {
                 attackHeroToHero(side.getOther());
                 gameState.resetSelected(side.getOther());
+            } else if (gameState.isHeroPowerSelected(side.getOther())) {
+                getActionHolderMap().get(ActionType.DO_ACTION).doAction(
+                        gameState.getHeroPower(side.getOther()).getName(), null, this);
             }
         } else if (gameState.getActiveWeapon(gameState.getSideTurn()) != null
-                && gameState.getActiveWeapon(gameState.getSideTurn()).getLastAttackTurn()
-                != gameState.getTurnNumber()) {
+                && gameState.getActiveWeapon(gameState.getSideTurn()).isHasAttack()) {
             gameState.resetSelected(side);
             gameState.setHeroSelected(side, true);
         }
@@ -57,7 +56,7 @@ public class MultiPlayerGame extends AbstractGame {
         int indexOnGround = gameState.getGround(heroSide.getOther()).indexOf(minionLogic);
         HeroLogic heroLogic = gameState.getHero(heroSide);
         heroLogic.dealMinionDamage(minionLogic.getAttack(), this, true);
-        minionLogic.setLastAttackTurn(gameState.getTurnNumber());
+        minionLogic.setHasSleep(true);
         PlayDetails.Event event = new PlayDetails.EventBuilder(PlayDetails.EventType.ATTACK_MINION_TO_HERO)
                 .setIndex(indexOnGround).setOverview(minionLogic.getMinionOverview())
                 .setSide(minionLogic.getSide().getIndex()).build();
@@ -87,6 +86,8 @@ public class MultiPlayerGame extends AbstractGame {
         if (side != gameState.getSideTurn()) return;
         gameState.resetSelected(side);
         gameState.setHeroPowerSelected(side, true);
+        getActionHolderMap().get(ActionType.DO_ACTION).doAction(gameState.getHeroPower(side).getName()
+                , null, this);
     }
 
     @Override
@@ -116,8 +117,11 @@ public class MultiPlayerGame extends AbstractGame {
                     attackMinionToMinion(gameState.getSelectedMinionOnGround(gameState.getSideTurn()), selected);
                     gameState.resetSelected(side.getOther());
                 } else if (gameState.isHeroSelected(side.getOther())) {
-                    attackHeroToMinion(side.getOther(),selected);
+                    attackHeroToMinion(side.getOther(), selected);
                     gameState.resetSelected(side.getOther());
+                }else if (gameState.isHeroPowerSelected(side.getOther())) {
+                    getActionHolderMap().get(ActionType.DO_ACTION).doAction(
+                            gameState.getHeroPower(side.getOther()).getName(), null, this);
                 }
             }
         } else {
@@ -133,7 +137,7 @@ public class MultiPlayerGame extends AbstractGame {
         int indexOfAttacker = gameState.getGround(attacker.getSide()).indexOf(attacker);
         attacker.dealMinionDamage(defender.getAttack(), this, false);
         defender.dealMinionDamage(attacker.getAttack(), this, true);
-        attacker.setLastAttackTurn(gameState.getTurnNumber());
+        attacker.setHasSleep(true);
         PlayDetails.Event event = new PlayDetails.EventBuilder(PlayDetails.EventType.ATTACK_MINION_TO_MINION)
                 .setOverview(attacker.getMinionOverview()).setSide(attacker.getSide().getIndex())
                 .setIndex(indexOfAttacker)
@@ -183,8 +187,14 @@ public class MultiPlayerGame extends AbstractGame {
         gameState.getGameEvents().add(gameEvent);
         if (gameState.getSideTurn() == Side.PLAYER_TWO) gameState.setTurnNumber(gameState.getTurnNumber() + 1);
         int mana = Math.min(gameState.getTurnNumber(), Server.MAX_MANA);
+        if (gameState.getActiveWeapon(gameState.getSideTurn()) != null)
+            gameState.getActiveWeapon(gameState.getSideTurn()).setHasAttack(false, gameState);
         gameState.setSideTurn(gameState.getSideTurn().getOther());
         gameState.setMana(gameState.getSideTurn(), mana);
+        if (gameState.getActiveWeapon(gameState.getSideTurn()) != null)
+            gameState.getActiveWeapon(gameState.getSideTurn()).setHasAttack(true, gameState);
+        gameState.getGround(gameState.getSideTurn()).forEach(
+                minionLogic -> minionLogic.setHasSleep(false, gameState));
         visitAll(this, ActionType.START_TURN, null, gameState.getSideTurn());
         turnStartTime = System.currentTimeMillis();
         timer.setTask(server::endTurn, Server.TURN_TIME);

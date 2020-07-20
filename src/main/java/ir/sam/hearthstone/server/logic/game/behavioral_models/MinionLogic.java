@@ -20,16 +20,15 @@ public class MinionLogic extends CardLogic {
     private Minion minion;
     @Getter
     @Setter
-    private int hp, attack, lastAttackTurn;
+    private int hp, attack;
     @Getter
     @Setter
-    private boolean hasRush, hasTaunt, hasDivineShield, hasAttack;
+    private boolean hasRush, hasTaunt, hasDivineShield, hasSleep;
 
     public MinionLogic(Side side, Minion minion) {
         super(side);
         this.minion = minion.clone();
-        lastAttackTurn = 0;
-        hasAttack = false;
+        hasSleep = false;
         hasDivineShield = false;
         hasTaunt = false;
         hasRush = false;
@@ -74,13 +73,20 @@ public class MinionLogic extends CardLogic {
         }
     }
 
+    public void setHasSleep(boolean hasSleep, GameState gameState) {
+        boolean temp = hasSleep != this.hasSleep;
+        setHasSleep(hasSleep);
+        if (temp)
+            addChangeEvent(gameState);
+    }
+
     public void kill(AbstractGame game, boolean sendEvent) {
         int indexOnGround = game.getGameState().getGround(side).indexOf(this);
         game.getGameState().getGround(side).remove(indexOnGround);
         if (hasTaunt)
             game.getGameState().changeTaunts(side, -1);
         PlayDetails.Event event = new PlayDetails.EventBuilder(PlayDetails.EventType.REMOVE_FROM_GROUND)
-        .setSide(side.getIndex()).setIndex(indexOnGround).build();
+                .setSide(side.getIndex()).setIndex(indexOnGround).build();
         if (sendEvent)
             game.getGameState().getEvents().add(event);
         game.getActionHolderMap().get(ActionType.DEATH_RATTLE).doAction(getName(), this, game);
@@ -107,7 +113,7 @@ public class MinionLogic extends CardLogic {
                         .doAction(getName(), this, game);
             if (sendEvent)
                 addChangeEvent(game.getGameState());
-        }else hp=0;
+        } else hp = 0;
     }
 
     private void addChangeEvent(GameState gameState) {
@@ -132,7 +138,7 @@ public class MinionLogic extends CardLogic {
         GameState gameState = game.getGameState();
         gameState.getHand(side).remove(indexOnHand);
         PlayDetails.Event event = new PlayDetails.EventBuilder(PlayDetails.EventType.MOVE_FROM_HAND_TO_GROUND)
-        .setOverview(getMinionOverview()).setSide(side.getIndex()).setIndex(indexOnGround)
+                .setOverview(getMinionOverview()).setSide(side.getIndex()).setIndex(indexOnGround)
                 .setSecondIndex(indexOnHand).build();
         gameState.getEvents().add(event);
         AbstractGame.visitAll(game, ActionType.SUMMON_MINION, this, side);
@@ -156,20 +162,24 @@ public class MinionLogic extends CardLogic {
         hp = minion.getHpFrz();
         attack = minion.getAttFrz();
         GameState gameState = abstractGame.getGameState();
-        lastAttackTurn = gameState.getTurnNumber();
+        hasSleep = true;
         gameState.getGround(side).add(indexOnGround, this);
     }
 
     public boolean canAttackToMinion(GameState gameState) {
-        if (gameState.getTurnNumber() > lastAttackTurn)
-            return true;
-        return hasRush;
+        return !hasSleep || hasRush;
+    }
+
+    public void restore(int restore, GameState gameState) {
+        restore = Math.min(minion.getHpFrz() - hp, restore);
+        if (restore > 0) {
+            hp += restore;
+            addChangeEvent(gameState);
+        }
     }
 
     public boolean canAttackToHero(GameState gameState) {
-        if (gameState.getTurnNumber() > lastAttackTurn)
-            return gameState.getTaunts(side.getOther())==0;
-        return false;
+        return !hasSleep && gameState.getTaunts(side.getOther()) == 0;
     }
 
     public MinionOverview getMinionOverview() {

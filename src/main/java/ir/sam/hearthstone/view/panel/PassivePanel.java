@@ -63,6 +63,7 @@ public class PassivePanel extends JPanel {
         button = new JButton("Confirm");
         button.setBounds(buttonX, buttonY, buttonWidth, buttonHeight);
         button.addActionListener(e -> passiveAction.confirm());
+        Constant.makeTransparent(button);
     }
 
     private void initializeCardBox() {

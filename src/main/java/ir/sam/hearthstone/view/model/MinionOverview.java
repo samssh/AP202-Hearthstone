@@ -30,7 +30,7 @@ public class MinionOverview extends CardOverview {
         hasTaunt = minionLogic.isHasTaunt();
         hasRush = minionLogic.isHasRush();
         hasDivineShield = minionLogic.isHasDivineShield();
-        hasSleep = false;
+        hasSleep = minionLogic.isHasSleep();
     }
 
     @Override

@@ -14,6 +14,7 @@ import ir.sam.hearthstone.server.logic.game.events.DrawCard;
 import ir.sam.hearthstone.server.logic.game.events.GameEvent;
 import ir.sam.hearthstone.server.logic.game.visitors.ActionHolder;
 import ir.sam.hearthstone.server.logic.game.visitors.ActionHolderBuilder;
+import ir.sam.hearthstone.util.TaskTimer;
 import ir.sam.hearthstone.view.model.CardOverview;
 import lombok.Getter;
 
@@ -36,20 +37,23 @@ public abstract class AbstractGame {
     protected final Map<ActionType, ActionHolder> actionHolderMap;
     @Getter
     protected long turnStartTime;
+    @Getter
+    protected final TaskTimer timer;
 
     public AbstractGame(Server server, GameState gameState, ModelLoader modelLoader) {
         this.server = server;
         this.gameState = gameState;
         actionHolderMap = ActionHolderBuilder.getAllActionHolders(modelLoader);
+        timer = new TaskTimer();
     }
 
-    public abstract void selectHero(Side client,Side side);
+    public abstract void selectHero(Side client, Side side);
 
-    public abstract void selectHeroPower(Side client,Side side);
+    public abstract void selectHeroPower(Side client, Side side);
 
-    public abstract void selectMinion(Side client,Side side, int index, int emptyIndex);
+    public abstract void selectMinion(Side client, Side side, int index, int emptyIndex);
 
-    public abstract void selectCardInHand(Side client,Side side, int index);
+    public abstract void selectCardInHand(Side client, Side side, int index);
 
     public abstract void nextTurn(Side client);
 
@@ -60,24 +64,31 @@ public abstract class AbstractGame {
     public abstract List<PlayDetails.Event> getEvents(Side client);
 
     public void drawCard(Side side) {
-        int randomIndex = (int) (Math.random() * gameState.getDeck(side).size());
-        CardLogic randomCard = gameState.getDeck(side).get(randomIndex);
-        drawCard(side, randomCard);
+        if (gameState.getDeck(side).size() > 0) {
+            int randomIndex = (int) (Math.random() * gameState.getDeck(side).size());
+            CardLogic randomCard = gameState.getDeck(side).get(randomIndex);
+            drawCard(side, randomCard);
+        } else {
+            PlayDetails.Event event = new PlayDetails.EventBuilder(PlayDetails.EventType.END_GAME)
+                    .setMessage(side + " lose").build();
+            getGameState().getEvents().add(event);
+        }
     }
 
     public void drawCard(Side side, CardLogic cardLogic) {
         gameState.getDeck(side).remove(cardLogic);
         if (gameState.getHand(side).size() < Server.MAX_HAND_SIZE) {
             gameState.getHand(side).add(0, cardLogic);
+            visitAll(this, ActionType.DRAW_CARD, cardLogic, side);
             PlayDetails.Event event = new PlayDetails.EventBuilder(ADD_TO_HAND)
                     .setOverview(new CardOverview(cardLogic.getCard())).setSide(side.getIndex()).build();
             GameEvent gameEvent = new DrawCard(side, cardLogic.getCard());
             gameState.getEvents().add(event);
             gameState.getGameEvents().add(gameEvent);
-        }else {
+        } else {
             PlayDetails.Event event = new PlayDetails.EventBuilder(SHOW_MESSAGE)
                     .setMessage("your Hand is full!!!!!").build();
-            GameEvent gameEvent = new DeleteCard(side,cardLogic.getCard());
+            GameEvent gameEvent = new DeleteCard(side, cardLogic.getCard());
             gameState.getEvents().add(event);
             gameState.getGameEvents().add(gameEvent);
         }
@@ -90,7 +101,7 @@ public abstract class AbstractGame {
             if (minion.getManaFrz() <= gameState.getMana(side)) {
                 gameState.setSelectedMinionOnHand(side, minionLogic);
             }
-        }else {
+        } else {
             PlayDetails.Event event = new PlayDetails.EventBuilder(SHOW_MESSAGE)
                     .setMessage("ground is full!!!!").build();
             gameState.getEvents().add(event);
