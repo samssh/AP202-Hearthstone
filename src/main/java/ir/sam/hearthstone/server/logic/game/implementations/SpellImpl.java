@@ -18,6 +18,7 @@ import java.util.stream.Collectors;
 @SuppressWarnings("ALL")
 public class SpellImpl {
     private SpellImpl() {
+        this.arcane(null,null,null);
     }
 
     private static MethodHandles.Lookup getLookup() {
@@ -27,7 +28,7 @@ public class SpellImpl {
     /**
      * DO_ACTION
      */
-    private void arcane(ComplexLogic complexLogic, CharacterLogic characterLogic, AbstractGame game) {
+    private static void arcane(ComplexLogic complexLogic, CharacterLogic characterLogic, AbstractGame game) {
         GameState gameState = game.getGameState();
         Side side = gameState.getSideTurn();
         if (complexLogic instanceof SpellLogic) {
@@ -44,7 +45,7 @@ public class SpellImpl {
     /**
      * DO_ACTION
      */
-    private void book(ComplexLogic complexLogic, CharacterLogic characterLogic, AbstractGame game) {
+    private static void book(ComplexLogic complexLogic, CharacterLogic characterLogic, AbstractGame game) {
         GameState gameState = game.getGameState();
         Side side = gameState.getSideTurn();
         for (int i = 0; i < 3; i++) {
@@ -61,9 +62,9 @@ public class SpellImpl {
     /**
      * DO_ACTION
      */
-    private void deadlyShot(ComplexLogic complexLogic, CharacterLogic characterLogic, AbstractGame game) {
+    private static void deadlyShot(ComplexLogic complexLogic, CharacterLogic characterLogic, AbstractGame game) {
         GameState gameState = game.getGameState();
-        Side side = gameState.getSideTurn();
+        Side side = gameState.getSideTurn().getOther();
         if (gameState.getGround(side).size() == 0)
             return;
         int indexOnGround = (int) (gameState.getGround(side).size() * Math.random());
@@ -74,7 +75,7 @@ public class SpellImpl {
     /**
      * DO_ACTION
      */
-    private void divine(ComplexLogic complexLogic, CharacterLogic characterLogic, AbstractGame game) {
+    private static void divine(ComplexLogic complexLogic, CharacterLogic characterLogic, AbstractGame game) {
         GameState gameState = game.getGameState();
         Side side = gameState.getSideTurn();
         if (complexLogic instanceof SpellLogic) {
@@ -91,7 +92,7 @@ public class SpellImpl {
     /**
      * DO_ACTION
      */
-    private void overflow(ComplexLogic complexLogic, CharacterLogic characterLogic, AbstractGame game) {
+    private static void overflow(ComplexLogic complexLogic, CharacterLogic characterLogic, AbstractGame game) {
         GameState gameState = game.getGameState();
         Side side = gameState.getSideTurn();
         if (complexLogic instanceof SpellLogic) {
@@ -115,7 +116,7 @@ public class SpellImpl {
     /**
      * DO_ACTION
      */
-    private void pharaoh(ComplexLogic complexLogic, CharacterLogic characterLogic, AbstractGame game) {
+    private static void pharaoh(ComplexLogic complexLogic, CharacterLogic characterLogic, AbstractGame game) {
         game.getGameState().setWaitForTarget(game.getGameState().getSideTurn(), complexLogic);
     }
 
@@ -135,7 +136,7 @@ public class SpellImpl {
     /**
      * DO_ACTION
      */
-    private void polymorph(ComplexLogic complexLogic, CharacterLogic characterLogic, AbstractGame game) {
+    private static void polymorph(ComplexLogic complexLogic, CharacterLogic characterLogic, AbstractGame game) {
         game.getGameState().setWaitForTarget(game.getGameState().getSideTurn(), complexLogic);
     }
 
@@ -162,7 +163,7 @@ public class SpellImpl {
     /**
      * DO_ACTION
      */
-    private void pyroblast(ComplexLogic complexLogic, CharacterLogic characterLogic, AbstractGame game) {
+    private static void pyroblast(ComplexLogic complexLogic, CharacterLogic characterLogic, AbstractGame game) {
         game.getGameState().setWaitForTarget(game.getGameState().getSideTurn(), complexLogic);
     }
 
@@ -186,7 +187,7 @@ public class SpellImpl {
     /**
      * DO_ACTION
      */
-    private void sand(ComplexLogic complexLogic, CharacterLogic characterLogic, AbstractGame game) {
+    private static void sand(ComplexLogic complexLogic, CharacterLogic characterLogic, AbstractGame game) {
         game.getGameState().setWaitForTarget(game.getGameState().getSideTurn(), complexLogic);
     }
 
@@ -209,7 +210,7 @@ public class SpellImpl {
     /**
      * DO_ACTION
      */
-    private void sprint(ComplexLogic complexLogic, CharacterLogic characterLogic, AbstractGame game) {
+    private static void sprint(ComplexLogic complexLogic, CharacterLogic characterLogic, AbstractGame game) {
         GameState gameState = game.getGameState();
         Side side = gameState.getSideTurn();
         for (int i = 0; i < 4; i++) {
@@ -222,7 +223,7 @@ public class SpellImpl {
     /**
      * DO_ACTION
      */
-    private void starfall(ComplexLogic complexLogic, CharacterLogic characterLogic, AbstractGame game) {
+    private static void starfall(ComplexLogic complexLogic, CharacterLogic characterLogic, AbstractGame game) {
         GameState gameState = game.getGameState();
         Side side = gameState.getSideTurn();
         if (complexLogic instanceof SpellLogic) {
@@ -236,7 +237,7 @@ public class SpellImpl {
     /**
      * DO_ACTION
      */
-    private void locusts(ComplexLogic complexLogic, CharacterLogic characterLogic, AbstractGame game) {
+    private static void locusts(ComplexLogic complexLogic, CharacterLogic characterLogic, AbstractGame game) {
         GameState gameState = game.getGameState();
         Side side = gameState.getSideTurn();
         for (int i = 0; i < 7; i++) {
@@ -250,7 +251,7 @@ public class SpellImpl {
     /**
      * DO_ACTION
      */
-    private void boomship(ComplexLogic complexLogic, CharacterLogic characterLogic, AbstractGame game) {
+    private static void boomship(ComplexLogic complexLogic, CharacterLogic characterLogic, AbstractGame game) {
         GameState gameState = game.getGameState();
         Side side = gameState.getSideTurn();
         for (int i = 0; i < 3; i++) {
@@ -268,7 +269,7 @@ public class SpellImpl {
     /**
      * PLAY_SPELL
      */
-    private void learn(ComplexLogic complexLogic, CharacterLogic characterLogic, AbstractGame game) {
+    private static void learn(ComplexLogic complexLogic, CharacterLogic characterLogic, AbstractGame game) {
         GameState gameState = game.getGameState();
         Side side = gameState.getSideTurn();
         if (characterLogic instanceof SpellLogic && complexLogic instanceof QuestLogic) {
@@ -286,7 +287,7 @@ public class SpellImpl {
     /**
      * PLAY_MINION
      */
-    private void strength(ComplexLogic complexLogic, CharacterLogic characterLogic, AbstractGame game) {
+    private static void strength(ComplexLogic complexLogic, CharacterLogic characterLogic, AbstractGame game) {
         GameState gameState = game.getGameState();
         Side side = gameState.getSideTurn();
         if (characterLogic instanceof MinionLogic && complexLogic instanceof QuestLogic) {
