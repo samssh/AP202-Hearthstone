@@ -17,17 +17,12 @@ public class QuestLogic extends CardLogic {
     protected Quest quest;
     @Getter
     @Setter
-    protected QuestProgress questProgress;
+    protected int questProgress;
 
     public QuestLogic(Side side, Quest quest) {
         super(side);
         this.quest = quest.clone();
-        questProgress = null;
-    }
-
-    public int getProgress() {
-        if (questProgress != null) return questProgress.getProgress();
-        return 0;
+        questProgress = 0;
     }
 
     @Override
@@ -54,7 +49,7 @@ public class QuestLogic extends CardLogic {
             PlayDetails.Event event = new PlayDetails.EventBuilder(PlayDetails.EventType.PLAY_SPELL)
                     .setSide(side.getIndex()).setIndex(indexOnHand).build();
             gameState.getEvents().add(event);
-            game.getActionHolderMap().get(ActionType.DO_ACTION).doAction(getName(), this, game);
+            game.getActionHolderMap().get(ActionType.DO_ACTION).doAction(this, this, game);
         }
     }
 

@@ -73,7 +73,7 @@ public class WeaponLogic extends CardLogic {
             PlayDetails.Event event = new PlayDetails.EventBuilder(PlayDetails.EventType.PLAY_WEAPON)
                     .setOverview(getOverview()).setSide(side.getIndex()).setIndex(indexOnHand).build();
             gameState.getEvents().add(event);
-            game.getActionHolderMap().get(ActionType.BATTLE_CRY).doAction(getName(), this, game);
+            game.getActionHolderMap().get(ActionType.BATTLE_CRY).doAction(this, this, game);
             AbstractGame.visitAll(game, ActionType.PLAY_WEAPON, this, side);
         } else {
             System.out.println("cant play weapon because of lack of mana");

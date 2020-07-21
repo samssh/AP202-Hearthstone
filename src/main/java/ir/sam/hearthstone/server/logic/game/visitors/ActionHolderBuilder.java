@@ -6,6 +6,7 @@ import ir.sam.hearthstone.model.main.Hero;
 import ir.sam.hearthstone.resource_manager.ModelLoader;
 import ir.sam.hearthstone.server.logic.game.AbstractGame;
 import ir.sam.hearthstone.server.logic.game.behavioral_models.CharacterLogic;
+import ir.sam.hearthstone.server.logic.game.behavioral_models.ComplexLogic;
 
 import java.lang.invoke.*;
 import java.lang.reflect.InvocationTargetException;
@@ -46,7 +47,7 @@ public class ActionHolderBuilder {
             try {
                 Class<?> clazz = Class.forName(hasAction.getClassName());
                 Method method = clazz.getDeclaredMethod(hasAction.getMethods().get(actionName)
-                        , CharacterLogic.class, AbstractGame.class);
+                        , ComplexLogic.class, CharacterLogic.class, AbstractGame.class);
                 action = toAction(clazz, method, getLookup(clazz));
             } catch (Throwable e) {
                 new FindActionException(hasAction.getName(), e).printStackTrace();
@@ -56,7 +57,7 @@ public class ActionHolderBuilder {
     }
 
     public ActionHolder build() {
-        return new ActionHolder(actionName, Collections.unmodifiableMap(actions));
+        return new ActionHolder(Collections.unmodifiableMap(actions));
     }
 
     private MethodHandles.Lookup getLookup(Class<?> clazz) {

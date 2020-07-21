@@ -1,14 +1,15 @@
 package ir.sam.hearthstone.server.logic.game.implementations;
 
-import ir.sam.hearthstone.model.main.ActionType;
 import ir.sam.hearthstone.server.logic.game.AbstractGame;
 import ir.sam.hearthstone.server.logic.game.GameState;
 import ir.sam.hearthstone.server.logic.game.Side;
 import ir.sam.hearthstone.server.logic.game.behavioral_models.CardLogic;
 import ir.sam.hearthstone.server.logic.game.behavioral_models.CharacterLogic;
+import ir.sam.hearthstone.server.logic.game.behavioral_models.ComplexLogic;
 
 import java.lang.invoke.MethodHandles;
 
+@SuppressWarnings("ALL")
 public class PassiveImpl {
     private PassiveImpl() {
     }
@@ -17,7 +18,11 @@ public class PassiveImpl {
         return MethodHandles.lookup();
     }
 
-    private static void manaJump(CharacterLogic characterLogic, AbstractGame game) {
+
+    /**
+     * START_TURN
+     */
+    private static void manaJump(ComplexLogic complexLogic, CharacterLogic characterLogic, AbstractGame game) {
         GameState gameState = game.getGameState();
         Side side = gameState.getSideTurn();
         if (gameState.getMana(side) < 10) {
@@ -25,8 +30,10 @@ public class PassiveImpl {
         }
     }
 
-    private static void nurse(CharacterLogic characterLogic, AbstractGame game) {
-        System.out.println("nurse");
+    /**
+     * END_TURN
+     */
+    private static void nurse(ComplexLogic complexLogic, CharacterLogic characterLogic, AbstractGame game) {
         GameState gameState = game.getGameState();
         if (gameState.getGround(gameState.getSideTurn()).size() > 0) {
             int randomIndex = (int) (Math.random() * gameState.getGround(gameState.getSideTurn()).size());
@@ -34,8 +41,10 @@ public class PassiveImpl {
         }
     }
 
-    private static void offCard(CharacterLogic characterLogic, AbstractGame game) {
-        System.out.println(characterLogic instanceof CardLogic);
+    /**
+     * DRAW_CARD
+     */
+    private static void offCard(ComplexLogic complexLogic, CharacterLogic characterLogic, AbstractGame game) {
         if (characterLogic instanceof CardLogic) {
             CardLogic cardLogic = ((CardLogic) characterLogic);
             if (cardLogic.getCard().getManaFrz() > 0)
@@ -43,13 +52,18 @@ public class PassiveImpl {
         }
     }
 
-    private static void twiceDraw(CharacterLogic characterLogic, AbstractGame game) {
+    /**
+     * START_TURN
+     */
+    private static void twiceDraw(ComplexLogic complexLogic, CharacterLogic characterLogic, AbstractGame game) {
         game.drawCard(game.getGameState().getSideTurn());
     }
 
-    private static void warriors(CharacterLogic characterLogic, AbstractGame game) {
-        System.out.println("warriors");
+    /**
+     * KILL_MINION
+     */
+    private static void warriors(ComplexLogic complexLogic, CharacterLogic characterLogic, AbstractGame game) {
         int newDefence = game.getGameState().getHero(game.getGameState().getSideTurn()).getDefence() + 2;
-        game.getGameState().getHero(game.getGameState().getSideTurn()).setDefence(newDefence,game.getGameState());
+        game.getGameState().getHero(game.getGameState().getSideTurn()).setDefence(newDefence, game.getGameState());
     }
 }

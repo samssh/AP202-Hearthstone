@@ -19,13 +19,12 @@ import ir.sam.hearthstone.server.logic.game.MultiplayerGameBuilder;
 import ir.sam.hearthstone.util.Loop;
 import ir.sam.hearthstone.resource_manager.ModelLoader;
 import ir.sam.hearthstone.view.model.*;
+import lombok.Getter;
 
 import java.util.*;
 import java.util.stream.Collectors;
 
-import static ir.sam.hearthstone.server.logic.game.PlayMode.MULTIPLAYER;
-import static ir.sam.hearthstone.server.logic.game.Side.PLAYER_ONE;
-import static ir.sam.hearthstone.server.logic.game.Side.PLAYER_TWO;
+import static ir.sam.hearthstone.server.logic.game.Side.*;
 
 public class Server {
     public final static int STARTING_MANA;
@@ -59,6 +58,7 @@ public class Server {
 
     private final List<Request> tempRequestList, requestList;
     private final Connector connector;
+    @Getter
     private final ModelLoader modelLoader;
     private final Loop executor;
     private Player player;
@@ -338,6 +338,6 @@ public class Server {
         game.getTimer().cancelTask();
         gameBuilder = null;
         game = null;
-        sendResponse(new GoTo("MAIN_MENU",null));
+        sendResponse(new GoTo("MAIN_MENU", null));
     }
 }

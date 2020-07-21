@@ -4,10 +4,7 @@ import ir.sam.hearthstone.response.PlayDetails;
 import ir.sam.hearthstone.view.graphics_engine.AnimationManger;
 import ir.sam.hearthstone.view.graphics_engine.Speed;
 import ir.sam.hearthstone.view.graphics_engine.effects.*;
-import ir.sam.hearthstone.view.model.CardOverview;
-import ir.sam.hearthstone.view.model.HeroOverview;
-import ir.sam.hearthstone.view.model.MinionOverview;
-import ir.sam.hearthstone.view.model.Overview;
+import ir.sam.hearthstone.view.model.*;
 import ir.sam.hearthstone.view.panel.PlayPanel;
 
 import javax.swing.*;
@@ -50,7 +47,7 @@ public class PlayEventExecutor {
                 playPanel.getHand()[side].addModel((CardOverview) event.getOverview(), true);
                 break;
             case CHANGE_IN_HAND:
-                playPanel.getHand()[side].changeModel(index, (CardOverview) event.getOverview());
+                playPanel.getHand()[side].changeModelNoAnime(index, (CardOverview) event.getOverview());
                 break;
             case REMOVE_FROM_HAND:
                 playPanel.getHand()[side].removeModel(index, true);
@@ -83,6 +80,12 @@ public class PlayEventExecutor {
             case ATTACK_HERO_TO_HERO:
                 attackHeroToHero(event);
                 break;
+            case ATTACK_HERO_POWER_TO_HERO:
+                attackHeroPowerToHero(event);
+                break;
+            case ATTACK_HERO_POWER_TO_MINION:
+                attackHeroPowerToMinion(event);
+                break;
             case CHANGE_WEAPON:
                 playPanel.getWeapon()[side].setUnitOverviewAnimated(event.getOverview());
                 break;
@@ -111,12 +114,16 @@ public class PlayEventExecutor {
         Point org = playPanel.getGround()[side].getPosition(index);
         org.translate(playPanel.getGround()[side].getX(), playPanel.getGround()[side].getY());
         Point dest = playPanel.getHero()[side ^ 1].getLocation();
-        Overview old = playPanel.getGround()[side].removeModel(index);
+        Overview old;
         Overview neW = event.getOverview();
-        playPanel.getAnimationManger().addPainter(getGoAndBack(org, dest, old, neW, x -> Math.pow(x, 1.7)));
-        if (neW != null)
+        if (neW != null) {
             playPanel.getAnimationManger().addEndAnimationAction(() -> playPanel.getGround()[side]
-                    .addModel(index, (MinionOverview) neW));
+                    .revertTemporaryRemove(index, (MinionOverview) neW));
+            old = playPanel.getGround()[side].temporaryRemove(index);
+        } else {
+            old = playPanel.getGround()[side].removeModel(index);
+        }
+        playPanel.getAnimationManger().addPainter(getGoAndBack(org, dest, old, neW, x -> Math.pow(x, 1.7)));
     }
 
     private void attackMinionToMinion(PlayDetails.Event event) {
@@ -127,10 +134,15 @@ public class PlayEventExecutor {
         Point dest = playPanel.getGround()[side ^ 1].getPosition(event.getSecondIndex());
         dest.translate(playPanel.getGround()[side ^ 1].getX(), playPanel.getGround()[side ^ 1].getY());
         Overview neW = event.getOverview();
-        Overview old = playPanel.getGround()[side].removeModel(index);
+        Overview old;
+        if (neW != null) {
+            old = playPanel.getGround()[side].temporaryRemove(index);
+            playPanel.getAnimationManger().addEndAnimationAction(() ->
+                    playPanel.getGround()[side].revertTemporaryRemove(index, (MinionOverview) neW));
+        } else {
+            old = playPanel.getGround()[side].removeModel(index);
+        }
         playPanel.getAnimationManger().addPainter(getGoAndBack(org, dest, old, neW, x -> Math.pow(x, 1.7)));
-        if (neW != null)
-            playPanel.getGround()[side].addModel(index, (MinionOverview) neW);
     }
 
     private void attackHeroToMinion(PlayDetails.Event event) {
@@ -160,5 +172,33 @@ public class PlayEventExecutor {
         playPanel.getAnimationManger().addEndAnimationAction(() ->
                 playPanel.getHero()[side].setUnitOverview(attackerHero));
 
+    }
+
+    private void attackHeroPowerToHero(PlayDetails.Event event) {
+        int side = event.getSide();
+        Point org = playPanel.getHeroPower()[side].getLocation();
+        Point dest = playPanel.getHero()[event.getSecondIndex()].getLocation();
+        UnitOverview heroPower = playPanel.getHeroPower()[side].getUnitOverview();
+        playPanel.getHeroPower()[side].setUnitOverview(null);
+        playPanel.getAnimationManger().addPainter(getGoAndBack(org, dest, heroPower
+                , heroPower, x -> Math.pow(x, 1.7)));
+        playPanel.getAnimationManger().addEndAnimationAction(
+                () -> playPanel.getHeroPower()[side].setUnitOverview(heroPower)
+        );
+    }
+
+    private void attackHeroPowerToMinion(PlayDetails.Event event) {
+        int side = event.getSide();
+        Point org = playPanel.getHeroPower()[side].getLocation();
+        Point dest = playPanel.getGround()[event.getSecondIndex()].getPosition(event.getIndex());
+        dest.translate(playPanel.getGround()[event.getSecondIndex()].getX()
+                , playPanel.getGround()[event.getSecondIndex()].getY());
+        UnitOverview heroPower = playPanel.getHeroPower()[side].getUnitOverview();
+        playPanel.getAnimationManger().addPainter(getGoAndBack(org, dest, heroPower
+                , heroPower, x -> Math.pow(x, 1.7)));
+        playPanel.getHeroPower()[side].setUnitOverview(null);
+        playPanel.getAnimationManger().addEndAnimationAction(
+                () -> playPanel.getHeroPower()[side].setUnitOverview(heroPower)
+        );
     }
 }

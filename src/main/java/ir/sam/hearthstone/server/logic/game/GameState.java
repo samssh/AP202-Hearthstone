@@ -1,6 +1,5 @@
 package ir.sam.hearthstone.server.logic.game;
 
-import ir.sam.hearthstone.model.main.ActionType;
 import ir.sam.hearthstone.response.PlayDetails;
 import ir.sam.hearthstone.server.logic.game.behavioral_models.*;
 import ir.sam.hearthstone.server.logic.game.events.GameEvent;
@@ -199,7 +198,7 @@ public class GameState {
                 complexLogicList.add(weapon);
             if (quest != null)
                 complexLogicList.add(quest);
-            complexLogicList.addAll(hand);
+            complexLogicList.addAll(ground);
             complexLogicList.addAll(activeUnits);
             return complexLogicList.stream();
         }

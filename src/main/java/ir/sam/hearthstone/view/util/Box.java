@@ -104,13 +104,24 @@ public abstract class Box<Model extends Overview, T extends JPanel> extends JPan
             PaintByTime back = new OverviewPainter(backOve);
             PaintByTime front = new OverviewPainter(model);
             int indexOnShow = index - begin;
-            T t = items[indexOnShow % a][index / a];
+            T t = items[indexOnShow % a][indexOnShow / a];
             set(t, null);
             animationManger.addPainter(new TranslatorByTime(new DoublePictureScale(front, back, ScaleOnCenter.X)
                     , t.getX(), t.getY()));
-            animationManger.start(() -> set(items[indexOnShow % a][index / a], model));
+            animationManger.start(() -> set(items[indexOnShow % a][indexOnShow / a], model));
             showing.remove(index);
             showing.add(index, model);
+        }
+    }
+
+    public void changeModelNoAnime(int index, Model model) {
+        models.remove(index);
+        models.add(index, model);
+        if (begin <= index && index < end) {
+            int indexOnShow = index - begin;
+            set(items[indexOnShow % a][indexOnShow / a], model);
+            end = 0;
+            next();
         }
     }
 
@@ -144,7 +155,7 @@ public abstract class Box<Model extends Overview, T extends JPanel> extends JPan
                 (new OverviewPainter(model), false, ScaleOnCenter.ALL)
                 , items[index % a][index / a].getX(), items[index % a][index / a].getY()));
         setButtons();
-        animationManger.start(() -> endAnimation(index - begin));
+        animationManger.start(() -> endAnimation(index));
     }
 
     public int getModelSize() {
@@ -209,6 +220,18 @@ public abstract class Box<Model extends Overview, T extends JPanel> extends JPan
 
     public Model removeModel(int index) {
         return removeModel(index, false);
+    }
+
+    public Model temporaryRemove(int index) {
+        Model model = models.get(index);
+        index -= begin;
+        set(items[index % a][index / a], null);
+        return model;
+    }
+
+    public void revertTemporaryRemove(int index, Model model) {
+        index -= begin;
+        set(items[index % a][index / a], model);
     }
 
     public int indexOf(String name) {

@@ -1,6 +1,7 @@
 package ir.sam.hearthstone.server.logic.game;
 
 import ir.sam.hearthstone.model.main.ActionType;
+import ir.sam.hearthstone.model.main.Minion;
 import ir.sam.hearthstone.resource_manager.ModelLoader;
 import ir.sam.hearthstone.response.PlayDetails;
 import ir.sam.hearthstone.server.Server;
@@ -8,13 +9,14 @@ import ir.sam.hearthstone.server.logic.game.behavioral_models.CardLogic;
 import ir.sam.hearthstone.server.logic.game.behavioral_models.HeroLogic;
 import ir.sam.hearthstone.server.logic.game.behavioral_models.MinionLogic;
 import ir.sam.hearthstone.server.logic.game.behavioral_models.WeaponLogic;
-import ir.sam.hearthstone.server.logic.game.events.Attack;
-import ir.sam.hearthstone.server.logic.game.events.EndTurn;
-import ir.sam.hearthstone.server.logic.game.events.GameEvent;
-import ir.sam.hearthstone.util.TaskTimer;
+import ir.sam.hearthstone.server.logic.game.events.*;
+import ir.sam.hearthstone.view.model.CardOverview;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import static ir.sam.hearthstone.response.PlayDetails.EventType.ADD_TO_HAND;
+import static ir.sam.hearthstone.response.PlayDetails.EventType.SHOW_MESSAGE;
 
 public class MultiPlayerGame extends AbstractGame {
     public MultiPlayerGame(Server server, GameState gameState, ModelLoader modelLoader) {
@@ -27,8 +29,14 @@ public class MultiPlayerGame extends AbstractGame {
             throw new UnsupportedOperationException();
         if (gameState.getWaitForTarget(gameState.getSideTurn()) != null) {
             actionHolderMap.get(ActionType.Do_ACTION_FOR_TARGET)
-                    .doAction(gameState.getWaitForTarget(gameState.getSideTurn()).getName()
+                    .doAction(gameState.getWaitForTarget(gameState.getSideTurn())
                             , gameState.getHero(side), this);
+            return;
+        }
+        HeroLogic selected = gameState.getHero(side);
+        if (gameState.isHeroPowerSelected(gameState.getSideTurn())) {
+            getActionHolderMap().get(ActionType.DO_ACTION).doAction(
+                    gameState.getHeroPower(gameState.getSideTurn()), selected, this);
             return;
         }
         if (side != gameState.getSideTurn()) {
@@ -41,9 +49,6 @@ public class MultiPlayerGame extends AbstractGame {
             } else if (gameState.isHeroSelected(side.getOther())) {
                 attackHeroToHero(side.getOther());
                 gameState.resetSelected(side.getOther());
-            } else if (gameState.isHeroPowerSelected(side.getOther())) {
-                getActionHolderMap().get(ActionType.DO_ACTION).doAction(
-                        gameState.getHeroPower(side.getOther()).getName(), null, this);
             }
         } else if (gameState.getActiveWeapon(gameState.getSideTurn()) != null
                 && gameState.getActiveWeapon(gameState.getSideTurn()).isHasAttack()) {
@@ -52,10 +57,11 @@ public class MultiPlayerGame extends AbstractGame {
         }
     }
 
+    @Override
     public void attackMinionToHero(MinionLogic minionLogic, Side heroSide) {
         int indexOnGround = gameState.getGround(heroSide.getOther()).indexOf(minionLogic);
         HeroLogic heroLogic = gameState.getHero(heroSide);
-        heroLogic.dealMinionDamage(minionLogic.getAttack(), this, true);
+        heroLogic.dealDamage(minionLogic.getAttack(), this, true);
         minionLogic.setHasSleep(true);
         PlayDetails.Event event = new PlayDetails.EventBuilder(PlayDetails.EventType.ATTACK_MINION_TO_HERO)
                 .setIndex(indexOnGround).setOverview(minionLogic.getMinionOverview())
@@ -65,10 +71,11 @@ public class MultiPlayerGame extends AbstractGame {
         gameState.getGameEvents().add(gameEvent);
     }
 
+    @Override
     public void attackHeroToHero(Side attackerSide) {
         HeroLogic defender = gameState.getHero(attackerSide.getOther());
         WeaponLogic attacker = gameState.getActiveWeapon(attackerSide);
-        defender.dealMinionDamage(attacker.getAttack(), this, true);
+        defender.dealDamage(attacker.getAttack(), this, true);
         attacker.use(gameState);
         PlayDetails.Event event = new PlayDetails.EventBuilder(PlayDetails.EventType.ATTACK_HERO_TO_HERO)
                 .setOverview(attacker.getOverview())
@@ -78,15 +85,12 @@ public class MultiPlayerGame extends AbstractGame {
         gameState.getGameEvents().add(gameEvent);
     }
 
-
     @Override
     public void selectHeroPower(Side client, Side side) {
         if (client == Side.PLAYER_TWO)
             throw new UnsupportedOperationException();
         if (side != gameState.getSideTurn()) return;
-        gameState.resetSelected(side);
-        gameState.setHeroPowerSelected(side, true);
-        getActionHolderMap().get(ActionType.DO_ACTION).doAction(gameState.getHeroPower(side).getName()
+        getActionHolderMap().get(ActionType.DO_ACTION).doAction(gameState.getHeroPower(side)
                 , null, this);
     }
 
@@ -107,8 +111,13 @@ public class MultiPlayerGame extends AbstractGame {
         MinionLogic selected = gameState.getGround(side).get(index);
         if (gameState.getWaitForTarget(gameState.getSideTurn()) != null) {
             actionHolderMap.get(ActionType.Do_ACTION_FOR_TARGET)
-                    .doAction(gameState.getWaitForTarget(gameState.getSideTurn()).getName()
+                    .doAction(gameState.getWaitForTarget(gameState.getSideTurn())
                             , selected, this);
+            return;
+        }
+        if (gameState.isHeroPowerSelected(gameState.getSideTurn())) {
+            getActionHolderMap().get(ActionType.DO_ACTION).doAction(
+                    gameState.getHeroPower(gameState.getSideTurn()), selected, this);
             return;
         }
         if (side != gameState.getSideTurn()) {
@@ -119,24 +128,22 @@ public class MultiPlayerGame extends AbstractGame {
                 } else if (gameState.isHeroSelected(side.getOther())) {
                     attackHeroToMinion(side.getOther(), selected);
                     gameState.resetSelected(side.getOther());
-                }else if (gameState.isHeroPowerSelected(side.getOther())) {
-                    getActionHolderMap().get(ActionType.DO_ACTION).doAction(
-                            gameState.getHeroPower(side.getOther()).getName(), null, this);
                 }
             }
         } else {
-            if (selected.canAttackToMinion(gameState)) {
+            if (selected.canAttackToMinion()) {
                 gameState.resetSelected(side);
                 gameState.setSelectedMinionOnGround(gameState.getSideTurn(), selected);
             }
         }
     }
 
+    @Override
     public void attackMinionToMinion(MinionLogic attacker, MinionLogic defender) {
         int indexOfDefender = gameState.getGround(defender.getSide()).indexOf(defender);
         int indexOfAttacker = gameState.getGround(attacker.getSide()).indexOf(attacker);
-        attacker.dealMinionDamage(defender.getAttack(), this, false);
-        defender.dealMinionDamage(attacker.getAttack(), this, true);
+        attacker.dealDamage(defender.getAttack(), this, false);
+        defender.dealDamage(attacker.getAttack(), this, true);
         attacker.setHasSleep(true);
         PlayDetails.Event event = new PlayDetails.EventBuilder(PlayDetails.EventType.ATTACK_MINION_TO_MINION)
                 .setOverview(attacker.getMinionOverview()).setSide(attacker.getSide().getIndex())
@@ -147,12 +154,13 @@ public class MultiPlayerGame extends AbstractGame {
         gameState.getGameEvents().add(gameEvent);
     }
 
+    @Override
     public void attackHeroToMinion(Side attackerSide, MinionLogic defender) {
         int indexOnGround = gameState.getGround(attackerSide.getOther()).indexOf(defender);
         WeaponLogic attacker = gameState.getActiveWeapon(attackerSide);
         HeroLogic heroLogic = gameState.getHero(attackerSide);
-        heroLogic.dealMinionDamage(defender.getAttack(), this, false);
-        defender.dealMinionDamage(attacker.getAttack(), this, true);
+        heroLogic.dealDamage(defender.getAttack(), this, false);
+        defender.dealDamage(attacker.getAttack(), this, true);
         attacker.use(gameState);
         PlayDetails.Event event = new PlayDetails.EventBuilder(PlayDetails.EventType.ATTACK_HERO_TO_MINION)
                 .setOverview(attacker.getOverview()).setOverview1(heroLogic.getHeroOverview())
@@ -228,6 +236,14 @@ public class MultiPlayerGame extends AbstractGame {
                 , gameState.getDeck(client).size()));
         builder.append(String.format("number of opponent deck cards: %d\n"
                 , gameState.getDeck(client.getOther()).size()));
+        if (gameState.getActiveQuest(Side.PLAYER_ONE) != null) {
+            builder.append(String.format("PLAYER_ONE quest progress: %d\n"
+                    , gameState.getActiveQuest(Side.PLAYER_ONE).getQuestProgress()));
+        }
+        if (gameState.getActiveQuest(Side.PLAYER_TWO) != null) {
+            builder.append(String.format("PLAYER_TWO quest progress: %d\n"
+                    , gameState.getActiveQuest(Side.PLAYER_TWO).getQuestProgress()));
+        }
         builder.append("=====events=====\n");
         List<GameEvent> gameEvents = gameState.getGameEvents();
         for (int i = gameEvents.size() - 1; i >= 0; i--) {
@@ -244,5 +260,52 @@ public class MultiPlayerGame extends AbstractGame {
         List<PlayDetails.Event> result = new ArrayList<>(gameState.getEvents());
         gameState.getEvents().clear();
         return result;
+    }
+
+    @Override
+    public void drawCard(Side side) {
+        if (gameState.getDeck(side).size() > 0) {
+            int randomIndex = (int) (Math.random() * gameState.getDeck(side).size());
+            CardLogic randomCard = gameState.getDeck(side).remove(randomIndex);
+            drawCard(side, randomCard);
+        } else {
+            PlayDetails.Event event = new PlayDetails.EventBuilder(PlayDetails.EventType.END_GAME)
+                    .setMessage(side + " lose").build();
+            getGameState().getEvents().add(event);
+        }
+    }
+
+    @Override
+    public void drawCard(Side side, CardLogic cardLogic) {
+        if (gameState.getHand(side).size() < Server.MAX_HAND_SIZE) {
+            gameState.getHand(side).add(0, cardLogic);
+            visitAll(this, ActionType.DRAW_CARD, cardLogic, side);
+            PlayDetails.Event event = new PlayDetails.EventBuilder(ADD_TO_HAND)
+                    .setOverview(new CardOverview(cardLogic.getCard())).setSide(side.getIndex()).build();
+            GameEvent gameEvent = new DrawCard(side, cardLogic.getCard());
+            gameState.getEvents().add(event);
+            gameState.getGameEvents().add(gameEvent);
+        } else {
+            PlayDetails.Event event = new PlayDetails.EventBuilder(SHOW_MESSAGE)
+                    .setMessage("your Hand is full!!!!!").build();
+            GameEvent gameEvent = new DeleteCard(side, cardLogic.getCard());
+            gameState.getEvents().add(event);
+            gameState.getGameEvents().add(gameEvent);
+        }
+    }
+
+    @Override
+    public void playMinion(MinionLogic minionLogic) {
+        Side side = minionLogic.getSide();
+        Minion minion = minionLogic.getMinion();
+        if (gameState.getGround(side).size() < Server.MAX_GROUND_SIZE) {
+            if (minion.getManaFrz() <= gameState.getMana(side)) {
+                gameState.setSelectedMinionOnHand(side, minionLogic);
+            }
+        } else {
+            PlayDetails.Event event = new PlayDetails.EventBuilder(SHOW_MESSAGE)
+                    .setMessage("ground is full!!!!").build();
+            gameState.getEvents().add(event);
+        }
     }
 }

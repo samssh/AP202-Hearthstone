@@ -104,6 +104,8 @@ public class PlayDetails extends Response {
         ATTACK_MINION_TO_MINION,
         ATTACK_HERO_TO_MINION,
         ATTACK_HERO_TO_HERO,
+        ATTACK_HERO_POWER_TO_HERO,
+        ATTACK_HERO_POWER_TO_MINION,
         PLAY_SPELL,
         PLAY_WEAPON,
         CHANGE_WEAPON,

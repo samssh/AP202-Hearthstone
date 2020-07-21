@@ -9,9 +9,16 @@ import ir.sam.hearthstone.server.logic.game.GameState;
 import ir.sam.hearthstone.server.logic.game.Side;
 import ir.sam.hearthstone.server.logic.game.events.GameEvent;
 import ir.sam.hearthstone.server.logic.game.events.PlayCard;
+import lombok.Getter;
+import lombok.Setter;
 
 public class SpellLogic extends CardLogic {
+    @Getter
+    @Setter
     protected Spell spell;
+    @Getter
+    @Setter
+    protected int value;
 
     public SpellLogic(Side side, Spell spell) {
         super(side);
@@ -36,7 +43,7 @@ public class SpellLogic extends CardLogic {
             PlayDetails.Event event = new PlayDetails.EventBuilder(PlayDetails.EventType.PLAY_SPELL)
             .setSide(side.getIndex()).setIndex(indexOnHand).build();
             gameState.getEvents().add(event);
-            game.getActionHolderMap().get(ActionType.DO_ACTION).doAction(getName(), this, game);
+            game.getActionHolderMap().get(ActionType.DO_ACTION).doAction(this, this, game);
             AbstractGame.visitAll(game, ActionType.PLAY_SPELL, this, side);
         }
     }
@@ -44,12 +51,5 @@ public class SpellLogic extends CardLogic {
     @Override
     public String getName() {
         return spell.getName();
-    }
-
-    @Override
-    public String toString() {
-        return "SpellLogic{" +
-                "spell=" + spell +
-                '}';
     }
 }

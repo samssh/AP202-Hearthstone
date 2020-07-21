@@ -4,17 +4,19 @@ import ir.sam.hearthstone.model.main.ActionType;
 import ir.sam.hearthstone.model.main.Card;
 import ir.sam.hearthstone.model.main.Minion;
 import ir.sam.hearthstone.response.PlayDetails;
+import ir.sam.hearthstone.server.Server;
 import ir.sam.hearthstone.server.logic.game.AbstractGame;
 import ir.sam.hearthstone.server.logic.game.GameState;
 import ir.sam.hearthstone.server.logic.game.Side;
 import ir.sam.hearthstone.server.logic.game.events.GameEvent;
 import ir.sam.hearthstone.server.logic.game.events.PlayCard;
 import ir.sam.hearthstone.server.logic.game.events.SummonMinion;
+import ir.sam.hearthstone.view.model.CardOverview;
 import ir.sam.hearthstone.view.model.MinionOverview;
 import lombok.Getter;
 import lombok.Setter;
 
-public class MinionLogic extends CardLogic {
+public class MinionLogic extends CardLogic implements LiveCharacter {
     @Getter
     @Setter
     private Minion minion;
@@ -39,31 +41,23 @@ public class MinionLogic extends CardLogic {
         return minion.getName();
     }
 
-    private boolean dealDamage(int damage, AbstractGame game, boolean sendEvent) {
+    public void dealDamage(int damage, AbstractGame game, boolean sendEvent) {
         if (hasDivineShield) {
             hasDivineShield = false;
         } else {
+            game.getActionHolderMap().get(ActionType.MINION_TAKE_DAMAGE)
+                    .doAction(this, this, game);
             if (damage > hp) {
                 overkill(game, sendEvent);
-                return false;
+                return;
             } else if (damage == hp) {
                 kill(game, sendEvent);
-                return false;
+                return;
             } else {
                 hp -= damage;
             }
         }
-        return true;
-    }
-
-    public void dealSpellDamage(int damage, AbstractGame game, boolean sendEvent) {
-        boolean ds = hasDivineShield;
-        if (dealDamage(damage, game, sendEvent)) {
-            if (!ds)
-                AbstractGame.visitAll(game, ActionType.SPELL_DAMAGE, this, side.getOther());
-            if (sendEvent)
-                addChangeEvent(game.getGameState());
-        }
+        if (sendEvent) addChangeEventOnGround(game.getGameState());
     }
 
     public void giveTaunt(AbstractGame game) {
@@ -73,14 +67,21 @@ public class MinionLogic extends CardLogic {
         }
     }
 
+    public void giveRush() {
+        if (!hasRush) {
+            hasRush = true;
+        }
+    }
+
     public void setHasSleep(boolean hasSleep, GameState gameState) {
         boolean temp = hasSleep != this.hasSleep;
         setHasSleep(hasSleep);
         if (temp)
-            addChangeEvent(gameState);
+            addChangeEventOnGround(gameState);
     }
 
     public void kill(AbstractGame game, boolean sendEvent) {
+        hp = 0;
         int indexOnGround = game.getGameState().getGround(side).indexOf(this);
         game.getGameState().getGround(side).remove(indexOnGround);
         if (hasTaunt)
@@ -89,48 +90,41 @@ public class MinionLogic extends CardLogic {
                 .setSide(side.getIndex()).setIndex(indexOnGround).build();
         if (sendEvent)
             game.getGameState().getEvents().add(event);
-        game.getActionHolderMap().get(ActionType.DEATH_RATTLE).doAction(getName(), this, game);
+        game.getActionHolderMap().get(ActionType.DEATH_RATTLE).doAction(this, this, game);
         AbstractGame.visitAll(game, ActionType.KILL_MINION, this, side);
     }
 
     public void overkill(AbstractGame game, boolean sendEvent) {
         kill(game, sendEvent);
-        game.getActionHolderMap().get(ActionType.OVERKILL).doAction(this.getName(), this, game);
+        game.getActionHolderMap().get(ActionType.OVERKILL).doAction(this, this, game);
     }
 
-
-    /**
-     * attack enemy to this minion
-     * this can be hero with weapon or minion
-     *
-     * @param damage damage that deals to this minion
-     */
-    public void dealMinionDamage(int damage, AbstractGame game, boolean sendEvent) {
-        boolean ds = hasDivineShield;
-        if (dealDamage(damage, game, sendEvent)) {
-            if (!ds)
-                game.getActionHolderMap().get(ActionType.MINION_TAKE_DAMAGE)
-                        .doAction(getName(), this, game);
-            if (sendEvent)
-                addChangeEvent(game.getGameState());
-        } else hp = 0;
-    }
-
-    private void addChangeEvent(GameState gameState) {
+    private void addChangeEventOnGround(GameState gameState) {
         int indexOnGround = gameState.getGround(side).indexOf(this);
         PlayDetails.Event event = new PlayDetails.EventBuilder(PlayDetails.EventType.CHANGE_IN_GROUND)
                 .setOverview(getMinionOverview()).setSide(side.getIndex()).setIndex(indexOnGround).build();
         gameState.getEvents().add(event);
     }
 
+    private void addChangeEventOnHand(GameState gameState) {
+        int indexOnHand = gameState.getHand(side).indexOf(this);
+        PlayDetails.Event event = new PlayDetails.EventBuilder(PlayDetails.EventType.CHANGE_IN_HAND)
+                .setOverview(new CardOverview(minion)).setSide(side.getIndex()).setIndex(indexOnHand).build();
+        gameState.getEvents().add(event);
+    }
 
-    /**
-     * deal damage from passives and hero powers
-     *
-     * @param damage damage that deals to this minion
-     */
-    public void dealHeroPowerDamage(int damage, AbstractGame game) {
-
+    public void gain(int attack, int hp, GameState gameState, boolean sendEvent, boolean onHand) {
+        if (this.hp <= 0) {
+            minion.setAttFrz(minion.getAttFrz() + attack);
+            minion.setHpFrz(minion.getHpFrz() + hp);
+        } else {
+            this.attack += attack;
+            this.hp += hp;
+        }
+        if (sendEvent) {
+            if (onHand) addChangeEventOnHand(gameState);
+            else addChangeEventOnGround(gameState);
+        }
     }
 
     public void summon(AbstractGame game, int indexOnGround, int indexOnHand) {
@@ -148,10 +142,12 @@ public class MinionLogic extends CardLogic {
      * summon minion without playing this
      */
     public void summon(AbstractGame game, int indexOnGround) {
-        summon0(game, indexOnGround);
         GameState gameState = game.getGameState();
+        if (gameState.getGround(side).size()== Server.MAX_GROUND_SIZE)
+            return;
+        summon0(game, indexOnGround);
         PlayDetails.Event event = new PlayDetails.EventBuilder(PlayDetails.EventType.ADD_TO_GROUND)
-                .setOverview(getMinionOverview()).setSide(side.getIndex()).build();
+                .setIndex(indexOnGround).setOverview(getMinionOverview()).setSide(side.getIndex()).build();
         gameState.getEvents().add(event);
         GameEvent gameEvent = new SummonMinion(side, minion);
         gameState.getGameEvents().add(gameEvent);
@@ -166,7 +162,7 @@ public class MinionLogic extends CardLogic {
         gameState.getGround(side).add(indexOnGround, this);
     }
 
-    public boolean canAttackToMinion(GameState gameState) {
+    public boolean canAttackToMinion() {
         return !hasSleep || hasRush;
     }
 
@@ -174,7 +170,7 @@ public class MinionLogic extends CardLogic {
         restore = Math.min(minion.getHpFrz() - hp, restore);
         if (restore > 0) {
             hp += restore;
-            addChangeEvent(gameState);
+            addChangeEventOnGround(gameState);
         }
     }
 
@@ -204,17 +200,12 @@ public class MinionLogic extends CardLogic {
             int indexOnHand = gameState.getHand(side).indexOf(this);
             GameEvent gameEvent = new PlayCard(side, minion);
             gameState.getGameEvents().add(gameEvent);
-            game.getActionHolderMap().get(ActionType.BATTLE_CRY).doAction(getName(), this, game);
+            game.getActionHolderMap().get(ActionType.BATTLE_CRY).doAction(this, this, game);
             AbstractGame.visitAll(game, ActionType.PLAY_MINION, this, side);
+            if (indexOnGround > gameState.getGround(side).size())
+                indexOnGround = gameState.getGround(side).size();
             this.summon(game, indexOnGround, indexOnHand);
             AbstractGame.visitAll(game, ActionType.ENEMY_PLAY_MINION, this, side.getOther());
         }
-    }
-
-    @Override
-    public String toString() {
-        return "MinionLogic{" +
-                "minion=" + minion +
-                '}';
     }
 }

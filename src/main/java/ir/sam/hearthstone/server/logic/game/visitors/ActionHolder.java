@@ -1,21 +1,19 @@
 package ir.sam.hearthstone.server.logic.game.visitors;
 
-import ir.sam.hearthstone.model.main.ActionType;
 import ir.sam.hearthstone.server.logic.game.AbstractGame;
 import ir.sam.hearthstone.server.logic.game.behavioral_models.CharacterLogic;
+import ir.sam.hearthstone.server.logic.game.behavioral_models.ComplexLogic;
 
 import java.util.Map;
 
 public class ActionHolder {
-    private final Map<String ,Action> actions;
-    private final ActionType actionName;
+    private final Map<String, Action> actions;
 
-    public ActionHolder(ActionType actionName, Map<String,Action> actions) {
-        this.actionName = actionName;
+    public ActionHolder(Map<String, Action> actions) {
         this.actions = actions;
     }
 
-    public void doAction(String name, CharacterLogic characterLogic, AbstractGame game){
-        actions.get(name).doAction(characterLogic,game);
+    public void doAction(ComplexLogic visitor, CharacterLogic characterLogic, AbstractGame game) {
+        actions.get(visitor.getName()).doAction(visitor,characterLogic, game);
     }
 }
