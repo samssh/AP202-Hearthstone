@@ -44,10 +44,10 @@ public class PlayEventExecutor {
                         , (MinionOverview) event.getOverview(), true);
                 break;
             case ADD_TO_HAND:
-                playPanel.getHand()[side].addModel((CardOverview) event.getOverview(), true);
+                playPanel.getHand()[side].addModel(0,(CardOverview) event.getOverview(), true);
                 break;
             case CHANGE_IN_HAND:
-                playPanel.getHand()[side].changeModelNoAnime(index, (CardOverview) event.getOverview());
+                playPanel.getHand()[side].changeModel(index, (CardOverview) event.getOverview());
                 break;
             case REMOVE_FROM_HAND:
                 playPanel.getHand()[side].removeModel(index, true);

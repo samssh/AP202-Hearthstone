@@ -4,6 +4,7 @@ import ir.sam.hearthstone.model.main.ActionType;
 import ir.sam.hearthstone.model.main.ClassOfCard;
 import ir.sam.hearthstone.model.main.Minion;
 import ir.sam.hearthstone.model.main.Rarity;
+import ir.sam.hearthstone.response.PlayDetails;
 import ir.sam.hearthstone.server.logic.game.AbstractGame;
 import ir.sam.hearthstone.server.logic.game.GameState;
 import ir.sam.hearthstone.server.logic.game.Side;
@@ -13,6 +14,7 @@ import java.lang.invoke.MethodHandles;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Vector;
 import java.util.stream.Collectors;
 
 @SuppressWarnings("ALL")
@@ -155,6 +157,9 @@ public class SpellImpl {
                     , Rarity.Common, 0, 1, 1);
             gameState.getGround(side).remove(index);
             MinionLogic minionLogic = new MinionLogic(side, wisp);
+            PlayDetails.Event event = new PlayDetails.EventBuilder(PlayDetails.EventType.REMOVE_FROM_GROUND)
+                    .setSide(side.getIndex()).setIndex(index).build();
+            gameState.getEvents().add(event);
             minionLogic.summon(game, index);
             game.getGameState().setWaitForTarget(game.getGameState().getSideTurn(), null);
         }
@@ -196,9 +201,9 @@ public class SpellImpl {
      */
     private static void sandT(ComplexLogic complexLogic, CharacterLogic characterLogic, AbstractGame game) {
         GameState gameState = game.getGameState();
-        Side side = gameState.getSideTurn().getOther();
+        Side side = gameState.getSideTurn();
         if (characterLogic instanceof MinionLogic
-                && characterLogic.getSide() != complexLogic.getSide()
+                && characterLogic.getSide() == complexLogic.getSide()
                 && (gameState.getGround(side).contains(characterLogic))
                 && complexLogic instanceof SpellLogic) {
             ((MinionLogic) characterLogic).setHasDivineShield(true);
@@ -229,7 +234,7 @@ public class SpellImpl {
         if (complexLogic instanceof SpellLogic) {
             ((SpellLogic) complexLogic).setValue(2);
             AbstractGame.visitAll(game, ActionType.SPELL_DAMAGE, (CharacterLogic) complexLogic, side);
-            gameState.getGround(side.getOther()).forEach(minionLogic -> minionLogic
+            new Vector<>(gameState.getGround(side.getOther())).forEach(minionLogic -> minionLogic
                     .dealDamage(((SpellLogic) complexLogic).getValue(), game, true));
         }
     }
@@ -260,9 +265,11 @@ public class SpellImpl {
                     .collect(Collectors.toList());
             if (hand.size() == 0)
                 return;
+//            System.out.println(hand.stream().map(MinionLogic::getName).collect(Collectors.toList()));
             int randomIndex = (int) (hand.size() * Math.random());
-            MinionLogic summen = hand.get(randomIndex);
-            summen.summon(game, gameState.getGround(side).size(), randomIndex);
+            MinionLogic summon = hand.get(randomIndex);
+            summon.giveRush();
+            summon.summon(game, gameState.getGround(side).size(), gameState.getHand(side).indexOf(summon));
         }
     }
 
@@ -280,6 +287,7 @@ public class SpellImpl {
                         , Rarity.Common, 0, 6, 6);
                 MinionLogic minionLogic = new MinionLogic(side, wisp);
                 minionLogic.summon(game, gameState.getGround(side).size());
+                gameState.setActiveQuest(side,null);
             }
         }
     }
@@ -300,8 +308,8 @@ public class SpellImpl {
                 if (deck.size()==0) return;
                 int randomIndex = (int) (Math.random()*deck.size());
                 deck.get(randomIndex).summon(game,gameState.getGround(side).size());
+                gameState.setActiveQuest(side,null);
             }
         }
     }
-
 }

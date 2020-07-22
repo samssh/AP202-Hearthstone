@@ -62,7 +62,7 @@ public class MultiPlayerGame extends AbstractGame {
         int indexOnGround = gameState.getGround(heroSide.getOther()).indexOf(minionLogic);
         HeroLogic heroLogic = gameState.getHero(heroSide);
         heroLogic.dealDamage(minionLogic.getAttack(), this, true);
-        minionLogic.setHasSleep(true);
+        minionLogic.use();
         PlayDetails.Event event = new PlayDetails.EventBuilder(PlayDetails.EventType.ATTACK_MINION_TO_HERO)
                 .setIndex(indexOnGround).setOverview(minionLogic.getMinionOverview())
                 .setSide(minionLogic.getSide().getIndex()).build();
@@ -144,7 +144,7 @@ public class MultiPlayerGame extends AbstractGame {
         int indexOfAttacker = gameState.getGround(attacker.getSide()).indexOf(attacker);
         attacker.dealDamage(defender.getAttack(), this, false);
         defender.dealDamage(attacker.getAttack(), this, true);
-        attacker.setHasSleep(true);
+        attacker.use();
         PlayDetails.Event event = new PlayDetails.EventBuilder(PlayDetails.EventType.ATTACK_MINION_TO_MINION)
                 .setOverview(attacker.getMinionOverview()).setSide(attacker.getSide().getIndex())
                 .setIndex(indexOfAttacker)
@@ -202,7 +202,7 @@ public class MultiPlayerGame extends AbstractGame {
         if (gameState.getActiveWeapon(gameState.getSideTurn()) != null)
             gameState.getActiveWeapon(gameState.getSideTurn()).setHasAttack(true, gameState);
         gameState.getGround(gameState.getSideTurn()).forEach(
-                minionLogic -> minionLogic.setHasSleep(false, gameState));
+                minionLogic -> minionLogic.removeRushAndGiveSleep(gameState));
         visitAll(this, ActionType.START_TURN, null, gameState.getSideTurn());
         turnStartTime = System.currentTimeMillis();
         timer.setTask(server::endTurn, Server.TURN_TIME);

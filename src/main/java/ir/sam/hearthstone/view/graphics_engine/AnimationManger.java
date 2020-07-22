@@ -104,6 +104,13 @@ public class AnimationManger {
         }
     }
 
+    public void clear() {
+        synchronized (painterGroups){
+            painterGroups.forEach(PainterGroup::clear);
+            painterGroups.clear();
+        }
+    }
+
     private static class PainterGroup {
         private final List<PaintByTime> painters;
         private volatile long lastPaint;

@@ -68,7 +68,7 @@ public class MultiplayerGameBuilder extends GameBuilder {
         if (handP2.size()==0){
             finalizeHand(handP1,handP1state,deckP1);
             gameStateBuilder.setHandP1(handP1).setDeckCardsP1(deckP1);
-            deckToList(deckP2,gameStateBuilder.getDeckP1());
+            deckToList(deckP2,gameStateBuilder.getDeckP2());
             pickCards(handP2,handP2state,deckP2, STARTING_HAND_CARDS);
             return sendCards(handP2,handP2state);
         }else {
@@ -90,7 +90,7 @@ public class MultiplayerGameBuilder extends GameBuilder {
         Collections.reverse(hand);
         hand.forEach(card -> result.getGameState().getEvents().add(
                 new PlayDetails.EventBuilder(PlayDetails.EventType.ADD_TO_HAND)
-                .setOverview(new CardOverview(card.getCard())).setSide(side.getIndex()).build()));
+                        .setOverview(new CardOverview(card.getCard())).setSide(side.getIndex()).build()));
         Collections.reverse(hand);
     }
 }
