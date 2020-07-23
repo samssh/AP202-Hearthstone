@@ -248,7 +248,7 @@ public class MinionImpl {
      * ENEMY_PLAY_MINION
      */
     private static void kingDred(ComplexLogic complexLogic, CharacterLogic characterLogic, AbstractGame game) {
-        if (characterLogic instanceof MinionLogic && complexLogic instanceof MinionLogic)
+        if (characterLogic instanceof MinionLogic && complexLogic instanceof MinionLogic && ((MinionLogic) characterLogic).getHp()>0)
             game.attackMinionToMinion(((MinionLogic) complexLogic), ((MinionLogic) characterLogic));
     }
 
@@ -282,22 +282,22 @@ public class MinionImpl {
     }
 
     /**
-     * BATTLE_CRY
+     * DEATH_RATTLE
      */
     private static void pinata(ComplexLogic complexLogic, CharacterLogic characterLogic, AbstractGame game) {
         pickRandom(legendaryList).ifPresent(minion -> {
-            MinionLogic minionLogic = new MinionLogic(game.getGameState().getSideTurn(), minion);
-            game.getGameState().getHand(game.getGameState().getSideTurn()).add(minionLogic);
+            Side side = characterLogic.getSide();
+            MinionLogic minionLogic = new MinionLogic(side, minion);
+            game.getGameState().getHand(side).add(minionLogic);
             PlayDetails.Event event = new PlayDetails.EventBuilder(PlayDetails.EventType.ADD_TO_HAND)
-                    .setSide(game.getGameState().getSideTurn().getIndex())
-                    .setIndex(game.getGameState().getHand(game.getGameState().getSideTurn()).size())
+                    .setSide(side.getIndex()).setIndex(game.getGameState().getHand(side).size())
                     .setOverview(new CardOverview(minion)).build();
             game.getGameState().getEvents().add(event);
         });
     }
 
     /**
-     * BATTLE_CRY
+     * END_TURN
      */
     private static void young(ComplexLogic complexLogic, CharacterLogic characterLogic, AbstractGame game) {
         GameState gameState = game.getGameState();
