@@ -1,16 +1,12 @@
 package ir.sam.hearthstone.model.main;
 
-import ir.sam.hearthstone.hibernate.MapToStringConverter;
 import ir.sam.hearthstone.hibernate.SaveAble;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 
-import javax.persistence.Column;
-import javax.persistence.Convert;
-import javax.persistence.Entity;
-import javax.persistence.Id;
+import javax.persistence.*;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -34,7 +30,8 @@ public class Passive implements SaveAble, Cloneable, HasAction {
     @Setter
     @Getter
     @Column
-    @Convert(converter = MapToStringConverter.class)
+    @ElementCollection
+    @MapKeyEnumerated(EnumType.STRING)
     protected Map<ActionType, String> methods;
 
     public Passive() {

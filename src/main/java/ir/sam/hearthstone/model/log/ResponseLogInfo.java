@@ -21,15 +21,15 @@ public class ResponseLogInfo {
     @Column
     @Getter
     @Setter
-    private String passives, hand, ground, weapon, hero, heroPower, eventLog;
+    private String type, hand, ground, weapon, hero, heroPower, eventLog;
     @Column
     @Getter
     @Setter
-    private String sell, buy, bigDeckOverviews, decks, deckCards, deckName;
-    @Column
+    private String sell, buy, panel, message, deckName;
+    @Column(length = 100000)
     @Getter
     @Setter
-    private String type, message, heroNames, classOfCardNames, cards, panel;
+    private String passives, decks, heroNames, classOfCardNames, cards, bigDeckOverviews, deckCards;
     @Column
     @Getter
     @Setter

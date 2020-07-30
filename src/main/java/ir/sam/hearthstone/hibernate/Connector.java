@@ -8,9 +8,6 @@ import org.hibernate.boot.MetadataSources;
 import org.hibernate.boot.registry.StandardServiceRegistry;
 import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
 
-import javax.persistence.TypedQuery;
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
 import java.io.*;
 import java.util.HashSet;
 import java.util.List;
@@ -100,6 +97,7 @@ public class Connector {
     }
 
     public void close() {
+        sessionFactory.close();
         worker.stop();
     }
 
@@ -118,7 +116,7 @@ public class Connector {
     }
 
     public <E extends SaveAble> E fetch(Class<E> entity, Serializable id) {
-        synchronized (Connector.class) {
+        synchronized (staticLock) {
             Session session = sessionFactory.openSession();
             E result = session.get(entity, id);
             session.close();
@@ -126,51 +124,31 @@ public class Connector {
         }
     }
 
-
     public <E extends SaveAble> List<E> fetchAll(Class<E> entity) {
+        String hql = "FROM " + entity.getName();
+        return executeHQL(hql,entity);
+    }
+
+    public <E extends SaveAble> List<E> executeHQL(String hql,Class<E> entity) {
         synchronized (staticLock) {
             Session session = sessionFactory.openSession();
-            List<E> result = session.createQuery("from " + entity.getName(), entity).getResultList();
+            List<E> result = session.createQuery(hql, entity).getResultList();
             session.close();
             return result;
         }
     }
 
-    public CriteriaBuilder getCriteriaBuilder() {
+    public<E extends SaveAble> List<E> executeSQLQuery(String sql,Class<E> entity){
         synchronized (staticLock) {
             Session session = sessionFactory.openSession();
-            CriteriaBuilder result = session.getCriteriaBuilder();
-            session.close();
-            return result;
-        }
-    }
-
-    public <E> TypedQuery<E> createQuery(CriteriaQuery<E> criteriaQuery) {
-        synchronized (staticLock) {
-            Session session = sessionFactory.openSession();
-            TypedQuery<E> result = session.createQuery(criteriaQuery);
-            session.close();
-            return result;
-        }
-    }
-
-    public <E> CriteriaQuery<E> createCriteriaQuery(Class<E> entity) {
-        synchronized (staticLock) {
-            Session session = sessionFactory.openSession();
-            CriteriaBuilder criteriaBuilder = session.getCriteriaBuilder();
-            CriteriaQuery<E> result = criteriaBuilder.createQuery(entity);
+            List<E> result = session.createNativeQuery(sql,entity).getResultList();
             session.close();
             return result;
         }
     }
 
     public <E extends SaveAble> List<E> fetchWithRestriction(Class<E> entity, String fieldName, Object value) {
-        synchronized (staticLock) {
-            Session session = sessionFactory.openSession();
-            List<E> result = session.createQuery("from " + entity.getName() + " where " + fieldName
-                    + "=" + "'" + value + "'", entity).getResultList();
-            session.close();
-            return result;
-        }
+        String hql = "from " + entity.getName() + " where " + fieldName + "=" + "'" + value + "'";
+        return executeHQL(hql,entity);
     }
 }
