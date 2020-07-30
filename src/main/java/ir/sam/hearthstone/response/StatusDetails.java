@@ -1,6 +1,5 @@
 package ir.sam.hearthstone.response;
 
-import ir.sam.hearthstone.client.Client;
 import ir.sam.hearthstone.view.model.BigDeckOverview;
 import lombok.Getter;
 
@@ -15,12 +14,7 @@ public class StatusDetails extends Response {
     }
 
     @Override
-    public void execute(Client client) {
-        client.setStatusDetails(bigDeckOverviews);
-    }
-
-    @Override
-    public void accept(ResponseLogInfoVisitor visitor) {
-        visitor.setStatusDetailsInfo(this);
+    public void execute(ResponseExecutor responseExecutor) {
+        responseExecutor.setStatusDetails(bigDeckOverviews);
     }
 }

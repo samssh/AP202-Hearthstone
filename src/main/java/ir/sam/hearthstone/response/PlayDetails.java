@@ -1,6 +1,5 @@
 package ir.sam.hearthstone.response;
 
-import ir.sam.hearthstone.client.Client;
 import ir.sam.hearthstone.view.model.UnitOverview;
 import lombok.Getter;
 import lombok.Setter;
@@ -28,16 +27,11 @@ public class PlayDetails extends Response {
     }
 
     @Override
-    public void execute(Client client) {
-        client.setPlayDetail(events, eventLog, mana, time);
+    public void execute(ResponseExecutor responseExecutor) {
+        responseExecutor.setPlayDetail(events, eventLog, mana, time);
     }
 
-    @Override
-    public void accept(ResponseLogInfoVisitor visitor) {
-        visitor.setPlayDetailsInfo(this);
-    }
-
-    @ToString
+    @ToString(includeFieldNames = false)
     public static class Event {
         @Getter
         private final EventType type;
@@ -62,7 +56,7 @@ public class PlayDetails extends Response {
         }
     }
 
-    public static class EventBuilder{
+    public static class EventBuilder {
         private final EventType type;
         @Setter
         @Accessors(chain = true)
@@ -84,8 +78,8 @@ public class PlayDetails extends Response {
             side = -1;
         }
 
-        public Event build(){
-            return new Event(type,overview,overview1,index,side,secondIndex,message);
+        public Event build() {
+            return new Event(type, overview, overview1, index, side, secondIndex, message);
         }
     }
 

@@ -6,8 +6,9 @@ import lombok.ToString;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
-@ToString(exclude = {"image"})
+@ToString(includeFieldNames = false)
 public class PassiveOverview extends Overview{
+    @ToString.Exclude
     private final BufferedImage image;
 
     public PassiveOverview(Passive p) {

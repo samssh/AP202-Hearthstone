@@ -8,9 +8,10 @@ import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.awt.image.ColorModel;
 
-@ToString(exclude = {"big", "small"})
+@ToString(includeFieldNames = false)
 public class HeroPowerOverview extends UnitOverview {
     private final int mana;
+    @ToString.Exclude
     private final BufferedImage big, small;
 
     public HeroPowerOverview(HeroPower heroPower) {

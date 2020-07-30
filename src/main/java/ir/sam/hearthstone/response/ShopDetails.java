@@ -1,6 +1,5 @@
 package ir.sam.hearthstone.response;
 
-import ir.sam.hearthstone.client.Client;
 import ir.sam.hearthstone.view.model.CardOverview;
 import lombok.Getter;
 
@@ -19,12 +18,7 @@ public class ShopDetails extends Response {
     }
 
     @Override
-    public void execute(Client client) {
-        client.setShopDetails(sell, buy, coins);
-    }
-
-    @Override
-    public void accept(ResponseLogInfoVisitor visitor) {
-        visitor.setShopDetailsInfo(this);
+    public void execute(ResponseExecutor responseExecutor) {
+        responseExecutor.setShopDetails(sell, buy, coins);
     }
 }

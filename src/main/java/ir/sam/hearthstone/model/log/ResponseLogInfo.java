@@ -1,15 +1,20 @@
 package ir.sam.hearthstone.model.log;
 
 import ir.sam.hearthstone.response.*;
-import ir.sam.hearthstone.util.Visitable;
+import ir.sam.hearthstone.view.model.BigDeckOverview;
+import ir.sam.hearthstone.view.model.CardOverview;
+import ir.sam.hearthstone.view.model.PassiveOverview;
+import ir.sam.hearthstone.view.model.SmallDeckOverview;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
-import ir.sam.hearthstone.response.ResponseLogInfoVisitor;
+import ir.sam.hearthstone.response.ResponseExecutor;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
+import java.util.Arrays;
+import java.util.List;
 
 @Entity
 @EqualsAndHashCode(of = "id")
@@ -21,94 +26,122 @@ public class ResponseLogInfo {
     @Column
     @Getter
     @Setter
-    private String type, hand, ground, weapon, hero, heroPower, eventLog;
+    private long time;
     @Column
     @Getter
     @Setter
-    private String sell, buy, panel, message, deckName;
-    @Column(length = 100000)
+    private String type, hand, ground, weapon, hero, heroPower, eventLog, panel,
+            message, deckName, cardName, eventType, deckOverview, cardOverview, manas;
+    @Column(length = 200000)
     @Getter
     @Setter
-    private String passives, decks, heroNames, classOfCardNames, cards, bigDeckOverviews, deckCards;
+    private String sell, buy, passives, decks, heroNames, classOfCardNames,
+            cards, bigDeckOverviews, deckCards, events, passiveList;
     @Column
     @Getter
     @Setter
-    private boolean success, canAddDeck, canChangeHero;
+    private boolean success, canAddDeck, canChangeHero, showButton;
     @Column
     @Getter
     @Setter
-    private int coins, mana;
+    private int coins, mana, index;
 
     public ResponseLogInfo() {
     }
 
-    public ResponseLogInfo(Visitable<ResponseLogInfoVisitor> response, long id) {
+    public ResponseLogInfo(Response response, long id) {
         this.id = id;
         type = response.getClass().getSimpleName();
-        response.accept(new Visitor());
+        response.execute(new SetDetails());
     }
 
 
-    private class Visitor implements ResponseLogInfoVisitor {
-
+    private class SetDetails implements ResponseExecutor {
         @Override
-        public void setPassiveDetailsInfo(PassiveDetails response) {
-            if (response.getPassives() != null)
-                passives = response.getPassives().toString();
-
+        public void login(boolean success, String message) {
+            setSuccess(success);
+            setMessage(message);
         }
 
         @Override
-        public void setPlayDetailsInfo(PlayDetails playDetails) {
-//            hand = playDetails.getHand().toString();
-//            ground = playDetails.getGround().toString();
-//            if (playDetails.getWeapon() != null)
-//                weapon = playDetails.getWeapon().toString();
-//            hero = playDetails.getHero().toString();
-//            heroPower = playDetails.getHeroPower().toString();
-//            mana = playDetails.getMana();
-//            deckCards = playDetails.getDeckCards() + "";
-//            eventLog = playDetails.getEventLog();
+        public void setShopDetails(List<CardOverview> sell, List<CardOverview> buy, int coin) {
+            setSell(sell.toString());
+            setBuy(buy.toString());
+            setCoins(coin);
         }
 
         @Override
-        public void setGoToInfo(GoTo goTo) {
-            message = goTo.getMessage();
-            panel = goTo.getPanel();
+        public void putShopEvent(String cardName, String type, int coins) {
+            setCardName(cardName);
+            setEventType(type);
+            setCoins(coins);
         }
 
         @Override
-        public void setShowMessageInfo(ShowMessage showMessage) {
-            message = showMessage.getMessage();
+        public void setStatusDetails(List<BigDeckOverview> bigDeckOverviews) {
+            setBigDeckOverviews(bigDeckOverviews.toString());
         }
 
         @Override
-        public void setCollectionDetailsInfo(AllCollectionDetails allCollectionDetails) {
-            decks = allCollectionDetails.getDecks().toString();
-            cards = allCollectionDetails.getCards().toString();
-            if (allCollectionDetails.getDeckCards() != null)
-                deckCards = allCollectionDetails.getDeckCards().toString();
-            deckName = allCollectionDetails.getDeckName();
-            canAddDeck = allCollectionDetails.isCanAddDeck();
-            canChangeHero = allCollectionDetails.isCanChangeHero();
+        public void setCollectionDetail(List<CardOverview> cards, List<SmallDeckOverview> decks, List<CardOverview> deckCards
+                , boolean canAddDeck, boolean canChangeHero, String deckName, List<String> heroNames, List<String> classOfCardNames) {
+            setCards(cards.toString());
+            setDecks(decks.toString());
+            setDeckCards(deckCards.toString());
+            setCanAddDeck(canAddDeck);
+            setCanChangeHero(canChangeHero);
+            setDeckName(deckName);
+            setHeroNames(heroNames.toString());
+            setClassOfCardNames(classOfCardNames.toString());
         }
 
         @Override
-        public void setStatusDetailsInfo(StatusDetails statusDetails) {
-            bigDeckOverviews = statusDetails.getBigDeckOverviews().toString();
+        public void putCollectionDeckEvent(String type, String deckName, SmallDeckOverview newDeck) {
+            setEventType(type);
+            setDeckName(deckName);
+            setDeckOverview(newDeck.toString());
         }
 
         @Override
-        public void setShopDetailsInfo(ShopDetails shopDetails) {
-            buy = shopDetails.getBuy().toString();
-            sell = shopDetails.getSell().toString();
-            coins = shopDetails.getCoins();
+        public void putCollectionCardEvent(String type, String cardName, boolean canAddDeck, boolean canChangeHero) {
+            setEventType(type);
+            setCardName(cardName);
+            setCanAddDeck(canAddDeck);
+            setCanChangeHero(canChangeHero);
         }
 
         @Override
-        public void setLoginResponseInfo(LoginResponse loginResponse) {
-            success = loginResponse.isSuccess();
-            message = loginResponse.getMessage();
+        public void showMessage(String message) {
+            setMessage(message);
+        }
+
+        @Override
+        public void goTo(String panel, String message) {
+            setPanel(panel);
+            setMessage(message);
+        }
+
+        @Override
+        public void setPassives(List<PassiveOverview> passives, List<SmallDeckOverview> decks, List<CardOverview> cards, String message, boolean showButton) {
+            setPassiveList(passives.toString());
+            setDecks(decks.toString());
+            setCards(cards.toString());
+            setMessage(message);
+            setShowButton(showButton);
+        }
+
+        @Override
+        public void changeCardOnPassive(CardOverview cardOverview, int index) {
+            setCardOverview(cardOverview.toString());
+            setIndex(index);
+        }
+
+        @Override
+        public void setPlayDetail(List<PlayDetails.Event> events, String eventLog, int[] mana, long time) {
+            setEvents(events.toString());
+            setEventLog(eventLog);
+            setManas(Arrays.toString(mana));
+            setTime(time);
         }
     }
 }

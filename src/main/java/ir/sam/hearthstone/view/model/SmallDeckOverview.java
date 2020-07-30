@@ -6,8 +6,9 @@ import lombok.ToString;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
-@ToString(exclude = {"image"})
+@ToString(includeFieldNames = false)
 public class SmallDeckOverview extends Overview{
+    @ToString.Exclude
     private final BufferedImage image;
     public SmallDeckOverview(Deck deck) {
         super(deck.getName(),deck.getHero().getName());

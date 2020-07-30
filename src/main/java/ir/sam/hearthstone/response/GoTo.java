@@ -1,6 +1,5 @@
 package ir.sam.hearthstone.response;
 
-import ir.sam.hearthstone.client.Client;
 import lombok.Getter;
 
 public class GoTo extends Response {
@@ -12,14 +11,8 @@ public class GoTo extends Response {
         this.message = message;
     }
 
-
     @Override
-    public void execute(Client client) {
-        client.goTo(panel, message);
-    }
-
-    @Override
-    public void accept(ResponseLogInfoVisitor visitor) {
-        visitor.setGoToInfo(this);
+    public void execute(ResponseExecutor responseExecutor) {
+        responseExecutor.goTo(panel, message);
     }
 }

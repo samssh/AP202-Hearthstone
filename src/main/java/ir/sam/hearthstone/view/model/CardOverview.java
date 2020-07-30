@@ -12,7 +12,7 @@ import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.awt.image.ColorModel;
 
-@ToString(exclude = {"big", "small"})
+@ToString(includeFieldNames = false)
 public class CardOverview extends UnitOverview {
     @Getter
     @Setter
@@ -20,6 +20,7 @@ public class CardOverview extends UnitOverview {
     private final int price, mana;
     protected final int att, hp;
     private final boolean showPrice;
+    @ToString.Exclude
     protected BufferedImage big, small;
 
     public CardOverview(Card card) {

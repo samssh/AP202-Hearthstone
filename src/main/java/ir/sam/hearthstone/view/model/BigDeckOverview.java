@@ -7,15 +7,17 @@ import lombok.ToString;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.text.DecimalFormat;
-@ToString(exclude = {"image"})
+
+@ToString(includeFieldNames = false)
 public class BigDeckOverview extends Overview {
     private final String cardName;
-    private final int games,wins;
-    private final double winRate,manaAverage;
+    private final int games, wins;
+    private final double winRate, manaAverage;
+    @ToString.Exclude()
     private final BufferedImage image;
 
-    public BigDeckOverview(Deck deck , String cardName) {
-        super(deck.getName(),deck.getHero().getName());
+    public BigDeckOverview(Deck deck, String cardName) {
+        super(deck.getName(), deck.getHero().getName());
         this.cardName = cardName;
         this.games = deck.getGames();
         this.wins = deck.getWins();

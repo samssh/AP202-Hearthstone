@@ -8,6 +8,7 @@ import ir.sam.hearthstone.requests.*;
 import ir.sam.hearthstone.response.PlayDetails;
 import ir.sam.hearthstone.response.Response;
 import ir.sam.hearthstone.resource_manager.ConfigFactory;
+import ir.sam.hearthstone.response.ResponseExecutor;
 import ir.sam.hearthstone.util.Loop;
 import ir.sam.hearthstone.util.Updatable;
 import ir.sam.hearthstone.view.MyFrame;
@@ -22,7 +23,7 @@ import java.util.*;
 
 import static ir.sam.hearthstone.view.PanelType.*;
 
-public class Client {
+public class Client implements ResponseExecutor {
     private final JFrame frame;
     @Getter
     private final Map<PanelType, JPanel> panels;
@@ -98,6 +99,7 @@ public class Client {
         System.exit(0);
     }
 
+    @Override
     public void login(boolean success, String message) {
         LoginPanel panel = (LoginPanel) panels.get(LOGIN);
         if (success) {
@@ -168,6 +170,7 @@ public class Client {
         connector.save(new RequestLog(request, username));
     }
 
+    @Override
     public void setShopDetails(List<CardOverview> sell, List<CardOverview> buy, int coin) {
         if (now != SHOP) {
             now = SHOP;
@@ -179,12 +182,13 @@ public class Client {
         shopPanel.setCoins(coin);
     }
 
+    @Override
     public void putShopEvent(String cardName, String type, int coins) {
         ShopPanel shopPanel = (ShopPanel) panels.get(SHOP);
         shopPanel.putShopEvent(cardName, type, coins);
     }
 
-
+    @Override
     public void setStatusDetails(List<BigDeckOverview> bigDeckOverviews) {
         StatusPanel statusPanel = (StatusPanel) panels.get(STATUS);
         statusPanel.setDeckBoxList(bigDeckOverviews);
@@ -194,6 +198,7 @@ public class Client {
         }
     }
 
+    @Override
     public void setCollectionDetail(List<CardOverview> cards, List<SmallDeckOverview> decks,
                                     List<CardOverview> deckCards, boolean canAddDeck,
                                     boolean canChangeHero, String deckName,
@@ -206,19 +211,23 @@ public class Client {
         }
     }
 
+    @Override
     public void putCollectionDeckEvent(String type, String deckName, SmallDeckOverview newDeck) {
         ((CollectionPanel) panels.get(COLLECTION)).putDeckEvent(type, deckName, newDeck);
     }
 
+    @Override
     public void putCollectionCardEvent(String type, String cardName, boolean canAddDeck
             , boolean canChangeHero) {
         ((CollectionPanel) panels.get(COLLECTION)).putCardEvent(type, cardName, canAddDeck, canChangeHero);
     }
 
+    @Override
     public void showMessage(String message) {
         JOptionPane.showMessageDialog(frame, message);
     }
 
+    @Override
     public void goTo(String panel, String message) {
         try {
             PanelType p = valueOf(panel);
@@ -240,25 +249,28 @@ public class Client {
         connector.save(new RequestLog(request, username));
     }
 
+    @Override
     public void setPassives(List<PassiveOverview> passives, List<SmallDeckOverview> decks
             , List<CardOverview> cards, String message, boolean showButton) {
-        ((PassivePanel) panels.get(PASSIVE)).setDetails(passives, decks, cards, message,showButton);
+        ((PassivePanel) panels.get(PASSIVE)).setDetails(passives, decks, cards, message, showButton);
         if (now != PASSIVE) {
             now = PASSIVE;
             updateFrame();
         }
     }
-    public void changeCardOnPassive(CardOverview cardOverview,int index){
-        ((PassivePanel) panels.get(PASSIVE)).changeCard(cardOverview,index);
+
+    @Override
+    public void changeCardOnPassive(CardOverview cardOverview, int index) {
+        ((PassivePanel) panels.get(PASSIVE)).changeCard(cardOverview, index);
     }
 
+    @Override
     public void setPlayDetail(List<PlayDetails.Event> events, String eventLog
-            , int[] mana,long time) {
-        ((PlayPanel) panels.get(PLAY)).setDetails(events,eventLog,mana,time);
+            , int[] mana, long time) {
+        ((PlayPanel) panels.get(PLAY)).setDetails(events, eventLog, mana, time);
         if (now != PLAY) {
             now = PLAY;
             updateFrame();
         }
     }
-
 }

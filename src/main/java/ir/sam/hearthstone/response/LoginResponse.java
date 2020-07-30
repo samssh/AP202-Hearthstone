@@ -1,6 +1,5 @@
 package ir.sam.hearthstone.response;
 
-import ir.sam.hearthstone.client.Client;
 import lombok.Getter;
 
 public class LoginResponse extends Response {
@@ -15,12 +14,7 @@ public class LoginResponse extends Response {
     }
 
     @Override
-    public void execute(Client client) {
-        client.login(success, message);
-    }
-
-    @Override
-    public void accept(ResponseLogInfoVisitor visitor) {
-        visitor.setLoginResponseInfo(this);
+    public void execute(ResponseExecutor responseExecutor) {
+        responseExecutor.login(success, message);
     }
 }

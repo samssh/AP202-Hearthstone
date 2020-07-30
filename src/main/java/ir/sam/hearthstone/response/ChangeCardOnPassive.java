@@ -1,9 +1,8 @@
 package ir.sam.hearthstone.response;
 
-import ir.sam.hearthstone.client.Client;
 import ir.sam.hearthstone.view.model.CardOverview;
 
-public class ChangeCardOnPassive extends Response{
+public class ChangeCardOnPassive extends Response {
     private final CardOverview cardOverview;
     private final int index;
 
@@ -13,12 +12,7 @@ public class ChangeCardOnPassive extends Response{
     }
 
     @Override
-    public void execute(Client client) {
-        client.changeCardOnPassive(cardOverview,index);
-    }
-
-    @Override
-    public void accept(ResponseLogInfoVisitor responseLogInfoVisitor) {
-
+    public void execute(ResponseExecutor responseExecutor) {
+        responseExecutor.changeCardOnPassive(cardOverview, index);
     }
 }

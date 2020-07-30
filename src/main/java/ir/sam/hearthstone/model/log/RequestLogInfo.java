@@ -35,10 +35,10 @@ public class RequestLogInfo {
     public RequestLogInfo(Request request, long id) {
         type = request.getClass().getSimpleName();
         this.id = id;
-        request.execute(new Logger());
+        request.execute(new SetDetails());
     }
 
-    private class Logger implements RequestExecutor {
+    private class SetDetails implements RequestExecutor {
 
         @Override
         public void login(String username, String password, int mode) {

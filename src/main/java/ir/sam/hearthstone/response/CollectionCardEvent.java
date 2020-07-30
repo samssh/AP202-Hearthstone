@@ -1,7 +1,5 @@
 package ir.sam.hearthstone.response;
 
-import ir.sam.hearthstone.client.Client;
-
 public class CollectionCardEvent extends Response {
     private final String type;
     private final String cardName;
@@ -15,11 +13,7 @@ public class CollectionCardEvent extends Response {
     }
 
     @Override
-    public void execute(Client client) {
-        client.putCollectionCardEvent(type,cardName,canAddDeck,canChangeHero);
-    }
-
-    @Override
-    public void accept(ResponseLogInfoVisitor responseLogInfoVisitor) {
+    public void execute(ResponseExecutor responseExecutor) {
+        responseExecutor.putCollectionCardEvent(type, cardName, canAddDeck, canChangeHero);
     }
 }

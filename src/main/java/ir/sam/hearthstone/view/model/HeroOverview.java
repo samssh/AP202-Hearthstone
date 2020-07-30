@@ -1,6 +1,5 @@
 package ir.sam.hearthstone.view.model;
 
-import ir.sam.hearthstone.model.main.Hero;
 import ir.sam.hearthstone.resource_manager.ImageLoader;
 import ir.sam.hearthstone.server.logic.game.behavioral_models.HeroLogic;
 import lombok.ToString;
@@ -9,11 +8,12 @@ import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.awt.image.ColorModel;
 
-@ToString(exclude = {"big", "small"})
+@ToString(includeFieldNames = false)
 public class HeroOverview extends UnitOverview {
     static final BufferedImage defImage = ImageLoader.getInstance().getEffect("defence");
     private final int hp;
     private final int defence;
+    @ToString.Exclude
     private final BufferedImage big, small;
 
     public HeroOverview(HeroLogic heroLogic) {

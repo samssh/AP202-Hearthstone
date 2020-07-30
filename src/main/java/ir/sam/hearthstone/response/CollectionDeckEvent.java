@@ -1,9 +1,8 @@
 package ir.sam.hearthstone.response;
 
-import ir.sam.hearthstone.client.Client;
 import ir.sam.hearthstone.view.model.SmallDeckOverview;
 
-public class CollectionDeckEvent extends Response{
+public class CollectionDeckEvent extends Response {
     private final String type;
     private final SmallDeckOverview newDeck;
     private final String deckName;
@@ -19,12 +18,7 @@ public class CollectionDeckEvent extends Response{
     }
 
     @Override
-    public void execute(Client client) {
-        client.putCollectionDeckEvent(type,deckName,newDeck);
-    }
-
-    @Override
-    public void accept(ResponseLogInfoVisitor responseLogInfoVisitor) {
-
+    public void execute(ResponseExecutor responseExecutor) {
+        responseExecutor.putCollectionDeckEvent(type, deckName, newDeck);
     }
 }

@@ -1,12 +1,11 @@
 package ir.sam.hearthstone.response;
 
-import ir.sam.hearthstone.client.Client;
 import ir.sam.hearthstone.view.model.CardOverview;
 import lombok.Getter;
 
 import java.util.List;
 
-public class CollectionAllCards extends Response{
+public class CollectionAllCards extends Response {
     @Getter
     private final List<CardOverview> cards;
     @Getter
@@ -26,13 +25,8 @@ public class CollectionAllCards extends Response{
     }
 
     @Override
-    public void execute(Client client) {
-        client.setCollectionDetail(cards,null,deckCards,canAddDeck,canChangeHero,deckName,
-                null,null);
-    }
-
-    @Override
-    public void accept(ResponseLogInfoVisitor responseLogInfoVisitor) {
-
+    public void execute(ResponseExecutor responseExecutor) {
+        responseExecutor.setCollectionDetail(cards, null, deckCards, canAddDeck, canChangeHero, deckName,
+                null, null);
     }
 }

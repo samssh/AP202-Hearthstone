@@ -1,6 +1,5 @@
 package ir.sam.hearthstone.response;
 
-import ir.sam.hearthstone.client.Client;
 import lombok.Getter;
 
 public class ShowMessage extends Response {
@@ -12,12 +11,7 @@ public class ShowMessage extends Response {
     }
 
     @Override
-    public void execute(Client client) {
-        client.showMessage(message);
-    }
-
-    @Override
-    public void accept(ResponseLogInfoVisitor visitor) {
-        visitor.setShowMessageInfo(this);
+    public void execute(ResponseExecutor responseExecutor) {
+        responseExecutor.showMessage(message);
     }
 }

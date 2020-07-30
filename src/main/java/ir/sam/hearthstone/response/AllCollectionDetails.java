@@ -1,6 +1,5 @@
 package ir.sam.hearthstone.response;
 
-import ir.sam.hearthstone.client.Client;
 import ir.sam.hearthstone.view.model.CardOverview;
 import ir.sam.hearthstone.view.model.SmallDeckOverview;
 import lombok.Getter;
@@ -35,13 +34,8 @@ public class AllCollectionDetails extends Response {
     }
 
     @Override
-    public void execute(Client client) {
-        client.setCollectionDetail(cards, decks, deckCards, canAddDeck, canChangeHero,
-                deckName,heroNames,classOfCardNames);
-    }
-
-    @Override
-    public void accept(ResponseLogInfoVisitor visitor) {
-        visitor.setCollectionDetailsInfo(this);
+    public void execute(ResponseExecutor responseExecutor) {
+        responseExecutor.setCollectionDetail(cards, decks, deckCards, canAddDeck, canChangeHero,
+                deckName, heroNames, classOfCardNames);
     }
 }

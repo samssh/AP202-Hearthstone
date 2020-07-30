@@ -1,15 +1,9 @@
 package ir.sam.hearthstone.response;
 
-import ir.sam.hearthstone.client.Client;
-
-public class ShopEvent extends Response{
+public class ShopEvent extends Response {
     private final String cardName;
     private final String type;
     private final int coins;
-
-//    public ShopEvent(String cardName, String type) {
-//        this(cardName, type, coins);
-//    }
 
     public ShopEvent(String cardName, String type, int coins) {
         this.cardName = cardName;
@@ -18,12 +12,7 @@ public class ShopEvent extends Response{
     }
 
     @Override
-    public void execute(Client client) {
-        client.putShopEvent(cardName,type,coins);
-    }
-
-    @Override
-    public void accept(ResponseLogInfoVisitor responseLogInfoVisitor) {
-
+    public void execute(ResponseExecutor responseExecutor) {
+        responseExecutor.putShopEvent(cardName, type, coins);
     }
 }
