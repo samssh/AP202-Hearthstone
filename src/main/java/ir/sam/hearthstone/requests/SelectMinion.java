@@ -1,9 +1,7 @@
 package ir.sam.hearthstone.requests;
 
-import ir.sam.hearthstone.server.Server;
-
 public class SelectMinion extends Request {
-    private final int side,index, emptyIndex;
+    private final int side, index, emptyIndex;
 
     public SelectMinion(int side, int index, int emptyIndex) {
         this.side = side;
@@ -12,12 +10,7 @@ public class SelectMinion extends Request {
     }
 
     @Override
-    public void execute(Server server) {
-        server.selectMinion(side,index,emptyIndex);
-    }
-
-    @Override
-    public void accept(RequestLogInfoVisitor requestLogInfoVisitor) {
-
+    public void execute(RequestExecutor requestExecutor) {
+        requestExecutor.selectMinion(side, index, emptyIndex);
     }
 }

@@ -1,9 +1,8 @@
 package ir.sam.hearthstone.requests;
 
-import ir.sam.hearthstone.server.Server;
 import lombok.Getter;
 
-public class AllCollectionDetails extends Request{
+public class AllCollectionDetails extends Request {
     @Getter
     private final String name, classOfCard;
     @Getter
@@ -17,12 +16,7 @@ public class AllCollectionDetails extends Request{
     }
 
     @Override
-    public void execute(Server server) {
-        server.sendAllCollectionDetails(name,classOfCard,mana,lockMode);
-    }
-
-    @Override
-    public void accept(RequestLogInfoVisitor requestLogInfoVisitor) {
-
+    public void execute(RequestExecutor requestExecutor) {
+        requestExecutor.sendAllCollectionDetails(name, classOfCard, mana, lockMode);
     }
 }

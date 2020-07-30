@@ -1,6 +1,5 @@
 package ir.sam.hearthstone.requests;
 
-import ir.sam.hearthstone.server.Server;
 import lombok.Getter;
 
 public class NewDeck extends Request {
@@ -13,12 +12,7 @@ public class NewDeck extends Request {
     }
 
     @Override
-    public void execute(Server server) {
-        server.newDeck(deckName, heroName);
-    }
-
-    @Override
-    public void accept(RequestLogInfoVisitor requestLogInfoVisitor) {
-        requestLogInfoVisitor.setNewDeck(this);
+    public void execute(RequestExecutor requestExecutor) {
+        requestExecutor.newDeck(deckName, heroName);
     }
 }

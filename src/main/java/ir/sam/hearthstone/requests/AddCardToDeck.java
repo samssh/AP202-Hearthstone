@@ -1,7 +1,6 @@
 package ir.sam.hearthstone.requests;
 
 import lombok.Getter;
-import ir.sam.hearthstone.server.Server;
 
 public class AddCardToDeck extends Request {
     @Getter
@@ -13,12 +12,7 @@ public class AddCardToDeck extends Request {
     }
 
     @Override
-    public void execute(Server server) {
-        server.addCardToDeck(cardName, deckName);
-    }
-
-    @Override
-    public void accept(RequestLogInfoVisitor requestLogInfoVisitor) {
-        requestLogInfoVisitor.setAddCardToDeck(this);
+    public void execute(RequestExecutor requestExecutor) {
+        requestExecutor.addCardToDeck(cardName, deckName);
     }
 }

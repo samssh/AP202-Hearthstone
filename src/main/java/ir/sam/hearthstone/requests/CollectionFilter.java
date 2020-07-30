@@ -1,7 +1,6 @@
 package ir.sam.hearthstone.requests;
 
 import lombok.Getter;
-import ir.sam.hearthstone.server.Server;
 
 public class CollectionFilter extends Request {
     @Getter
@@ -17,12 +16,7 @@ public class CollectionFilter extends Request {
     }
 
     @Override
-    public void execute(Server server) {
-        server.applyCollectionFilter(name, classOfCard, mana, lockMode);
-    }
-
-    @Override
-    public void accept(RequestLogInfoVisitor requestLogInfoVisitor) {
-        requestLogInfoVisitor.setCollectionDetails(this);
+    public void execute(RequestExecutor requestExecutor) {
+        requestExecutor.applyCollectionFilter(name, classOfCard, mana, lockMode);
     }
 }

@@ -1,7 +1,6 @@
 package ir.sam.hearthstone.requests;
 
 import lombok.Getter;
-import ir.sam.hearthstone.server.Server;
 
 public class ChangeDeckName extends Request {
     @Getter
@@ -13,13 +12,8 @@ public class ChangeDeckName extends Request {
     }
 
     @Override
-    public void execute(Server server) {
-        server.changeDeckName(oldDeckName, newDeckName);
-    }
-
-    @Override
-    public void accept(RequestLogInfoVisitor requestLogInfoVisitor) {
-        requestLogInfoVisitor.setChangeDeckName(this);
+    public void execute(RequestExecutor requestExecutor) {
+        requestExecutor.changeDeckName(oldDeckName, newDeckName);
     }
 }
 

@@ -1,8 +1,6 @@
 package ir.sam.hearthstone.requests;
 
-import ir.sam.hearthstone.server.Server;
-
-public class SelectOpponentDeck extends Request{
+public class SelectOpponentDeck extends Request {
     private final String deckName;
 
     public SelectOpponentDeck(String deckName) {
@@ -10,12 +8,7 @@ public class SelectOpponentDeck extends Request{
     }
 
     @Override
-    public void execute(Server server) {
-        server.selectOpponentDeck(deckName);
-    }
-
-    @Override
-    public void accept(RequestLogInfoVisitor requestLogInfoVisitor) {
-
+    public void execute(RequestExecutor requestExecutor) {
+        requestExecutor.selectOpponentDeck(deckName);
     }
 }

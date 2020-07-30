@@ -1,7 +1,6 @@
 package ir.sam.hearthstone.requests;
 
 import lombok.Getter;
-import ir.sam.hearthstone.server.Server;
 
 public class SelectPassive extends Request {
     @Getter
@@ -12,12 +11,7 @@ public class SelectPassive extends Request {
     }
 
     @Override
-    public void execute(Server server) {
-        server.selectPassive(passiveName);
-    }
-
-    @Override
-    public void accept(RequestLogInfoVisitor requestLogInfoVisitor) {
-        requestLogInfoVisitor.setSelectPassive(this);
+    public void execute(RequestExecutor requestExecutor) {
+        requestExecutor.selectPassive(passiveName);
     }
 }

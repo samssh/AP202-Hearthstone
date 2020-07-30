@@ -7,6 +7,7 @@ import ir.sam.hearthstone.model.account.Deck;
 import ir.sam.hearthstone.model.account.Player;
 import ir.sam.hearthstone.model.log.*;
 import ir.sam.hearthstone.model.main.*;
+import ir.sam.hearthstone.requests.RequestExecutor;
 import ir.sam.hearthstone.resource_manager.Config;
 import ir.sam.hearthstone.resource_manager.ConfigFactory;
 import ir.sam.hearthstone.response.*;
@@ -26,7 +27,7 @@ import java.util.stream.Collectors;
 
 import static ir.sam.hearthstone.server.logic.game.Side.*;
 
-public class Server {
+public class Server implements RequestExecutor {
     public final static int STARTING_MANA;
     public final static int MANA_PER_TURN;
     public final static int CARD_PER_TURN;
@@ -101,6 +102,7 @@ public class Server {
         }
     }
 
+    @Override
     public void shutdown() {
         executor.stop();
         connector.close();
@@ -114,6 +116,7 @@ public class Server {
             }
     }
 
+    @Override
     public void login(String username, String password, int mode) {
         if (mode == 1)
             signIn(username, password);
@@ -160,6 +163,7 @@ public class Server {
         }
     }
 
+    @Override
     public void logout() {
         if (this.player != null) {
             connector.save(player);
@@ -168,6 +172,7 @@ public class Server {
         }
     }
 
+    @Override
     public void deleteAccount() {
         if (this.player != null) {
             connector.delete(player);
@@ -179,58 +184,72 @@ public class Server {
         }
     }
 
+    @Override
     public void sendShop() {
         sendResponse(shop.sendShop(player));
     }
 
+    @Override
     public void sellCard(String cardName) {
         sendResponse(shop.sellCard(cardName, player));
     }
 
+    @Override
     public void buyCard(String cardName) {
         sendResponse(shop.buyCard(cardName, player));
     }
 
+    @Override
     public void sendStatus() {
         sendResponse(status.sendStatus(player));
     }
 
+    @Override
     public void selectDeck(String deckName) {
         sendResponse(collection.selectDeck(player, deckName));
     }
 
+    @Override
     public void sendAllCollectionDetails(String name, String classOfCard, int mana, int lockMode) {
         sendResponse(collection.sendAllCollectionDetails(name, classOfCard, mana, lockMode, player));
     }
 
+    @Override
     public void applyCollectionFilter(String name, String classOfCard, int mana, int lockMode) {
         sendResponse(collection.applyCollectionFilter(name, classOfCard, mana, lockMode, player));
     }
 
+    @Override
     public void newDeck(String deckName, String heroName) {
         sendResponse(collection.newDeck(deckName, heroName, player));
     }
 
+    @Override
     public void deleteDeck(String deckName) {
         sendResponse(collection.deleteDeck(deckName, player));
     }
 
+    @Override
     public void changeDeckName(String oldDeckName, String newDeckName) {
         sendResponse(collection.changeDeckName(oldDeckName, newDeckName, player));
     }
 
+    @Override
     public void changeHeroDeck(String deckName, String heroName) {
         sendResponse(collection.changeHeroDeck(deckName, heroName, player));
     }
 
+    @Override
     public void removeCardFromDeck(String cardName, String deckName) {
         sendResponse(collection.removeCardFromDeck(cardName, deckName, player));
     }
 
+    @Override
     public void addCardToDeck(String cardName, String deckName) {
         sendResponse(collection.addCardToDeck(cardName, deckName, player, shop));
     }
 
+    @Override
     public void startPlay() {
         Response response;
         if (canStartGame(player.getSelectedDeck())) {
@@ -241,6 +260,7 @@ public class Server {
         sendResponse(response);
     }
 
+    @Override
     public void selectPlayMode(String modeName) {
         Response response = null;
         switch (modeName) {
@@ -264,7 +284,7 @@ public class Server {
         return deck != null && deck.getSize() == MAX_DECK_SIZE;
     }
 
-
+    @Override
     public void selectPassive(String passiveName) {
         if (gameBuilder != null) {
             Optional<Passive> optionalPassive = modelLoader.getPassive(passiveName);
@@ -278,6 +298,7 @@ public class Server {
         return new PassiveDetails(null, decks, null, message);
     }
 
+    @Override
     public void selectOpponentDeck(String deckName) {
         if (gameBuilder != null) {
             Optional<Deck> optionalDeck = collection.getDeck(deckName, player);
@@ -287,11 +308,13 @@ public class Server {
         }
     }
 
+    @Override
     public void selectCadOnPassive(int index) {
         if (gameBuilder != null)
             sendResponse(gameBuilder.selectCard(index));
     }
 
+    @Override
     public void confirm() {
         if (gameBuilder != null) {
             sendResponse(gameBuilder.confirm());
@@ -299,6 +322,7 @@ public class Server {
         }
     }
 
+    @Override
     public void endTurn() {
         if (game != null) {
             game.nextTurn(PLAYER_ONE);
@@ -306,6 +330,7 @@ public class Server {
         }
     }
 
+    @Override
     public void selectHero(int side) {
         if (game != null) {
             game.selectHero(PLAYER_ONE, side == 0 ? PLAYER_ONE : PLAYER_TWO);
@@ -313,6 +338,7 @@ public class Server {
         }
     }
 
+    @Override
     public void selectHeroPower(int side) {
         if (game != null) {
             game.selectHeroPower(PLAYER_ONE, side == 0 ? PLAYER_ONE : PLAYER_TWO);
@@ -320,6 +346,7 @@ public class Server {
         }
     }
 
+    @Override
     public void selectMinion(int side, int index, int emptyIndex) {
         if (game != null) {
             game.selectMinion(PLAYER_ONE, side == 0 ? PLAYER_ONE : PLAYER_TWO, index, emptyIndex);
@@ -327,6 +354,7 @@ public class Server {
         }
     }
 
+    @Override
     public void selectCardInHand(int side, int index) {
         if (game != null) {
             game.selectCardInHand(PLAYER_ONE, side == 0 ? PLAYER_ONE : PLAYER_TWO, index);
@@ -334,6 +362,7 @@ public class Server {
         }
     }
 
+    @Override
     public void exitGame() {
         game.getTimer().cancelTask();
         gameBuilder = null;

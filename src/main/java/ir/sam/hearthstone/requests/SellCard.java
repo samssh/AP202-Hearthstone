@@ -1,6 +1,5 @@
 package ir.sam.hearthstone.requests;
 
-import ir.sam.hearthstone.server.Server;
 import lombok.Getter;
 
 public class SellCard extends Request {
@@ -12,12 +11,8 @@ public class SellCard extends Request {
     }
 
     @Override
-    public void execute(Server server) {
-        server.sellCard(cardName);
+    public void execute(RequestExecutor requestExecutor) {
+        requestExecutor.sellCard(cardName);
     }
 
-    @Override
-    public void accept(RequestLogInfoVisitor requestLogInfoVisitor) {
-        requestLogInfoVisitor.setSellCard(this);
-    }
 }

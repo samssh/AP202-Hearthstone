@@ -1,6 +1,5 @@
 package ir.sam.hearthstone.requests;
 
-import ir.sam.hearthstone.server.Server;
 import lombok.Getter;
 
 public class RemoveCardFromDeck extends Request {
@@ -13,12 +12,7 @@ public class RemoveCardFromDeck extends Request {
     }
 
     @Override
-    public void execute(Server server) {
-        server.removeCardFromDeck(cardName, deckName);
-    }
-
-    @Override
-    public void accept(RequestLogInfoVisitor requestLogInfoVisitor) {
-        requestLogInfoVisitor.setRemoveCardFromDeck(this);
+    public void execute(RequestExecutor requestExecutor) {
+        requestExecutor.removeCardFromDeck(cardName, deckName);
     }
 }

@@ -1,8 +1,6 @@
 package ir.sam.hearthstone.requests;
 
-import ir.sam.hearthstone.server.Server;
-
-public class SelectHero extends Request{
+public class SelectHero extends Request {
     private final int side;
 
     public SelectHero(int side) {
@@ -10,12 +8,7 @@ public class SelectHero extends Request{
     }
 
     @Override
-    public void execute(Server server) {
-        server.selectHero(side);
-    }
-
-    @Override
-    public void accept(RequestLogInfoVisitor requestLogInfoVisitor) {
-
+    public void execute(RequestExecutor requestExecutor) {
+        requestExecutor.selectHero(side);
     }
 }

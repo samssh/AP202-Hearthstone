@@ -1,6 +1,5 @@
 package ir.sam.hearthstone.requests;
 
-import ir.sam.hearthstone.server.Server;
 import lombok.Getter;
 
 public class DeleteDeck extends Request {
@@ -12,12 +11,7 @@ public class DeleteDeck extends Request {
     }
 
     @Override
-    public void execute(Server server) {
-        server.deleteDeck(deckName);
-    }
-
-    @Override
-    public void accept(RequestLogInfoVisitor requestLogInfoVisitor) {
-        requestLogInfoVisitor.setDeleteDeck(this);
+    public void execute(RequestExecutor requestExecutor) {
+        requestExecutor.deleteDeck(deckName);
     }
 }
