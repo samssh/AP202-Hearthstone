@@ -1,7 +1,6 @@
 package ir.sam.hearthstone.view.panel;
 
-import ir.sam.hearthstone.client.Actions.LoginPanelAction;
-import ir.sam.hearthstone.client.Client;
+import ir.sam.hearthstone.client.actions.LoginPanelAction;
 import ir.sam.hearthstone.resource_manager.Config;
 import ir.sam.hearthstone.resource_manager.ImageLoader;
 import ir.sam.hearthstone.view.util.Constant;

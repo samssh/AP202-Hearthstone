@@ -1,7 +1,6 @@
-package ir.sam.hearthstone.client.Actions;
+package ir.sam.hearthstone.client.actions;
 
 import ir.sam.hearthstone.client.Client;
-import ir.sam.hearthstone.hibernate.Connector;
 import ir.sam.hearthstone.view.panel.LoginPanel;
 
 public class LoginPanelAction {

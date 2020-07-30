@@ -1,7 +1,7 @@
 package ir.sam.hearthstone.client;
 
-import ir.sam.hearthstone.Transmitters.RequestSender;
-import ir.sam.hearthstone.client.Actions.*;
+import ir.sam.hearthstone.transmitters.RequestSender;
+import ir.sam.hearthstone.client.actions.*;
 import ir.sam.hearthstone.hibernate.Connector;
 import ir.sam.hearthstone.model.log.*;
 import ir.sam.hearthstone.requests.*;

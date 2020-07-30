@@ -1,6 +1,6 @@
 package ir.sam.hearthstone.view.panel;
 
-import ir.sam.hearthstone.client.Actions.MainMenuAction;
+import ir.sam.hearthstone.client.actions.MainMenuAction;
 import ir.sam.hearthstone.resource_manager.Config;
 import ir.sam.hearthstone.resource_manager.ConfigFactory;
 import ir.sam.hearthstone.resource_manager.ImageLoader;
@@ -17,9 +17,9 @@ public class MainMenuPanel extends JPanel implements Updatable {
     private final BufferedImage image;
     private int componentWidth, componentHeight, componentSpace;
     private int exitWidth, exitHeight, exitX, exitY, exitSpace, shiftX, shiftY;
-    int sumHeight;
-    int startX;
-    int startY;
+    private final int sumHeight;
+    private final int startX;
+    private final int startY;
     private final Dimension dimension;
     private final MainMenuAction mainMenuAction;
 
@@ -47,7 +47,7 @@ public class MainMenuPanel extends JPanel implements Updatable {
     protected void paintComponent(Graphics g) {
         Graphics2D graphics2D = (Graphics2D) g;
         super.paintComponent(graphics2D);
-        g.drawImage(image,0,0,null);
+        g.drawImage(image, 0, 0, null);
     }
 
     private void initialize() {
@@ -72,7 +72,7 @@ public class MainMenuPanel extends JPanel implements Updatable {
         play = new JButton("play");
         play.setSize(dimension);
         play.setLocation(startX, startY + sumHeight);
-        play.addActionListener(e->mainMenuAction.play());
+        play.addActionListener(e -> mainMenuAction.play());
         Constant.makeTransparent(play);
     }
 

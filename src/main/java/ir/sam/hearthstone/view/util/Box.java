@@ -16,7 +16,7 @@ public abstract class Box<Model extends Overview, T extends JPanel> extends JPan
     private final LinkedList<Model> showing;
     protected final T[][] items;
     protected final int a, b;
-    protected int height, width;
+    protected final int height, width;
     protected int begin, end;
     protected JLabel title;
     protected JButton next, previous;

@@ -1,6 +1,6 @@
 package ir.sam.hearthstone.view.panel;
 
-import ir.sam.hearthstone.client.Actions.CollectionAction;
+import ir.sam.hearthstone.client.actions.CollectionAction;
 import ir.sam.hearthstone.resource_manager.Config;
 import ir.sam.hearthstone.resource_manager.ConfigFactory;
 import ir.sam.hearthstone.resource_manager.ImageLoader;
@@ -212,35 +212,19 @@ public class CollectionPanel extends JPanel implements Updatable {
 
     public void putDeckEvent(String type,String deckName,SmallDeckOverview newDeck){
         switch (type) {
-            case "change":
-                decks.changeModel(deckName, newDeck);
-                break;
-            case "delete":
-                decks.removeModel(deckName, true);
-                break;
-            case "new":
-                decks.addModel(newDeck);
-                break;
-            default:
-                System.err.println("shit");
-                break;
+            case "change" -> decks.changeModel(deckName, newDeck);
+            case "delete" -> decks.removeModel(deckName, true);
+            case "new" -> decks.addModel(newDeck);
+            default -> System.err.println("shit");
         }
     }
 
     public void putCardEvent(String type,String cardName,boolean canAddDeck, boolean canChangeHero){
         switch (type) {
-            case "add":
-                AnimationManger.moveCard(cardName, cards, deckCards,animationManger);
-                break;
-            case "move":
-                AnimationManger.moveCard(cardName, deckCards, cards,animationManger);
-                break;
-            case "remove":
-                deckCards.removeModel(cardName, true);
-                break;
-            default:
-                System.err.println("shit");
-                break;
+            case "add" -> AnimationManger.moveCard(cardName, cards, deckCards, animationManger);
+            case "move" -> AnimationManger.moveCard(cardName, deckCards, cards, animationManger);
+            case "remove" -> deckCards.removeModel(cardName, true);
+            default -> System.err.println("shit");
         }
         setButtons(canAddDeck,canChangeHero);
     }

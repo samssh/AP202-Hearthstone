@@ -1,6 +1,6 @@
 package ir.sam.hearthstone.view.panel;
 
-import ir.sam.hearthstone.client.Actions.PlayModeAction;
+import ir.sam.hearthstone.client.actions.PlayModeAction;
 import ir.sam.hearthstone.resource_manager.Config;
 import ir.sam.hearthstone.resource_manager.ConfigFactory;
 import ir.sam.hearthstone.resource_manager.ImageLoader;

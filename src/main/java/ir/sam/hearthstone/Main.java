@@ -1,6 +1,6 @@
 package ir.sam.hearthstone;
 
-import ir.sam.hearthstone.Transmitters.OfflineTransmitter;
+import ir.sam.hearthstone.transmitters.OfflineTransmitter;
 import ir.sam.hearthstone.client.Client;
 import ir.sam.hearthstone.server.Server;
 import ir.sam.hearthstone.resource_manager.ResourceLoader;

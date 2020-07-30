@@ -1,6 +1,6 @@
 package ir.sam.hearthstone.server;
 
-import ir.sam.hearthstone.Transmitters.ResponseSender;
+import ir.sam.hearthstone.transmitters.ResponseSender;
 import ir.sam.hearthstone.requests.Request;
 import ir.sam.hearthstone.hibernate.Connector;
 import ir.sam.hearthstone.model.account.Deck;
@@ -264,18 +264,13 @@ public class Server implements RequestExecutor {
     public void selectPlayMode(String modeName) {
         Response response = null;
         switch (modeName) {
-            case "multiplayer":
+            case "multiplayer" -> {
                 gameBuilder = new MultiplayerGameBuilder(modelLoader, this);
                 response = gameBuilder.setDeckP1(player.getSelectedDeck());
-                break;
-            case "AI":
-                response = new GoTo("MAIN_MENU", "AI add soon\ngoto main menu?");
-                break;
-            case "deck reader":
-                response = new GoTo("MAIN_MENU", "deck reader add soon\ngoto main menu?");
-                break;
-            case "online":
-                response = new GoTo("MAIN_MENU", "online add in next phase\ngoto main menu?");
+            }
+            case "AI" -> response = new GoTo("MAIN_MENU", "AI add soon\ngoto main menu?");
+            case "deck reader" -> response = new GoTo("MAIN_MENU", "deck reader add soon\ngoto main menu?");
+            case "online" -> response = new GoTo("MAIN_MENU", "online add in next phase\ngoto main menu?");
         }
         sendResponse(response);
     }

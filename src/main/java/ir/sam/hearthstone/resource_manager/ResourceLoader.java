@@ -56,7 +56,7 @@ public class ResourceLoader {
 
             long endTime = System.currentTimeMillis();
 
-            System.out.println("Done. " + totalBytesRead + " bytes read (" + (endTime - startTime) + " millseconds).\n");
+            System.out.println("Done. " + totalBytesRead + " bytes read (" + (endTime - startTime) + " milliseconds).\n");
             writer.close();
             reader.close();
         } catch (IOException e) {

@@ -21,81 +21,43 @@ public class PlayEventExecutor {
         int side = event.getSide();
         int index = event.getIndex();
         switch (event.getType()) {
-            case SET_HERO:
-                playPanel.getHero()[side].setUnitOverviewAnimated(event.getOverview());
-                break;
-            case SET_HERO_POWER:
-                playPanel.getHeroPower()[side].setUnitOverviewAnimated(event.getOverview());
-                break;
-            case PLAY_WEAPON:
-                AnimationManger.moveUnitToViewer(playPanel.getWeapon()[side], playPanel.getHand()[side],
-                        event.getOverview(), event.getIndex(), playPanel.getAnimationManger());
-                break;
-            case PLAY_SPELL:
+            case SET_HERO -> playPanel.getHero()[side].setUnitOverviewAnimated(event.getOverview());
+            case SET_HERO_POWER -> playPanel.getHeroPower()[side].setUnitOverviewAnimated(event.getOverview());
+            case PLAY_WEAPON -> AnimationManger.moveUnitToViewer(playPanel.getWeapon()[side], playPanel.getHand()[side],
+                    event.getOverview(), event.getIndex(), playPanel.getAnimationManger());
+            case PLAY_SPELL -> {
                 Overview spell = playPanel.getHand()[side].removeModel(index, false);
                 Point org = playPanel.getHand()[side].getPosition(index);
                 org.translate(playPanel.getHand()[side].getX(), playPanel.getGround()[side].getY());
                 Point dest = playPanel.getHero()[side ^ 1].getLocation();
                 PaintByTime spellPainter = new Rotary(new OverviewPainter(spell));
                 playPanel.getAnimationManger().addPainter(new LinearMotion(org, dest, spellPainter, x -> Math.pow(x, 2.1)));
-                break;
-            case ADD_TO_GROUND:
-                playPanel.getGround()[side].addModel(index
-                        , (MinionOverview) event.getOverview(), true);
-                break;
-            case ADD_TO_HAND:
-                playPanel.getHand()[side].addModel((CardOverview) event.getOverview(), true);
-                break;
-            case CHANGE_IN_HAND:
-                playPanel.getHand()[side].changeModelNoAnime(index, (CardOverview) event.getOverview());
-                break;
-            case REMOVE_FROM_HAND:
-                playPanel.getHand()[side].removeModel(index, true);
-                break;
-            case MOVE_FROM_HAND_TO_GROUND:
-                AnimationManger.moveAndChangeCard(playPanel.getGround()[side], playPanel.getHand()[side]
-                        , (MinionOverview) event.getOverview(), event.getIndex(), event.getSecondIndex()
-                        , playPanel.getAnimationManger());
-                break;
-            case MOVE_FROM_GROUND_TO_HAND:
-                AnimationManger.moveAndChangeCard(playPanel.getHand()[side], playPanel.getGround()[side]
-                        , (CardOverview) event.getOverview(), event.getSecondIndex(), event.getIndex()
-                        , playPanel.getAnimationManger());
-                break;
-            case CHANGE_IN_GROUND:
-                playPanel.getGround()[side].changeModel(index, (MinionOverview) event.getOverview());
-                break;
-            case REMOVE_FROM_GROUND:
-                playPanel.getGround()[side].removeModel(index, true);
-                break;
-            case ATTACK_MINION_TO_HERO:
-                attackMinionToHero(event);
-                break;
-            case ATTACK_MINION_TO_MINION:
-                attackMinionToMinion(event);
-                break;
-            case ATTACK_HERO_TO_MINION:
-                attackHeroToMinion(event);
-                break;
-            case ATTACK_HERO_TO_HERO:
-                attackHeroToHero(event);
-                break;
-            case ATTACK_HERO_POWER_TO_HERO:
-                attackHeroPowerToHero(event);
-                break;
-            case ATTACK_HERO_POWER_TO_MINION:
-                attackHeroPowerToMinion(event);
-                break;
-            case CHANGE_WEAPON:
-                playPanel.getWeapon()[side].setUnitOverviewAnimated(event.getOverview());
-                break;
-            case SHOW_MESSAGE:
-                SwingUtilities.invokeLater(() -> JOptionPane.showMessageDialog(playPanel, event.getMessage()));
-                break;
-            case END_GAME:
+            }
+            case ADD_TO_GROUND -> playPanel.getGround()[side].addModel(index
+                    , (MinionOverview) event.getOverview(), true);
+            case ADD_TO_HAND -> playPanel.getHand()[side].addModel((CardOverview) event.getOverview(), true);
+            case CHANGE_IN_HAND -> playPanel.getHand()[side].changeModelNoAnime(index, (CardOverview) event.getOverview());
+            case REMOVE_FROM_HAND -> playPanel.getHand()[side].removeModel(index, true);
+            case MOVE_FROM_HAND_TO_GROUND -> AnimationManger.moveAndChangeCard(playPanel.getGround()[side], playPanel.getHand()[side]
+                    , (MinionOverview) event.getOverview(), event.getIndex(), event.getSecondIndex()
+                    , playPanel.getAnimationManger());
+            case MOVE_FROM_GROUND_TO_HAND -> AnimationManger.moveAndChangeCard(playPanel.getHand()[side], playPanel.getGround()[side]
+                    , (CardOverview) event.getOverview(), event.getSecondIndex(), event.getIndex()
+                    , playPanel.getAnimationManger());
+            case CHANGE_IN_GROUND -> playPanel.getGround()[side].changeModel(index, (MinionOverview) event.getOverview());
+            case REMOVE_FROM_GROUND -> playPanel.getGround()[side].removeModel(index, true);
+            case ATTACK_MINION_TO_HERO -> attackMinionToHero(event);
+            case ATTACK_MINION_TO_MINION -> attackMinionToMinion(event);
+            case ATTACK_HERO_TO_MINION -> attackHeroToMinion(event);
+            case ATTACK_HERO_TO_HERO -> attackHeroToHero(event);
+            case ATTACK_HERO_POWER_TO_HERO -> attackHeroPowerToHero(event);
+            case ATTACK_HERO_POWER_TO_MINION -> attackHeroPowerToMinion(event);
+            case CHANGE_WEAPON -> playPanel.getWeapon()[side].setUnitOverviewAnimated(event.getOverview());
+            case SHOW_MESSAGE -> SwingUtilities.invokeLater(() -> JOptionPane.showMessageDialog(playPanel, event.getMessage()));
+            case END_GAME -> {
                 JOptionPane.showMessageDialog(playPanel, event.getMessage());
                 playPanel.exit();
-                break;
+            }
         }
     }
 

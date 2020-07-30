@@ -16,7 +16,7 @@ public class EndGame extends GameEvent {
     }
 
     public enum EndGameType {
-        WIN, LOSE;
+        WIN, LOSE
     }
 
     @Override

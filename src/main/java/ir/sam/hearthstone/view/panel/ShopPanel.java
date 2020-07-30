@@ -1,12 +1,9 @@
 package ir.sam.hearthstone.view.panel;
 
-import ir.sam.hearthstone.client.Actions.ShopAction;
+import ir.sam.hearthstone.client.actions.ShopAction;
 import ir.sam.hearthstone.resource_manager.Config;
 import ir.sam.hearthstone.resource_manager.ImageLoader;
 import ir.sam.hearthstone.view.graphics_engine.AnimationManger;
-import ir.sam.hearthstone.view.graphics_engine.effects.LinearMotion;
-import ir.sam.hearthstone.view.graphics_engine.effects.OverviewPainter;
-import ir.sam.hearthstone.view.graphics_engine.effects.Rotary;
 import ir.sam.hearthstone.view.model.CardOverview;
 import ir.sam.hearthstone.view.util.CardBox;
 import ir.sam.hearthstone.view.util.Constant;

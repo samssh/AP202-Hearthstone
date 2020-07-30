@@ -1,4 +1,4 @@
-package ir.sam.hearthstone.Transmitters;
+package ir.sam.hearthstone.transmitters;
 
 import ir.sam.hearthstone.requests.Request;
 
