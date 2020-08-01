@@ -9,6 +9,7 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
 import ir.sam.hearthstone.response.ResponseExecutor;
+import lombok.ToString;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -19,6 +20,7 @@ import java.util.Objects;
 
 @Entity
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
+@ToString(includeFieldNames = false)
 public class ResponseLogInfo {
     @Id
     @Setter
@@ -32,12 +34,12 @@ public class ResponseLogInfo {
     @Column
     @Getter
     @Setter
-    private String type, hand, ground, weapon, hero, heroPower, eventLog, panel,
+    private String type, hand, ground, weapon, hero, heroPower, panel,
             message, deckName, cardName, eventType, deckOverview, cardOverview, manas;
     @Column(length = 200000)
     @Getter
     @Setter
-    private String sell, buy, passives, decks, heroNames, classOfCardNames,
+    private String sell, buy, passives, decks, heroNames, classOfCardNames,eventLog,
             cards, bigDeckOverviews, deckCards, events, passiveList;
     @Column
     @Getter

@@ -1,5 +1,6 @@
 package ir.sam.hearthstone.model.log;
 
+import lombok.ToString;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
 import lombok.Getter;
@@ -10,6 +11,7 @@ import javax.persistence.Entity;
 import javax.persistence.OneToOne;
 
 @Entity
+@ToString(includeFieldNames = false)
 public class ResponseLog extends Log {
     @OneToOne
     @Cascade(CascadeType.ALL)

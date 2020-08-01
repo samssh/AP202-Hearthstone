@@ -9,6 +9,7 @@ import org.hibernate.boot.registry.StandardServiceRegistry;
 import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
 import org.hibernate.exception.GenericJDBCException;
 
+import javax.persistence.PersistenceException;
 import java.io.*;
 import java.util.HashSet;
 import java.util.List;
@@ -86,22 +87,28 @@ public class Connector {
                 for (SaveAble saveAble : tempDelete) {
                     try {
                         session.delete(saveAble);
-                    }catch (GenericJDBCException e){
+                    } catch (PersistenceException e) {
                         e.printStackTrace();
-                        System.err.println("instance not deleted: "+saveAble);
+                        System.err.println("instance not deleted: " + saveAble);
                     }
                 }
-                tempDelete.clear();
                 for (SaveAble saveAble : tempSave) {
                     try {
                         session.saveOrUpdate(saveAble);
-                    } catch (GenericJDBCException e) {
+                    } catch (PersistenceException e) {
                         e.printStackTrace();
-                        System.err.println("instance not saved :"+saveAble);
+                        System.err.println("instance not saved :" + saveAble);
                     }
                 }
+                try {
+                    session.getTransaction().commit();
+                } catch (PersistenceException e) {
+                    e.printStackTrace();
+                    System.err.println("instances not saved :" + tempSave);
+                    System.err.println("instances not deleted :" + tempDelete);
+                }
                 tempSave.clear();
-                session.getTransaction().commit();
+                tempDelete.clear();
                 session.close();
             }
     }
