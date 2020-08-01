@@ -13,11 +13,12 @@ import java.util.HashMap;
 import java.util.Map;
 
 @Entity
-@EqualsAndHashCode(of = "id")
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
 public class Deck implements SaveAble {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Setter
+    @EqualsAndHashCode.Include
     private long id;
     @Column
     @Getter

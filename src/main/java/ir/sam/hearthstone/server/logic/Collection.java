@@ -31,6 +31,7 @@ public class Collection {
 
     public Response sendAllCollectionDetails(String name, String classOfCard, int mana,
                                              int lockMode, Player player) {
+
         this.name = name;
         this.classOfCard = classOfCard;
         this.mana = mana;
@@ -253,7 +254,6 @@ public class Collection {
                                         , deckName, "add Card", null));
                                 responses[0] = new CollectionCardEvent("add", cardName,
                                         canAddDeck(player), canChangeHero(optionalDeck.get()));
-
                             } else {
                                 responses[1] = new ShowMessage("cant add card to deck\ndeck is full!!!");
                             }

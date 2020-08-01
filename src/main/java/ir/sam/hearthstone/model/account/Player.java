@@ -16,11 +16,12 @@ import java.util.*;
 
 @Entity
 @ToString()
-@EqualsAndHashCode(of = "userName")
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
 public class Player implements SaveAble {
     @Id
     @Setter
     @Getter
+    @EqualsAndHashCode.Include
     private String userName;
     @Column
     @Setter

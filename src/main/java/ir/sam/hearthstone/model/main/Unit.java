@@ -10,11 +10,12 @@ import java.util.HashMap;
 import java.util.Map;
 
 @Entity
-@EqualsAndHashCode(of = "name")
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
 public abstract class Unit implements SaveAble, Cloneable, HasAction{
     @Id
     @Setter
     @Getter
+    @EqualsAndHashCode.Include
     protected String name;
     @Setter
     @Getter
@@ -37,6 +38,11 @@ public abstract class Unit implements SaveAble, Cloneable, HasAction{
         this.name = name;
         this.description = description;
         methods = new HashMap<>();
+    }
+
+    @PostLoad
+    private void postLoad() {
+        methods = new HashMap<>(methods);
     }
 
     @Override

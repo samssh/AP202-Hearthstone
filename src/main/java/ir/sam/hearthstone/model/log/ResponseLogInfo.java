@@ -15,13 +15,15 @@ import javax.persistence.Entity;
 import javax.persistence.Id;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 
 @Entity
-@EqualsAndHashCode(of = "id")
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
 public class ResponseLogInfo {
     @Id
     @Setter
     @Getter
+    @EqualsAndHashCode.Include
     private long id;
     @Column
     @Getter
@@ -44,7 +46,7 @@ public class ResponseLogInfo {
     @Column
     @Getter
     @Setter
-    private int coins, mana, index;
+    private int coins, mana, _index;
 
     public ResponseLogInfo() {
     }
@@ -65,8 +67,8 @@ public class ResponseLogInfo {
 
         @Override
         public void setShopDetails(List<CardOverview> sell, List<CardOverview> buy, int coin) {
-            setSell(sell.toString());
-            setBuy(buy.toString());
+            setSell(Objects.toString(sell));
+            setBuy(Objects.toString(buy));
             setCoins(coin);
         }
 
@@ -79,27 +81,27 @@ public class ResponseLogInfo {
 
         @Override
         public void setStatusDetails(List<BigDeckOverview> bigDeckOverviews) {
-            setBigDeckOverviews(bigDeckOverviews.toString());
+            setBigDeckOverviews(Objects.toString(bigDeckOverviews));
         }
 
         @Override
         public void setCollectionDetail(List<CardOverview> cards, List<SmallDeckOverview> decks, List<CardOverview> deckCards
                 , boolean canAddDeck, boolean canChangeHero, String deckName, List<String> heroNames, List<String> classOfCardNames) {
-            setCards(cards.toString());
-            setDecks(decks.toString());
-            setDeckCards(deckCards.toString());
+            setCards(Objects.toString(cards));
+            setDecks(Objects.toString(decks));
+            setDeckCards(Objects.toString(deckCards));
             setCanAddDeck(canAddDeck);
             setCanChangeHero(canChangeHero);
             setDeckName(deckName);
-            setHeroNames(heroNames.toString());
-            setClassOfCardNames(classOfCardNames.toString());
+            setHeroNames(Objects.toString(heroNames));
+            setClassOfCardNames(Objects.toString(classOfCardNames));
         }
 
         @Override
         public void putCollectionDeckEvent(String type, String deckName, SmallDeckOverview newDeck) {
             setEventType(type);
             setDeckName(deckName);
-            setDeckOverview(newDeck.toString());
+            setDeckOverview(Objects.toString(newDeck));
         }
 
         @Override
@@ -123,22 +125,22 @@ public class ResponseLogInfo {
 
         @Override
         public void setPassives(List<PassiveOverview> passives, List<SmallDeckOverview> decks, List<CardOverview> cards, String message, boolean showButton) {
-            setPassiveList(passives.toString());
-            setDecks(decks.toString());
-            setCards(cards.toString());
+            setPassiveList(Objects.toString(passives));
+            setDecks(Objects.toString(decks));
+            setCards(Objects.toString(cards));
             setMessage(message);
             setShowButton(showButton);
         }
 
         @Override
         public void changeCardOnPassive(CardOverview cardOverview, int index) {
-            setCardOverview(cardOverview.toString());
-            setIndex(index);
+            setCardOverview(Objects.toString(cardOverview));
+            set_index(index);
         }
 
         @Override
         public void setPlayDetail(List<PlayDetails.Event> events, String eventLog, int[] mana, long time) {
-            setEvents(events.toString());
+            setEvents(Objects.toString(events));
             setEventLog(eventLog);
             setManas(Arrays.toString(mana));
             setTime(time);

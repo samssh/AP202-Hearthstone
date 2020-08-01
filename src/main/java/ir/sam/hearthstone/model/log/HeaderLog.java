@@ -10,11 +10,12 @@ import javax.persistence.Entity;
 import javax.persistence.Id;
 
 @Entity
-@EqualsAndHashCode(of = "id")
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
 public class HeaderLog implements SaveAble {
     @Id
     @Setter
     @Getter
+    @EqualsAndHashCode.Include
     private long id;
     @Column
     @Setter

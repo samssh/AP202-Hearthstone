@@ -9,11 +9,12 @@ import javax.persistence.Entity;
 import javax.persistence.Id;
 
 @Entity
-@EqualsAndHashCode(of = "time")
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
 public abstract class Log implements SaveAble {
     @Id
     @Getter
     @Setter
+    @EqualsAndHashCode.Include
     protected long time;
     @Getter
     @Setter

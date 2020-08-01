@@ -16,7 +16,7 @@ public abstract class Box<Model extends Overview, T extends JPanel> extends JPan
     private final LinkedList<Model> showing;
     protected final T[][] items;
     protected final int a, b;
-    protected final int height, width;
+    protected int height, width;
     protected int begin, end;
     protected JLabel title;
     protected JButton next, previous;
@@ -303,10 +303,10 @@ public abstract class Box<Model extends Overview, T extends JPanel> extends JPan
 
     private void update() {
         this.clear(0);
+        int randomMode = DoublePictureScale.getRandomMode();
         for (int i = 0, showingSize = showing.size(); i < showingSize; i++) {
             Model model = showing.get(i);
             PaintByTime front = new OverviewPainter(model);
-            int randomMode = DoublePictureScale.getRandomMode();
             animationManger.addPainter(new TranslatorByTime(
                     new SinglePictureScale(front, false, randomMode)
                     , items[i % a][i / a].getX(), items[i % a][i / a].getY()));

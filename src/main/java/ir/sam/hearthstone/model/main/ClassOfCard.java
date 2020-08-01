@@ -9,11 +9,12 @@ import javax.persistence.Entity;
 import javax.persistence.Id;
 
 @Entity
-@EqualsAndHashCode(of = "heroName")
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
 public class ClassOfCard implements SaveAble {
     @Id
     @Setter
     @Getter
+    @EqualsAndHashCode.Include
     private String heroName;
 
     public ClassOfCard() {

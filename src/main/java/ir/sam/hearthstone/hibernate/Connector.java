@@ -7,6 +7,7 @@ import org.hibernate.SessionFactory;
 import org.hibernate.boot.MetadataSources;
 import org.hibernate.boot.registry.StandardServiceRegistry;
 import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
+import org.hibernate.exception.GenericJDBCException;
 
 import java.io.*;
 import java.util.HashSet;
@@ -83,12 +84,21 @@ public class Connector {
                 Session session = sessionFactory.openSession();
                 session.beginTransaction();
                 for (SaveAble saveAble : tempDelete) {
-                    session.delete(saveAble);
-
+                    try {
+                        session.delete(saveAble);
+                    }catch (GenericJDBCException e){
+                        e.printStackTrace();
+                        System.err.println("instance not deleted: "+saveAble);
+                    }
                 }
                 tempDelete.clear();
                 for (SaveAble saveAble : tempSave) {
-                    session.saveOrUpdate(saveAble);
+                    try {
+                        session.saveOrUpdate(saveAble);
+                    } catch (GenericJDBCException e) {
+                        e.printStackTrace();
+                        System.err.println("instance not saved :"+saveAble);
+                    }
                 }
                 tempSave.clear();
                 session.getTransaction().commit();
@@ -97,8 +107,8 @@ public class Connector {
     }
 
     public void close() {
-        sessionFactory.close();
         worker.stop();
+        sessionFactory.close();
     }
 
     public void save(SaveAble saveAble) {
@@ -126,10 +136,10 @@ public class Connector {
 
     public <E extends SaveAble> List<E> fetchAll(Class<E> entity) {
         String hql = "FROM " + entity.getName();
-        return executeHQL(hql,entity);
+        return executeHQL(hql, entity);
     }
 
-    public <E extends SaveAble> List<E> executeHQL(String hql,Class<E> entity) {
+    public <E extends SaveAble> List<E> executeHQL(String hql, Class<E> entity) {
         synchronized (staticLock) {
             Session session = sessionFactory.openSession();
             List<E> result = session.createQuery(hql, entity).getResultList();
@@ -138,10 +148,10 @@ public class Connector {
         }
     }
 
-    public<E extends SaveAble> List<E> executeSQLQuery(String sql,Class<E> entity){
+    public <E extends SaveAble> List<E> executeSQLQuery(String sql, Class<E> entity) {
         synchronized (staticLock) {
             Session session = sessionFactory.openSession();
-            List<E> result = session.createNativeQuery(sql,entity).getResultList();
+            List<E> result = session.createNativeQuery(sql, entity).getResultList();
             session.close();
             return result;
         }
@@ -149,6 +159,6 @@ public class Connector {
 
     public <E extends SaveAble> List<E> fetchWithRestriction(Class<E> entity, String fieldName, Object value) {
         String hql = "from " + entity.getName() + " where " + fieldName + "=" + "'" + value + "'";
-        return executeHQL(hql,entity);
+        return executeHQL(hql, entity);
     }
 }

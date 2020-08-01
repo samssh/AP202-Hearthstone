@@ -10,11 +10,12 @@ import javax.persistence.Entity;
 import javax.persistence.Id;
 
 @Entity
-@EqualsAndHashCode(of = "id")
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
 public class RequestLogInfo {
     @Id
     @Getter
     @Setter
+    @EqualsAndHashCode.Include
     private long id;
     @Column
     @Getter
@@ -27,7 +28,7 @@ public class RequestLogInfo {
     @Column
     @Getter
     @Setter
-    private int mana, lockMode, mode, side, index, emptyIndex;
+    private int mana, lockMode, mode, side, _index, emptyIndex;
 
     public RequestLogInfo() {
     }
@@ -130,7 +131,7 @@ public class RequestLogInfo {
 
         @Override
         public void selectCadOnPassive(int index) {
-            setIndex(index);
+            set_index(index);
         }
 
         @Override
@@ -146,14 +147,14 @@ public class RequestLogInfo {
         @Override
         public void selectMinion(int side, int index, int emptyIndex) {
             setSide(side);
-            setIndex(index);
+            set_index(index);
             setEmptyIndex(emptyIndex);
         }
 
         @Override
         public void selectCardInHand(int side, int index) {
             setSide(side);
-            setIndex(index);
+            set_index(index);
         }
     }
 }

@@ -3,22 +3,16 @@ package ir.sam.hearthstone.util;
 import lombok.SneakyThrows;
 
 
-public class Loop implements Runnable, Updatable {
+public class Loop {
     private final int fps;
     private volatile boolean running = false;
     protected Thread thread;
-    private Updatable updatable;
-
-
-    public Loop(int fps) {
-        this.fps = fps;
-        thread = new Thread(this);
-    }
+    private final Updatable updatable;
 
     public Loop(int fps, Updatable updatable) {
         this.fps = fps;
         this.updatable = updatable;
-        thread = new Thread(this);
+        thread = new Thread(this::run);
     }
 
     public void update() {
@@ -26,8 +20,7 @@ public class Loop implements Runnable, Updatable {
             updatable.update();
     }
 
-    @Override
-    public void run() {
+    private void run() {
         long lastTime = System.nanoTime();
         int ns_per_update = 1000000000 / fps;
         double delta = 0;
@@ -39,14 +32,18 @@ public class Loop implements Runnable, Updatable {
                 sleep((long) (ns_per_update * (1 - delta)));
             }
             while (running && delta >= 1) {
-                update();
+                try {
+                    update();
+                }catch (Throwable throwable){
+                    throwable.printStackTrace();
+                }
                 delta--;
             }
         }
     }
 
     @SneakyThrows
-    public void sleep(long time){
+    public void sleep(long time) {
         int milliseconds = (int) (time) / 1000000;
         int nanoseconds = (int) (time) % 1000000;
         Thread.sleep(milliseconds, nanoseconds);
@@ -58,7 +55,7 @@ public class Loop implements Runnable, Updatable {
     }
 
     public void restart() {
-        thread = new Thread(this);
+        thread = new Thread(this::run);
         running = true;
         thread.start();
     }

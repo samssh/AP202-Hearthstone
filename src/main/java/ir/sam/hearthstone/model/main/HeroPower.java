@@ -12,11 +12,12 @@ import java.util.Map;
 
 @Entity
 @ToString
-@EqualsAndHashCode(of = "name")
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
 public class HeroPower implements SaveAble, Cloneable,HasAction {
     @Id
     @Getter
     @Setter
+    @EqualsAndHashCode.Include
     private String name;
     @Column
     @Getter
@@ -46,6 +47,11 @@ public class HeroPower implements SaveAble, Cloneable,HasAction {
         this.description = description;
         this.manaFrz = manaFrz;
         this.methods = new HashMap<>();
+    }
+
+    @PostLoad
+    private void postLoad() {
+        methods = new HashMap<>(methods);
     }
 
     @Override
