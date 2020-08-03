@@ -1,9 +1,9 @@
 package ir.sam.hearthstone;
 
-import ir.sam.hearthstone.transmitters.OfflineTransmitter;
 import ir.sam.hearthstone.client.Client;
-import ir.sam.hearthstone.server.Server;
 import ir.sam.hearthstone.resource_manager.ResourceLoader;
+import ir.sam.hearthstone.server.Server;
+import ir.sam.hearthstone.transmitters.OfflineTransmitter;
 
 public class Main {
     public static void main(String[] args) {

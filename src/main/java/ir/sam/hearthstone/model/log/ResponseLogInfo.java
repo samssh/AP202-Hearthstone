@@ -1,6 +1,8 @@
 package ir.sam.hearthstone.model.log;
 
-import ir.sam.hearthstone.response.*;
+import ir.sam.hearthstone.response.PlayDetails;
+import ir.sam.hearthstone.response.Response;
+import ir.sam.hearthstone.response.ResponseExecutor;
 import ir.sam.hearthstone.view.model.BigDeckOverview;
 import ir.sam.hearthstone.view.model.CardOverview;
 import ir.sam.hearthstone.view.model.PassiveOverview;
@@ -8,7 +10,6 @@ import ir.sam.hearthstone.view.model.SmallDeckOverview;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
-import ir.sam.hearthstone.response.ResponseExecutor;
 import lombok.ToString;
 
 import javax.persistence.Column;
@@ -39,7 +40,7 @@ public class ResponseLogInfo {
     @Column(length = 200000)
     @Getter
     @Setter
-    private String sell, buy, passives, decks, heroNames, classOfCardNames,eventLog,
+    private String sell, buy, passives, decks, heroNames, classOfCardNames, eventLog,
             cards, bigDeckOverviews, deckCards, events, passiveList;
     @Column
     @Getter

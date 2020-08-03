@@ -1,6 +1,6 @@
 package ir.sam.hearthstone.view.util;
 
-import ir.sam.hearthstone.view.graphics_engine.*;
+import ir.sam.hearthstone.view.graphics_engine.AnimationManger;
 import ir.sam.hearthstone.view.graphics_engine.effects.*;
 import ir.sam.hearthstone.view.model.Overview;
 
@@ -280,7 +280,7 @@ public abstract class Box<Model extends Overview, T extends JPanel> extends JPan
     private void previous() {
         animationManger.clear();
         end = begin;
-        if (end>models.size()){
+        if (end > models.size()) {
             end = models.size();
         }
         showing.clear();

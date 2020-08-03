@@ -248,7 +248,7 @@ public class MinionImpl {
      * ENEMY_PLAY_MINION
      */
     private static void kingDred(ComplexLogic complexLogic, CharacterLogic characterLogic, AbstractGame game) {
-        if (characterLogic instanceof MinionLogic && complexLogic instanceof MinionLogic && ((MinionLogic) characterLogic).getHp()>0)
+        if (characterLogic instanceof MinionLogic && complexLogic instanceof MinionLogic && ((MinionLogic) characterLogic).getHp() > 0)
             game.attackMinionToMinion(((MinionLogic) complexLogic), ((MinionLogic) characterLogic));
     }
 

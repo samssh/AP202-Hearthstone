@@ -20,7 +20,7 @@ import java.util.stream.Collectors;
 @SuppressWarnings("ALL")
 public class SpellImpl {
     private SpellImpl() {
-        this.arcane(null,null,null);
+        this.arcane(null, null, null);
     }
 
     private static MethodHandles.Lookup getLookup() {
@@ -287,7 +287,7 @@ public class SpellImpl {
                         , Rarity.Common, 0, 6, 6);
                 MinionLogic minionLogic = new MinionLogic(side, wisp);
                 minionLogic.summon(game, gameState.getGround(side).size());
-                gameState.setActiveQuest(side,null);
+                gameState.setActiveQuest(side, null);
             }
         }
     }
@@ -305,10 +305,10 @@ public class SpellImpl {
                 List<MinionLogic> deck = gameState.getDeck(side).stream().filter(cardLogic ->
                         cardLogic instanceof MinionLogic).map(cardLogic -> ((MinionLogic) cardLogic))
                         .collect(Collectors.toList());
-                if (deck.size()==0) return;
-                int randomIndex = (int) (Math.random()*deck.size());
-                deck.get(randomIndex).summon(game,gameState.getGround(side).size());
-                gameState.setActiveQuest(side,null);
+                if (deck.size() == 0) return;
+                int randomIndex = (int) (Math.random() * deck.size());
+                deck.get(randomIndex).summon(game, gameState.getGround(side).size());
+                gameState.setActiveQuest(side, null);
             }
         }
     }

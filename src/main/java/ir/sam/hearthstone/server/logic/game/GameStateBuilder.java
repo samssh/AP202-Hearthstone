@@ -5,17 +5,16 @@ import ir.sam.hearthstone.model.main.*;
 import ir.sam.hearthstone.response.PlayDetails;
 import ir.sam.hearthstone.server.logic.game.behavioral_models.*;
 import ir.sam.hearthstone.server.logic.game.events.DrawCard;
-import ir.sam.hearthstone.view.model.CardOverview;
 import ir.sam.hearthstone.view.model.HeroOverview;
 import ir.sam.hearthstone.view.model.HeroPowerOverview;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
 
-import java.util.Collections;
 import java.util.List;
 
-import static ir.sam.hearthstone.server.logic.game.Side.*;
+import static ir.sam.hearthstone.server.logic.game.Side.PLAYER_ONE;
+import static ir.sam.hearthstone.server.logic.game.Side.PLAYER_TWO;
 
 public class GameStateBuilder {
     @Setter
@@ -48,10 +47,10 @@ public class GameStateBuilder {
                 .setOverview(new HeroOverview(gameState.getHero(side))).setSide(side.getIndex()).build());
         gameState.setHeroPower(side, new HeroPowerLogic(side, deck.getHero().getPower()));
         gameState.getEvents().add(new PlayDetails.EventBuilder(PlayDetails.EventType.SET_HERO_POWER)
-        .setOverview(new HeroPowerOverview(deck.getHero().getPower())).setSide(side.getIndex()).build());
+                .setOverview(new HeroPowerOverview(deck.getHero().getPower())).setSide(side.getIndex()).build());
         gameState.setMana(side, 0);
-        deckCards.forEach(card -> gameState.getDeck(side).add(buildCardLogic(side,card)));
-        hand.forEach(card -> gameState.getHand(side).add(buildCardLogic(side,card)));
+        deckCards.forEach(card -> gameState.getDeck(side).add(buildCardLogic(side, card)));
+        hand.forEach(card -> gameState.getHand(side).add(buildCardLogic(side, card)));
         hand.forEach(card -> gameState.getGameEvents().add(new DrawCard(side, card)));
     }
 

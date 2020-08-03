@@ -34,7 +34,7 @@ public class Loop {
             while (running && delta >= 1) {
                 try {
                     update();
-                }catch (Throwable throwable){
+                } catch (Throwable throwable) {
                     throwable.printStackTrace();
                 }
                 delta--;

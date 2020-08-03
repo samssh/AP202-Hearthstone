@@ -6,12 +6,14 @@ import lombok.ToString;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
+
 @ToString(includeFieldNames = false)
-public class SmallDeckOverview extends Overview{
+public class SmallDeckOverview extends Overview {
     @ToString.Exclude
     private final BufferedImage image;
+
     public SmallDeckOverview(Deck deck) {
-        super(deck.getName(),deck.getHero().getName());
+        super(deck.getName(), deck.getHero().getName());
         image = ImageLoader.getInstance().getSmallDeck(imageName);
     }
 

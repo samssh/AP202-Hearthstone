@@ -9,7 +9,8 @@ import lombok.Setter;
 import java.util.*;
 import java.util.stream.Stream;
 
-import static ir.sam.hearthstone.server.logic.game.Side.*;
+import static ir.sam.hearthstone.server.logic.game.Side.PLAYER_ONE;
+import static ir.sam.hearthstone.server.logic.game.Side.PLAYER_TWO;
 
 public class GameState {
     @Getter
@@ -169,7 +170,7 @@ public class GameState {
         protected final List<ComplexLogic> activeUnits;
         protected WeaponLogic weapon;
         protected QuestLogic quest;
-        protected MinionLogic selectedMinionOnGround,selectedMinionOnHand; // in hand or ground
+        protected MinionLogic selectedMinionOnGround, selectedMinionOnHand; // in hand or ground
         protected ComplexLogic waitForTarget; // some thing special
         protected boolean heroSelected, heroPowerSelected;
         protected int taunts;
@@ -190,7 +191,8 @@ public class GameState {
         }
 
         protected Stream<ComplexLogic> getStream() {
-            /*Array*/List<ComplexLogic> complexLogicList = new Stack<>(/*hand.size() + 5*/);
+            /*Array*/
+            List<ComplexLogic> complexLogicList = new Stack<>(/*hand.size() + 5*/);
             complexLogicList.add(hero);
             complexLogicList.add(heroPower);
             complexLogicList.add(passive);

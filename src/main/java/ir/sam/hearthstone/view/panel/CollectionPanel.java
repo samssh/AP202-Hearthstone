@@ -210,7 +210,7 @@ public class CollectionPanel extends JPanel implements Updatable {
         Constant.makeTransparent(backMainMenu);
     }
 
-    public void putDeckEvent(String type,String deckName,SmallDeckOverview newDeck){
+    public void putDeckEvent(String type, String deckName, SmallDeckOverview newDeck) {
         switch (type) {
             case "change" -> decks.changeModel(deckName, newDeck);
             case "delete" -> decks.removeModel(deckName, true);
@@ -219,14 +219,14 @@ public class CollectionPanel extends JPanel implements Updatable {
         }
     }
 
-    public void putCardEvent(String type,String cardName,boolean canAddDeck, boolean canChangeHero){
+    public void putCardEvent(String type, String cardName, boolean canAddDeck, boolean canChangeHero) {
         switch (type) {
             case "add" -> AnimationManger.moveCard(cardName, cards, deckCards, animationManger);
             case "move" -> AnimationManger.moveCard(cardName, deckCards, cards, animationManger);
             case "remove" -> deckCards.removeModel(cardName, true);
             default -> System.err.println("shit");
         }
-        setButtons(canAddDeck,canChangeHero);
+        setButtons(canAddDeck, canChangeHero);
     }
 
     public void setDetails(List<CardOverview> cards, List<SmallDeckOverview> decks,

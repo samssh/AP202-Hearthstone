@@ -10,13 +10,13 @@ import javax.persistence.Entity;
 import javax.persistence.OneToOne;
 
 @Entity
-public class  Hero extends Unit {
+public class Hero extends Unit {
     @Column
     @Setter
     @Getter
     private int hpFrz;
     @OneToOne
-    @Cascade({CascadeType.SAVE_UPDATE,CascadeType.DELETE})
+    @Cascade({CascadeType.SAVE_UPDATE, CascadeType.DELETE})
     @Setter
     @Getter
     private HeroPower power;
@@ -24,7 +24,7 @@ public class  Hero extends Unit {
     public Hero() {
     }
 
-    public Hero(String name, String description, int hpFrz,HeroPower power) {
+    public Hero(String name, String description, int hpFrz, HeroPower power) {
         super(name, description);
         this.hpFrz = hpFrz;
         this.power = power;

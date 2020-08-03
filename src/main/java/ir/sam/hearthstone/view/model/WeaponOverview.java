@@ -29,6 +29,6 @@ public class WeaponOverview extends CardOverview {
             graphics2D.setFont(graphics2D.getFont().deriveFont(21.0F));
             graphics2D.drawString("" + hp, 73 * w / 100, 77 * h / 90);
             graphics2D.drawString("" + att, 14 * w / 100, 73 * h / 90);
-        }else graphics2D.drawImage(closeWeapon, 0, 0, null);
+        } else graphics2D.drawImage(closeWeapon, 0, 0, null);
     }
 }

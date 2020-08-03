@@ -12,7 +12,7 @@ import java.util.Scanner;
 public class ResourceLoader {
     private static String[] args;
     private final static String defaultAddress = "./src/main/resources/configurations/MainConfig.properties";
-    private final static String defaultUrl="http://8upload.ir/uploads/f126514325.zip";
+    private final static String defaultUrl = "http://8upload.ir/uploads/f126514325.zip";
 
     private final static ResourceLoader instance = new ResourceLoader();
     private final String INPUT_ZIP_FILE = "./temp.zip";
@@ -89,7 +89,7 @@ public class ResourceLoader {
         return args.length > 0 ? args[0] : defaultAddress;
     }
 
-    public static String getUrl(){
+    public static String getUrl() {
         return args.length > 1 ? args[1] : defaultUrl;
     }
 

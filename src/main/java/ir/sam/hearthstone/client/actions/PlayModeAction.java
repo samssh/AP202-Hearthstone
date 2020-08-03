@@ -17,8 +17,8 @@ public class PlayModeAction {
         this.client = client;
     }
 
-    public void select(String modeName){
-        connector.save(new ButtonLog(client.getUsername(), "play mode: "+modeName, PLAY_MODE.toString()));
+    public void select(String modeName) {
+        connector.save(new ButtonLog(client.getUsername(), "play mode: " + modeName, PLAY_MODE.toString()));
         Request request = new SelectPlayMode(modeName);
         client.getRequestSender().sendRequest(request);
     }

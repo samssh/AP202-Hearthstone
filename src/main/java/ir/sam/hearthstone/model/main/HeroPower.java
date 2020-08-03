@@ -13,7 +13,7 @@ import java.util.Map;
 @Entity
 @ToString
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
-public class HeroPower implements SaveAble, Cloneable,HasAction {
+public class HeroPower implements SaveAble, Cloneable, HasAction {
     @Id
     @Getter
     @Setter
@@ -36,7 +36,7 @@ public class HeroPower implements SaveAble, Cloneable,HasAction {
     @Column
     @ElementCollection
     @MapKeyEnumerated(EnumType.STRING)
-    protected Map<ActionType,String> methods;
+    protected Map<ActionType, String> methods;
 
 
     public HeroPower() {

@@ -2,17 +2,20 @@ package ir.sam.hearthstone.model.account;
 
 import ir.sam.hearthstone.hibernate.SaveAble;
 import ir.sam.hearthstone.model.main.Card;
+import ir.sam.hearthstone.model.main.CardDetails;
 import ir.sam.hearthstone.model.main.Hero;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
-import ir.sam.hearthstone.model.main.CardDetails;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
 
 import javax.persistence.*;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 @Entity
 @ToString()
@@ -75,7 +78,7 @@ public class Player implements SaveAble {
         this.cards = cards;
         this.heroes = heroes;
         this.decks = decks;
-        decks.forEach(deck->deck.setPlayer(this));
+        decks.forEach(deck -> deck.setPlayer(this));
     }
 
     public void addCard(Card card) {

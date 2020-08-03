@@ -14,6 +14,6 @@ public class ActionHolder {
     }
 
     public void doAction(ComplexLogic visitor, CharacterLogic characterLogic, AbstractGame game) {
-        actions.get(visitor.getName()).doAction(visitor,characterLogic, game);
+        actions.get(visitor.getName()).doAction(visitor, characterLogic, game);
     }
 }

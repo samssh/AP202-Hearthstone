@@ -60,7 +60,7 @@ public class MainMenuAction {
     }
 
     public void play() {
-        client.getPanels().put(PLAY,new PlayPanel(new PlayAction(connector,client)));
+        client.getPanels().put(PLAY, new PlayPanel(new PlayAction(connector, client)));
         connector.save(new ButtonLog(client.getUsername(), "play", MAIN_MENU.toString()));
         client.sendStartPlayRequest();
     }

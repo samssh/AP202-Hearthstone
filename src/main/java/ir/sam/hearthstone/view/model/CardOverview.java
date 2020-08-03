@@ -1,12 +1,11 @@
 package ir.sam.hearthstone.view.model;
 
 import ir.sam.hearthstone.model.main.Card;
+import ir.sam.hearthstone.model.main.Minion;
 import ir.sam.hearthstone.model.main.Weapon;
 import ir.sam.hearthstone.resource_manager.ImageLoader;
 import lombok.Getter;
-import ir.sam.hearthstone.model.main.Minion;
 import lombok.Setter;
-import lombok.ToString;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
@@ -20,7 +19,7 @@ public class CardOverview extends UnitOverview {
     private final int price, mana;
     protected final int att, hp;
     private final boolean showPrice;
-//    @ToString.Exclude
+    //    @ToString.Exclude
     protected BufferedImage big, small;
 
     public CardOverview(Card card) {

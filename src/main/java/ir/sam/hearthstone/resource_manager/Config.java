@@ -6,7 +6,6 @@ import java.io.Reader;
 import java.lang.reflect.Array;
 import java.lang.reflect.Constructor;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Properties;
 
@@ -37,7 +36,7 @@ public class Config extends Properties {
     @SuppressWarnings("unchecked")
     public <E> E[] getPropertyArray(Class<E> c, String propertyName) {
         String[] values = getProperty(propertyName).split(",");
-        E[] result= (E[]) Array.newInstance(c,values.length);
+        E[] result = (E[]) Array.newInstance(c, values.length);
         for (int i = 0, valuesLength = values.length; i < valuesLength; i++) {
             result[i] = getObject(c, values[i]);
         }

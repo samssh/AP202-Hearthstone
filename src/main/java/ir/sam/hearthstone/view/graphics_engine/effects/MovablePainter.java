@@ -2,7 +2,7 @@ package ir.sam.hearthstone.view.graphics_engine.effects;
 
 import ir.sam.hearthstone.view.graphics_engine.Speed;
 
-public abstract class MovablePainter  implements PaintByTime {
+public abstract class MovablePainter implements PaintByTime {
     protected final int originX, originY, destinationX, destinationY;
     protected final PaintByTime painter;
     protected final Speed speed;

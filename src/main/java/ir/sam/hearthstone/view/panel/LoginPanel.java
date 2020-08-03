@@ -2,11 +2,11 @@ package ir.sam.hearthstone.view.panel;
 
 import ir.sam.hearthstone.client.actions.LoginPanelAction;
 import ir.sam.hearthstone.resource_manager.Config;
+import ir.sam.hearthstone.resource_manager.ConfigFactory;
 import ir.sam.hearthstone.resource_manager.ImageLoader;
 import ir.sam.hearthstone.view.util.Constant;
 import lombok.Getter;
 import lombok.Setter;
-import ir.sam.hearthstone.resource_manager.ConfigFactory;
 
 import javax.swing.*;
 import java.awt.*;
@@ -70,10 +70,9 @@ public class LoginPanel extends JPanel {
         login = new JButton();
         login.setSize(dimension);
         login.addActionListener(actionListener -> loginPanelAction.login(
-                this,userName.getText(),String.valueOf(password.getPassword()),String.valueOf(passwordAgain.getPassword())));
+                this, userName.getText(), String.valueOf(password.getPassword()), String.valueOf(passwordAgain.getPassword())));
         Constant.makeTransparent(login);
     }
-
 
 
     private void initializeChangeMode() {
@@ -165,7 +164,8 @@ public class LoginPanel extends JPanel {
         SIGN_IN(1), SIGN_UP(2);
         @Getter
         int value;
-        Mode(int value){
+
+        Mode(int value) {
             this.value = value;
         }
     }
@@ -174,7 +174,7 @@ public class LoginPanel extends JPanel {
     protected void paintComponent(Graphics g) {
         Graphics2D graphics2D = (Graphics2D) g;
         super.paintComponent(graphics2D);
-        graphics2D.drawImage(bg,0,0,getWidth(),getHeight(),this);
+        graphics2D.drawImage(bg, 0, 0, getWidth(), getHeight(), this);
         int startWidth = (this.getWidth() - componentWidth) / 2 + shiftX;
         int startHeight = this.getHeight() / 2 + shiftY;
         int sumHeight = componentHeight + componentSpace;

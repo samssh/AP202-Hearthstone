@@ -2,7 +2,8 @@ package ir.sam.hearthstone.client.actions;
 
 import ir.sam.hearthstone.client.Client;
 import ir.sam.hearthstone.hibernate.Connector;
-import ir.sam.hearthstone.model.log.*;
+import ir.sam.hearthstone.model.log.ButtonLog;
+import ir.sam.hearthstone.model.log.RequestLog;
 import ir.sam.hearthstone.requests.*;
 
 import static ir.sam.hearthstone.view.PanelType.PLAY;

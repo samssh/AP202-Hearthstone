@@ -41,7 +41,7 @@ public class SpellLogic extends CardLogic {
             GameEvent gameEvent = new PlayCard(side, spell);
             gameState.getGameEvents().add(gameEvent);
             PlayDetails.Event event = new PlayDetails.EventBuilder(PlayDetails.EventType.PLAY_SPELL)
-            .setSide(side.getIndex()).setIndex(indexOnHand).build();
+                    .setSide(side.getIndex()).setIndex(indexOnHand).build();
             gameState.getEvents().add(event);
             game.getActionHolderMap().get(ActionType.DO_ACTION).doAction(this, this, game);
             AbstractGame.visitAll(game, ActionType.PLAY_SPELL, this, side);

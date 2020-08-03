@@ -6,15 +6,15 @@ public abstract class ScaleOnCenter implements PaintByTime {
     public static final int ALL = 3, X = 2, Y = 1, NONE = 0, RANDOM = 5;
     private final int mode;
 
-    public static int getRandomMode(){
-        return (int)(Math.random()*3) + 1;
+    public static int getRandomMode() {
+        return (int) (Math.random() * 3) + 1;
     }
 
     public ScaleOnCenter(int mode) {
         if (mode == RANDOM)
-            mode = (int)(Math.random()*3) + 1;
+            mode = (int) (Math.random() * 3) + 1;
         this.mode = mode;
-    } 
+    }
 
     protected void paint0(Graphics2D graphics2D, double time, PaintByTime painter) {
         int translateX = ((mode & X) > 0) ? (int) ((painter.getWidth() * (1 - time)) / 2) : 0;

@@ -12,7 +12,7 @@ public interface MyChangeListener extends DocumentListener {
     }
 
     @Override
-    default void removeUpdate(DocumentEvent e){
+    default void removeUpdate(DocumentEvent e) {
         this.change(e);
     }
 

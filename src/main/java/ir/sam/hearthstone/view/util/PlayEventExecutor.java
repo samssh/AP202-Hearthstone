@@ -35,7 +35,7 @@ public class PlayEventExecutor {
             }
             case ADD_TO_GROUND -> playPanel.getGround()[side].addModel(index
                     , (MinionOverview) event.getOverview(), true);
-            case ADD_TO_HAND -> playPanel.getHand()[side].addModel(0,(CardOverview) event.getOverview(), true);
+            case ADD_TO_HAND -> playPanel.getHand()[side].addModel(0, (CardOverview) event.getOverview(), true);
             case CHANGE_IN_HAND -> playPanel.getHand()[side].changeModel(index, (CardOverview) event.getOverview());
             case REMOVE_FROM_HAND -> playPanel.getHand()[side].removeModel(index, true);
             case MOVE_FROM_HAND_TO_GROUND -> AnimationManger.moveAndChangeCard(playPanel.getGround()[side], playPanel.getHand()[side]

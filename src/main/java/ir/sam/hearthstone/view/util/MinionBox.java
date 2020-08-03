@@ -6,7 +6,8 @@ import javax.swing.*;
 import java.awt.event.MouseEvent;
 import java.util.OptionalInt;
 
-import static ir.sam.hearthstone.view.util.Constant.*;
+import static ir.sam.hearthstone.view.util.Constant.MINION_HEIGHT;
+import static ir.sam.hearthstone.view.util.Constant.MINION_SPACE;
 
 public class MinionBox extends Box<MinionOverview, MinionBox.Viewer> {
 

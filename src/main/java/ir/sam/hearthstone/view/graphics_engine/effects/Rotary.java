@@ -1,4 +1,5 @@
 package ir.sam.hearthstone.view.graphics_engine.effects;
+
 import java.awt.*;
 
 public class Rotary implements PaintByTime {
@@ -13,9 +14,9 @@ public class Rotary implements PaintByTime {
         double rotationRequired = 2 * Math.PI * (time);
         double locationX = painter.getWidth() / 2.0;
         double locationY = painter.getHeight() / 2.0;
-        graphics2D.rotate(rotationRequired,locationX,locationY);
-        painter.paint(graphics2D,time);
-        graphics2D.rotate(-1*rotationRequired,locationX,locationY);
+        graphics2D.rotate(rotationRequired, locationX, locationY);
+        painter.paint(graphics2D, time);
+        graphics2D.rotate(-1 * rotationRequired, locationX, locationY);
     }
 
     @Override

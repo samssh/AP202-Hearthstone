@@ -1,9 +1,9 @@
 package ir.sam.hearthstone.server.logic.game.events;
 
+import ir.sam.hearthstone.model.main.Card;
 import ir.sam.hearthstone.server.logic.game.Side;
 import lombok.Getter;
 import lombok.Setter;
-import ir.sam.hearthstone.model.main.Card;
 
 public class DeleteCard extends GameEvent {
 
@@ -19,6 +19,6 @@ public class DeleteCard extends GameEvent {
 
     @Override
     public String toString() {
-        return side+": Delete card(" + "card=" + card.getName() + ')';
+        return side + ": Delete card(" + "card=" + card.getName() + ')';
     }
 }

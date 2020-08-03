@@ -4,9 +4,9 @@ import ir.sam.hearthstone.hibernate.Connector;
 import ir.sam.hearthstone.model.account.Player;
 import ir.sam.hearthstone.model.log.BuySellLog;
 import ir.sam.hearthstone.model.main.Card;
+import ir.sam.hearthstone.resource_manager.ModelLoader;
 import ir.sam.hearthstone.response.Response;
 import ir.sam.hearthstone.response.ShopDetails;
-import ir.sam.hearthstone.resource_manager.ModelLoader;
 import ir.sam.hearthstone.response.ShopEvent;
 import ir.sam.hearthstone.view.model.CardOverview;
 
@@ -73,7 +73,7 @@ public class Shop {
                 connector.save(player);
                 connector.save(new BuySellLog(player.getUserName()
                         , player.getCoin() - card.getPrice(), player.getCoin(), cardName, "sell"));
-                return new ShopEvent(cardName,"sell",player.getCoin());
+                return new ShopEvent(cardName, "sell", player.getCoin());
             }
         }
         return null;
@@ -93,7 +93,7 @@ public class Shop {
                 connector.save(player);
                 connector.save(new BuySellLog(player.getUserName()
                         , player.getCoin() + card.getPrice(), player.getCoin(), cardName, "buy"));
-                return new ShopEvent(cardName,"buy",player.getCoin());
+                return new ShopEvent(cardName, "buy", player.getCoin());
             }
         }
         return null;

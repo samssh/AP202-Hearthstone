@@ -27,28 +27,28 @@ public class ModelLoader {
         firstHeroes = new ArrayList<>();
         firstCards = new ArrayList<>();
         firstPassives = connector.fetchAll(Passive.class);
-        config(ConfigFactory.getInstance().getConfig("MODEL_LOADER_CONFIG"),connector);
+        config(ConfigFactory.getInstance().getConfig("MODEL_LOADER_CONFIG"), connector);
     }
 
     public void config(Config config, Connector connector) {
         defaultHero = getHero(config.getProperty(String.class, "defaultHero"))
-                .orElseThrow(()->new NoSuchElementException("hero on config file not exist"));
+                .orElseThrow(() -> new NoSuchElementException("hero on config file not exist"));
         List<String> heroName = config.getPropertyList(String.class, "firstHeroes");
         for (String s : heroName) {
             firstHeroes.add(getHero(s)
-                    .orElseThrow(()->new NoSuchElementException("hero on config file not exist")));
+                    .orElseThrow(() -> new NoSuchElementException("hero on config file not exist")));
         }
         List<String> cardsName = config.getPropertyList(String.class, "firstCards");
         for (String s : cardsName) {
             firstCards.add(getCard(s)
-                    .orElseThrow(()->new NoSuchElementException("hero on config file not exist")));
+                    .orElseThrow(() -> new NoSuchElementException("hero on config file not exist")));
         }
     }
 
     public List<Deck> getFirstDecks() {
         List<Deck> deckList = new ArrayList<>();
-        for (Hero hero:firstHeroes) {
-            deckList.add(new Deck(hero,"default"));
+        for (Hero hero : firstHeroes) {
+            deckList.add(new Deck(hero, "default"));
         }
         return deckList;
     }
@@ -62,8 +62,8 @@ public class ModelLoader {
     }
 
     public Map<Card, CardDetails> getFirstCards() {
-        Map<Card,CardDetails> map = new HashMap<>();
-        for (Card card:firstCards) map.put(card,new CardDetails(1));
+        Map<Card, CardDetails> map = new HashMap<>();
+        for (Card card : firstCards) map.put(card, new CardDetails(1));
         return map;
     }
 
@@ -81,14 +81,14 @@ public class ModelLoader {
         return Optional.empty();
     }
 
-    public Optional<ClassOfCard> getClassOfCard(String name){
+    public Optional<ClassOfCard> getClassOfCard(String name) {
         for (ClassOfCard c : classOfCards)
             if (c.getHeroName().equals(name))
                 return Optional.of(c);
         return Optional.empty();
     }
 
-    public Optional<Passive> getPassive(String name){
+    public Optional<Passive> getPassive(String name) {
         for (Passive p : firstPassives)
             if (p.getName().equals(name))
                 return Optional.of(p);

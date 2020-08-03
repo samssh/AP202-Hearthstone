@@ -1,12 +1,10 @@
 package ir.sam.hearthstone.view.util;
 
 import ir.sam.hearthstone.view.model.SmallDeckOverview;
-import lombok.Setter;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
 
 public class SmallDeckBox extends Box<SmallDeckOverview, SmallDeckBox.SmallDeckViewer> {
     public SmallDeckBox(int width, int height, JPanel parent, MyActionListener deckActionListener) {
@@ -48,7 +46,7 @@ public class SmallDeckBox extends Box<SmallDeckOverview, SmallDeckBox.SmallDeckV
         @Override
         public void mouseClicked(MouseEvent e) {
             if (e.getButton() == MouseEvent.BUTTON1) {
-                if (action != null && smallDeckOverview!=null)
+                if (action != null && smallDeckOverview != null)
                     action.action(smallDeckOverview.getName());
             }
         }

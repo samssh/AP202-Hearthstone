@@ -1,4 +1,5 @@
 package ir.sam.hearthstone.view.graphics_engine.effects;
+
 import java.awt.*;
 import java.awt.image.BufferedImage;
 
@@ -11,7 +12,7 @@ public class SimplePainter implements PaintByTime {
 
     @Override
     public void paint(Graphics2D graphics2D, double time) {
-        graphics2D.drawImage(image,0,0,null);
+        graphics2D.drawImage(image, 0, 0, null);
     }
 
     @Override

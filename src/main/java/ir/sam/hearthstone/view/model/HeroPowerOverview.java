@@ -52,7 +52,7 @@ public class HeroPowerOverview extends UnitOverview {
             Graphics g = image.createGraphics();
             this.paintBig(g);
             return image;
-        }else return big;
+        } else return big;
     }
 
     private void paintBig(Graphics g) {

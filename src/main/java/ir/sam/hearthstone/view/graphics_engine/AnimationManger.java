@@ -105,7 +105,7 @@ public class AnimationManger {
     }
 
     public void clear() {
-        synchronized (painterGroups){
+        synchronized (painterGroups) {
             painterGroups.forEach(PainterGroup::clear);
             painterGroups.clear();
         }

@@ -6,19 +6,20 @@ import lombok.ToString;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
+
 @ToString(includeFieldNames = false)
-public class PassiveOverview extends Overview{
+public class PassiveOverview extends Overview {
     @ToString.Exclude
     private final BufferedImage image;
 
     public PassiveOverview(Passive p) {
-        super(p.getName(),p.getName());
+        super(p.getName(), p.getName());
         image = ImageLoader.getInstance().getPassive(imageName);
     }
 
     @Override
     public void paint(Graphics2D g) {
-        g.drawImage(image,0,0,null);
+        g.drawImage(image, 0, 0, null);
     }
 
     @Override

@@ -8,7 +8,8 @@ public class Quest extends Spell {
         super(name, description, price, classOfCard, rarity, manaFrz);
     }
 
-    public Quest(){}
+    public Quest() {
+    }
 
     @Override
     public Quest clone() {

@@ -7,7 +7,7 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 
 @Entity
-public class AccountLog extends Log{
+public class AccountLog extends Log {
     @Column
     @Setter
     @Getter

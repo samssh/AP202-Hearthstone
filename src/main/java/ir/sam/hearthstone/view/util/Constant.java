@@ -62,15 +62,15 @@ public class Constant {
         WEAPON_HEIGHT = config.getProperty(Integer.class, "WEAPON_HEIGHT");
     }
 
-    public static void makeTransparent(JButton button){
+    public static void makeTransparent(JButton button) {
         makeWhite(button);
         button.setFocusable(false);
         button.setBorderPainted(false);
     }
 
-    public static void makeWhite(JComponent component){
+    public static void makeWhite(JComponent component) {
         component.setFont(component.getFont().deriveFont(18.F));
         component.setForeground(Color.WHITE);
-        component.setBackground(new Color(10,10,10,200));
+        component.setBackground(new Color(10, 10, 10, 200));
     }
 }

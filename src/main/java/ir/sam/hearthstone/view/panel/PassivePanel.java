@@ -8,8 +8,8 @@ import ir.sam.hearthstone.view.model.CardOverview;
 import ir.sam.hearthstone.view.model.Overview;
 import ir.sam.hearthstone.view.model.PassiveOverview;
 import ir.sam.hearthstone.view.model.SmallDeckOverview;
-import ir.sam.hearthstone.view.util.*;
 import ir.sam.hearthstone.view.util.Box;
+import ir.sam.hearthstone.view.util.*;
 
 import javax.swing.*;
 import java.awt.*;
@@ -113,8 +113,8 @@ public class PassivePanel extends JPanel {
         else this.remove(button);
     }
 
-    public void changeCard(CardOverview cardOverview,int index) {
-        cardBox.changeModel(index,cardOverview);
+    public void changeCard(CardOverview cardOverview, int index) {
+        cardBox.changeModel(index, cardOverview);
     }
 
     private <Model extends Overview> void setModels(Box<Model, ?> box, List<Model> mode, String message) {

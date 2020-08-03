@@ -2,14 +2,13 @@ package ir.sam.hearthstone.view.util;
 
 import ir.sam.hearthstone.view.graphics_engine.AnimationManger;
 import ir.sam.hearthstone.view.graphics_engine.effects.*;
+import ir.sam.hearthstone.view.model.UnitOverview;
 import lombok.Getter;
 import lombok.Setter;
-import ir.sam.hearthstone.view.model.UnitOverview;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
 
 public class UnitViewer extends JPanel {
     @Getter

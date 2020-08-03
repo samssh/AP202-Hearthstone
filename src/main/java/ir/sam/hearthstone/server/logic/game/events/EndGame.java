@@ -21,7 +21,7 @@ public class EndGame extends GameEvent {
 
     @Override
     public String toString() {
-        return side.toString()+": EndGame(" +
+        return side.toString() + ": EndGame(" +
                 "type=" + type +
                 ')';
     }

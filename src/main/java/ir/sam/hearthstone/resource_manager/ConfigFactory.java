@@ -22,7 +22,7 @@ public class ConfigFactory {
         setFonts(mainConfig.getProperty("FONT"));
     }
 
-    private void setFonts(String address){
+    private void setFonts(String address) {
         try {
             GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
             File file = new File(address);

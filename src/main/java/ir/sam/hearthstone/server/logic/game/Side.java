@@ -24,5 +24,6 @@ public enum Side {
     };
 
     public abstract Side getOther();
+
     public abstract int getIndex();
 }

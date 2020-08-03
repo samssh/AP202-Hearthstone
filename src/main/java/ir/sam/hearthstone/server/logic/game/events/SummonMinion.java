@@ -13,7 +13,7 @@ public class SummonMinion extends GameEvent {
 
     @Override
     public String toString() {
-        return side+": SummonMinion{" +
+        return side + ": SummonMinion{" +
                 "minion=" + minion +
                 '}';
     }

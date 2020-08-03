@@ -50,7 +50,7 @@ public class PassiveBox extends Box<PassiveOverview, PassiveBox.PassiveViewer> {
         @Override
         public void mouseClicked(MouseEvent e) {
             if (e.getButton() == MouseEvent.BUTTON1) {
-                if (action != null && passiveOverview!=null)
+                if (action != null && passiveOverview != null)
                     action.action(passiveOverview.getName());
             }
         }

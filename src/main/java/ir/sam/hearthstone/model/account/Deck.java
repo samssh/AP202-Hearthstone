@@ -1,12 +1,12 @@
 package ir.sam.hearthstone.model.account;
 
 import ir.sam.hearthstone.hibernate.SaveAble;
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.Setter;
 import ir.sam.hearthstone.model.main.Card;
 import ir.sam.hearthstone.model.main.CardDetails;
 import ir.sam.hearthstone.model.main.Hero;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.Setter;
 
 import javax.persistence.*;
 import java.util.HashMap;

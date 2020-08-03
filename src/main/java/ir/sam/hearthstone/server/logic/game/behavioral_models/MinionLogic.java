@@ -36,7 +36,7 @@ public class MinionLogic extends CardLogic implements LiveCharacter {
         hasRush = false;
     }
 
-    public void use(){
+    public void use() {
         this.setHasSleep(true);
         this.setHasRush(false);
     }

@@ -6,8 +6,8 @@ import ir.sam.hearthstone.resource_manager.ConfigFactory;
 import ir.sam.hearthstone.resource_manager.ImageLoader;
 import ir.sam.hearthstone.response.PlayDetails;
 import ir.sam.hearthstone.view.graphics_engine.AnimationManger;
-import ir.sam.hearthstone.view.util.*;
 import ir.sam.hearthstone.view.util.Box;
+import ir.sam.hearthstone.view.util.*;
 import lombok.Getter;
 
 import javax.swing.*;
@@ -62,7 +62,7 @@ public class PlayPanel extends JPanel {
         executor = new PlayEventExecutor(this);
     }
 
-    private void addComponents(){
+    private void addComponents() {
         this.add(hand[0]);
         this.add(ground[0]);
         this.add(hero[0]);

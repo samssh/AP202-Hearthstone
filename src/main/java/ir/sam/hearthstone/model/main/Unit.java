@@ -11,7 +11,7 @@ import java.util.Map;
 
 @Entity
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
-public abstract class Unit implements SaveAble, Cloneable, HasAction{
+public abstract class Unit implements SaveAble, Cloneable, HasAction {
     @Id
     @Setter
     @Getter
@@ -29,7 +29,7 @@ public abstract class Unit implements SaveAble, Cloneable, HasAction{
     @Getter
     @ElementCollection
     @MapKeyEnumerated(EnumType.STRING)
-    protected Map<ActionType,String> methods;
+    protected Map<ActionType, String> methods;
 
     public Unit() {
     }

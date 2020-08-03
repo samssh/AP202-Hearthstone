@@ -9,9 +9,7 @@ import ir.sam.hearthstone.view.model.HeroOverview;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.util.Arrays;
-
-public class HeroLogic extends CharacterLogic implements LiveCharacter{
+public class HeroLogic extends CharacterLogic implements LiveCharacter {
     @Getter
     @Setter
     private Hero hero;

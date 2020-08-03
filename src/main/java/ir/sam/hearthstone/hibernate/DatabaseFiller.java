@@ -1,9 +1,9 @@
 package ir.sam.hearthstone.hibernate;
 
 import ir.sam.hearthstone.model.account.Player;
+import ir.sam.hearthstone.model.main.*;
 import ir.sam.hearthstone.resource_manager.ConfigFactory;
 import ir.sam.hearthstone.resource_manager.ResourceLoader;
-import ir.sam.hearthstone.model.main.*;
 
 import java.util.List;
 
@@ -14,22 +14,22 @@ public class DatabaseFiller {
     }
 
     private static void writeHero() {
-        HeroPower magePower = new HeroPower("Fireblast","Deal 1 damage",2);
+        HeroPower magePower = new HeroPower("Fireblast", "Deal 1 damage", 2);
         connector.save(new Hero("Mage", "She is a skilled wizard who has special skills in using spells."
-                , 30,magePower));
-        HeroPower roguePower = new HeroPower("Rubbery","Steal a card from opponent's hand and add it to your hand",3);
+                , 30, magePower));
+        HeroPower roguePower = new HeroPower("Rubbery", "Steal a card from opponent's hand and add it to your hand", 3);
         connector.save(new Hero("Rogue", "SHe is a thief and most of her abilities are in stealing from the enemy!"
-                , 30,roguePower));
-        HeroPower warlockPower = new HeroPower("Life Tap","Draw a card and take 2 damage Or add a random minion  1/1.",0);
+                , 30, roguePower));
+        HeroPower warlockPower = new HeroPower("Life Tap", "Draw a card and take 2 damage Or add a random minion  1/1.", 0);
         connector.save(new Hero("Warlock",
                 "You will never see anyone beyond him. He passes on his life and property and sacrifices something to win the war.",
-                35,warlockPower));
-        HeroPower hunterPower = new HeroPower("Caltrops","After your opponent plays a minion, deal 1 damage to it",0);
+                35, warlockPower));
+        HeroPower hunterPower = new HeroPower("Caltrops", "After your opponent plays a minion, deal 1 damage to it", 0);
         connector.save(new Hero("Hunter", "She is keen to attack quickly. And because it has a strong interest in hunting," +
-                " most of its minions are animal-type.", 30,hunterPower));
-        HeroPower priestPower= new HeroPower("Heal","Restore 4 Health.",2);
+                " most of its minions are animal-type.", 30, hunterPower));
+        HeroPower priestPower = new HeroPower("Heal", "Restore 4 Health.", 2);
         connector.save(new Hero("Priest", "Although she has few soldiers, her soldiers are loyal. She has many skills in healing, healing and reviving.",
-                30,priestPower));
+                30, priestPower));
     }
 
     private static void writeCart() {
@@ -98,8 +98,8 @@ public class DatabaseFiller {
                 6, neutral, Rarity.Rare, 7));
         connector.save(new Spell("The Boomship", "Summon 3 random minions from your hand. Give them Rush",
                 7, neutral, Rarity.Legendary, 9));
-        connector.save(new Spell("Divine Hymn","Restore 6 Health to all friendly characters.",
-                4,neutral,Rarity.Common,2));
+        connector.save(new Spell("Divine Hymn", "Restore 6 Health to all friendly characters.",
+                4, neutral, Rarity.Common, 2));
 
         connector.save(new Quest("Strength in Numbers", "Sidequest: Spend 10 Mana on minions." +
                 "Reward: Summon a minion from your deck.", 3, neutral, Rarity.Common, 1));
@@ -144,19 +144,19 @@ public class DatabaseFiller {
         connector.save(new Spell("Book of Specters", "Draw 3 cards. Discard any spells drawn.", 4,
                 neutral, Rarity.Epic, 2));
 
-        connector.save(new Passive("Mana Jump","start with an extra Mana"));
-        connector.save(new Passive("Nurse","At the end of your turn,Restore 2 Health to random friendly minion"));
-        connector.save(new Passive("Off Card","The cost of all cards is reduced by one mana"));
-        connector.save(new Passive("Twice Draw","Draw two Card each turn"));
-        connector.save(new Passive("Warriors","if a minion dies on the playground, your hero gain two defence"));
+        connector.save(new Passive("Mana Jump", "start with an extra Mana"));
+        connector.save(new Passive("Nurse", "At the end of your turn,Restore 2 Health to random friendly minion"));
+        connector.save(new Passive("Off Card", "The cost of all cards is reduced by one mana"));
+        connector.save(new Passive("Twice Draw", "Draw two Card each turn"));
+        connector.save(new Passive("Warriors", "if a minion dies on the playground, your hero gain two defence"));
     }
 
     private static Connector connector;
 
     public static void main(String[] args) {
         ResourceLoader.setArgs(args);
-        connector =  new Connector(ConfigFactory.getInstance().getConfigFile("SERVER_HIBERNATE_CONFIG")
-                ,System.getenv("HearthStone password"));
+        connector = new Connector(ConfigFactory.getInstance().getConfigFile("SERVER_HIBERNATE_CONFIG")
+                , System.getenv("HearthStone password"));
         fill();
         List<Hero> heroes = connector.fetchAll(Hero.class);
         heroes.forEach(System.out::println);

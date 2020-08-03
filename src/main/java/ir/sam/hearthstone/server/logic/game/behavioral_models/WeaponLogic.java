@@ -30,7 +30,7 @@ public class WeaponLogic extends CardLogic {
     }
 
     public void setHasAttack(boolean hasAttack, GameState gameState) {
-        boolean temp = hasAttack!=this.hasAttack;
+        boolean temp = hasAttack != this.hasAttack;
         setHasAttack(hasAttack);
         if (temp)
             addChangeEvent(gameState);

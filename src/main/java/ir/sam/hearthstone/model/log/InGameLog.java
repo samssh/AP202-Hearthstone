@@ -7,11 +7,11 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 
 @Entity
-public class InGameLog extends Log{
+public class InGameLog extends Log {
     @Column
     @Getter
     @Setter
-    private String cardName,type;
+    private String cardName, type;
     @Column
     @Getter
     @Setter

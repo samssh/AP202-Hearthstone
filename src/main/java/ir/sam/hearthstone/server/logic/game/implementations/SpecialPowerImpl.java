@@ -24,7 +24,7 @@ public class SpecialPowerImpl {
             if (characterLogic instanceof SpellLogic) {
                 Spell spell = ((SpellLogic) characterLogic).getSpell();
                 spell.setManaFrz(spell.getManaFrz() - 2);
-                if (spell.getManaFrz()<0) spell.setManaFrz(0);
+                if (spell.getManaFrz() < 0) spell.setManaFrz(0);
             }
     }
 

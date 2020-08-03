@@ -11,13 +11,13 @@ public class CardDetails {
     @Column
     @Getter
     @Setter
-    private int repeatedTimes,usage;
+    private int repeatedTimes, usage;
 
     public CardDetails() {
     }
 
     public CardDetails(int repeatedTimes) {
-        this.repeatedTimes=repeatedTimes;
+        this.repeatedTimes = repeatedTimes;
         this.usage = 0;
     }
 
