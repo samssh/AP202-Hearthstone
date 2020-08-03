@@ -1,7 +1,7 @@
 package ir.sam.hearthstone.server.model.log;
 
-import ir.sam.hearthstone.requests.Request;
-import ir.sam.hearthstone.requests.RequestExecutor;
+import ir.sam.hearthstone.server.model.requests.Request;
+import ir.sam.hearthstone.server.model.requests.RequestExecutor;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;

@@ -1,6 +1,6 @@
 package ir.sam.hearthstone.server.model.log;
 
-import ir.sam.hearthstone.requests.Request;
+import ir.sam.hearthstone.server.model.requests.Request;
 import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.annotations.Cascade;

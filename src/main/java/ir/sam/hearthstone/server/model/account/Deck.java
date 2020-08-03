@@ -1,9 +1,9 @@
 package ir.sam.hearthstone.server.model.account;
 
-import ir.sam.hearthstone.hibernate.SaveAble;
 import ir.sam.hearthstone.server.model.main.Card;
 import ir.sam.hearthstone.server.model.main.CardDetails;
 import ir.sam.hearthstone.server.model.main.Hero;
+import ir.sam.hearthstone.server.util.hibernate.SaveAble;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;

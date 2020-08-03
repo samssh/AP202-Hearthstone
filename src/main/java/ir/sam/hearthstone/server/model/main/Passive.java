@@ -1,6 +1,6 @@
 package ir.sam.hearthstone.server.model.main;
 
-import ir.sam.hearthstone.hibernate.SaveAble;
+import ir.sam.hearthstone.server.util.hibernate.SaveAble;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;

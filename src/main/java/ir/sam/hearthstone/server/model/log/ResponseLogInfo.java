@@ -1,12 +1,12 @@
 package ir.sam.hearthstone.server.model.log;
 
-import ir.sam.hearthstone.response.PlayDetails;
-import ir.sam.hearthstone.response.Response;
-import ir.sam.hearthstone.response.ResponseExecutor;
-import ir.sam.hearthstone.client.view.model.BigDeckOverview;
-import ir.sam.hearthstone.client.view.model.CardOverview;
-import ir.sam.hearthstone.client.view.model.PassiveOverview;
-import ir.sam.hearthstone.client.view.model.SmallDeckOverview;
+import ir.sam.hearthstone.server.model.client.BigDeckOverview;
+import ir.sam.hearthstone.server.model.client.CardOverview;
+import ir.sam.hearthstone.server.model.client.PassiveOverview;
+import ir.sam.hearthstone.server.model.client.SmallDeckOverview;
+import ir.sam.hearthstone.server.model.response.PlayDetails;
+import ir.sam.hearthstone.server.model.response.Response;
+import ir.sam.hearthstone.server.model.response.ResponseExecutor;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;

@@ -13,17 +13,9 @@ repositories {
 }
 
 dependencies {
-
     //PostGreSQL driver
     // https://mvnrepository.com/artifact/org.postgresql/postgresql
     compile group: 'org.postgresql', name: 'postgresql', version: '42.2.14'
-
-    // SQLite driver
-    // https://mvnrepository.com/artifact/org.xerial/sqlite-jdbc
-    compile group: 'org.xerial', name: 'sqlite-jdbc', version: '3.32.3.2'
-    // SQLite dialect
-    // https://mvnrepository.com/artifact/com.github.gwenn/sqlite-dialect
-    compile group: 'com.github.gwenn', name: 'sqlite-dialect', version: '0.1.0'
 
     // hibernate core
     // https://mvnrepository.com/artifact/org.hibernate/hibernate-core
@@ -33,10 +25,6 @@ dependencies {
     // https://mvnrepository.com/artifact/org.projectlombok/lombok
     providedCompile group: 'org.projectlombok', name: 'lombok', version: '1.18.12'
     annotationProcessor group: 'org.projectlombok', name: 'lombok', version: '1.18.12'
-
-    // zip
-    // https://mvnrepository.com/artifact/net.lingala.zip4j/zip4j
-    compile group: 'net.lingala.zip4j', name: 'zip4j', version: '2.5.2'
 
     // json
     // https://mvnrepository.com/artifact/com.google.code.gson/gson

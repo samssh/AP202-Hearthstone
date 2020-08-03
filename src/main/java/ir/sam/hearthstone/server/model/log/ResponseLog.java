@@ -1,6 +1,6 @@
 package ir.sam.hearthstone.server.model.log;
 
-import ir.sam.hearthstone.response.Response;
+import ir.sam.hearthstone.server.model.response.Response;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
