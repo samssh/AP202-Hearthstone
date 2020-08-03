@@ -12,7 +12,7 @@ import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.awt.image.ColorModel;
 
-@ToString(includeFieldNames = false)
+//@ToString(includeFieldNames = false)
 public class CardOverview extends UnitOverview {
     @Getter
     @Setter
@@ -20,7 +20,7 @@ public class CardOverview extends UnitOverview {
     private final int price, mana;
     protected final int att, hp;
     private final boolean showPrice;
-    @ToString.Exclude
+//    @ToString.Exclude
     protected BufferedImage big, small;
 
     public CardOverview(Card card) {
@@ -141,5 +141,19 @@ public class CardOverview extends UnitOverview {
         Graphics g = image.createGraphics();
         this.paintBig(g);
         return image;
+    }
+
+    @Override
+    public String toString() {
+        return "CardOverview{" +
+                "number=" + number +
+                ", price=" + price +
+                ", mana=" + mana +
+                ", att=" + att +
+                ", hp=" + hp +
+                ", showPrice=" + showPrice +
+                ", name='" + name + '\'' +
+                ", imageName='" + imageName + '\'' +
+                '}';
     }
 }

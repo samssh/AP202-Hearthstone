@@ -1,6 +1,7 @@
 package ir.sam.hearthstone.server.logic.game.implementations;
 
 import ir.sam.hearthstone.model.main.Card;
+import ir.sam.hearthstone.model.main.Spell;
 import ir.sam.hearthstone.server.logic.game.AbstractGame;
 import ir.sam.hearthstone.server.logic.game.behavioral_models.*;
 
@@ -21,8 +22,9 @@ public class SpecialPowerImpl {
     private static void mage(ComplexLogic complexLogic, CharacterLogic characterLogic, AbstractGame game) {
         if (characterLogic != null)
             if (characterLogic instanceof SpellLogic) {
-                ((SpellLogic) characterLogic).getCard()
-                        .setManaFrz(((SpellLogic) characterLogic).getCard().getManaFrz() - 2);
+                Spell spell = ((SpellLogic) characterLogic).getSpell();
+                spell.setManaFrz(spell.getManaFrz() - 2);
+                if (spell.getManaFrz()<0) spell.setManaFrz(0);
             }
     }
 

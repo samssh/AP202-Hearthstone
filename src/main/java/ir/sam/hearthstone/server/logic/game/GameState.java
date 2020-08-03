@@ -176,10 +176,10 @@ public class GameState {
 
 
         protected SideState() {
-            hand = new ArrayList<>();
-            deck = new ArrayList<>();
-            ground = new ArrayList<>();
-            activeUnits = new ArrayList<>();
+            hand = new Stack<>();
+            deck = new Stack<>();
+            ground = new Stack<>();
+            activeUnits = new Stack<>();
         }
 
         protected void resetSelected() {
@@ -190,7 +190,7 @@ public class GameState {
         }
 
         protected Stream<ComplexLogic> getStream() {
-            ArrayList<ComplexLogic> complexLogicList = new ArrayList<>(hand.size() + 5);
+            /*Array*/List<ComplexLogic> complexLogicList = new Stack<>(/*hand.size() + 5*/);
             complexLogicList.add(hero);
             complexLogicList.add(heroPower);
             complexLogicList.add(passive);

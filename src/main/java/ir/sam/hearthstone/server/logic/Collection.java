@@ -70,7 +70,9 @@ public class Collection {
                 connector.save(player);
                 connector.save(new CollectionLog(player.getUserName(), null, null, deckName,
                         "selected deck", null));
-                return new CollectionAllCards(null, getDeckCards(deck.get()), canAddDeck(player),
+                List<CardOverview> cards = makeCardsList(name, modelLoader.getClassOfCard(classOfCard).orElse(null),
+                        mana, lockMode, player.getSelectedDeck(), player);
+                return new CollectionAllCards(cards, getDeckCards(deck.get()), canAddDeck(player),
                         canChangeHero(deck.get()), deckName);
             }
         }

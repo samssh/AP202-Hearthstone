@@ -114,24 +114,14 @@ public abstract class Box<Model extends Overview, T extends JPanel> extends JPan
         }
     }
 
-    public void changeModelNoAnime(int index, Model model) {
-        models.remove(index);
-        models.add(index, model);
-        if (begin <= index && index < end) {
-            int indexOnShow = index - begin;
-            set(items[indexOnShow % a][indexOnShow / a], model);
-            end = 0;
-            next();
-        }
-    }
-
     public void changeModel(String name, Model model) {
         changeModel(indexOf(name), model);
     }
 
     public void addModel(int index, Model model, boolean animationOnNew) {
         models.add(index, model);
-        if ((begin <= index && index < end) || (begin == end) || (index == end && showing.size() < a * b)) {
+        if ((begin <= index && index < end) || (index == end && showing.size() < a * b)) {
+            animationManger.clear();
             clear(index - begin);
             for (int k = index - begin, showingSize = showing.size(); k < showingSize && k + 1 < a * b; k++) {
                 moveTo(k, k + 1);
@@ -158,13 +148,13 @@ public abstract class Box<Model extends Overview, T extends JPanel> extends JPan
         animationManger.start(() -> endAnimation(index));
     }
 
-    public int getModelSize() {
-        return models.size();
-    }
-
-    public List<Model> getModels() {
-        return models;
-    }
+//    public int getModelSize() {
+//        return models.size();
+//    }
+//
+//    public List<Model> getModels() {
+//        return models;
+//    }
 
     public void addModel(int index, Model model) {
         addModel(index, model, false);
@@ -181,6 +171,7 @@ public abstract class Box<Model extends Overview, T extends JPanel> extends JPan
     public Model removeModel(int index, boolean animationOnOld) {
         Model model = models.remove(index);
         if (begin <= index && index < end) {
+            animationManger.clear();
             clear(index - begin);
             for (int k = index - begin + 1, showingSize = showing.size(); k < showingSize; k++) {
                 moveTo(k, k - 1);
@@ -210,9 +201,9 @@ public abstract class Box<Model extends Overview, T extends JPanel> extends JPan
         animationManger.start(() -> endAnimation(index - begin));
     }
 
-    public Model removeModel(String name) {
-        return removeModel(indexOf(name), false);
-    }
+//    public Model removeModel(String name) {
+//        return removeModel(indexOf(name), false);
+//    }
 
     public Model removeModel(String name, boolean animationOnOld) {
         return removeModel(indexOf(name), animationOnOld);
@@ -276,6 +267,7 @@ public abstract class Box<Model extends Overview, T extends JPanel> extends JPan
     }
 
     private void next() {
+        animationManger.clear();
         showing.clear();
         begin = end;
         for (int k = begin; k < models.size() && k < begin + a * b; k++) {
@@ -286,7 +278,11 @@ public abstract class Box<Model extends Overview, T extends JPanel> extends JPan
     }
 
     private void previous() {
+        animationManger.clear();
         end = begin;
+        if (end>models.size()){
+            end = models.size();
+        }
         showing.clear();
         for (int k = end - 1; k >= end - a * b && k >= 0; k--) {
             begin = k;

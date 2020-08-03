@@ -36,6 +36,11 @@ public class MinionLogic extends CardLogic implements LiveCharacter {
         hasRush = false;
     }
 
+    public void use(){
+        this.setHasSleep(true);
+        this.setHasRush(false);
+    }
+
     @Override
     public String getName() {
         return minion.getName();
@@ -73,9 +78,10 @@ public class MinionLogic extends CardLogic implements LiveCharacter {
         }
     }
 
-    public void setHasSleep(boolean hasSleep, GameState gameState) {
-        boolean temp = hasSleep != this.hasSleep;
-        setHasSleep(hasSleep);
+    public void removeRushAndGiveSleep(GameState gameState) {
+        boolean temp = (this.hasSleep) || (this.hasRush);
+        setHasSleep(false);
+        setHasRush(false);
         if (temp)
             addChangeEventOnGround(gameState);
     }
@@ -131,11 +137,11 @@ public class MinionLogic extends CardLogic implements LiveCharacter {
         summon0(game, indexOnGround);
         GameState gameState = game.getGameState();
         gameState.getHand(side).remove(indexOnHand);
+        AbstractGame.visitAll(game, ActionType.SUMMON_MINION, this, side);
         PlayDetails.Event event = new PlayDetails.EventBuilder(PlayDetails.EventType.MOVE_FROM_HAND_TO_GROUND)
                 .setOverview(getMinionOverview()).setSide(side.getIndex()).setIndex(indexOnGround)
                 .setSecondIndex(indexOnHand).build();
         gameState.getEvents().add(event);
-        AbstractGame.visitAll(game, ActionType.SUMMON_MINION, this, side);
     }
 
     /**
@@ -143,7 +149,7 @@ public class MinionLogic extends CardLogic implements LiveCharacter {
      */
     public void summon(AbstractGame game, int indexOnGround) {
         GameState gameState = game.getGameState();
-        if (gameState.getGround(side).size()== Server.MAX_GROUND_SIZE)
+        if (gameState.getGround(side).size() == Server.MAX_GROUND_SIZE)
             return;
         summon0(game, indexOnGround);
         PlayDetails.Event event = new PlayDetails.EventBuilder(PlayDetails.EventType.ADD_TO_GROUND)
