@@ -1,6 +1,6 @@
 package ir.sam.hearthstone.client.view.util;
 
-import ir.sam.hearthstone.client.view.model.PassiveOverview;
+import ir.sam.hearthstone.client.model.main.PassiveOverview;
 import lombok.Setter;
 
 import javax.swing.*;

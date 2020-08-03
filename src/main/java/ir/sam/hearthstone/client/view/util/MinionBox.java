@@ -1,6 +1,6 @@
 package ir.sam.hearthstone.client.view.util;
 
-import ir.sam.hearthstone.client.view.model.MinionOverview;
+import ir.sam.hearthstone.client.model.main.MinionOverview;
 
 import javax.swing.*;
 import java.awt.event.MouseEvent;

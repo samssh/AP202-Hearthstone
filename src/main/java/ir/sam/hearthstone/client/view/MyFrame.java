@@ -2,7 +2,7 @@ package ir.sam.hearthstone.client.view;
 
 import ir.sam.hearthstone.client.resource_manager.Config;
 import ir.sam.hearthstone.client.resource_manager.ConfigFactory;
-import ir.sam.hearthstone.util.Loop;
+import ir.sam.hearthstone.client.util.Loop;
 
 import javax.swing.*;
 import java.awt.*;

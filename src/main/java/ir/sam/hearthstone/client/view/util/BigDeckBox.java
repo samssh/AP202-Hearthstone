@@ -1,6 +1,6 @@
 package ir.sam.hearthstone.client.view.util;
 
-import ir.sam.hearthstone.client.view.model.BigDeckOverview;
+import ir.sam.hearthstone.client.model.main.BigDeckOverview;
 import lombok.Setter;
 
 import javax.swing.*;

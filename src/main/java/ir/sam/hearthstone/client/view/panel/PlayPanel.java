@@ -1,10 +1,10 @@
 package ir.sam.hearthstone.client.view.panel;
 
-import ir.sam.hearthstone.client.actions.PlayAction;
+import ir.sam.hearthstone.client.controller.action_listener.PlayAction;
+import ir.sam.hearthstone.client.model.response.PlayDetails;
 import ir.sam.hearthstone.client.resource_manager.Config;
 import ir.sam.hearthstone.client.resource_manager.ConfigFactory;
 import ir.sam.hearthstone.client.resource_manager.ImageLoader;
-import ir.sam.hearthstone.response.PlayDetails;
 import ir.sam.hearthstone.client.view.graphics_engine.AnimationManger;
 import ir.sam.hearthstone.client.view.util.Box;
 import ir.sam.hearthstone.client.view.util.*;

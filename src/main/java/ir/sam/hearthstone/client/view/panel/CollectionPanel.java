@@ -1,13 +1,13 @@
 package ir.sam.hearthstone.client.view.panel;
 
-import ir.sam.hearthstone.client.actions.CollectionAction;
+import ir.sam.hearthstone.client.controller.action_listener.CollectionAction;
+import ir.sam.hearthstone.client.model.main.CardOverview;
+import ir.sam.hearthstone.client.model.main.SmallDeckOverview;
 import ir.sam.hearthstone.client.resource_manager.Config;
 import ir.sam.hearthstone.client.resource_manager.ConfigFactory;
 import ir.sam.hearthstone.client.resource_manager.ImageLoader;
-import ir.sam.hearthstone.util.Updatable;
+import ir.sam.hearthstone.client.util.Updatable;
 import ir.sam.hearthstone.client.view.graphics_engine.AnimationManger;
-import ir.sam.hearthstone.client.view.model.CardOverview;
-import ir.sam.hearthstone.client.view.model.SmallDeckOverview;
 import ir.sam.hearthstone.client.view.util.CardBox;
 import ir.sam.hearthstone.client.view.util.Constant;
 import ir.sam.hearthstone.client.view.util.MyChangeListener;

@@ -1,11 +1,11 @@
 package ir.sam.hearthstone.client.view.panel;
 
-import ir.sam.hearthstone.client.actions.StatusAction;
+import ir.sam.hearthstone.client.controller.action_listener.StatusAction;
+import ir.sam.hearthstone.client.model.main.BigDeckOverview;
 import ir.sam.hearthstone.client.resource_manager.Config;
 import ir.sam.hearthstone.client.resource_manager.ConfigFactory;
 import ir.sam.hearthstone.client.resource_manager.ImageLoader;
-import ir.sam.hearthstone.util.Updatable;
-import ir.sam.hearthstone.client.view.model.BigDeckOverview;
+import ir.sam.hearthstone.client.util.Updatable;
 import ir.sam.hearthstone.client.view.util.BigDeckBox;
 import ir.sam.hearthstone.client.view.util.Constant;
 

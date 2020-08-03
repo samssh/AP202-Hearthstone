@@ -1,10 +1,10 @@
 package ir.sam.hearthstone.client.view.util;
 
-import ir.sam.hearthstone.response.PlayDetails;
+import ir.sam.hearthstone.client.model.main.*;
+import ir.sam.hearthstone.client.model.response.PlayDetails;
 import ir.sam.hearthstone.client.view.graphics_engine.AnimationManger;
 import ir.sam.hearthstone.client.view.graphics_engine.Speed;
 import ir.sam.hearthstone.client.view.graphics_engine.effects.*;
-import ir.sam.hearthstone.client.view.model.*;
 import ir.sam.hearthstone.client.view.panel.PlayPanel;
 
 import javax.swing.*;

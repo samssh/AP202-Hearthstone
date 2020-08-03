@@ -1,9 +1,9 @@
 package ir.sam.hearthstone.client.view.graphics_engine;
 
+import ir.sam.hearthstone.client.model.main.CardOverview;
+import ir.sam.hearthstone.client.model.main.Overview;
+import ir.sam.hearthstone.client.model.main.UnitOverview;
 import ir.sam.hearthstone.client.view.graphics_engine.effects.*;
-import ir.sam.hearthstone.client.view.model.CardOverview;
-import ir.sam.hearthstone.client.view.model.Overview;
-import ir.sam.hearthstone.client.view.model.UnitOverview;
 import ir.sam.hearthstone.client.view.util.Box;
 import ir.sam.hearthstone.client.view.util.CardBox;
 import ir.sam.hearthstone.client.view.util.UnitViewer;

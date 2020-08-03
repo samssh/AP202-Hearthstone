@@ -1,8 +1,8 @@
 package ir.sam.hearthstone.client.view.util;
 
+import ir.sam.hearthstone.client.model.main.UnitOverview;
 import ir.sam.hearthstone.client.view.graphics_engine.AnimationManger;
 import ir.sam.hearthstone.client.view.graphics_engine.effects.*;
-import ir.sam.hearthstone.client.view.model.UnitOverview;
 import lombok.Getter;
 import lombok.Setter;
 

@@ -1,6 +1,6 @@
 package ir.sam.hearthstone.client.view.util;
 
-import ir.sam.hearthstone.client.view.model.SmallDeckOverview;
+import ir.sam.hearthstone.client.model.main.SmallDeckOverview;
 
 import javax.swing.*;
 import java.awt.*;
