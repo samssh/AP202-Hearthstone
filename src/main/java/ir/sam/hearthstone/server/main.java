@@ -1,0 +1,7 @@
+package ir.sam.hearthstone.server;
+
+public class main {
+    public static void main(String[] args) {
+
+    }
+}

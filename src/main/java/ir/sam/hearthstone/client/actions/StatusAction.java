@@ -2,9 +2,9 @@ package ir.sam.hearthstone.client.actions;
 
 import ir.sam.hearthstone.client.Client;
 import ir.sam.hearthstone.hibernate.Connector;
-import ir.sam.hearthstone.model.log.ButtonLog;
+import ir.sam.hearthstone.server.model.log.ButtonLog;
 
-import static ir.sam.hearthstone.view.PanelType.STATUS;
+import static ir.sam.hearthstone.client.view.PanelType.STATUS;
 
 public class StatusAction {
     private final Connector connector;

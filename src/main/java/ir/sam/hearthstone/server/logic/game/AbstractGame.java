@@ -1,7 +1,7 @@
 package ir.sam.hearthstone.server.logic.game;
 
-import ir.sam.hearthstone.model.main.ActionType;
-import ir.sam.hearthstone.resource_manager.ModelLoader;
+import ir.sam.hearthstone.server.model.main.ActionType;
+import ir.sam.hearthstone.client.resource_manager.ModelLoader;
 import ir.sam.hearthstone.response.PlayDetails;
 import ir.sam.hearthstone.response.Response;
 import ir.sam.hearthstone.server.Server;

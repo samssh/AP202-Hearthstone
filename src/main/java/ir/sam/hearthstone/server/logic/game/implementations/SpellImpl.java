@@ -1,9 +1,9 @@
 package ir.sam.hearthstone.server.logic.game.implementations;
 
-import ir.sam.hearthstone.model.main.ActionType;
-import ir.sam.hearthstone.model.main.ClassOfCard;
-import ir.sam.hearthstone.model.main.Minion;
-import ir.sam.hearthstone.model.main.Rarity;
+import ir.sam.hearthstone.server.model.main.ActionType;
+import ir.sam.hearthstone.server.model.main.ClassOfCard;
+import ir.sam.hearthstone.server.model.main.Minion;
+import ir.sam.hearthstone.server.model.main.Rarity;
 import ir.sam.hearthstone.response.PlayDetails;
 import ir.sam.hearthstone.server.logic.game.AbstractGame;
 import ir.sam.hearthstone.server.logic.game.GameState;

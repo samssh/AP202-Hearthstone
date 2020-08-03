@@ -1,11 +1,11 @@
 package ir.sam.hearthstone.server.logic.game.behavioral_models;
 
-import ir.sam.hearthstone.model.main.Hero;
+import ir.sam.hearthstone.server.model.main.Hero;
 import ir.sam.hearthstone.response.PlayDetails;
 import ir.sam.hearthstone.server.logic.game.AbstractGame;
 import ir.sam.hearthstone.server.logic.game.GameState;
 import ir.sam.hearthstone.server.logic.game.Side;
-import ir.sam.hearthstone.view.model.HeroOverview;
+import ir.sam.hearthstone.client.view.model.HeroOverview;
 import lombok.Getter;
 import lombok.Setter;
 

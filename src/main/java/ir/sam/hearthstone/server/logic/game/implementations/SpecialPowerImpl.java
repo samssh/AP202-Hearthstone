@@ -1,7 +1,7 @@
 package ir.sam.hearthstone.server.logic.game.implementations;
 
-import ir.sam.hearthstone.model.main.Card;
-import ir.sam.hearthstone.model.main.Spell;
+import ir.sam.hearthstone.server.model.main.Card;
+import ir.sam.hearthstone.server.model.main.Spell;
 import ir.sam.hearthstone.server.logic.game.AbstractGame;
 import ir.sam.hearthstone.server.logic.game.behavioral_models.*;
 

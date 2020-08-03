@@ -2,11 +2,11 @@ package ir.sam.hearthstone.client.actions;
 
 import ir.sam.hearthstone.client.Client;
 import ir.sam.hearthstone.hibernate.Connector;
-import ir.sam.hearthstone.model.log.ButtonLog;
-import ir.sam.hearthstone.model.log.RequestLog;
+import ir.sam.hearthstone.server.model.log.ButtonLog;
+import ir.sam.hearthstone.server.model.log.RequestLog;
 import ir.sam.hearthstone.requests.*;
 
-import static ir.sam.hearthstone.view.PanelType.PASSIVE;
+import static ir.sam.hearthstone.client.view.PanelType.PASSIVE;
 
 public class PassiveAction {
     private final Connector connector;
@@ -34,31 +34,23 @@ public class PassiveAction {
     }
 
     public void selectPassive(String passiveName) {
-        Request request = new SelectPassive(passiveName);
-        client.getRequestSender().sendRequest(request);
+        client.addRequest(new SelectPassive(passiveName));
         connector.save(new ButtonLog(client.getUsername(), "passive:" + passiveName, PASSIVE.toString()));
-        connector.save(new RequestLog(request, client.getUsername()));
     }
 
     public void selectDeck(String deckName) {
-        Request request = new SelectOpponentDeck(deckName);
-        client.getRequestSender().sendRequest(request);
+        client.addRequest(new SelectOpponentDeck(deckName));
         connector.save(new ButtonLog(client.getUsername(), "deck:" + deckName, PASSIVE.toString()));
-        connector.save(new RequestLog(request, client.getUsername()));
     }
 
     public void selectCard(String cardNumber) {
         int index = Integer.parseInt(cardNumber);
-        Request request = new SelectCardOnPassive(index);
-        client.getRequestSender().sendRequest(request);
+        client.addRequest(new SelectCardOnPassive(index));
         connector.save(new ButtonLog(client.getUsername(), "Card number:" + cardNumber, PASSIVE.toString()));
-        connector.save(new RequestLog(request, client.getUsername()));
     }
 
     public void confirm() {
-        Request request = new ConfirmOnPassive();
-        client.getRequestSender().sendRequest(request);
+        client.addRequest(new ConfirmOnPassive());
         connector.save(new ButtonLog(client.getUsername(), "Confirm", PASSIVE.toString()));
-        connector.save(new RequestLog(request, client.getUsername()));
     }
 }

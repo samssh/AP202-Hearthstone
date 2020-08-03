@@ -12,25 +12,6 @@ repositories {
     mavenCentral()
 }
 
-sourceSets {
-    test {
-        java {
-            srcDirs = ['./src/test/java']
-        }
-        resources {
-            srcDirs = ['./src/test/resources']
-        }
-    }
-    main {
-        java {
-            srcDirs = ['./src/main/java']
-        }
-        resources {
-            srcDirs = ['./src/main/resources']
-        }
-    }
-}
-
 dependencies {
 
     //PostGreSQL driver

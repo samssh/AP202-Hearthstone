@@ -1,6 +1,6 @@
 package ir.sam.hearthstone.response;
 
-import ir.sam.hearthstone.view.model.SmallDeckOverview;
+import ir.sam.hearthstone.client.view.model.SmallDeckOverview;
 
 public class CollectionDeckEvent extends Response {
     private final String type;

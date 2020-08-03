@@ -1,6 +1,6 @@
 package ir.sam.hearthstone.server.logic.game.events;
 
-import ir.sam.hearthstone.model.main.Unit;
+import ir.sam.hearthstone.server.model.main.Unit;
 import ir.sam.hearthstone.server.logic.game.Side;
 import lombok.Getter;
 

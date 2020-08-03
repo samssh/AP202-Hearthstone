@@ -2,30 +2,30 @@ package ir.sam.hearthstone.client;
 
 import ir.sam.hearthstone.client.actions.*;
 import ir.sam.hearthstone.hibernate.Connector;
-import ir.sam.hearthstone.model.log.RequestLog;
-import ir.sam.hearthstone.model.log.ResponseLog;
+import ir.sam.hearthstone.server.model.log.RequestLog;
+import ir.sam.hearthstone.server.model.log.ResponseLog;
 import ir.sam.hearthstone.requests.*;
-import ir.sam.hearthstone.resource_manager.ConfigFactory;
+import ir.sam.hearthstone.client.resource_manager.ConfigFactory;
 import ir.sam.hearthstone.response.PlayDetails;
 import ir.sam.hearthstone.response.Response;
 import ir.sam.hearthstone.response.ResponseExecutor;
 import ir.sam.hearthstone.transmitters.RequestSender;
 import ir.sam.hearthstone.util.Loop;
 import ir.sam.hearthstone.util.Updatable;
-import ir.sam.hearthstone.view.MyFrame;
-import ir.sam.hearthstone.view.PanelType;
-import ir.sam.hearthstone.view.model.BigDeckOverview;
-import ir.sam.hearthstone.view.model.CardOverview;
-import ir.sam.hearthstone.view.model.PassiveOverview;
-import ir.sam.hearthstone.view.model.SmallDeckOverview;
-import ir.sam.hearthstone.view.panel.*;
+import ir.sam.hearthstone.client.view.MyFrame;
+import ir.sam.hearthstone.client.view.PanelType;
+import ir.sam.hearthstone.client.view.model.BigDeckOverview;
+import ir.sam.hearthstone.client.view.model.CardOverview;
+import ir.sam.hearthstone.client.view.model.PassiveOverview;
+import ir.sam.hearthstone.client.view.model.SmallDeckOverview;
+import ir.sam.hearthstone.client.view.panel.*;
 import lombok.Getter;
 import lombok.Setter;
 
 import javax.swing.*;
 import java.util.*;
 
-import static ir.sam.hearthstone.view.PanelType.*;
+import static ir.sam.hearthstone.client.view.PanelType.*;
 
 public class Client implements ResponseExecutor {
     private final JFrame frame;
@@ -37,16 +37,13 @@ public class Client implements ResponseExecutor {
     @Setter
     private PanelType now;
     private final Connector connector;
-    private final List<Response> tempResponseList, responseList;
+    private final List<Request> requestList;
     private final Loop executor;
     @Getter
     private String username;
-    @Getter
     private final RequestSender requestSender;
 
     public Client(RequestSender requestSender) {
-        SwingUtilities.invokeLater(() -> {
-        });
         this.requestSender = requestSender;
         this.frame = new MyFrame();
         panels = new EnumMap<>(PanelType.class);
@@ -63,27 +60,33 @@ public class Client implements ResponseExecutor {
         panels.put(PASSIVE, new PassivePanel(new PassiveAction(connector, this)));
         panels.put(PLAY_MODE, new PlayModePanel(new PlayModeAction(connector, this)));
         panels.put(PLAY, new PlayPanel(new PlayAction(connector, this)));
-        tempResponseList = new LinkedList<>();
-        responseList = new LinkedList<>();
+        requestList = new LinkedList<>();
         executor = new Loop(60, this::executeAnswers);
         executor.start();
     }
 
     private void executeAnswers() {
-        synchronized (tempResponseList) {
-            responseList.addAll(tempResponseList);
-            tempResponseList.clear();
+        List<Request> temp;
+        synchronized (requestList){
+            temp = new ArrayList<>(requestList);
+            requestList.clear();
         }
-        responseList.forEach(response -> response.execute(this));
-        responseList.clear();
+        for (Request request:temp) {
+            connector.save(new RequestLog(request,username));
+            Response[] responses = requestSender.sendRequest(request);
+            for (Response response : responses) {
+                response.execute(this);
+                connector.save(new ResponseLog(response,username));
+            }
+        }
     }
 
-    public void addResponse(Response response) {
-        if (response != null) {
-            synchronized (tempResponseList) {
-                tempResponseList.add(response);
+    public void addRequest(Request request) {
+        if (request != null) {
+            synchronized (requestList) {
+                requestList.add(request);
             }
-            connector.save(new ResponseLog(response, username));
+//            connector.save(new ResponseLog(response, username));
         }
     }
 
@@ -98,7 +101,7 @@ public class Client implements ResponseExecutor {
     }
 
     public void exit() {
-        requestSender.sendRequest(new ShutdownRequest());
+        addRequest(new ShutdownRequest());
         this.shutdown();
         System.exit(0);
     }
@@ -119,13 +122,13 @@ public class Client implements ResponseExecutor {
 
     public void logout() {
         Request request = new LogoutRequest();
-        requestSender.sendRequest(request);
+        addRequest(request);
         connector.save(new RequestLog(request, username));
     }
 
     public void deleteAccount() {
         Request request = new DeleteAccount();
-        requestSender.sendRequest(request);
+        addRequest(request);
         connector.save(new RequestLog(request, username));
     }
 
@@ -146,31 +149,31 @@ public class Client implements ResponseExecutor {
 
     public void sendLoginRequest(String username, String pass, int mode) {
         Request request = new LoginRequest(username, pass, mode);
-        requestSender.sendRequest(request);
+        addRequest(request);
         connector.save(new RequestLog(request, username));
     }
 
     public void sendShopRequest() {
         Request request = new ShopRequest();
-        requestSender.sendRequest(request);
+        addRequest(request);
         connector.save(new RequestLog(request, username));
     }
 
     public void sendStatusRequest() {
         Request request = new StatusRequest();
-        requestSender.sendRequest(request);
+        addRequest(request);
         connector.save(new RequestLog(request, username));
     }
 
     public void sendCollectionRequest(String name, String classOfCard, int mana, int lockMode) {
         Request request = new CollectionFilter(name, classOfCard, mana, lockMode);
-        requestSender.sendRequest(request);
+        addRequest(request);
         connector.save(new RequestLog(request, username));
     }
 
     public void sendAllCollectionDetailsRequest(String name, String classOfCard, int mana, int lockMode) {
         Request request = new AllCollectionDetails(name, classOfCard, mana, lockMode);
-        requestSender.sendRequest(request);
+        addRequest(request);
         connector.save(new RequestLog(request, username));
     }
 
@@ -249,7 +252,7 @@ public class Client implements ResponseExecutor {
 
     public void sendStartPlayRequest() {
         Request request = new StartPlaying();
-        requestSender.sendRequest(request);
+        addRequest(request);
         connector.save(new RequestLog(request, username));
     }
 

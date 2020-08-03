@@ -1,15 +1,15 @@
 package ir.sam.hearthstone.server.logic.game.implementations;
 
-import ir.sam.hearthstone.model.main.ClassOfCard;
-import ir.sam.hearthstone.model.main.Minion;
-import ir.sam.hearthstone.model.main.Rarity;
+import ir.sam.hearthstone.server.model.main.ClassOfCard;
+import ir.sam.hearthstone.server.model.main.Minion;
+import ir.sam.hearthstone.server.model.main.Rarity;
 import ir.sam.hearthstone.response.PlayDetails;
 import ir.sam.hearthstone.server.Server;
 import ir.sam.hearthstone.server.logic.game.AbstractGame;
 import ir.sam.hearthstone.server.logic.game.GameState;
 import ir.sam.hearthstone.server.logic.game.Side;
 import ir.sam.hearthstone.server.logic.game.behavioral_models.*;
-import ir.sam.hearthstone.view.model.CardOverview;
+import ir.sam.hearthstone.client.view.model.CardOverview;
 
 import java.lang.invoke.MethodHandles;
 import java.util.*;

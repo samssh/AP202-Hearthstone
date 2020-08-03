@@ -1,8 +1,8 @@
 package ir.sam.hearthstone.server.logic.game;
 
-import ir.sam.hearthstone.model.main.ActionType;
-import ir.sam.hearthstone.model.main.Minion;
-import ir.sam.hearthstone.resource_manager.ModelLoader;
+import ir.sam.hearthstone.server.model.main.ActionType;
+import ir.sam.hearthstone.server.model.main.Minion;
+import ir.sam.hearthstone.client.resource_manager.ModelLoader;
 import ir.sam.hearthstone.response.PlayDetails;
 import ir.sam.hearthstone.server.Server;
 import ir.sam.hearthstone.server.logic.game.behavioral_models.CardLogic;
@@ -10,7 +10,7 @@ import ir.sam.hearthstone.server.logic.game.behavioral_models.HeroLogic;
 import ir.sam.hearthstone.server.logic.game.behavioral_models.MinionLogic;
 import ir.sam.hearthstone.server.logic.game.behavioral_models.WeaponLogic;
 import ir.sam.hearthstone.server.logic.game.events.*;
-import ir.sam.hearthstone.view.model.CardOverview;
+import ir.sam.hearthstone.client.view.model.CardOverview;
 
 import java.util.ArrayList;
 import java.util.List;

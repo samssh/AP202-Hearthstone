@@ -1,12 +1,12 @@
 package ir.sam.hearthstone.server.logic;
 
-import ir.sam.hearthstone.model.account.Deck;
-import ir.sam.hearthstone.model.account.Player;
-import ir.sam.hearthstone.model.main.Card;
-import ir.sam.hearthstone.model.main.CardDetails;
+import ir.sam.hearthstone.server.model.account.Deck;
+import ir.sam.hearthstone.server.model.account.Player;
+import ir.sam.hearthstone.server.model.main.Card;
+import ir.sam.hearthstone.server.model.main.CardDetails;
 import ir.sam.hearthstone.response.Response;
 import ir.sam.hearthstone.response.StatusDetails;
-import ir.sam.hearthstone.view.model.BigDeckOverview;
+import ir.sam.hearthstone.client.view.model.BigDeckOverview;
 
 import java.util.*;
 import java.util.stream.Collectors;

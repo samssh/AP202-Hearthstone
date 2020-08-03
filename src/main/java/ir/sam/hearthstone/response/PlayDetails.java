@@ -1,6 +1,6 @@
 package ir.sam.hearthstone.response;
 
-import ir.sam.hearthstone.view.model.UnitOverview;
+import ir.sam.hearthstone.client.view.model.UnitOverview;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;

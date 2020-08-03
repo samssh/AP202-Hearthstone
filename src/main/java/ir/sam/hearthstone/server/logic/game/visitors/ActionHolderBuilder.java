@@ -1,9 +1,9 @@
 package ir.sam.hearthstone.server.logic.game.visitors;
 
-import ir.sam.hearthstone.model.main.ActionType;
-import ir.sam.hearthstone.model.main.HasAction;
-import ir.sam.hearthstone.model.main.Hero;
-import ir.sam.hearthstone.resource_manager.ModelLoader;
+import ir.sam.hearthstone.server.model.main.ActionType;
+import ir.sam.hearthstone.server.model.main.HasAction;
+import ir.sam.hearthstone.server.model.main.Hero;
+import ir.sam.hearthstone.client.resource_manager.ModelLoader;
 import ir.sam.hearthstone.server.logic.game.AbstractGame;
 import ir.sam.hearthstone.server.logic.game.behavioral_models.CharacterLogic;
 import ir.sam.hearthstone.server.logic.game.behavioral_models.ComplexLogic;

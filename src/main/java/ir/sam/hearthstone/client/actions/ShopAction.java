@@ -2,13 +2,13 @@ package ir.sam.hearthstone.client.actions;
 
 import ir.sam.hearthstone.client.Client;
 import ir.sam.hearthstone.hibernate.Connector;
-import ir.sam.hearthstone.model.log.ButtonLog;
-import ir.sam.hearthstone.model.log.RequestLog;
+import ir.sam.hearthstone.server.model.log.ButtonLog;
+import ir.sam.hearthstone.server.model.log.RequestLog;
 import ir.sam.hearthstone.requests.BuyCard;
 import ir.sam.hearthstone.requests.Request;
 import ir.sam.hearthstone.requests.SellCard;
 
-import static ir.sam.hearthstone.view.PanelType.SHOP;
+import static ir.sam.hearthstone.client.view.PanelType.SHOP;
 
 public class ShopAction {
     private final Connector connector;
@@ -20,17 +20,13 @@ public class ShopAction {
     }
 
     public void sell(String cardName) {
+        client.addRequest(new SellCard(cardName));
         connector.save(new ButtonLog(client.getUsername(), "sell:" + cardName, SHOP.toString()));
-        Request request = new SellCard(cardName);
-        client.getRequestSender().sendRequest(request);
-        connector.save(new RequestLog(request, client.getUsername()));
     }
 
     public void buy(String cardName) {
+        client.addRequest(new BuyCard(cardName));
         connector.save(new ButtonLog(client.getUsername(), "buy:" + cardName, SHOP.toString()));
-        Request request = new BuyCard(cardName);
-        client.getRequestSender().sendRequest(request);
-        connector.save(new RequestLog(request, client.getUsername()));
     }
 
     public void exit() {

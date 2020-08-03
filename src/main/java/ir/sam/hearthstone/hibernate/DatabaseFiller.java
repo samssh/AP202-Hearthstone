@@ -1,9 +1,9 @@
 package ir.sam.hearthstone.hibernate;
 
-import ir.sam.hearthstone.model.account.Player;
-import ir.sam.hearthstone.model.main.*;
-import ir.sam.hearthstone.resource_manager.ConfigFactory;
-import ir.sam.hearthstone.resource_manager.ResourceLoader;
+import ir.sam.hearthstone.server.model.account.Player;
+import ir.sam.hearthstone.server.model.main.*;
+import ir.sam.hearthstone.client.resource_manager.ConfigFactory;
+import ir.sam.hearthstone.client.resource_manager.ResourceLoader;
 
 import java.util.List;
 

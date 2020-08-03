@@ -1,6 +1,6 @@
 package ir.sam.hearthstone.server.logic.game.behavioral_models;
 
-import ir.sam.hearthstone.model.main.Passive;
+import ir.sam.hearthstone.server.model.main.Passive;
 import ir.sam.hearthstone.server.logic.game.Side;
 import lombok.Getter;
 

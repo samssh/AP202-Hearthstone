@@ -1,12 +1,12 @@
 package ir.sam.hearthstone.server.logic.game;
 
-import ir.sam.hearthstone.model.account.Deck;
-import ir.sam.hearthstone.model.main.*;
+import ir.sam.hearthstone.server.model.account.Deck;
+import ir.sam.hearthstone.server.model.main.*;
 import ir.sam.hearthstone.response.PlayDetails;
 import ir.sam.hearthstone.server.logic.game.behavioral_models.*;
 import ir.sam.hearthstone.server.logic.game.events.DrawCard;
-import ir.sam.hearthstone.view.model.HeroOverview;
-import ir.sam.hearthstone.view.model.HeroPowerOverview;
+import ir.sam.hearthstone.client.view.model.HeroOverview;
+import ir.sam.hearthstone.client.view.model.HeroPowerOverview;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;

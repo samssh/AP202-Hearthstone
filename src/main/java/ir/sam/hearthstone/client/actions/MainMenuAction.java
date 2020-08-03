@@ -2,14 +2,14 @@ package ir.sam.hearthstone.client.actions;
 
 import ir.sam.hearthstone.client.Client;
 import ir.sam.hearthstone.hibernate.Connector;
-import ir.sam.hearthstone.model.log.ButtonLog;
+import ir.sam.hearthstone.server.model.log.ButtonLog;
 import ir.sam.hearthstone.util.Updatable;
-import ir.sam.hearthstone.view.PanelType;
-import ir.sam.hearthstone.view.panel.CollectionPanel;
-import ir.sam.hearthstone.view.panel.MainMenuPanel;
-import ir.sam.hearthstone.view.panel.PlayPanel;
+import ir.sam.hearthstone.client.view.PanelType;
+import ir.sam.hearthstone.client.view.panel.CollectionPanel;
+import ir.sam.hearthstone.client.view.panel.MainMenuPanel;
+import ir.sam.hearthstone.client.view.panel.PlayPanel;
 
-import static ir.sam.hearthstone.view.PanelType.*;
+import static ir.sam.hearthstone.client.view.PanelType.*;
 
 public class MainMenuAction {
     private final Connector connector;

@@ -1,14 +1,14 @@
 package ir.sam.hearthstone.server.logic;
 
 import ir.sam.hearthstone.hibernate.Connector;
-import ir.sam.hearthstone.model.account.Player;
-import ir.sam.hearthstone.model.log.BuySellLog;
-import ir.sam.hearthstone.model.main.Card;
-import ir.sam.hearthstone.resource_manager.ModelLoader;
+import ir.sam.hearthstone.server.model.account.Player;
+import ir.sam.hearthstone.server.model.log.BuySellLog;
+import ir.sam.hearthstone.server.model.main.Card;
+import ir.sam.hearthstone.client.resource_manager.ModelLoader;
 import ir.sam.hearthstone.response.Response;
 import ir.sam.hearthstone.response.ShopDetails;
 import ir.sam.hearthstone.response.ShopEvent;
-import ir.sam.hearthstone.view.model.CardOverview;
+import ir.sam.hearthstone.client.view.model.CardOverview;
 
 import java.util.ArrayList;
 import java.util.List;

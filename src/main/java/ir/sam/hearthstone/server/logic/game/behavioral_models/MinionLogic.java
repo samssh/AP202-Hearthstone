@@ -1,8 +1,8 @@
 package ir.sam.hearthstone.server.logic.game.behavioral_models;
 
-import ir.sam.hearthstone.model.main.ActionType;
-import ir.sam.hearthstone.model.main.Card;
-import ir.sam.hearthstone.model.main.Minion;
+import ir.sam.hearthstone.server.model.main.ActionType;
+import ir.sam.hearthstone.server.model.main.Card;
+import ir.sam.hearthstone.server.model.main.Minion;
 import ir.sam.hearthstone.response.PlayDetails;
 import ir.sam.hearthstone.server.Server;
 import ir.sam.hearthstone.server.logic.game.AbstractGame;
@@ -11,8 +11,8 @@ import ir.sam.hearthstone.server.logic.game.Side;
 import ir.sam.hearthstone.server.logic.game.events.GameEvent;
 import ir.sam.hearthstone.server.logic.game.events.PlayCard;
 import ir.sam.hearthstone.server.logic.game.events.SummonMinion;
-import ir.sam.hearthstone.view.model.CardOverview;
-import ir.sam.hearthstone.view.model.MinionOverview;
+import ir.sam.hearthstone.client.view.model.CardOverview;
+import ir.sam.hearthstone.client.view.model.MinionOverview;
 import lombok.Getter;
 import lombok.Setter;
 

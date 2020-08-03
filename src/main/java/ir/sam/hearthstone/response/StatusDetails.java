@@ -1,6 +1,6 @@
 package ir.sam.hearthstone.response;
 
-import ir.sam.hearthstone.view.model.BigDeckOverview;
+import ir.sam.hearthstone.client.view.model.BigDeckOverview;
 import lombok.Getter;
 
 import java.util.List;

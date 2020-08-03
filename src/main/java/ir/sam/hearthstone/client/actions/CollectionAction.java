@@ -2,15 +2,15 @@ package ir.sam.hearthstone.client.actions;
 
 import ir.sam.hearthstone.client.Client;
 import ir.sam.hearthstone.hibernate.Connector;
-import ir.sam.hearthstone.model.log.ButtonLog;
-import ir.sam.hearthstone.model.log.RequestLog;
+import ir.sam.hearthstone.server.model.log.ButtonLog;
+import ir.sam.hearthstone.server.model.log.RequestLog;
 import ir.sam.hearthstone.requests.*;
 
 import javax.swing.event.DocumentEvent;
 import javax.swing.text.BadLocationException;
 import java.awt.event.ItemEvent;
 
-import static ir.sam.hearthstone.view.PanelType.COLLECTION;
+import static ir.sam.hearthstone.client.view.PanelType.COLLECTION;
 
 public class CollectionAction {
     private String name = null, classOfCard = null, deckName = null;
@@ -86,55 +86,41 @@ public class CollectionAction {
     public void selectDeck(String deckName) {
         if (deckName.equals(this.deckName)) this.deckName = null;
         else this.deckName = deckName;
-        Request request = new SelectDeck(deckName);
-        client.getRequestSender().sendRequest(request);
-        connector.save(new RequestLog(request, client.getUsername()));
+        client.addRequest(new SelectDeck(deckName));
         connector.save(new ButtonLog(client.getUsername(), "select deck:" + deckName, COLLECTION.toString()));
     }
 
     public void newDeck(String deckName, String heroName) {
-        Request request = new NewDeck(deckName, heroName);
-        client.getRequestSender().sendRequest(request);
-        connector.save(new RequestLog(request, client.getUsername()));
+        client.addRequest(new NewDeck(deckName, heroName));
         connector.save(new ButtonLog(client.getUsername(), "new deck:" + deckName + " hero:" + heroName
                 , COLLECTION.toString()));
     }
 
     public void deleteDeck(String deckName) {
-        Request request = new DeleteDeck(deckName);
-        client.getRequestSender().sendRequest(request);
-        connector.save(new RequestLog(request, client.getUsername()));
+        client.addRequest(new DeleteDeck(deckName));
         connector.save(new ButtonLog(client.getUsername(), "delete deck:" + deckName, COLLECTION.toString()));
     }
 
     public void changeDeckName(String oldDeckName, String newDeckName) {
-        Request request = new ChangeDeckName(oldDeckName, newDeckName);
-        client.getRequestSender().sendRequest(request);
-        connector.save(new RequestLog(request, client.getUsername()));
+        client.addRequest(new ChangeDeckName(oldDeckName, newDeckName));
         connector.save(new ButtonLog(client.getUsername(), "change deck name:" + oldDeckName + " new:" + newDeckName,
                 COLLECTION.toString()));
     }
 
     public void changeHeroDeck(String deckName, String heroName) {
-        Request request = new ChangeHeroDeck(deckName, heroName);
-        client.getRequestSender().sendRequest(request);
-        connector.save(new RequestLog(request, client.getUsername()));
+        client.addRequest(new ChangeHeroDeck(deckName, heroName));
         connector.save(new ButtonLog(client.getUsername(), "change hero deck:" + deckName + " hero:" + heroName
                 , COLLECTION.toString()));
     }
 
     public void addCardToDeck(String cardName) {
-        Request request = new AddCardToDeck(cardName, deckName);
-        client.getRequestSender().sendRequest(request);
-        connector.save(new RequestLog(request, client.getUsername()));
+        client.addRequest(new AddCardToDeck(cardName, deckName));
         connector.save(new ButtonLog(client.getUsername(), "add card to deck:" + deckName + "card:" + cardName
                 , COLLECTION.toString()));
     }
 
     public void removeCardFromDeck(String cardName) {
-        Request request = new RemoveCardFromDeck(cardName, deckName);
-        client.getRequestSender().sendRequest(request);
-        connector.save(new RequestLog(request, client.getUsername()));
+        client.addRequest(new RemoveCardFromDeck(cardName, deckName));
         connector.save(new ButtonLog(client.getUsername(), "remove card to deck:" + deckName + "card:" + cardName
                 , COLLECTION.toString()));
     }

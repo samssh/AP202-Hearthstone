@@ -1,15 +1,15 @@
 package ir.sam.hearthstone.server.logic.game.behavioral_models;
 
-import ir.sam.hearthstone.model.main.ActionType;
-import ir.sam.hearthstone.model.main.Card;
-import ir.sam.hearthstone.model.main.Weapon;
+import ir.sam.hearthstone.server.model.main.ActionType;
+import ir.sam.hearthstone.server.model.main.Card;
+import ir.sam.hearthstone.server.model.main.Weapon;
 import ir.sam.hearthstone.response.PlayDetails;
 import ir.sam.hearthstone.server.logic.game.AbstractGame;
 import ir.sam.hearthstone.server.logic.game.GameState;
 import ir.sam.hearthstone.server.logic.game.Side;
 import ir.sam.hearthstone.server.logic.game.events.GameEvent;
 import ir.sam.hearthstone.server.logic.game.events.PlayCard;
-import ir.sam.hearthstone.view.model.WeaponOverview;
+import ir.sam.hearthstone.client.view.model.WeaponOverview;
 import lombok.Getter;
 import lombok.Setter;
 
