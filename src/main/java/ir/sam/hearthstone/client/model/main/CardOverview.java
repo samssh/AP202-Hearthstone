@@ -20,7 +20,7 @@ public class CardOverview extends UnitOverview {
     public CardOverview() {
     }
 
-    public CardOverview(String name, String imageName, String toolkit, int number, int price
+    private CardOverview(String name, String imageName, String toolkit, int number, int price
             , int mana, int att, int hp, boolean showPrice, BufferedImage big, BufferedImage small) {
         this.name = name;
         this.imageName = imageName;
@@ -46,7 +46,8 @@ public class CardOverview extends UnitOverview {
                 big = ImageLoader.getInstance().getBigCard(imageName);
             } else {
                 big = ImageLoader.getInstance().getBigGrayCard(imageName);
-            }        }
+            }
+        }
         return big;
     }
 
