@@ -21,7 +21,7 @@ public class PassiveAction {
 
     public void exit() {
         connector.save(new ButtonLog(client.getUsername(), "exit", PASSIVE.toString()));
-        client.logout();
+        client.sendLogoutRequest();
         client.exit();
     }
 

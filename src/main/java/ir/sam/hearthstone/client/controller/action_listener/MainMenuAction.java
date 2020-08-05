@@ -5,7 +5,6 @@ import ir.sam.hearthstone.client.model.log.ButtonLog;
 import ir.sam.hearthstone.client.util.Updatable;
 import ir.sam.hearthstone.client.util.hibernate.Connector;
 import ir.sam.hearthstone.client.view.PanelType;
-import ir.sam.hearthstone.client.view.panel.CollectionPanel;
 import ir.sam.hearthstone.client.view.panel.MainMenuPanel;
 import ir.sam.hearthstone.client.view.panel.PlayPanel;
 
@@ -22,26 +21,18 @@ public class MainMenuAction {
 
     public void exit() {
         connector.save(new ButtonLog(client.getUsername(), "exit", MAIN_MENU.toString()));
-        client.logout();
+        client.sendLogoutRequest();
         client.exit();
     }
 
     public void logout() {
         connector.save(new ButtonLog(client.getUsername(), "logout", MAIN_MENU.toString()));
-        client.logout();
-        ((CollectionPanel) client.getPanels().get(COLLECTION)).reset();
-        client.setNow(PanelType.LOGIN);
-        client.updateFrame();
-        client.getHistory().clear();
+        client.sendLogoutRequest();
     }
 
     public void deleteAccount() {
         connector.save(new ButtonLog(client.getUsername(), "deleteAccount", MAIN_MENU.toString()));
         client.deleteAccount();
-        ((CollectionPanel) client.getPanels().get(COLLECTION)).reset();
-        client.setNow(PanelType.LOGIN);
-        client.updateFrame();
-        client.getHistory().clear();
     }
 
     public void shop() {

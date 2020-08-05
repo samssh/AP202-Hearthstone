@@ -8,6 +8,13 @@ import ir.sam.hearthstone.client.model.main.SmallDeckOverview;
 import java.util.List;
 
 public interface ResponseExecutor {
+    default void doLogout() {
+    }
+
+    default void doShutDown() {
+
+    }
+
     void login(boolean success, String message);
 
     void setShopDetails(List<CardOverview> sell, List<CardOverview> buy, int coin);

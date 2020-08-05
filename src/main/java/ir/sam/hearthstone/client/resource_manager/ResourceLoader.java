@@ -35,28 +35,24 @@ public class ResourceLoader {
         try {
             System.out.println("download resources");
             long startTime = System.currentTimeMillis();
-
             URL url = new URL(ResourceLoader.getUrl());
-
             url.openConnection();
             InputStream reader = url.openStream();
-
             FileOutputStream writer = new FileOutputStream(this.INPUT_ZIP_FILE);
             byte[] buffer = new byte[102400];
             int totalBytesRead = 0;
             int bytesRead;
-
             System.out.println("Reading ZIP file 20KB blocks at a time.\n");
-
             while ((bytesRead = reader.read(buffer)) > 0) {
                 writer.write(buffer, 0, bytesRead);
                 buffer = new byte[102400];
                 totalBytesRead += bytesRead;
+                System.out.println(totalBytesRead + " bytes read ("
+                        + (System.currentTimeMillis() - startTime) + " milliseconds).");
             }
-
             long endTime = System.currentTimeMillis();
-
-            System.out.println("Done. " + totalBytesRead + " bytes read (" + (endTime - startTime) + " milliseconds).\n");
+            System.out.println("Done. " + totalBytesRead +
+                    " bytes read (" + (endTime - startTime) + " milliseconds).");
             writer.close();
             reader.close();
         } catch (IOException e) {

@@ -1,7 +1,7 @@
 package ir.sam.hearthstone.client.controller;
 
 import ir.sam.hearthstone.client.controller.action_listener.*;
-import ir.sam.hearthstone.client.controller.transmitters.RequestSender;
+import ir.sam.hearthstone.client.controller.network.RequestSender;
 import ir.sam.hearthstone.client.model.log.RequestLog;
 import ir.sam.hearthstone.client.model.log.ResponseLog;
 import ir.sam.hearthstone.client.model.main.BigDeckOverview;
@@ -41,18 +41,17 @@ public class Client implements ResponseExecutor {
     private final Loop executor;
     @Getter
     private String username;
-    private final RequestSender requestSender;
+    @Setter
+    private RequestSender requestSender;
 
-    public Client(RequestSender requestSender) {
-        this.requestSender = requestSender;
+    public Client() {
+        connector = new Connector(
+                ConfigFactory.getInstance().getConfigFile("CLIENT_HIBERNATE_CONFIG"));
         this.frame = new MyFrame();
         panels = new EnumMap<>(PanelType.class);
         history = new Stack<>();
+        panels.put(CONNECT, new ConnectPanel(new ConnectAction(this)));
         panels.put(LOGIN, new LoginPanel(new LoginPanelAction(this)));
-        now = LOGIN;
-        updateFrame();
-        connector = new Connector(
-                ConfigFactory.getInstance().getConfigFile("CLIENT_HIBERNATE_CONFIG"));
         panels.put(MAIN_MENU, new MainMenuPanel(new MainMenuAction(connector, this)));
         panels.put(SHOP, new ShopPanel(new ShopAction(connector, this)));
         panels.put(STATUS, new StatusPanel(new StatusAction(connector, this)));
@@ -61,8 +60,19 @@ public class Client implements ResponseExecutor {
         panels.put(PLAY_MODE, new PlayModePanel(new PlayModeAction(connector, this)));
         panels.put(PLAY, new PlayPanel(new PlayAction(connector, this)));
         requestList = new LinkedList<>();
+        now = CONNECT;
+        frame.setContentPane(panels.get(CONNECT));
         executor = new Loop(60, this::executeAnswers);
+    }
+
+
+    public void start() {
         executor.start();
+    }
+
+    public void setOnLogin() {
+        now = LOGIN;
+        updateFrame();
     }
 
     private void executeAnswers() {
@@ -86,13 +96,7 @@ public class Client implements ResponseExecutor {
             synchronized (requestList) {
                 requestList.add(request);
             }
-//            connector.save(new ResponseLog(response, username));
         }
-    }
-
-    private void shutdown() {
-        connector.close();
-        executor.stop();
     }
 
     public void updateFrame() {
@@ -102,25 +106,9 @@ public class Client implements ResponseExecutor {
 
     public void exit() {
         addRequest(new ShutdownRequest());
-        this.shutdown();
-        System.exit(0);
     }
 
-    @Override
-    public void login(boolean success, String message) {
-        LoginPanel panel = (LoginPanel) panels.get(LOGIN);
-        if (success) {
-            panel.reset();
-            now = MAIN_MENU;
-            updateFrame();
-            username = message;
-            ((MainMenuPanel) panels.get(MAIN_MENU)).update();
-        } else {
-            panel.setMessage(message);
-        }
-    }
-
-    public void logout() {
+    public void sendLogoutRequest() {
         Request request = new LogoutRequest();
         addRequest(request);
         connector.save(new RequestLog(request, username));
@@ -175,6 +163,44 @@ public class Client implements ResponseExecutor {
         Request request = new AllCollectionDetails(name, classOfCard, mana, lockMode);
         addRequest(request);
         connector.save(new RequestLog(request, username));
+    }
+
+    public void sendStartPlayRequest() {
+        Request request = new StartPlaying();
+        addRequest(request);
+        connector.save(new RequestLog(request, username));
+    }
+
+    @Override
+    public void doShutDown() {
+        connector.close();
+        synchronized (requestList) {
+            requestList.clear();
+            executor.stop();
+        }
+        System.exit(0);
+    }
+
+    @Override
+    public void doLogout() {
+        ((CollectionPanel) panels.get(COLLECTION)).reset();
+        now = PanelType.LOGIN;
+        updateFrame();
+        history.clear();
+    }
+
+    @Override
+    public void login(boolean success, String message) {
+        LoginPanel panel = (LoginPanel) panels.get(LOGIN);
+        if (success) {
+            panel.reset();
+            now = MAIN_MENU;
+            updateFrame();
+            username = message;
+            ((MainMenuPanel) panels.get(MAIN_MENU)).update();
+        } else {
+            panel.setMessage(message);
+        }
     }
 
     @Override
@@ -248,12 +274,6 @@ public class Client implements ResponseExecutor {
             }
         } catch (IllegalArgumentException ignored) {
         }
-    }
-
-    public void sendStartPlayRequest() {
-        Request request = new StartPlaying();
-        addRequest(request);
-        connector.save(new RequestLog(request, username));
     }
 
     @Override

@@ -28,7 +28,7 @@ public class CollectionAction {
 
     public void exit() {
         connector.save(new ButtonLog(client.getUsername(), "exit", COLLECTION.toString()));
-        client.logout();
+        client.sendLogoutRequest();
         client.exit();
     }
 

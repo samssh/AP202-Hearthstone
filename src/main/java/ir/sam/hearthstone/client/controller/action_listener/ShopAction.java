@@ -29,7 +29,7 @@ public class ShopAction {
 
     public void exit() {
         connector.save(new ButtonLog(client.getUsername(), "exit", SHOP.toString()));
-        client.logout();
+        client.sendLogoutRequest();
         client.exit();
     }
 

@@ -1,4 +1,4 @@
-package ir.sam.hearthstone.client.controller.transmitters;
+package ir.sam.hearthstone.client.controller.network;
 
 import ir.sam.hearthstone.client.model.requests.Request;
 import ir.sam.hearthstone.client.model.response.Response;
