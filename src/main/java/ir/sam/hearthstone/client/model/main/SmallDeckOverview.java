@@ -1,6 +1,8 @@
 package ir.sam.hearthstone.client.model.main;
 
 
+import ir.sam.hearthstone.client.resource_manager.ImageLoader;
+
 import java.awt.*;
 import java.awt.image.BufferedImage;
 
@@ -10,10 +12,16 @@ public class SmallDeckOverview extends Overview {
     public SmallDeckOverview() {
     }
 
+    public BufferedImage getImage() {
+        if (image == null) {
+            image = ImageLoader.getInstance().getSmallDeck(imageName);
+        }
+        return image;
+    }
 
     @Override
     public void paint(Graphics2D g) {
-        g.drawImage(image, 0, 0, null);
+        g.drawImage(getImage(), 0, 0, null);
         g.setFont(new Font("War Priest 3D", Font.PLAIN, 15));
         g.setColor(Color.yellow);
         g.drawString("deck name:" + name, 0, 20);
@@ -22,12 +30,12 @@ public class SmallDeckOverview extends Overview {
 
     @Override
     public int getWidth() {
-        return image.getWidth();
+        return getImage().getWidth();
     }
 
     @Override
     public int getHeight() {
-        return image.getHeight();
+        return getImage().getHeight();
     }
 
     @Override

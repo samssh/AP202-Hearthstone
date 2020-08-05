@@ -1,5 +1,6 @@
 package ir.sam.hearthstone.client.model.main;
 
+import ir.sam.hearthstone.client.resource_manager.ImageLoader;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -23,10 +24,16 @@ public class BigDeckOverview extends Overview {
     public BigDeckOverview() {
     }
 
+    public BufferedImage getImage() {
+        if (image == null) {
+            image = ImageLoader.getInstance().getBigDeck(imageName);
+        }
+        return image;
+    }
 
     @Override
     public void paint(Graphics2D g) {
-        g.drawImage(image, 0, 0, null);
+        g.drawImage(getImage(), 0, 0, null);
         g.setFont(new Font("War Priest Expanded", Font.PLAIN, 20));
         g.setColor(Color.yellow);
         g.drawString("deck name:" + name, 0, 40);
@@ -45,12 +52,12 @@ public class BigDeckOverview extends Overview {
 
     @Override
     public int getWidth() {
-        return image.getWidth();
+        return getImage().getWidth();
     }
 
     @Override
     public int getHeight() {
-        return image.getHeight();
+        return getImage().getHeight();
     }
 
     @Override

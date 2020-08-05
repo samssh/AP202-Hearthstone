@@ -16,18 +16,30 @@ public class HeroOverview extends UnitOverview {
     private transient BufferedImage big, small;
 
     public HeroOverview() {
-
     }
 
+    public BufferedImage getBig() {
+        if (big == null) {
+            big = ImageLoader.getInstance().getBigHero(imageName);
+        }
+        return big;
+    }
+
+    public BufferedImage getSmall() {
+        if (small == null) {
+            small = ImageLoader.getInstance().getSmallHero(imageName);
+        }
+        return small;
+    }
 
     @Override
     public void paint(Graphics2D g) {
-        g.drawImage(small, 0, 0, null);
+        g.drawImage(getSmall(), 0, 0, null);
         g.setColor(Color.WHITE);
         g.setFont(g.getFont().deriveFont(Font.BOLD));
         g.setFont(g.getFont().deriveFont(19.5F));
-        int w = small.getWidth();
-        int h = small.getHeight();
+        int w = getSmall().getWidth();
+        int h = getSmall().getHeight();
         if (defence > 0) {
             g.drawImage(defImage, 87 * w / 120, 65 * h / 170, null);
             g.drawString(defence + "", 96 * w / 120, 88 * h / 170);
@@ -37,26 +49,26 @@ public class HeroOverview extends UnitOverview {
 
     @Override
     public int getWidth() {
-        return small.getWidth();
+        return getSmall().getWidth();
     }
 
     @Override
     public int getHeight() {
-        return small.getHeight();
+        return getSmall().getHeight();
     }
 
     @Override
     public Image getBigImage() {
-        ColorModel cm = big.getColorModel();
-        BufferedImage image = new BufferedImage(cm, big.copyData(null), cm.isAlphaPremultiplied(), null);
+        ColorModel cm = getBig().getColorModel();
+        BufferedImage image = new BufferedImage(cm, getBig().copyData(null), cm.isAlphaPremultiplied(), null);
         Graphics g = image.createGraphics();
         this.paintBig(g);
         return image;
     }
 
     private void paintBig(Graphics g) {
-        int w = big.getWidth();
-        int h = big.getHeight();
+        int w = getBig().getWidth();
+        int h = getBig().getHeight();
         g.setColor(Color.WHITE);
         g.setFont(g.getFont().deriveFont(Font.BOLD));
         g.setFont(g.getFont().deriveFont(40.0F));

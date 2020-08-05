@@ -33,7 +33,7 @@ public class Connector {
     }
 
     private final SessionFactory sessionFactory;
-    private final Set<SaveAble> save, delete, tempSave, tempDelete;
+    private final Set<SaveAble> save, delete;
     private final Object lock;
     private final Loop worker;
 
@@ -42,8 +42,6 @@ public class Connector {
         sessionFactory = buildSessionFactory(getServiceRegistryBuilder(configFile).build());
         save = new HashSet<>();
         delete = new HashSet<>();
-        tempDelete = new HashSet<>();
-        tempSave = new HashSet<>();
         lock = new Object();
         worker = new Loop(30, this::persist);
         worker.start();
@@ -62,10 +60,12 @@ public class Connector {
     }
 
     private void persist() {
+        Set<SaveAble> tempDelete;
+        Set<SaveAble> tempSave;
         synchronized (lock) {
-            tempSave.addAll(save);
+            tempSave = new HashSet<>(save);
             this.save.clear();
-            tempDelete.addAll(delete);
+            tempDelete = new HashSet<>(delete);
             this.delete.clear();
         }
         if (tempSave.size() > 0 || tempDelete.size() > 0)

@@ -14,14 +14,21 @@ public class WeaponOverview extends CardOverview {
     private boolean hasAttack;
 
     public WeaponOverview() {
+    }
 
+    @Override
+    public BufferedImage getSmall() {
+        if (small == null) {
+            small = ImageLoader.getInstance().getWeapon(imageName);
+        }
+        return small;
     }
 
     @Override
     public void paint(Graphics2D graphics2D) {
         if (hasAttack) {
-            graphics2D.drawImage(small, 0, 0, null);
-            int w = small.getWidth(), h = small.getHeight();
+            graphics2D.drawImage(getSmall(), 0, 0, null);
+            int w = getSmall().getWidth(), h = getSmall().getHeight();
             graphics2D.setColor(Color.WHITE);
             graphics2D.setFont(graphics2D.getFont().deriveFont(Font.BOLD));
             graphics2D.setFont(graphics2D.getFont().deriveFont(21.0F));

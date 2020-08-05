@@ -148,14 +148,6 @@ public abstract class Box<Model extends Overview, T extends JPanel> extends JPan
         animationManger.start(() -> endAnimation(index));
     }
 
-//    public int getModelSize() {
-//        return models.size();
-//    }
-//
-//    public List<Model> getModels() {
-//        return models;
-//    }
-
     public void addModel(int index, Model model) {
         addModel(index, model, false);
     }
@@ -200,10 +192,6 @@ public abstract class Box<Model extends Overview, T extends JPanel> extends JPan
         setButtons();
         animationManger.start(() -> endAnimation(index - begin));
     }
-
-//    public Model removeModel(String name) {
-//        return removeModel(indexOf(name), false);
-//    }
 
     public Model removeModel(String name, boolean animationOnOld) {
         return removeModel(indexOf(name), animationOnOld);

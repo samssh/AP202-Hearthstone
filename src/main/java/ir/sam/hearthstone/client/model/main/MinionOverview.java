@@ -28,10 +28,18 @@ public class MinionOverview extends CardOverview {
     }
 
     @Override
+    public BufferedImage getSmall() {
+        if (small == null) {
+            small = ImageLoader.getInstance().getMinion(imageName);
+        }
+        return small;
+    }
+
+    @Override
     public void paint(Graphics2D graphics2D) {
-        int w = small.getWidth(), h = small.getHeight();
+        int w = getSmall().getWidth(), h = getSmall().getHeight();
         if (hasTaunt) graphics2D.drawImage(tauntImage, 0, 0, null);
-        graphics2D.drawImage(small, 0, 0, null);
+        graphics2D.drawImage(getSmall(), 0, 0, null);
         if (hasDivineShield) graphics2D.drawImage(divineShieldImage, 0, 0, null);
         if (hasSleep) graphics2D.drawImage(sleepImage, 20 * w / 90, 20 * h / 120, null);
         if (hasRush) graphics2D.drawImage(rushImage, 35 * w / 90, 88 * h / 120, null);

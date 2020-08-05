@@ -1,5 +1,6 @@
 package ir.sam.hearthstone.client.model.main;
 
+import ir.sam.hearthstone.client.resource_manager.ImageLoader;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -17,7 +18,6 @@ public class CardOverview extends UnitOverview {
     protected transient BufferedImage big, small;
 
     public CardOverview() {
-
     }
 
     public CardOverview(String name, String imageName, String toolkit, int number, int price
@@ -36,17 +36,38 @@ public class CardOverview extends UnitOverview {
     }
 
     public CardOverview getClone() {
-        return new CardOverview(name, imageName, getToolkit(), number, price, mana, att, hp, showPrice, big, small);
+        return new CardOverview(name, imageName, getToolkit(), number, price, mana, att
+                , hp, showPrice, getBig(), getSmall());
     }
 
+    public BufferedImage getBig() {
+        if (big == null) {
+            if (this.number > 0) {
+                big = ImageLoader.getInstance().getBigCard(imageName);
+            } else {
+                big = ImageLoader.getInstance().getBigGrayCard(imageName);
+            }        }
+        return big;
+    }
+
+    public BufferedImage getSmall() {
+        if (small == null) {
+            if (this.number > 0) {
+                small = ImageLoader.getInstance().getSmallCard(imageName);
+            } else {
+                small = ImageLoader.getInstance().getSmallGrayCard(imageName);
+            }
+        }
+        return small;
+    }
 
     @Override
     public void paint(Graphics2D g) {
         if (number == 2)
-            g.drawImage(small, 15, 0, null);
-        g.drawImage(small, 0, 0, null);
-        int w = small.getWidth();
-        int h = small.getHeight();
+            g.drawImage(getSmall(), 15, 0, null);
+        g.drawImage(getSmall(), 0, 0, null);
+        int w = getSmall().getWidth();
+        int h = getSmall().getHeight();
         g.setColor(Color.WHITE);
         g.setFont(g.getFont().deriveFont(Font.BOLD));
         g.setFont(g.getFont().deriveFont(21.0F));
@@ -64,17 +85,17 @@ public class CardOverview extends UnitOverview {
 
     @Override
     public int getWidth() {
-        return small.getWidth();
+        return getSmall().getWidth();
     }
 
     @Override
     public int getHeight() {
-        return small.getHeight();
+        return getSmall().getHeight();
     }
 
     private void paintBig(Graphics g) {
-        int w = big.getWidth();
-        int h = big.getHeight();
+        int w = getBig().getWidth();
+        int h = getBig().getHeight();
         g.setColor(Color.WHITE);
         g.setFont(g.getFont().deriveFont(Font.BOLD));
         g.setFont(g.getFont().deriveFont(40.0F));
@@ -92,8 +113,8 @@ public class CardOverview extends UnitOverview {
 
     @Override
     public BufferedImage getBigImage() {
-        ColorModel cm = big.getColorModel();
-        BufferedImage image = new BufferedImage(cm, big.copyData(null), cm.isAlphaPremultiplied()
+        ColorModel cm = getBig().getColorModel();
+        BufferedImage image = new BufferedImage(cm, getBig().copyData(null), cm.isAlphaPremultiplied()
                 , null);
         Graphics g = image.createGraphics();
         this.paintBig(g);
