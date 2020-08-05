@@ -2,17 +2,17 @@ package ir.sam.hearthstone.client.model.main;
 
 import ir.sam.hearthstone.client.view.Painter;
 import lombok.Getter;
+import lombok.Setter;
 
 import java.awt.*;
 import java.util.Objects;
 
 public abstract class Overview implements Painter {
     @Getter
-    protected final String name, imageName;
+    @Setter
+    protected String name, imageName;
 
-    public Overview(String name, String imageName) {
-        this.name = name;
-        this.imageName = imageName;
+    public Overview() {
     }
 
     public abstract void paint(Graphics2D graphics2D);

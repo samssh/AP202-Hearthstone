@@ -1,16 +1,16 @@
 package ir.sam.hearthstone.client.model.main;
 
 import lombok.Getter;
+import lombok.Setter;
 
 import java.awt.*;
 
 public abstract class UnitOverview extends Overview {
     @Getter
-    private final String toolkit;
+    @Setter
+    protected String toolkit;
 
-    public UnitOverview(String name, String imageName, String toolkit) {
-        super(name, imageName);
-        this.toolkit = toolkit;
+    public UnitOverview() {
     }
 
     public abstract Image getBigImage();

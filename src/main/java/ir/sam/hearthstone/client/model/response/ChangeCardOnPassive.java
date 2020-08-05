@@ -1,15 +1,16 @@
 package ir.sam.hearthstone.client.model.response;
 
 import ir.sam.hearthstone.client.model.main.CardOverview;
+import lombok.Getter;
+import lombok.Setter;
 
 public class ChangeCardOnPassive extends Response {
-    private final CardOverview cardOverview;
-    private final int index;
-
-    public ChangeCardOnPassive(CardOverview cardOverview, int index) {
-        this.cardOverview = cardOverview;
-        this.index = index;
-    }
+    @Getter
+    @Setter
+    private CardOverview cardOverview;
+    @Getter
+    @Setter
+    private int index;
 
     @Override
     public void execute(ResponseExecutor responseExecutor) {

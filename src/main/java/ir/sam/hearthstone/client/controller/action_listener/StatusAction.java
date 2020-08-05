@@ -17,7 +17,7 @@ public class StatusAction {
 
     public void exit() {
         connector.save(new ButtonLog(client.getUsername(), "exit", STATUS.toString()));
-        client.logout();
+        client.sendLogoutRequest();
         client.exit();
     }
 

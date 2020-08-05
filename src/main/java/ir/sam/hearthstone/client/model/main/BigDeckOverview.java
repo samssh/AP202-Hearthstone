@@ -1,21 +1,26 @@
 package ir.sam.hearthstone.client.model.main;
 
-import lombok.ToString;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.text.DecimalFormat;
 
-@ToString(includeFieldNames = false)
 public class BigDeckOverview extends Overview {
+    @Getter
+    @Setter
     private String cardName;
+    @Getter
+    @Setter
     private int games, wins;
+    @Getter
+    @Setter
     private double winRate, manaAverage;
-    @ToString.Exclude()
-    private BufferedImage image;
 
-    public BigDeckOverview(String name, String imageName) {
-        super(name, imageName);
+    private transient BufferedImage image;
+
+    public BigDeckOverview() {
     }
 
 
@@ -46,5 +51,18 @@ public class BigDeckOverview extends Overview {
     @Override
     public int getHeight() {
         return image.getHeight();
+    }
+
+    @Override
+    public String toString() {
+        return "BigDeckOverview{" +
+                "cardName='" + cardName + '\'' +
+                ", games=" + games +
+                ", wins=" + wins +
+                ", winRate=" + winRate +
+                ", manaAverage=" + manaAverage +
+                ", name='" + name + '\'' +
+                ", imageName='" + imageName + '\'' +
+                '}';
     }
 }

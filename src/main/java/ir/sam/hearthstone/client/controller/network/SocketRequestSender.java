@@ -17,8 +17,8 @@ public class SocketRequestSender implements RequestSender {
     private final Scanner scanner;
     private final PrintStream printStream;
     private final Gson gson;
-    private Base64.Decoder decoder = Base64.getDecoder();
-    private Base64.Encoder encoder = Base64.getEncoder();
+    private final Base64.Decoder decoder = Base64.getDecoder();
+    private final Base64.Encoder encoder = Base64.getEncoder();
     private String token;
 
     public SocketRequestSender(Socket socket) throws IOException {

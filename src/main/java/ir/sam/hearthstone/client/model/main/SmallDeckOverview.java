@@ -1,17 +1,13 @@
 package ir.sam.hearthstone.client.model.main;
 
-import lombok.ToString;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
 
-@ToString(includeFieldNames = false)
 public class SmallDeckOverview extends Overview {
-    @ToString.Exclude
-    private BufferedImage image;
+    private transient BufferedImage image;
 
-    public SmallDeckOverview(String name, String imageName) {
-        super(name, imageName);
+    public SmallDeckOverview() {
     }
 
 
@@ -32,5 +28,13 @@ public class SmallDeckOverview extends Overview {
     @Override
     public int getHeight() {
         return image.getHeight();
+    }
+
+    @Override
+    public String toString() {
+        return "SmallDeckOverview{" +
+                "name='" + name + '\'' +
+                ", imageName='" + imageName + '\'' +
+                '}';
     }
 }

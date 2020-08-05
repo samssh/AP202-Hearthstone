@@ -1,12 +1,15 @@
 package ir.sam.hearthstone.client.model.response;
 
 import lombok.Getter;
+import lombok.Setter;
 
 public class LoginResponse extends Response {
     @Getter
-    private final boolean success;
+    @Setter
+    private boolean success;
     @Getter
-    private final String message;
+    @Setter
+    private String message;
 
     public LoginResponse(boolean success, String message) {
         this.success = success;

@@ -1,17 +1,12 @@
 package ir.sam.hearthstone.client.model.main;
 
-import lombok.ToString;
-
 import java.awt.*;
 import java.awt.image.BufferedImage;
 
-@ToString(includeFieldNames = false)
 public class PassiveOverview extends Overview {
-    @ToString.Exclude
-    private BufferedImage image;
+    private transient BufferedImage image;
 
-    public PassiveOverview(String name, String imageName) {
-        super(name, imageName);
+    public PassiveOverview() {
     }
 
     @Override
@@ -27,5 +22,13 @@ public class PassiveOverview extends Overview {
     @Override
     public int getHeight() {
         return image.getHeight();
+    }
+
+    @Override
+    public String toString() {
+        return "PassiveOverview{" +
+                "name='" + name + '\'' +
+                ", imageName='" + imageName + '\'' +
+                '}';
     }
 }

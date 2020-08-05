@@ -2,16 +2,14 @@ package ir.sam.hearthstone.client.model.response;
 
 import ir.sam.hearthstone.client.model.main.BigDeckOverview;
 import lombok.Getter;
+import lombok.Setter;
 
 import java.util.List;
 
 public class StatusDetails extends Response {
     @Getter
-    private final List<BigDeckOverview> bigDeckOverviews;
-
-    public StatusDetails(List<BigDeckOverview> bigDeckOverviews) {
-        this.bigDeckOverviews = bigDeckOverviews;
-    }
+    @Setter
+    private List<BigDeckOverview> bigDeckOverviews;
 
     @Override
     public void execute(ResponseExecutor responseExecutor) {

@@ -4,27 +4,22 @@ import ir.sam.hearthstone.client.model.main.UnitOverview;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
-import lombok.experimental.Accessors;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class PlayDetails extends Response {
     @Getter
-    private final List<Event> events;
+    @Setter
+    private List<Event> events;
     @Getter
-    private final String eventLog;
+    @Setter
+    private String eventLog;
     @Getter
-    private final int[] mana;
+    @Setter
+    private int[] mana;
     @Getter
-    private final long time;
-
-    public PlayDetails(String eventLog, int[] mana, long time) {
-        this.eventLog = eventLog;
-        this.mana = mana;
-        this.time = time;
-        events = new ArrayList<>();
-    }
+    @Setter
+    private long time;
 
     @Override
     public void execute(ResponseExecutor responseExecutor) {
@@ -34,53 +29,20 @@ public class PlayDetails extends Response {
     @ToString(includeFieldNames = false)
     public static class Event {
         @Getter
-        private final EventType type;
-        @Getter
-        private final UnitOverview overview, overview1;
-        @Getter
-        private final int index, secondIndex;
-        @Getter
-        private final int side;
-        @Getter
-        private final String message;
-
-        private Event(EventType type, UnitOverview overview, UnitOverview overview1
-                , int index, int side, int secondIndex, String message) {
-            this.type = type;
-            this.overview = overview;
-            this.overview1 = overview1;
-            this.index = index;
-            this.secondIndex = secondIndex;
-            this.side = side;
-            this.message = message;
-        }
-    }
-
-    public static class EventBuilder {
-        private final EventType type;
         @Setter
-        @Accessors(chain = true)
+        private EventType type;
+        @Getter
+        @Setter
         private UnitOverview overview, overview1;
+        @Getter
         @Setter
-        @Accessors(chain = true)
         private int index, secondIndex;
+        @Getter
         @Setter
-        @Accessors(chain = true)
         private int side;
+        @Getter
         @Setter
-        @Accessors(chain = true)
         private String message;
-
-        public EventBuilder(EventType type) {
-            this.type = type;
-            index = -1;
-            secondIndex = -1;
-            side = -1;
-        }
-
-        public Event build() {
-            return new Event(type, overview, overview1, index, side, secondIndex, message);
-        }
     }
 
     public enum EventType {

@@ -1,10 +1,12 @@
 package ir.sam.hearthstone.client.model.response;
 
 import lombok.Getter;
+import lombok.Setter;
 
 public class GoTo extends Response {
     @Getter
-    private final String panel, message;
+    @Setter
+    private String panel, message;
 
     public GoTo(String panel, String message) {
         this.panel = panel;

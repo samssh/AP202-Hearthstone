@@ -1,19 +1,19 @@
 package ir.sam.hearthstone.client.model.main;
 
-import lombok.ToString;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.awt.image.ColorModel;
 
-@ToString(includeFieldNames = false)
 public class HeroPowerOverview extends UnitOverview {
+    @Getter
+    @Setter
     private int mana;
-    @ToString.Exclude
-    private BufferedImage big, small;
+    private transient BufferedImage big, small;
 
-    public HeroPowerOverview(String name, String imageName, String toolkit) {
-        super(name, imageName, toolkit);
+    public HeroPowerOverview() {
     }
 
 
@@ -58,5 +58,14 @@ public class HeroPowerOverview extends UnitOverview {
         int w = big.getWidth();
         int h = big.getHeight();
         g.drawString(mana + "", 115 * w / 250, 46 * h / 350);
+    }
+
+    @Override
+    public String toString() {
+        return "HeroPowerOverview{" +
+                "mana=" + mana +
+                ", name='" + name + '\'' +
+                ", imageName='" + imageName + '\'' +
+                '}';
     }
 }

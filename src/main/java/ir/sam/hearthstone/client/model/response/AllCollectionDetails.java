@@ -3,35 +3,30 @@ package ir.sam.hearthstone.client.model.response;
 import ir.sam.hearthstone.client.model.main.CardOverview;
 import ir.sam.hearthstone.client.model.main.SmallDeckOverview;
 import lombok.Getter;
+import lombok.Setter;
 
 import java.util.List;
 
+
 public class AllCollectionDetails extends Response {
     @Getter
-    private final List<CardOverview> cards;
+    @Setter
+    private List<CardOverview> cards;
     @Getter
-    private final List<SmallDeckOverview> decks;
+    @Setter
+    private List<SmallDeckOverview> decks;
     @Getter
-    private final List<CardOverview> deckCards;
+    @Setter
+    private List<CardOverview> deckCards;
     @Getter
-    private final boolean canAddDeck, canChangeHero;
+    @Setter
+    private boolean canAddDeck, canChangeHero;
     @Getter
-    private final String deckName;
+    @Setter
+    private String deckName;
     @Getter
-    private final List<String> heroNames, classOfCardNames;
-
-    public AllCollectionDetails(List<CardOverview> cards, List<SmallDeckOverview> decks,
-                                List<CardOverview> deckCards, boolean canAddDeck,
-                                boolean canChangeHero, String deckName, List<String> heroNames, List<String> classOfCardNames) {
-        this.cards = cards;
-        this.decks = decks;
-        this.deckCards = deckCards;
-        this.canAddDeck = canAddDeck;
-        this.canChangeHero = canChangeHero;
-        this.deckName = deckName;
-        this.heroNames = heroNames;
-        this.classOfCardNames = classOfCardNames;
-    }
+    @Setter
+    private List<String> heroNames, classOfCardNames;
 
     @Override
     public void execute(ResponseExecutor responseExecutor) {

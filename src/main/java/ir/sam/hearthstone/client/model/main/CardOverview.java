@@ -1,6 +1,5 @@
 package ir.sam.hearthstone.client.model.main;
 
-import ir.sam.hearthstone.client.resource_manager.ImageLoader;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -11,20 +10,21 @@ import java.awt.image.ColorModel;
 public class CardOverview extends UnitOverview {
     @Getter
     @Setter
-    private int number;
-    private int price, mana;
-    protected int att, hp;
-    private boolean showPrice;
-    //    @ToString.Exclude
-    protected BufferedImage big, small;
+    protected int number, price, mana, att, hp;
+    @Getter
+    @Setter
+    protected boolean showPrice;
+    protected transient BufferedImage big, small;
 
-    public CardOverview(String name, String imageName, String toolkit) {
-        super(name, imageName, toolkit);
+    public CardOverview() {
+
     }
 
-    public CardOverview(String name, String imageName, String toolkit, int number, int price, int mana, int att,
-                        int hp, boolean showPrice, BufferedImage big, BufferedImage small) {
-        super(name, imageName, toolkit);
+    public CardOverview(String name, String imageName, String toolkit, int number, int price
+            , int mana, int att, int hp, boolean showPrice, BufferedImage big, BufferedImage small) {
+        this.name = name;
+        this.imageName = imageName;
+        this.toolkit = toolkit;
         this.number = number;
         this.price = price;
         this.mana = mana;
@@ -33,19 +33,6 @@ public class CardOverview extends UnitOverview {
         this.showPrice = showPrice;
         this.big = big;
         this.small = small;
-    }
-
-    public CardOverview(String name, String imageName, String toolkit, int number, int price, int mana, int att,
-                        int hp, boolean showPrice) {
-        this(name, imageName, toolkit, number, price, mana, att, hp
-                , showPrice, null, null);
-        if (this.number > 0) {
-            big = ImageLoader.getInstance().getBigCard(imageName);
-            small = ImageLoader.getInstance().getSmallCard(imageName);
-        } else {
-            big = ImageLoader.getInstance().getBigGrayCard(imageName);
-            small = ImageLoader.getInstance().getSmallGrayCard(imageName);
-        }
     }
 
     public CardOverview getClone() {

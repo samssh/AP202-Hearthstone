@@ -1,6 +1,8 @@
 package ir.sam.hearthstone.client.model.main;
 
 import ir.sam.hearthstone.client.resource_manager.ImageLoader;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
@@ -18,10 +20,11 @@ public class MinionOverview extends CardOverview {
         rushImage = ImageLoader.getInstance().getEffect("rush");
     }
 
+    @Getter
+    @Setter
     private boolean hasTaunt, hasRush, hasDivineShield, hasSleep;
 
-    public MinionOverview(String name, String imageName, String toolkit) {
-        super(name, imageName, toolkit);
+    public MinionOverview() {
     }
 
     @Override

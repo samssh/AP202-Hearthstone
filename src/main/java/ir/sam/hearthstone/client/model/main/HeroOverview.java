@@ -1,22 +1,22 @@
 package ir.sam.hearthstone.client.model.main;
 
 import ir.sam.hearthstone.client.resource_manager.ImageLoader;
-import lombok.ToString;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.awt.image.ColorModel;
 
-@ToString(includeFieldNames = false)
 public class HeroOverview extends UnitOverview {
     static final BufferedImage defImage = ImageLoader.getInstance().getEffect("defence");
-    private int hp;
-    private int defence;
-    @ToString.Exclude
-    private BufferedImage big, small;
+    @Getter
+    @Setter
+    private int hp, defence;
+    private transient BufferedImage big, small;
 
-    public HeroOverview(String name, String imageName, String toolkit) {
-        super(name, imageName, toolkit);
+    public HeroOverview() {
+
     }
 
 
@@ -61,5 +61,15 @@ public class HeroOverview extends UnitOverview {
         g.setFont(g.getFont().deriveFont(Font.BOLD));
         g.setFont(g.getFont().deriveFont(40.0F));
         g.drawString(hp + "", 192 * w / 250, 250 * h / 350);
+    }
+
+    @Override
+    public String toString() {
+        return "HeroOverview{" +
+                "hp=" + hp +
+                ", defence=" + defence +
+                ", name='" + name + '\'' +
+                ", imageName='" + imageName + '\'' +
+                '}';
     }
 }

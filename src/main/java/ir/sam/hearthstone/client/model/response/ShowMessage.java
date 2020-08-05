@@ -1,14 +1,12 @@
 package ir.sam.hearthstone.client.model.response;
 
 import lombok.Getter;
+import lombok.Setter;
 
 public class ShowMessage extends Response {
     @Getter
-    private final String message;
-
-    public ShowMessage(String message) {
-        this.message = message;
-    }
+    @Setter
+    private String message;
 
     @Override
     public void execute(ResponseExecutor responseExecutor) {
