@@ -50,10 +50,10 @@ public class MainMenuAction {
         ((Updatable) client.getPanels().get(COLLECTION)).update();
     }
 
-    public void play() {
+    public void play(String mode) {
         client.getPanels().put(PLAY, new PlayPanel(new PlayAction(connector, client)));
-        connector.save(new ButtonLog(client.getUsername(), "play", MAIN_MENU.toString()));
-        client.sendStartPlayRequest();
+        connector.save(new ButtonLog(client.getUsername(), mode, MAIN_MENU.toString()));
+        client.sendStartPlayRequest(mode);
     }
 
     public void update() {

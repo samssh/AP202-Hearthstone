@@ -1,6 +1,7 @@
 package ir.sam.hearthstone.client.view.panel;
 
 import ir.sam.hearthstone.client.controller.action_listener.ConnectAction;
+import ir.sam.hearthstone.client.resource_manager.ImageLoader;
 import ir.sam.hearthstone.client.view.util.Constant;
 import lombok.Getter;
 
@@ -8,6 +9,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
+import java.awt.image.BufferedImage;
 
 public class ConnectPanel extends JPanel {
     @Getter
@@ -16,6 +18,7 @@ public class ConnectPanel extends JPanel {
     private JButton connect;
     private final Dimension dimension;
     private final ConnectAction connectAction;
+    private final BufferedImage background;
 
     public ConnectPanel(ConnectAction connectAction) {
         dimension = new Dimension(120, 60);
@@ -36,6 +39,7 @@ public class ConnectPanel extends JPanel {
         gbc.gridx = 0;
         gbc.gridy = 2;
         this.add(connect, gbc);
+        background = ImageLoader.getInstance().getBackground("connect");
     }
 
     private void init() {
@@ -96,5 +100,9 @@ public class ConnectPanel extends JPanel {
         connect.addActionListener(e -> connectAction.connect(this));
     }
 
-
+    @Override
+    public void paintComponent(Graphics g) {
+        super.paintComponents(g);
+        g.drawImage(background,0,0,null);
+    }
 }

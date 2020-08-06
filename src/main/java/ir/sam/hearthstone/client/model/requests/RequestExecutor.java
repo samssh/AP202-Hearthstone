@@ -40,8 +40,7 @@ public interface RequestExecutor {
 
     void addCardToDeck(String cardName, String deckName);
 
-    default void startPlay() {
-    }
+    void startPlay(String mode);
 
     void selectPlayMode(String modeName);
 

@@ -13,7 +13,7 @@ import java.awt.image.BufferedImage;
 
 public class MainMenuPanel extends JPanel implements Updatable {
     private JLabel welcome;
-    private JButton play, shop, status, collection, exit, logout, deleteAccount;
+    private JButton playOnline, tavernBrawl, scoreBoard, practice, shop, status, collection, exit, logout, deleteAccount;
     private final BufferedImage image;
     private int componentWidth, componentHeight, componentSpace;
     private int exitWidth, exitHeight, exitX, exitY, exitSpace, shiftX, shiftY;
@@ -28,13 +28,16 @@ public class MainMenuPanel extends JPanel implements Updatable {
         config();
         sumHeight = componentHeight + componentSpace;
         startX = (this.getWidth() - componentWidth) / 2 + shiftX;
-        startY = this.getHeight() / 2 - (4 * sumHeight + componentHeight) / 2 + shiftY;
+        startY = this.getHeight() / 2 - (7 * sumHeight + componentHeight) / 2 + shiftY;
         this.mainMenuAction = mainMenuAction;
         this.image = ImageLoader.getInstance().getBackground("mainMenu");
         dimension = new Dimension(componentWidth, componentHeight);
         initialize();
         this.add(welcome);
-        this.add(play);
+        this.add(playOnline);
+        this.add(practice);
+        this.add(tavernBrawl);
+        this.add(scoreBoard);
         this.add(shop);
         this.add(status);
         this.add(collection);
@@ -53,7 +56,10 @@ public class MainMenuPanel extends JPanel implements Updatable {
     private void initialize() {
         initializeWelcome();
         initializeShop();
-        initializePlay();
+        initializePlayOnline();
+        initializePractice();
+        initializeTavernBrawl();
+        initializeScoreBoard();
         initializeStatus();
         initializeCollection();
         initializeExit();
@@ -68,19 +74,46 @@ public class MainMenuPanel extends JPanel implements Updatable {
         Constant.makeWhite(welcome);
     }
 
-    private void initializePlay() {
-        play = new JButton("play");
-        play.setSize(dimension);
-        play.setLocation(startX, startY + sumHeight);
-        play.addActionListener(e -> mainMenuAction.play());
-        Constant.makeTransparent(play);
+
+    private void initializePlayOnline() {
+        playOnline = new JButton("play online");
+        playOnline.setSize(dimension);
+        playOnline.setLocation(startX, startY + sumHeight);
+        playOnline.addActionListener(e -> mainMenuAction.play("online"));
+        Constant.makeTransparent(playOnline);
+    }
+
+
+    private void initializePractice() {
+        practice = new JButton("practice");
+        practice.setSize(dimension);
+        practice.setLocation(startX, startY + 2 * sumHeight);
+        practice.addActionListener(e -> mainMenuAction.play("practice"));
+        Constant.makeTransparent(practice);
+    }
+
+
+    private void initializeTavernBrawl() {
+        tavernBrawl = new JButton("tavern brawl");
+        tavernBrawl.setSize(dimension);
+        tavernBrawl.setLocation(startX, startY + 3 * sumHeight);
+        tavernBrawl.addActionListener(e -> mainMenuAction.play("tavernBrawl"));
+        Constant.makeTransparent(tavernBrawl);
+    }
+
+    private void initializeScoreBoard() {
+        scoreBoard = new JButton("scoreboard");
+        scoreBoard.setSize(dimension);
+        scoreBoard.setLocation(startX, startY + 4 * sumHeight);
+        //todo add listener
+        Constant.makeTransparent(scoreBoard);
     }
 
     private void initializeShop() {
         shop = new JButton("shop");
         shop.setSize(dimension);
         shop.addActionListener(e -> mainMenuAction.shop());
-        shop.setLocation(startX, startY + 2 * sumHeight);
+        shop.setLocation(startX, startY + 5 * sumHeight);
         Constant.makeTransparent(shop);
 
     }
@@ -89,7 +122,7 @@ public class MainMenuPanel extends JPanel implements Updatable {
         status = new JButton("status");
         status.setSize(dimension);
         status.addActionListener(e -> mainMenuAction.status());
-        status.setLocation(startX, startY + 3 * sumHeight);
+        status.setLocation(startX, startY + 6 * sumHeight);
         Constant.makeTransparent(status);
     }
 
@@ -97,7 +130,7 @@ public class MainMenuPanel extends JPanel implements Updatable {
         collection = new JButton("collection");
         collection.addActionListener(e -> mainMenuAction.collection());
         collection.setSize(dimension);
-        collection.setLocation(startX, startY + 4 * sumHeight);
+        collection.setLocation(startX, startY + 7 * sumHeight);
         Constant.makeTransparent(collection);
     }
 

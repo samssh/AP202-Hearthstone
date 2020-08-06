@@ -57,7 +57,6 @@ public class Client implements ResponseExecutor {
         panels.put(STATUS, new StatusPanel(new StatusAction(connector, this)));
         panels.put(COLLECTION, new CollectionPanel(new CollectionAction(connector, this)));
         panels.put(PASSIVE, new PassivePanel(new PassiveAction(connector, this)));
-        panels.put(PLAY_MODE, new PlayModePanel(new PlayModeAction(connector, this)));
         panels.put(PLAY, new PlayPanel(new PlayAction(connector, this)));
         requestList = new LinkedList<>();
         now = CONNECT;
@@ -165,8 +164,8 @@ public class Client implements ResponseExecutor {
         connector.save(new RequestLog(request, username));
     }
 
-    public void sendStartPlayRequest() {
-        Request request = new StartPlaying();
+    public void sendStartPlayRequest(String mode) {
+        Request request = new StartPlaying(mode);
         addRequest(request);
         connector.save(new RequestLog(request, username));
     }
