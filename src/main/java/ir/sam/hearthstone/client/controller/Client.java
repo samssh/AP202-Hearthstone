@@ -178,6 +178,7 @@ public class Client implements ResponseExecutor {
             requestList.clear();
             executor.stop();
         }
+        requestSender.close();
         System.exit(0);
     }
 

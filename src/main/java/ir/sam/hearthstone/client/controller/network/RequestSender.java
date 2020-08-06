@@ -5,4 +5,6 @@ import ir.sam.hearthstone.client.model.response.Response;
 
 public interface RequestSender {
     Response[] sendRequest(Request request);
+
+    void close();
 }

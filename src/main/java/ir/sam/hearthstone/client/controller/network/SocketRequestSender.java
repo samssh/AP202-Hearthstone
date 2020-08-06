@@ -6,6 +6,7 @@ import ir.sam.hearthstone.client.controller.network.serializer_and_deserializer.
 import ir.sam.hearthstone.client.controller.network.serializer_and_deserializer.Serializer;
 import ir.sam.hearthstone.client.controller.network.serializer_and_deserializer
         .SerializerAndDeserializerConstants;
+import ir.sam.hearthstone.client.model.main.AbstractCardOverview;
 import ir.sam.hearthstone.client.model.main.CardOverview;
 import ir.sam.hearthstone.client.model.main.Overview;
 import ir.sam.hearthstone.client.model.main.UnitOverview;
@@ -21,11 +22,11 @@ import java.util.Base64;
 import java.util.Scanner;
 
 public class SocketRequestSender implements RequestSender {
+    private static final Base64.Decoder decoder = Base64.getDecoder();
+    private static final Base64.Encoder encoder = Base64.getEncoder();
     private final Scanner scanner;
     private final PrintStream printStream;
     private final Gson gson;
-    private final Base64.Decoder decoder = Base64.getDecoder();
-    private final Base64.Encoder encoder = Base64.getEncoder();
     private String token;
 
     public SocketRequestSender(Socket socket) throws IOException {
@@ -39,7 +40,7 @@ public class SocketRequestSender implements RequestSender {
                         , new Deserializer<>(SerializerAndDeserializerConstants.OVERVIEW_PACKAGE))
                 .registerTypeAdapter(UnitOverview.class
                         , new Deserializer<>(SerializerAndDeserializerConstants.OVERVIEW_PACKAGE))
-                .registerTypeAdapter(CardOverview.class
+                .registerTypeAdapter(AbstractCardOverview.class
                         , new Deserializer<>(SerializerAndDeserializerConstants.OVERVIEW_PACKAGE))
                 .create();
     }
@@ -54,6 +55,12 @@ public class SocketRequestSender implements RequestSender {
         Message responseMessage = toMessage(decode);
         checkToken(responseMessage);
         return responseMessage.getResponses();
+    }
+
+    @Override
+    public void close() {
+        scanner.close();
+        printStream.close();
     }
 
     private String toJson(Message message) {
