@@ -1,6 +1,6 @@
 package ir.sam.hearthstone.server.controller.logic.game;
 
-import ir.sam.hearthstone.server.controller.Server;
+import ir.sam.hearthstone.server.controller.ClientHandler;
 import ir.sam.hearthstone.server.controller.logic.game.behavioral_models.CardLogic;
 import ir.sam.hearthstone.server.model.account.Deck;
 import ir.sam.hearthstone.server.model.client.CardOverview;
@@ -13,29 +13,29 @@ import ir.sam.hearthstone.server.resource_loader.ModelLoader;
 import java.util.Collections;
 import java.util.List;
 
-import static ir.sam.hearthstone.server.controller.Server.STARTING_HAND_CARDS;
+import static ir.sam.hearthstone.server.controller.Constants.STARTING_HAND_CARDS;
 import static ir.sam.hearthstone.server.controller.logic.game.Side.PLAYER_ONE;
 import static ir.sam.hearthstone.server.controller.logic.game.Side.PLAYER_TWO;
 
 public class MultiplayerGameBuilder extends GameBuilder {
-    public MultiplayerGameBuilder(ModelLoader modelLoader, Server server) {
-        super(modelLoader, server);
+    public MultiplayerGameBuilder(ModelLoader modelLoader) {
+        super(modelLoader);
     }
 
     @Override
     protected void build0() {
-        result = new MultiPlayerGame(server, gameStateBuilder.build(), modelLoader);
+        result = new MultiPlayerGame(gameStateBuilder.build(), modelLoader);
     }
 
     @Override
-    public Response setPassive(Passive passive, Server server) {
+    public Response setPassive(Passive passive, ClientHandler clientHandler) {
         if (sentPassives.contains(passive)) {
             if (gameStateBuilder.getPassiveP1() == null) {
                 gameStateBuilder.setPassiveP1(passive);
                 return sendPassives("select opponent passive");
             } else {
                 gameStateBuilder.setPassiveP2(passive);
-                return server.sendDecksForSelection("select opponent deck");
+                return clientHandler.sendDecksForSelection("select opponent deck");
             }
         }
         return null;

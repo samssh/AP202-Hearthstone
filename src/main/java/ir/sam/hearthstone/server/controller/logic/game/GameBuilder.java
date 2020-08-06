@@ -1,6 +1,6 @@
 package ir.sam.hearthstone.server.controller.logic.game;
 
-import ir.sam.hearthstone.server.controller.Server;
+import ir.sam.hearthstone.server.controller.ClientHandler;
 import ir.sam.hearthstone.server.model.account.Deck;
 import ir.sam.hearthstone.server.model.client.CardOverview;
 import ir.sam.hearthstone.server.model.client.PassiveOverview;
@@ -15,7 +15,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import static ir.sam.hearthstone.server.controller.Server.STARTING_PASSIVES;
+import static ir.sam.hearthstone.server.controller.Constants.STARTING_PASSIVES;
 
 
 public abstract class GameBuilder {
@@ -26,13 +26,12 @@ public abstract class GameBuilder {
     protected final List<Card> handP1, handP2, deckP1, deckP2;
     protected final List<Boolean> handP1state, handP2state;
     protected final ModelLoader modelLoader;
-    protected final Server server;
 
 
-    public GameBuilder(ModelLoader modelLoader, Server server) {
+
+    public GameBuilder(ModelLoader modelLoader) {
         this.modelLoader = modelLoader;
         this.allPassives = modelLoader.getFirstPassives();
-        this.server = server;
         gameStateBuilder = new GameStateBuilder();
         handP1 = new ArrayList<>();
         handP2 = new ArrayList<>();
@@ -48,7 +47,7 @@ public abstract class GameBuilder {
 
     protected abstract void build0();
 
-    public abstract Response setPassive(Passive passive, Server server);
+    public abstract Response setPassive(Passive passive, ClientHandler clientHandler);
 
     public abstract Response setDeckP1(Deck deckP1);
 

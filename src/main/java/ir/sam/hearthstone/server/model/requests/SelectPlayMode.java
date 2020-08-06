@@ -1,11 +1,12 @@
 package ir.sam.hearthstone.server.model.requests;
 
-public class SelectPlayMode extends Request {
-    private final String modeName;
+import lombok.Getter;
+import lombok.Setter;
 
-    public SelectPlayMode(String modeName) {
-        this.modeName = modeName;
-    }
+public class SelectPlayMode extends Request {
+    @Getter
+    @Setter
+    private String modeName;
 
     @Override
     public void execute(RequestExecutor requestExecutor) {

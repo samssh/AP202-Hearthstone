@@ -1,15 +1,12 @@
 package ir.sam.hearthstone.server.model.requests;
 
 import lombok.Getter;
+import lombok.Setter;
 
 public class NewDeck extends Request {
     @Getter
-    private final String deckName, heroName;
-
-    public NewDeck(String deckName, String heroName) {
-        this.deckName = deckName;
-        this.heroName = heroName;
-    }
+    @Setter
+    private String deckName, heroName;
 
     @Override
     public void execute(RequestExecutor requestExecutor) {

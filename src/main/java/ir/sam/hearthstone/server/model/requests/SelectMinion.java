@@ -1,13 +1,12 @@
 package ir.sam.hearthstone.server.model.requests;
 
-public class SelectMinion extends Request {
-    private final int side, index, emptyIndex;
+import lombok.Getter;
+import lombok.Setter;
 
-    public SelectMinion(int side, int index, int emptyIndex) {
-        this.side = side;
-        this.index = index;
-        this.emptyIndex = emptyIndex;
-    }
+public class SelectMinion extends Request {
+    @Getter
+    @Setter
+    private int side, index, emptyIndex;
 
     @Override
     public void execute(RequestExecutor requestExecutor) {

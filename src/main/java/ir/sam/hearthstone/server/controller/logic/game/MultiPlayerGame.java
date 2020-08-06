@@ -1,6 +1,7 @@
 package ir.sam.hearthstone.server.controller.logic.game;
 
-import ir.sam.hearthstone.server.controller.Server;
+import ir.sam.hearthstone.server.controller.ClientHandler;
+import ir.sam.hearthstone.server.controller.Constants;
 import ir.sam.hearthstone.server.controller.logic.game.behavioral_models.CardLogic;
 import ir.sam.hearthstone.server.controller.logic.game.behavioral_models.HeroLogic;
 import ir.sam.hearthstone.server.controller.logic.game.behavioral_models.MinionLogic;
@@ -19,8 +20,8 @@ import static ir.sam.hearthstone.server.model.response.PlayDetails.EventType.ADD
 import static ir.sam.hearthstone.server.model.response.PlayDetails.EventType.SHOW_MESSAGE;
 
 public class MultiPlayerGame extends AbstractGame {
-    public MultiPlayerGame(Server server, GameState gameState, ModelLoader modelLoader) {
-        super(server, gameState, modelLoader);
+    public MultiPlayerGame(GameState gameState, ModelLoader modelLoader) {
+        super(gameState, modelLoader);
     }
 
     @Override
@@ -194,7 +195,7 @@ public class MultiPlayerGame extends AbstractGame {
         GameEvent gameEvent = new EndTurn(gameState.getSideTurn());
         gameState.getGameEvents().add(gameEvent);
         if (gameState.getSideTurn() == Side.PLAYER_TWO) gameState.setTurnNumber(gameState.getTurnNumber() + 1);
-        int mana = Math.min(gameState.getTurnNumber(), Server.MAX_MANA);
+        int mana = Math.min(gameState.getTurnNumber(), Constants.MAX_MANA);
         if (gameState.getActiveWeapon(gameState.getSideTurn()) != null)
             gameState.getActiveWeapon(gameState.getSideTurn()).setHasAttack(false, gameState);
         gameState.setSideTurn(gameState.getSideTurn().getOther());
@@ -205,7 +206,7 @@ public class MultiPlayerGame extends AbstractGame {
                 minionLogic -> minionLogic.removeRushAndGiveSleep(gameState));
         visitAll(this, ActionType.START_TURN, null, gameState.getSideTurn());
         turnStartTime = System.currentTimeMillis();
-        timer.setTask(server::endTurn, Server.TURN_TIME);
+        timer.setTask(()->nextTurn(Side.PLAYER_ONE), Constants.TURN_TIME);
     }
 
     @Override
@@ -214,11 +215,11 @@ public class MultiPlayerGame extends AbstractGame {
         init(Side.PLAYER_TWO);
         gameState.setTurnNumber(1);
         gameState.setSideTurn(gameState.getSideTurn().getOther());
-        int mana = Math.min(gameState.getTurnNumber(), Server.MAX_MANA);
+        int mana = Math.min(gameState.getTurnNumber(), Constants.MAX_MANA);
         gameState.setMana(gameState.getSideTurn(), mana);
         visitAll(this, ActionType.START_TURN, null, gameState.getSideTurn());
         turnStartTime = System.currentTimeMillis();
-        timer.setTask(server::endTurn, Server.TURN_TIME);
+        timer.setTask(()->nextTurn(Side.PLAYER_ONE), Constants.TURN_TIME);
     }
 
     private void init(Side side) {
@@ -277,7 +278,7 @@ public class MultiPlayerGame extends AbstractGame {
 
     @Override
     public void drawCard(Side side, CardLogic cardLogic) {
-        if (gameState.getHand(side).size() < Server.MAX_HAND_SIZE) {
+        if (gameState.getHand(side).size() < Constants.MAX_HAND_SIZE) {
             gameState.getHand(side).add(0, cardLogic);
             visitAll(this, ActionType.DRAW_CARD, cardLogic, side);
             PlayDetails.Event event = new PlayDetails.EventBuilder(ADD_TO_HAND)
@@ -298,7 +299,7 @@ public class MultiPlayerGame extends AbstractGame {
     public void playMinion(MinionLogic minionLogic) {
         Side side = minionLogic.getSide();
         Minion minion = minionLogic.getMinion();
-        if (gameState.getGround(side).size() < Server.MAX_GROUND_SIZE) {
+        if (gameState.getGround(side).size() < Constants.MAX_GROUND_SIZE) {
             if (minion.getManaFrz() <= gameState.getMana(side)) {
                 gameState.setSelectedMinionOnHand(side, minionLogic);
             }

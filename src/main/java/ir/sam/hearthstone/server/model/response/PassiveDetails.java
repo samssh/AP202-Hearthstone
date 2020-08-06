@@ -10,9 +10,13 @@ import java.util.List;
 public class PassiveDetails extends Response {
     @Getter
     private final List<PassiveOverview> passives;
+    @Getter
     private final List<SmallDeckOverview> decks;
+    @Getter
     private final List<CardOverview> cards;
+    @Getter
     private final String message;
+    @Getter
     private final boolean showButton;
 
     public PassiveDetails(List<PassiveOverview> passives, List<SmallDeckOverview> decks, List<CardOverview> cards, String message) {

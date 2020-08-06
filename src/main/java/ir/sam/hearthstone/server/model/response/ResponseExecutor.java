@@ -37,4 +37,10 @@ public interface ResponseExecutor {
 
     void setPlayDetail(List<PlayDetails.Event> events, String eventLog
             , int[] mana, long time);
+
+    default void doLogout() {
+    }
+
+    default void doShutDown() {
+    }
 }

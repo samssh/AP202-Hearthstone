@@ -1,11 +1,12 @@
 package ir.sam.hearthstone.server.model.requests;
 
-public class SelectCardOnPassive extends Request {
-    private final int index;
+import lombok.Getter;
+import lombok.Setter;
 
-    public SelectCardOnPassive(int index) {
-        this.index = index;
-    }
+public class SelectCardOnPassive extends Request {
+    @Getter
+    @Setter
+    private int index;
 
     @Override
     public void execute(RequestExecutor requestExecutor) {

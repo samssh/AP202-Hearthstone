@@ -1,8 +1,13 @@
 package ir.sam.hearthstone.server.model.response;
 
+import lombok.Getter;
+
 public class CollectionCardEvent extends Response {
+    @Getter
     private final String type;
+    @Getter
     private final String cardName;
+    @Getter
     private final boolean canAddDeck, canChangeHero;
 
     public CollectionCardEvent(String type, String cardName, boolean canAddDeck, boolean canChangeHero) {

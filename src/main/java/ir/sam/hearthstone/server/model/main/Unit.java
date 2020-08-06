@@ -10,26 +10,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 @Entity
-@EqualsAndHashCode(onlyExplicitlyIncluded = true)
-public abstract class Unit implements SaveAble, Cloneable, HasAction {
-    @Id
-    @Setter
-    @Getter
-    @EqualsAndHashCode.Include
-    protected String name;
-    @Setter
-    @Getter
-    @Column
-    protected String description;
-    @Getter
-    @Setter
-    @Column
-    protected String className;
-    @Setter
-    @Getter
-    @ElementCollection
-    @MapKeyEnumerated(EnumType.STRING)
-    protected Map<ActionType, String> methods;
+public abstract class Unit extends HasAction implements SaveAble, Cloneable {
 
     public Unit() {
     }

@@ -1,4 +1,5 @@
 package ir.sam.hearthstone.server.model.response;
+
 import ir.sam.hearthstone.server.model.client.CardOverview;
 import lombok.Getter;
 

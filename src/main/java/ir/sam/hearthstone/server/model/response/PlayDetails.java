@@ -31,7 +31,6 @@ public class PlayDetails extends Response {
         responseExecutor.setPlayDetail(events, eventLog, mana, time);
     }
 
-    @ToString(includeFieldNames = false)
     public static class Event {
         @Getter
         private final EventType type;
@@ -53,6 +52,19 @@ public class PlayDetails extends Response {
             this.secondIndex = secondIndex;
             this.side = side;
             this.message = message;
+        }
+
+        @Override
+        public String toString() {
+            return "Event{" +
+                    "type=" + type +
+                    ", overview=" + overview +
+                    ", overview1=" + overview1 +
+                    ", index=" + index +
+                    ", secondIndex=" + secondIndex +
+                    ", side=" + side +
+                    ", message='" + message + '\'' +
+                    '}';
         }
     }
 

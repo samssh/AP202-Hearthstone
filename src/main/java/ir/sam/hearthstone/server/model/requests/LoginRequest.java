@@ -1,18 +1,15 @@
 package ir.sam.hearthstone.server.model.requests;
 
 import lombok.Getter;
+import lombok.Setter;
 
 public class LoginRequest extends Request {
     @Getter
-    private final String userName, password;
+    @Setter
+    private String userName, password;
     @Getter
-    private final int mode;
-
-    public LoginRequest(String userName, String password, int mode) {
-        this.userName = userName;
-        this.password = password;
-        this.mode = mode;
-    }
+    @Setter
+    private int mode;
 
     @Override
     public void execute(RequestExecutor requestExecutor) {

@@ -1,6 +1,6 @@
 package ir.sam.hearthstone.server.controller.logic.game.behavioral_models;
 
-import ir.sam.hearthstone.server.controller.Server;
+import ir.sam.hearthstone.server.controller.Constants;
 import ir.sam.hearthstone.server.controller.logic.game.AbstractGame;
 import ir.sam.hearthstone.server.controller.logic.game.GameState;
 import ir.sam.hearthstone.server.controller.logic.game.Side;
@@ -149,7 +149,7 @@ public class MinionLogic extends CardLogic implements LiveCharacter {
      */
     public void summon(AbstractGame game, int indexOnGround) {
         GameState gameState = game.getGameState();
-        if (gameState.getGround(side).size() == Server.MAX_GROUND_SIZE)
+        if (gameState.getGround(side).size() == Constants.MAX_GROUND_SIZE)
             return;
         summon0(game, indexOnGround);
         PlayDetails.Event event = new PlayDetails.EventBuilder(PlayDetails.EventType.ADD_TO_GROUND)

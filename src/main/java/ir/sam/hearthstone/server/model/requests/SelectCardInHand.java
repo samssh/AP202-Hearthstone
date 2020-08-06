@@ -1,15 +1,12 @@
 package ir.sam.hearthstone.server.model.requests;
 
 import lombok.Getter;
+import lombok.Setter;
 
 public class SelectCardInHand extends Request {
     @Getter
-    private final int side, index;
-
-    public SelectCardInHand(int side, int index) {
-        this.side = side;
-        this.index = index;
-    }
+    @Setter
+    private int side, index;
 
     @Override
     public void execute(RequestExecutor requestExecutor) {

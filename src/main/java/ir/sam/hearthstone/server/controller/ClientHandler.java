@@ -6,7 +6,7 @@ import ir.sam.hearthstone.server.controller.logic.Status;
 import ir.sam.hearthstone.server.controller.logic.game.AbstractGame;
 import ir.sam.hearthstone.server.controller.logic.game.GameBuilder;
 import ir.sam.hearthstone.server.controller.logic.game.MultiplayerGameBuilder;
-import ir.sam.hearthstone.server.controller.transmitters.ResponseSender;
+import ir.sam.hearthstone.server.controller.network.ResponseSender;
 import ir.sam.hearthstone.server.model.account.Deck;
 import ir.sam.hearthstone.server.model.account.Player;
 import ir.sam.hearthstone.server.model.client.SmallDeckOverview;
@@ -16,12 +16,7 @@ import ir.sam.hearthstone.server.model.log.ResponseLog;
 import ir.sam.hearthstone.server.model.main.Passive;
 import ir.sam.hearthstone.server.model.requests.Request;
 import ir.sam.hearthstone.server.model.requests.RequestExecutor;
-import ir.sam.hearthstone.server.model.response.GoTo;
-import ir.sam.hearthstone.server.model.response.LoginResponse;
-import ir.sam.hearthstone.server.model.response.PassiveDetails;
-import ir.sam.hearthstone.server.model.response.Response;
-import ir.sam.hearthstone.server.resource_loader.Config;
-import ir.sam.hearthstone.server.resource_loader.ConfigFactory;
+import ir.sam.hearthstone.server.model.response.*;
 import ir.sam.hearthstone.server.resource_loader.ModelLoader;
 import ir.sam.hearthstone.server.util.hibernate.Connector;
 import lombok.Getter;
@@ -34,36 +29,7 @@ import java.util.stream.Collectors;
 import static ir.sam.hearthstone.server.controller.logic.game.Side.PLAYER_ONE;
 import static ir.sam.hearthstone.server.controller.logic.game.Side.PLAYER_TWO;
 
-public class Server implements RequestExecutor {
-    public final static int STARTING_MANA;
-    public final static int MANA_PER_TURN;
-    public final static int CARD_PER_TURN;
-    public final static int MAX_DECK_SIZE;
-    public final static int STARTING_PASSIVES;
-    public final static int STARTING_HAND_CARDS;
-    public final static int MAX_MANA;
-    public final static int STARTING_COINS;
-    public final static int MAX_DECK_NUMBER;
-    public final static int TURN_TIME;// to millisecond
-    public final static int MAX_HAND_SIZE;
-    public final static int MAX_GROUND_SIZE;
-
-    static {
-        Config config = ConfigFactory.getInstance().getConfig("SERVER_CONFIG");
-        STARTING_MANA = config.getProperty(Integer.class, "STARTING_MANA");
-        MANA_PER_TURN = config.getProperty(Integer.class, "MANA_PER_TURN");
-        CARD_PER_TURN = config.getProperty(Integer.class, "CARD_PER_TURN");
-        MAX_DECK_SIZE = config.getProperty(Integer.class, "MAX_DECK_SIZE");
-        STARTING_PASSIVES = config.getProperty(Integer.class, "STARTING_PASSIVES");
-        STARTING_HAND_CARDS = config.getProperty(Integer.class, "STARTING_HAND_CARDS");
-        MAX_MANA = config.getProperty(Integer.class, "MAX_MANA");
-        STARTING_COINS = config.getProperty(Integer.class, "STARTING_COINS");
-        MAX_DECK_NUMBER = config.getProperty(Integer.class, "MAX_DECK_NUMBER");
-        TURN_TIME = config.getProperty(Integer.class, "TURN_TIME");
-        MAX_HAND_SIZE = config.getProperty(Integer.class, "MAX_HAND_SIZE");
-        MAX_GROUND_SIZE = config.getProperty(Integer.class, "MAX_GROUND_SIZE");
-    }
-
+public class ClientHandler implements RequestExecutor {
     private final List<Response> responseList;
     private final Connector connector;
     @Getter
@@ -74,23 +40,24 @@ public class Server implements RequestExecutor {
     private final Collection collection;
     private final Shop shop;
     private final Status status;
+    @Getter
     private final ResponseSender responseSender;
     private volatile boolean running;
 
-    public Server(ResponseSender responseSender) {
+    public ClientHandler(ResponseSender responseSender, Connector connector, ModelLoader modelLoader) {
         this.responseSender = responseSender;
         responseList = new ArrayList<>(100);
-        connector = new Connector(ConfigFactory.getInstance().getConfigFile("SERVER_HIBERNATE_CONFIG")
-                , System.getenv("HearthStone password"));
-        modelLoader = new ModelLoader(connector);
+        this.connector = connector;
+        this.modelLoader = modelLoader;
         collection = new Collection(connector, modelLoader);
         shop = new Shop(connector, modelLoader);
         status = new Status();
     }
 
-    public void start(){
+    public ClientHandler start() {
         running = true;
         new Thread(this::executeRequests).start();
+        return this;
     }
 
     private void executeRequests() {
@@ -100,12 +67,7 @@ public class Server implements RequestExecutor {
             responseSender.sendResponse(responseList.toArray(new Response[0]));
             responseList.clear();
         }
-    }
-
-    @Override
-    public void shutdown() {
-        running = false;
-        connector.close();
+        responseSender.close();
     }
 
     private void addToResponses(Response... responses) {
@@ -137,7 +99,6 @@ public class Server implements RequestExecutor {
                 this.player = fetched;
                 Response response = new LoginResponse(true, player.getUserName());
                 addToResponses(response);
-                connector.save(new ResponseLog(response, player.getUserName()));
                 connector.save(new AccountLog(player.getUserName(), "sign in"));
             } else {
                 Response response = new LoginResponse(false, "wrong password");
@@ -154,7 +115,7 @@ public class Server implements RequestExecutor {
     private void signUp(String username, String password) {
         Player player = connector.fetch(Player.class, username);
         if (player == null) {
-            player = new Player(username, password, System.currentTimeMillis(), STARTING_COINS, 0
+            player = new Player(username, password, System.currentTimeMillis(), Constants.STARTING_COINS, 0
                     , modelLoader.getFirstCards(), modelLoader.getFirstHeroes(), modelLoader.getFirstDecks());
             connector.save(new HeaderLog(player.getCreatTime(), player.getUserName(), player.getPassword()));
             connector.save(player);
@@ -174,6 +135,7 @@ public class Server implements RequestExecutor {
         if (this.player != null) {
             connector.save(player);
             connector.save(new AccountLog(player.getUserName(), "logout"));
+            addToResponses(new Logout());
             this.player = null;
         }
     }
@@ -186,8 +148,17 @@ public class Server implements RequestExecutor {
             HeaderLog header = connector.fetch(HeaderLog.class, player.getCreatTime());
             header.setDeletedAt(System.currentTimeMillis() + "");
             connector.save(header);
+            addToResponses(new Logout());
             this.player = null;
         }
+    }
+
+    @Override
+    public void shutdown() {
+        running = false;
+        Response response = new ShutDown();
+        addToResponses(false,response);
+        connector.save(new ResponseLog(response,null));
     }
 
     @Override
@@ -271,7 +242,7 @@ public class Server implements RequestExecutor {
         Response response = null;
         switch (modeName) {
             case "multiplayer" -> {
-                gameBuilder = new MultiplayerGameBuilder(modelLoader, this);
+                gameBuilder = new MultiplayerGameBuilder(modelLoader);
                 response = gameBuilder.setDeckP1(player.getSelectedDeck());
             }
             case "AI" -> response = new GoTo("MAIN_MENU", "AI add soon\ngoto main menu?");
@@ -282,7 +253,7 @@ public class Server implements RequestExecutor {
     }
 
     private boolean canStartGame(Deck deck) {
-        return deck != null && deck.getSize() == MAX_DECK_SIZE;
+        return deck != null && deck.getSize() == Constants.MAX_DECK_SIZE;
     }
 
     @Override

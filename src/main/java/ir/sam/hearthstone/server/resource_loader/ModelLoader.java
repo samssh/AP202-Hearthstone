@@ -27,11 +27,10 @@ public class ModelLoader {
         firstHeroes = new ArrayList<>();
         firstCards = new ArrayList<>();
         firstPassives = connector.fetchAll(Passive.class);
-        // todo config factory
-//        config(ConfigFactory.getInstance().getConfig("MODEL_LOADER_CONFIG"), connector);
+        config(ConfigFactory.getInstance().getConfig("MODEL_LOADER_CONFIG"));
     }
 
-    public void config(Config config, Connector connector) {
+    public void config(Config config) {
         defaultHero = getHero(config.getProperty(String.class, "defaultHero"))
                 .orElseThrow(() -> new NoSuchElementException("hero on config file not exist"));
         List<String> heroName = config.getPropertyList(String.class, "firstHeroes");
@@ -42,7 +41,7 @@ public class ModelLoader {
         List<String> cardsName = config.getPropertyList(String.class, "firstCards");
         for (String s : cardsName) {
             firstCards.add(getCard(s)
-                    .orElseThrow(() -> new NoSuchElementException("hero on config file not exist")));
+                    .orElseThrow(() -> new NoSuchElementException("card on config file not exist")));
         }
     }
 
@@ -93,16 +92,6 @@ public class ModelLoader {
         for (Passive p : firstPassives)
             if (p.getName().equals(name))
                 return Optional.of(p);
-        return Optional.empty();
-    }
-
-    public Optional<Unit> searchUnit(String s) {
-        for (Hero h : heroes)
-            if (h.getName().equals(s))
-                return Optional.of(h);
-        for (Card c : cards)
-            if (c.getName().equals(s))
-                return Optional.of(c);
         return Optional.empty();
     }
 }

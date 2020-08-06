@@ -1,8 +1,13 @@
 package ir.sam.hearthstone.server.model.response;
 
+import lombok.Getter;
+
 public class ShopEvent extends Response {
+    @Getter
     private final String cardName;
+    @Getter
     private final String type;
+    @Getter
     private final int coins;
 
     public ShopEvent(String cardName, String type, int coins) {

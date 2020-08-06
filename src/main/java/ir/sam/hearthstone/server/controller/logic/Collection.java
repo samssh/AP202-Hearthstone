@@ -18,8 +18,8 @@ import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import static ir.sam.hearthstone.server.controller.Server.MAX_DECK_NUMBER;
-import static ir.sam.hearthstone.server.controller.Server.MAX_DECK_SIZE;
+import static ir.sam.hearthstone.server.controller.Constants.MAX_DECK_NUMBER;
+import static ir.sam.hearthstone.server.controller.Constants.MAX_DECK_SIZE;
 
 public class Collection {
     private final Connector connector;

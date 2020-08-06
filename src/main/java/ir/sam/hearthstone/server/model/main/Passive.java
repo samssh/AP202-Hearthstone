@@ -13,35 +13,8 @@ import java.util.Map;
 
 @Entity
 @ToString
-@EqualsAndHashCode(onlyExplicitlyIncluded = true)
-public class Passive implements SaveAble, Cloneable, HasAction {
-    @Id
-    @Getter
-    @Setter
-    @EqualsAndHashCode.Include
-    private String name;
-    @Column
-    @Getter
-    @Setter
-    private String description;
-    @Getter
-    @Setter
-    @Column
-    protected String className;
-    @Setter
-    @Getter
-    @Column
-    @ElementCollection
-    @MapKeyEnumerated(EnumType.STRING)
-    protected Map<ActionType, String> methods;
-
+public class Passive extends HasAction implements SaveAble, Cloneable {
     public Passive() {
-    }
-
-    public Passive(String name, String description) {
-        this.name = name;
-        this.description = description;
-        this.methods = new HashMap<>();
     }
 
     @PostLoad

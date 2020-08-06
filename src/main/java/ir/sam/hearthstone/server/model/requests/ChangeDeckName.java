@@ -1,10 +1,12 @@
 package ir.sam.hearthstone.server.model.requests;
 
 import lombok.Getter;
+import lombok.Setter;
 
 public class ChangeDeckName extends Request {
     @Getter
-    private final String oldDeckName, newDeckName;
+    @Setter
+    private String oldDeckName, newDeckName;
 
     public ChangeDeckName(String oldDeckName, String newDeckName) {
         this.oldDeckName = oldDeckName;

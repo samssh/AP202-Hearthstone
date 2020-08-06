@@ -1,14 +1,12 @@
 package ir.sam.hearthstone.server.model.requests;
 
 import lombok.Getter;
+import lombok.Setter;
 
 public class BuyCard extends Request {
     @Getter
-    private final String cardName;
-
-    public BuyCard(String cardName) {
-        this.cardName = cardName;
-    }
+    @Setter
+    private String cardName;
 
     @Override
     public void execute(RequestExecutor requestExecutor) {

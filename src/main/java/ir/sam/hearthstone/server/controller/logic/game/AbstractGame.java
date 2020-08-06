@@ -1,6 +1,5 @@
 package ir.sam.hearthstone.server.controller.logic.game;
 
-import ir.sam.hearthstone.server.controller.Server;
 import ir.sam.hearthstone.server.controller.logic.game.behavioral_models.CardLogic;
 import ir.sam.hearthstone.server.controller.logic.game.behavioral_models.CharacterLogic;
 import ir.sam.hearthstone.server.controller.logic.game.behavioral_models.MinionLogic;
@@ -24,8 +23,6 @@ public abstract class AbstractGame {
     }
 
     @Getter
-    protected final Server server;
-    @Getter
     protected final GameState gameState;
     @Getter
     protected final Map<ActionType, ActionHolder> actionHolderMap;
@@ -34,8 +31,7 @@ public abstract class AbstractGame {
     @Getter
     protected final TaskTimer timer;
 
-    public AbstractGame(Server server, GameState gameState, ModelLoader modelLoader) {
-        this.server = server;
+    public AbstractGame(GameState gameState, ModelLoader modelLoader) {
         this.gameState = gameState;
         actionHolderMap = ActionHolderBuilder.getAllActionHolders(modelLoader);
         timer = new TaskTimer();

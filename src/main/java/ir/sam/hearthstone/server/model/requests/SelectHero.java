@@ -1,11 +1,12 @@
 package ir.sam.hearthstone.server.model.requests;
 
-public class SelectHero extends Request {
-    private final int side;
+import lombok.Getter;
+import lombok.Setter;
 
-    public SelectHero(int side) {
-        this.side = side;
-    }
+public class SelectHero extends Request {
+    @Getter
+    @Setter
+    private int side;
 
     @Override
     public void execute(RequestExecutor requestExecutor) {

@@ -2,8 +2,10 @@ package ir.sam.hearthstone.server.model.client;
 
 
 import ir.sam.hearthstone.server.controller.logic.game.behavioral_models.MinionLogic;
+import lombok.Getter;
 
 public class MinionOverview extends CardOverview {
+    @Getter
     private final boolean hasTaunt, hasRush, hasDivineShield, hasSleep;
 
     public MinionOverview(MinionLogic minionLogic) {
@@ -17,4 +19,17 @@ public class MinionOverview extends CardOverview {
         hasSleep = minionLogic.isHasSleep();
     }
 
+    @Override
+    public String toString() {
+        return "MinionOverview{" +
+                "hasTaunt=" + hasTaunt +
+                ", hasRush=" + hasRush +
+                ", hasDivineShield=" + hasDivineShield +
+                ", hasSleep=" + hasSleep +
+                ", att=" + att +
+                ", hp=" + hp +
+                ", name='" + name + '\'' +
+                ", imageName='" + imageName + '\'' +
+                '}';
+    }
 }
