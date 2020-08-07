@@ -2,6 +2,7 @@ package ir.sam.hearthstone.client.model.log;
 
 import ir.sam.hearthstone.client.model.requests.Request;
 import ir.sam.hearthstone.client.model.requests.RequestExecutor;
+import ir.sam.hearthstone.client.util.hibernate.SaveAble;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
@@ -10,9 +11,9 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 
-@Entity
+@Entity(name = "request_log_info")
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
-public class RequestLogInfo {
+public class RequestLogInfo implements SaveAble {
     @Id
     @Getter
     @Setter
@@ -21,15 +22,71 @@ public class RequestLogInfo {
     @Column
     @Getter
     @Setter
-    private String type, userName, password, cardName, name, modeName;
+    private String type;
     @Column
     @Getter
     @Setter
-    private String classOfCard, deckName, passiveName, heroName, newDeckName;
+    private String username;
     @Column
     @Getter
     @Setter
-    private int mana, lockMode, mode, side, _index, emptyIndex;
+    private String password;
+    @Column(name = "card_name")
+    @Getter
+    @Setter
+    private String cardName;
+    @Column
+    @Getter
+    @Setter
+    private String name;
+    @Column(name = "mode_name")
+    @Getter
+    @Setter
+    private String modeName;
+    @Column(name = "class_of_card")
+    @Getter
+    @Setter
+    private String classOfCard;
+    @Column(name = "deck_name")
+    @Getter
+    @Setter
+    private String deckName;
+    @Column(name = "passive_name")
+    @Getter
+    @Setter
+    private String passiveName;
+    @Column(name = "hero_name")
+    @Getter
+    @Setter
+    private String heroName;
+    @Column(name = "new_deck_name")
+    @Getter
+    @Setter
+    private String newDeckName;
+    @Column
+    @Getter
+    @Setter
+    private int mana;
+    @Column(name = "lock_mode")
+    @Getter
+    @Setter
+    private int lockMode;
+    @Column
+    @Getter
+    @Setter
+    private int mode;
+    @Column
+    @Getter
+    @Setter
+    private int side;
+    @Column(name = "_index")
+    @Getter
+    @Setter
+    private int index;
+    @Column(name = "empty_index")
+    @Getter
+    @Setter
+    private int emptyIndex;
 
     public RequestLogInfo() {
     }
@@ -44,7 +101,7 @@ public class RequestLogInfo {
 
         @Override
         public void login(String username, String password, int mode) {
-            setUserName(username);
+            setUsername(username);
             setPassword(password);
             setMode(mode);
         }
@@ -137,7 +194,7 @@ public class RequestLogInfo {
 
         @Override
         public void selectCadOnPassive(int index) {
-            set_index(index);
+            setIndex(index);
         }
 
         @Override
@@ -153,14 +210,14 @@ public class RequestLogInfo {
         @Override
         public void selectMinion(int side, int index, int emptyIndex) {
             setSide(side);
-            set_index(index);
+            setIndex(index);
             setEmptyIndex(emptyIndex);
         }
 
         @Override
         public void selectCardInHand(int side, int index) {
             setSide(side);
-            set_index(index);
+            setIndex(index);
         }
     }
 }

@@ -7,6 +7,7 @@ import ir.sam.hearthstone.client.model.main.SmallDeckOverview;
 import ir.sam.hearthstone.client.model.response.PlayDetails;
 import ir.sam.hearthstone.client.model.response.Response;
 import ir.sam.hearthstone.client.model.response.ResponseExecutor;
+import ir.sam.hearthstone.client.util.hibernate.SaveAble;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
@@ -19,10 +20,10 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 
-@Entity
+@Entity(name = "response_log_info")
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
 @ToString(includeFieldNames = false)
-public class ResponseLogInfo {
+public class ResponseLogInfo implements SaveAble {
     @Id
     @Setter
     @Getter
@@ -31,25 +32,139 @@ public class ResponseLogInfo {
     @Column
     @Getter
     @Setter
-    private long time;
+    private double time;
     @Column
     @Getter
     @Setter
-    private String type, hand, ground, weapon, hero, heroPower, panel,
-            message, deckName, cardName, eventType, deckOverview, cardOverview, manas;
+    private String type;
+    @Column
+    @Getter
+    @Setter
+    private String hand;
+    @Column
+    @Getter
+    @Setter
+    private String ground;
+    @Column
+    @Getter
+    @Setter
+    private String weapon;
+    @Column
+    @Getter
+    @Setter
+    private String hero;
+    @Column(name = "hero_power")
+    @Getter
+    @Setter
+    private String heroPower;
+    @Column
+    @Getter
+    @Setter
+    private String panel;
+    @Column
+    @Getter
+    @Setter
+    private String message;
+    @Column(name = "deck_name")
+    @Getter
+    @Setter
+    private String deckName;
+    @Column(name = "card_name")
+    @Getter
+    @Setter
+    private String cardName;
+    @Column(name = "event_type")
+    @Getter
+    @Setter
+    private String eventType;
+    @Column(name = "deck_overview")
+    @Getter
+    @Setter
+    private String deckOverview;
+    @Column(name = "card_overview")
+    @Getter
+    @Setter
+    private String cardOverview;
+    @Column
+    @Getter
+    @Setter
+    private String manas;
     @Column(length = 200000)
     @Getter
     @Setter
-    private String sell, buy, passives, decks, heroNames, classOfCardNames, eventLog,
-            cards, bigDeckOverviews, deckCards, events, passiveList;
+    private String sell;
+    @Column(length = 200000)
+    @Getter
+    @Setter
+    private String buy;
+    @Column(length = 200000)
+    @Getter
+    @Setter
+    private String passives;
+    @Column(length = 200000)
+    @Getter
+    @Setter
+    private String decks;
+    @Column(name = "hero_name", length = 200000)
+    @Getter
+    @Setter
+    private String heroNames;
+    @Column(name = "class_of_card_names", length = 200000)
+    @Getter
+    @Setter
+    private String classOfCardNames;
+    @Column(name = "event_log", length = 200000)
+    @Getter
+    @Setter
+    private String eventLog;
+    @Column(length = 200000)
+    @Getter
+    @Setter
+    private String cards;
+    @Column(name = "big_deck_overviews", length = 200000)
+    @Getter
+    @Setter
+    private String bigDeckOverviews;
+    @Column(name = "deck_cards", length = 200000)
+    @Getter
+    @Setter
+    private String deckCards;
+    @Column(length = 200000)
+    @Getter
+    @Setter
+    private String events;
+    @Column(name = "passive_list", length = 200000)
+    @Getter
+    @Setter
+    private String passiveList;
     @Column
     @Getter
     @Setter
-    private boolean success, canAddDeck, canChangeHero, showButton;
+    private boolean success;
+    @Column(name = "can_add_deck")
+    @Getter
+    @Setter
+    private boolean canAddDeck;
+    @Column(name = "can_change_hero")
+    @Getter
+    @Setter
+    private boolean canChangeHero;
+    @Column(name = "show_button")
+    @Getter
+    @Setter
+    private boolean showButton;
     @Column
     @Getter
     @Setter
-    private int coins, mana, _index;
+    private int coins;
+    @Column
+    @Getter
+    @Setter
+    private int mana;
+    @Column(name = "_index")
+    @Getter
+    @Setter
+    private int index;
 
     public ResponseLogInfo() {
     }
@@ -138,11 +253,11 @@ public class ResponseLogInfo {
         @Override
         public void changeCardOnPassive(CardOverview cardOverview, int index) {
             setCardOverview(Objects.toString(cardOverview));
-            set_index(index);
+            setIndex(index);
         }
 
         @Override
-        public void setPlayDetail(List<PlayDetails.Event> events, String eventLog, int[] mana, long time) {
+        public void setPlayDetail(List<PlayDetails.Event> events, String eventLog, int[] mana, double time) {
             setEvents(Objects.toString(events));
             setEventLog(eventLog);
             setManas(Arrays.toString(mana));

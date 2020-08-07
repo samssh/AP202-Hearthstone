@@ -19,7 +19,7 @@ public class PlayDetails extends Response {
     private int[] mana;
     @Getter
     @Setter
-    private long time;
+    private double time;
 
     @Override
     public void execute(ResponseExecutor responseExecutor) {

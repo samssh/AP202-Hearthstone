@@ -35,7 +35,6 @@ public class PlayPanel extends JPanel {
     private final BufferedImage background;
     private JProgressBar progressBar;
     private final PlayEventExecutor executor;
-    private long time;
     private int x, y, width, height;
     private Integer[] manaX, manaY;
     private Integer manaSpace;
@@ -92,7 +91,7 @@ public class PlayPanel extends JPanel {
     }
 
     private void initializeProgressBar() {
-        progressBar = new JProgressBar(0, 60000);
+        progressBar = new JProgressBar(0, 6000);
         progressBar.setBounds(groundX[1], groundY[1] + ground[1].getHeight()
                 , ground[1].getWidth(), groundY[0] - groundY[1] - ground[1].getHeight());
         progressBar.setOpaque(false);
@@ -193,13 +192,15 @@ public class PlayPanel extends JPanel {
         scrollPane.getViewport().setOpaque(false);
     }
 
-    public void setDetails(List<PlayDetails.Event> events, String eventLog, int[] mana, long time) {
+    public void setDetails(List<PlayDetails.Event> events, String eventLog, int[] mana, double time) {
         events.forEach(executor::execute);
         animationManger.start();
         this.eventLog.setText(eventLog);
         this.mana[0] = mana[0];
         this.mana[1] = mana[1];
-        this.time = time;
+        progressBar.setValue((int) (time * 6000));
+        if (time*6 <= 4) progressBar.setForeground(Color.GREEN);
+        else if (4 < time*6 && time*6 <= 6) progressBar.setForeground(Color.RED);
     }
 
     @Override
@@ -215,10 +216,6 @@ public class PlayPanel extends JPanel {
             g.drawImage(manaImage, manaX[1], manaY[1] + i * (manaImage.getHeight() + manaSpace), null);
         }
 
-        int t = (int) (System.currentTimeMillis() - time);
-        if (t < 1000) progressBar.setForeground(Color.GREEN);
-        else if (40000 < t && t < 41000) progressBar.setForeground(Color.RED);
-        progressBar.setValue(t);
     }
 
     public void exit() {

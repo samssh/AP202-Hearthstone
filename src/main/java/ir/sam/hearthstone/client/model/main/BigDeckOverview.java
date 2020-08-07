@@ -14,7 +14,7 @@ public class BigDeckOverview extends Overview {
     private String cardName;
     @Getter
     @Setter
-    private int games, wins;
+    private int games, wins, cupEarned;
     @Getter
     @Setter
     private double winRate, manaAverage;
@@ -42,12 +42,14 @@ public class BigDeckOverview extends Overview {
         if (winRate != -1) s = new DecimalFormat("#.##").format(winRate);
         else s = "--";
         g.drawString("wins:" + wins + " games:" + games + " winRate:" + s, 0, 120);
-        String p;
         if (manaAverage != 1000) {
-            p = new DecimalFormat("#.##").format(manaAverage);
-            g.drawString("mana average:" + p, 0, 160);
+            String p = new DecimalFormat("#.##").format(manaAverage);
+            g.drawString("mana avg:" + p + " cup earned:" + cupEarned, 0, 160);
             g.drawString("MVC:" + cardName, 0, 200);
-        } else g.drawString("deck empty", 0, 160);
+        } else {
+            g.drawString("cup earned:" + cupEarned, 0, 160);
+            g.drawString("deck empty", 0, 200);
+        }
     }
 
     @Override

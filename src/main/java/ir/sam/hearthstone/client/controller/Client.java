@@ -38,7 +38,7 @@ public class Client implements ResponseExecutor {
     private PanelType now;
     private final Connector connector;
     private final List<Request> requestList;
-    private final Loop executor;
+    private final Loop executor,updator;
     @Getter
     private String username;
     @Setter
@@ -62,11 +62,20 @@ public class Client implements ResponseExecutor {
         now = CONNECT;
         frame.setContentPane(panels.get(CONNECT));
         executor = new Loop(60, this::executeAnswers);
+        updator = new Loop(1,this::update);
+    }
+
+    @SuppressWarnings("SwitchStatementWithTooFewBranches")
+    private void update() {
+        switch (now){
+            case PLAY -> addRequest(new GameEvent());
+        }
     }
 
 
     public void start() {
         executor.start();
+        updator.start();
     }
 
     public void setOnLogin() {
@@ -293,7 +302,7 @@ public class Client implements ResponseExecutor {
 
     @Override
     public void setPlayDetail(List<PlayDetails.Event> events, String eventLog
-            , int[] mana, long time) {
+            , int[] mana, double time) {
         ((PlayPanel) panels.get(PLAY)).setDetails(events, eventLog, mana, time);
         if (now != PLAY) {
             now = PLAY;

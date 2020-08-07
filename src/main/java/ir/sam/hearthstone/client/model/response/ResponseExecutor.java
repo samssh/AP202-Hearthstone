@@ -43,5 +43,5 @@ public interface ResponseExecutor {
     void changeCardOnPassive(CardOverview cardOverview, int index);
 
     void setPlayDetail(List<PlayDetails.Event> events, String eventLog
-            , int[] mana, long time);
+            , int[] mana, double time);
 }
