@@ -1,6 +1,5 @@
 package ir.sam.hearthstone.server.controller.logic.game;
 
-import ir.sam.hearthstone.server.controller.ClientHandler;
 import ir.sam.hearthstone.server.controller.Constants;
 import ir.sam.hearthstone.server.controller.logic.game.behavioral_models.CardLogic;
 import ir.sam.hearthstone.server.controller.logic.game.behavioral_models.HeroLogic;
@@ -183,6 +182,11 @@ public class MultiPlayerGame extends AbstractGame {
             return;
         }
         hand.get(index).play(this);
+    }
+
+    @Override
+    public void endGame(Side Client) {
+        getTimer().cancelTask();
     }
 
     @Override

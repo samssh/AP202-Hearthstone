@@ -1,6 +1,7 @@
 package ir.sam.hearthstone.server.controller.logic.game;
 
 import ir.sam.hearthstone.server.controller.ClientHandler;
+import ir.sam.hearthstone.server.controller.logic.game.api.GameBuilder;
 import ir.sam.hearthstone.server.model.account.Deck;
 import ir.sam.hearthstone.server.model.client.CardOverview;
 import ir.sam.hearthstone.server.model.client.PassiveOverview;
@@ -12,33 +13,41 @@ import ir.sam.hearthstone.server.model.response.Response;
 import ir.sam.hearthstone.server.resource_loader.ModelLoader;
 
 import java.util.ArrayList;
+import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
 
 import static ir.sam.hearthstone.server.controller.Constants.STARTING_PASSIVES;
 
 
-public abstract class GameBuilder {
+public abstract class AbstractGameBuilder implements GameBuilder {
     protected AbstractGame result;
     protected final GameStateBuilder gameStateBuilder;
     protected final List<Passive> allPassives;
     protected List<Passive> sentPassives;
-    protected final List<Card> handP1, handP2, deckP1, deckP2;
-    protected final List<Boolean> handP1state, handP2state;
+    protected final Map<Side,SideBilder> sideBuilderMap;
     protected final ModelLoader modelLoader;
 
+    protected static class SideBilder {
+        protected final List<Card> hand, deck;
+        protected final List<Boolean> handstate;
+
+        public SideBilder() {
+            deck = new ArrayList<>();
+            hand = new ArrayList<>();
+            handstate = new ArrayList<>();
+        }
+    }
 
 
-    public GameBuilder(ModelLoader modelLoader) {
+
+    public AbstractGameBuilder(ModelLoader modelLoader) {
         this.modelLoader = modelLoader;
         this.allPassives = modelLoader.getFirstPassives();
         gameStateBuilder = new GameStateBuilder();
-        handP1 = new ArrayList<>();
-        handP2 = new ArrayList<>();
-        deckP1 = new ArrayList<>();
-        deckP2 = new ArrayList<>();
-        handP1state = new ArrayList<>();
-        handP2state = new ArrayList<>();
+        sideBuilderMap = new EnumMap<>(Side.class);
+        sideBuilderMap.put(Side.PLAYER_ONE,new SideBilder());
+        sideBuilderMap.put(Side.PLAYER_TWO,new SideBilder());
     }
 
     public AbstractGame build() {
@@ -47,16 +56,19 @@ public abstract class GameBuilder {
 
     protected abstract void build0();
 
-    public abstract Response setPassive(Passive passive, ClientHandler clientHandler);
+    @Override
+    public abstract Response setPassive(Side client,Passive passive, ClientHandler clientHandler);
 
-    public abstract Response setDeckP1(Deck deckP1);
+    @Override
+    public abstract Response setDeck(Side client,Deck deck);
 
-    public abstract Response setDeckP2(Deck deckP2);
+    @Override
+    public abstract Response selectCard(Side client,int index);
 
-    public abstract Response selectCard(int index);
+    @Override
+    public abstract Response confirm(Side client);
 
-    public abstract Response confirm();
-
+    @SuppressWarnings("SameParameterValue")
     private <T> List<T> chooseRandom(List<T> list, int n) {
         list = new ArrayList<>(list);
         int k = list.size() - n;

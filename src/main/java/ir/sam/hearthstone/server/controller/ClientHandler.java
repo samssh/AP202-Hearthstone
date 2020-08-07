@@ -3,9 +3,10 @@ package ir.sam.hearthstone.server.controller;
 import ir.sam.hearthstone.server.controller.logic.Collection;
 import ir.sam.hearthstone.server.controller.logic.Shop;
 import ir.sam.hearthstone.server.controller.logic.Status;
-import ir.sam.hearthstone.server.controller.logic.game.AbstractGame;
-import ir.sam.hearthstone.server.controller.logic.game.GameBuilder;
 import ir.sam.hearthstone.server.controller.logic.game.MultiplayerGameBuilder;
+import ir.sam.hearthstone.server.controller.logic.game.Side;
+import ir.sam.hearthstone.server.controller.logic.game.api.Game;
+import ir.sam.hearthstone.server.controller.logic.game.api.GameBuilder;
 import ir.sam.hearthstone.server.controller.network.ResponseSender;
 import ir.sam.hearthstone.server.model.account.Deck;
 import ir.sam.hearthstone.server.model.account.Player;
@@ -35,7 +36,7 @@ public class ClientHandler implements RequestExecutor {
     @Getter
     private final ModelLoader modelLoader;
     private Player player;
-    private AbstractGame game;
+    private Game game;
     private GameBuilder gameBuilder;
     private final Collection collection;
     private final Shop shop;
@@ -43,6 +44,7 @@ public class ClientHandler implements RequestExecutor {
     @Getter
     private final ResponseSender responseSender;
     private volatile boolean running;
+    private Side side;
 
     public ClientHandler(ResponseSender responseSender, Connector connector, ModelLoader modelLoader) {
         this.responseSender = responseSender;
@@ -227,10 +229,18 @@ public class ClientHandler implements RequestExecutor {
     }
 
     @Override
-    public void startPlay() {
-        Response response;
+    public void startPlay(String mode) {
+        Response response = null;
         if (canStartGame(player.getSelectedDeck())) {
-            response = new GoTo("PLAY_MODE", null);
+            switch (mode) {
+                case "practice" -> {
+                    this.side = PLAYER_ONE;
+                    gameBuilder = new MultiplayerGameBuilder(modelLoader);
+                    response = gameBuilder.setDeck(this.side,player.getSelectedDeck());
+                }
+                case "online" -> response = new ShowMessage("online add soon");
+                case "tavernBrawl" -> response = new ShowMessage("tavernBrawl add soon");
+            }
         } else {
             response = new GoTo("COLLECTION", "your deck is not ready\ngoto collection?");
         }
@@ -239,17 +249,7 @@ public class ClientHandler implements RequestExecutor {
 
     @Override
     public void selectPlayMode(String modeName) {
-        Response response = null;
-        switch (modeName) {
-            case "multiplayer" -> {
-                gameBuilder = new MultiplayerGameBuilder(modelLoader);
-                response = gameBuilder.setDeckP1(player.getSelectedDeck());
-            }
-            case "AI" -> response = new GoTo("MAIN_MENU", "AI add soon\ngoto main menu?");
-            case "deck reader" -> response = new GoTo("MAIN_MENU", "deck reader add soon\ngoto main menu?");
-            case "online" -> response = new GoTo("MAIN_MENU", "online add in next phase\ngoto main menu?");
-        }
-        addToResponses(response);
+        //tavernBrawl
     }
 
     private boolean canStartGame(Deck deck) {
@@ -260,7 +260,7 @@ public class ClientHandler implements RequestExecutor {
     public void selectPassive(String passiveName) {
         if (gameBuilder != null) {
             Optional<Passive> optionalPassive = modelLoader.getPassive(passiveName);
-            optionalPassive.ifPresent(passive -> addToResponses(gameBuilder.setPassive(passive, this)));
+            optionalPassive.ifPresent(passive -> addToResponses(gameBuilder.setPassive(this.side,passive, this)));
         }
     }
 
@@ -275,7 +275,7 @@ public class ClientHandler implements RequestExecutor {
         if (gameBuilder != null) {
             Optional<Deck> optionalDeck = collection.getDeck(deckName, player);
             if (optionalDeck.isPresent() && canStartGame(optionalDeck.get())) {
-                addToResponses(gameBuilder.setDeckP2(optionalDeck.get()));
+                addToResponses(gameBuilder.setDeck(this.side,optionalDeck.get()));
             }
         }
     }
@@ -283,13 +283,13 @@ public class ClientHandler implements RequestExecutor {
     @Override
     public void selectCadOnPassive(int index) {
         if (gameBuilder != null)
-            addToResponses(gameBuilder.selectCard(index));
+            addToResponses(gameBuilder.selectCard(this.side,index));
     }
 
     @Override
     public void confirm() {
         if (gameBuilder != null) {
-            addToResponses(gameBuilder.confirm());
+            addToResponses(gameBuilder.confirm(this.side));
             game = gameBuilder.build();
         }
     }
@@ -297,46 +297,46 @@ public class ClientHandler implements RequestExecutor {
     @Override
     public void endTurn() {
         if (game != null) {
-            game.nextTurn(PLAYER_ONE);
-            addToResponses(game.getResponse(PLAYER_ONE));
+            game.nextTurn(this.side);
+            addToResponses(game.getResponse(this.side));
         }
     }
 
     @Override
     public void selectHero(int side) {
         if (game != null) {
-            game.selectHero(PLAYER_ONE, side == 0 ? PLAYER_ONE : PLAYER_TWO);
-            addToResponses(game.getResponse(PLAYER_ONE));
+            game.selectHero(this.side, side == 0 ? PLAYER_ONE : PLAYER_TWO);
+            addToResponses(game.getResponse(this.side));
         }
     }
 
     @Override
     public void selectHeroPower(int side) {
         if (game != null) {
-            game.selectHeroPower(PLAYER_ONE, side == 0 ? PLAYER_ONE : PLAYER_TWO);
-            addToResponses(game.getResponse(PLAYER_ONE));
+            game.selectHeroPower(this.side, side == 0 ? PLAYER_ONE : PLAYER_TWO);
+            addToResponses(game.getResponse(this.side));
         }
     }
 
     @Override
     public void selectMinion(int side, int index, int emptyIndex) {
         if (game != null) {
-            game.selectMinion(PLAYER_ONE, side == 0 ? PLAYER_ONE : PLAYER_TWO, index, emptyIndex);
-            addToResponses(game.getResponse(PLAYER_ONE));
+            game.selectMinion(this.side, side == 0 ? PLAYER_ONE : PLAYER_TWO, index, emptyIndex);
+            addToResponses(game.getResponse(this.side));
         }
     }
 
     @Override
     public void selectCardInHand(int side, int index) {
         if (game != null) {
-            game.selectCardInHand(PLAYER_ONE, side == 0 ? PLAYER_ONE : PLAYER_TWO, index);
-            addToResponses(game.getResponse(PLAYER_ONE));
+            game.selectCardInHand(this.side, side == 0 ? PLAYER_ONE : PLAYER_TWO, index);
+            addToResponses(game.getResponse(this.side));
         }
     }
 
     @Override
     public void exitGame() {
-        game.getTimer().cancelTask();
+        game.endGame(this.side);
         gameBuilder = null;
         game = null;
         addToResponses(new GoTo("MAIN_MENU", null));

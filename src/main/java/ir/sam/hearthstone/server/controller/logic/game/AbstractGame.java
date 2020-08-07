@@ -1,5 +1,6 @@
 package ir.sam.hearthstone.server.controller.logic.game;
 
+import ir.sam.hearthstone.server.controller.logic.game.api.Game;
 import ir.sam.hearthstone.server.controller.logic.game.behavioral_models.CardLogic;
 import ir.sam.hearthstone.server.controller.logic.game.behavioral_models.CharacterLogic;
 import ir.sam.hearthstone.server.controller.logic.game.behavioral_models.MinionLogic;
@@ -15,7 +16,7 @@ import lombok.Getter;
 import java.util.List;
 import java.util.Map;
 
-public abstract class AbstractGame {
+public abstract class AbstractGame implements Game {
     public static void visitAll(AbstractGame game, ActionType actionType, CharacterLogic characterLogic, Side side) {
         game.getGameState().getSideStream(side).forEach(complexLogic ->
                 game.getActionHolderMap().get(actionType)
@@ -37,23 +38,28 @@ public abstract class AbstractGame {
         timer = new TaskTimer();
     }
 
+    @Override
     public abstract void selectHero(Side client, Side side);
+
+    @Override
+    public abstract void selectHeroPower(Side client, Side side);
+
+    @Override
+    public abstract void selectMinion(Side client, Side side, int index, int emptyIndex);
+
+    @Override
+    public abstract void selectCardInHand(Side client, Side side, int index);
+
+    @Override
+    public abstract void nextTurn(Side client);
 
     public abstract void attackMinionToHero(MinionLogic minionLogic, Side heroSide);
 
     public abstract void attackHeroToHero(Side attackerSide);
 
-    public abstract void selectHeroPower(Side client, Side side);
-
-    public abstract void selectMinion(Side client, Side side, int index, int emptyIndex);
-
     public abstract void attackMinionToMinion(MinionLogic attacker, MinionLogic defender);
 
     public abstract void attackHeroToMinion(Side attackerSide, MinionLogic defender);
-
-    public abstract void selectCardInHand(Side client, Side side, int index);
-
-    public abstract void nextTurn(Side client);
 
     public abstract void startGame();
 
@@ -67,6 +73,7 @@ public abstract class AbstractGame {
 
     public abstract void playMinion(MinionLogic minionLogic);
 
+    @Override
     public Response getResponse(Side client) {
         PlayDetails response = new PlayDetails(getEventLog(client), gameState.getMana(), turnStartTime);
         response.getEvents().addAll(getEvents(client));

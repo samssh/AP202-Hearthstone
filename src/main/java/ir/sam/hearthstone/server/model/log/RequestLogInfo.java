@@ -116,6 +116,11 @@ public class RequestLogInfo {
         }
 
         @Override
+        public void startPlay(String mode) {
+            setModeName(mode);
+        }
+
+        @Override
         public void selectPlayMode(String modeName) {
             setModeName(modeName);
         }

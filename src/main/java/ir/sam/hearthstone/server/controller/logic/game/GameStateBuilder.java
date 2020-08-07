@@ -11,47 +11,86 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import static ir.sam.hearthstone.server.controller.logic.game.Side.PLAYER_ONE;
 import static ir.sam.hearthstone.server.controller.logic.game.Side.PLAYER_TWO;
 
 public class GameStateBuilder {
-    @Setter
-    @Accessors(chain = true)
-    @Getter
-    private Passive passiveP1, passiveP2;
-    @Setter
-    @Accessors(chain = true)
-    @Getter
-    private Deck deckP1, deckP2;
-    @Setter
-    @Accessors(chain = true)
-    @Getter
-    private List<Card> deckCardsP1, deckCardsP2, handP1, handP2;
+    private final Map<Side, SideStateBuilder> stateBuilderMap;
+
+    public GameStateBuilder() {
+        stateBuilderMap = new HashMap<>();
+        stateBuilderMap.put(PLAYER_ONE, new SideStateBuilder());
+        stateBuilderMap.put(PLAYER_TWO, new SideStateBuilder());
+    }
 
     public GameState build() {
         GameState gameState = new GameState();
         gameState.setSideTurn(PLAYER_TWO);
         gameState.setTurnNumber(0);
-        buildSideState(PLAYER_ONE, passiveP1, deckP1, deckCardsP1, handP1, gameState);
-        buildSideState(PLAYER_TWO, passiveP2, deckP2, deckCardsP2, handP2, gameState);
+        buildSideState(PLAYER_ONE, stateBuilderMap.get(PLAYER_ONE), gameState);
+        buildSideState(PLAYER_TWO, stateBuilderMap.get(PLAYER_ONE), gameState);
         return gameState;
     }
 
-    private void buildSideState(Side side, Passive passive, Deck deck, List<Card> deckCards
-            , List<Card> hand, GameState gameState) {
-        gameState.setPassive(side, new PassiveLogic(passive, side));
-        gameState.setHero(side, new HeroLogic(side, deck.getHero()));
+    public Passive getPassive(Side side) {
+        return stateBuilderMap.get(side).passive;
+    }
+
+    public GameStateBuilder setPassive(Side side, Passive passive) {
+        this.stateBuilderMap.get(side).passive = passive;
+        return this;
+    }
+
+    public Deck getDeck(Side side) {
+        return stateBuilderMap.get(side).deck;
+    }
+
+    public GameStateBuilder setDeck(Side side, Deck deck) {
+        this.stateBuilderMap.get(side).deck = deck;
+        return this;
+    }
+
+    public List<Card> getDeckCards(Side side) {
+        return stateBuilderMap.get(side).deckCards;
+    }
+
+    public GameStateBuilder setDeckCards(Side side, List<Card> deckCards) {
+        this.stateBuilderMap.get(side).deckCards = deckCards;
+        return this;
+    }
+
+    public List<Card> getHand(Side side) {
+        return stateBuilderMap.get(side).hand;
+    }
+
+    public GameStateBuilder setHand(Side side, List<Card> hand) {
+        this.stateBuilderMap.get(side).hand = hand;
+        return this;
+    }
+
+    private static class SideStateBuilder {
+        private Passive passive;
+        private Deck deck;
+        private List<Card> deckCards, hand;
+    }
+
+    private void buildSideState(Side side, SideStateBuilder sideStateBuilder, GameState gameState) {
+        gameState.setPassive(side, new PassiveLogic(sideStateBuilder.passive, side));
+        gameState.setHero(side, new HeroLogic(side, sideStateBuilder.deck.getHero()));
         gameState.getEvents().add(new PlayDetails.EventBuilder(PlayDetails.EventType.SET_HERO)
                 .setOverview(new HeroOverview(gameState.getHero(side))).setSide(side.getIndex()).build());
-        gameState.setHeroPower(side, new HeroPowerLogic(side, deck.getHero().getPower()));
+        gameState.setHeroPower(side, new HeroPowerLogic(side, sideStateBuilder.deck.getHero().getPower()));
         gameState.getEvents().add(new PlayDetails.EventBuilder(PlayDetails.EventType.SET_HERO_POWER)
-                .setOverview(new HeroPowerOverview(deck.getHero().getPower())).setSide(side.getIndex()).build());
+                .setOverview(new HeroPowerOverview(sideStateBuilder.deck.getHero().getPower()))
+                .setSide(side.getIndex()).build());
         gameState.setMana(side, 0);
-        deckCards.forEach(card -> gameState.getDeck(side).add(buildCardLogic(side, card)));
-        hand.forEach(card -> gameState.getHand(side).add(buildCardLogic(side, card)));
-        hand.forEach(card -> gameState.getGameEvents().add(new DrawCard(side, card)));
+        sideStateBuilder.deckCards.forEach(card -> gameState.getDeck(side).add(buildCardLogic(side, card)));
+        sideStateBuilder.hand.forEach(card -> gameState.getHand(side).add(buildCardLogic(side, card)));
+        sideStateBuilder.hand.forEach(card -> gameState.getGameEvents().add(new DrawCard(side, card)));
     }
 
     private CardLogic buildCardLogic(Side side, Card card) {

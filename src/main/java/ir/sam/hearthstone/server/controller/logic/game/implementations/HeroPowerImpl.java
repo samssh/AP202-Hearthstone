@@ -68,20 +68,20 @@ public class HeroPowerImpl {
             gameState.getHeroPower(side).setLastTurnUse(gameState.getTurnNumber());
             gameState.resetSelected(side);
             if (characterLogic instanceof MinionLogic) {
-                ((MinionLogic) characterLogic).dealDamage(1, game, true);
                 PlayDetails.Event event = new PlayDetails.EventBuilder(
                         PlayDetails.EventType.ATTACK_HERO_POWER_TO_MINION)
                         .setSide(gameState.getSideTurn().getIndex())
                         .setIndex(gameState.getGround(characterLogic.getSide()).indexOf(characterLogic))
                         .setSecondIndex(characterLogic.getSide().getIndex()).build();
                 gameState.getEvents().add(event);
+                ((MinionLogic) characterLogic).dealDamage(1, game, true);
             } else if (characterLogic instanceof HeroLogic) {
-                ((HeroLogic) characterLogic).dealDamage(1, game, true);
                 PlayDetails.Event event = new PlayDetails.EventBuilder(
                         PlayDetails.EventType.ATTACK_HERO_POWER_TO_HERO)
                         .setSide(gameState.getSideTurn().getIndex())
                         .setSecondIndex(characterLogic.getSide().getIndex()).build();
                 gameState.getEvents().add(event);
+                ((HeroLogic) characterLogic).dealDamage(1, game, true);
             }
         }
     }

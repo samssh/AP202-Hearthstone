@@ -17,7 +17,7 @@ import static ir.sam.hearthstone.server.controller.Constants.STARTING_HAND_CARDS
 import static ir.sam.hearthstone.server.controller.logic.game.Side.PLAYER_ONE;
 import static ir.sam.hearthstone.server.controller.logic.game.Side.PLAYER_TWO;
 
-public class MultiplayerGameBuilder extends GameBuilder {
+public class MultiplayerGameBuilder extends AbstractGameBuilder {
     public MultiplayerGameBuilder(ModelLoader modelLoader) {
         super(modelLoader);
     }
@@ -28,13 +28,15 @@ public class MultiplayerGameBuilder extends GameBuilder {
     }
 
     @Override
-    public Response setPassive(Passive passive, ClientHandler clientHandler) {
+    public Response setPassive(Side client, Passive passive, ClientHandler clientHandler) {
+        if (client == PLAYER_TWO)
+            throw new UnsupportedOperationException();
         if (sentPassives.contains(passive)) {
-            if (gameStateBuilder.getPassiveP1() == null) {
-                gameStateBuilder.setPassiveP1(passive);
+            if (gameStateBuilder.getPassive(client) == null) {
+                gameStateBuilder.setPassive(client, passive);
                 return sendPassives("select opponent passive");
             } else {
-                gameStateBuilder.setPassiveP2(passive);
+                gameStateBuilder.setPassive(client.getOther(), passive);
                 return clientHandler.sendDecksForSelection("select opponent deck");
             }
         }
@@ -42,39 +44,53 @@ public class MultiplayerGameBuilder extends GameBuilder {
     }
 
     @Override
-    public Response setDeckP1(Deck deckP1) {
-        gameStateBuilder.setDeckP1(deckP1);
-        return sendPassives("select your passive");
-    }
-
-    @Override
-    public Response setDeckP2(Deck deckP2) {
-        gameStateBuilder.setDeckP2(deckP2);
-        deckToList(deckP1, gameStateBuilder.getDeckP1());
-        pickCards(handP1, handP1state, deckP1, STARTING_HAND_CARDS);
-        return sendCards(handP1, handP1state);
-    }
-
-    @Override
-    public Response selectCard(int index) {
-        if (handP2.size() == 0) {
-            return new ChangeCardOnPassive(changeState(handP1, handP1state, index), index);
+    public Response setDeck(Side client, Deck deck) {
+        if (client == PLAYER_TWO)
+            throw new UnsupportedOperationException();
+        if (gameStateBuilder.getDeck(PLAYER_ONE) == null) {
+            gameStateBuilder.setDeck(PLAYER_ONE, deck);
+            return sendPassives("select your passive");
         } else {
-            return new ChangeCardOnPassive(changeState(handP2, handP2state, index), index);
+            gameStateBuilder.setDeck(PLAYER_TWO, deck);
+            deckToList(sideBuilderMap.get(PLAYER_ONE).deck, gameStateBuilder.getDeck(PLAYER_ONE));
+            pickCards(sideBuilderMap.get(PLAYER_ONE).hand, sideBuilderMap.get(PLAYER_ONE).handstate
+                    , sideBuilderMap.get(PLAYER_ONE).deck, STARTING_HAND_CARDS);
+            return sendCards(sideBuilderMap.get(PLAYER_ONE).hand, sideBuilderMap.get(PLAYER_ONE).handstate);
+        }
+
+    }
+
+    @Override
+    public Response selectCard(Side client, int index) {
+        if (client == PLAYER_TWO)
+            throw new UnsupportedOperationException();
+        if (sideBuilderMap.get(PLAYER_TWO).hand.size() == 0) {
+            return new ChangeCardOnPassive(changeState(sideBuilderMap.get(PLAYER_ONE).hand
+                    , sideBuilderMap.get(PLAYER_ONE).handstate, index), index);
+        } else {
+            return new ChangeCardOnPassive(changeState(sideBuilderMap.get(PLAYER_TWO).hand
+                    , sideBuilderMap.get(PLAYER_TWO).handstate, index), index);
         }
     }
 
     @Override
-    public Response confirm() {
-        if (handP2.size() == 0) {
-            finalizeHand(handP1, handP1state, deckP1);
-            gameStateBuilder.setHandP1(handP1).setDeckCardsP1(deckP1);
-            deckToList(deckP2, gameStateBuilder.getDeckP2());
-            pickCards(handP2, handP2state, deckP2, STARTING_HAND_CARDS);
-            return sendCards(handP2, handP2state);
+    public Response confirm(Side client) {
+        if (client == PLAYER_TWO)
+            throw new UnsupportedOperationException();
+        if (sideBuilderMap.get(PLAYER_TWO).hand.size() == 0) {
+            finalizeHand(sideBuilderMap.get(PLAYER_ONE).hand, sideBuilderMap.get(PLAYER_ONE).handstate
+                    , sideBuilderMap.get(PLAYER_ONE).deck);
+            gameStateBuilder.setHand(PLAYER_ONE, sideBuilderMap.get(PLAYER_ONE).hand)
+                    .setDeckCards(PLAYER_ONE, sideBuilderMap.get(PLAYER_ONE).deck);
+            deckToList(sideBuilderMap.get(PLAYER_TWO).deck, gameStateBuilder.getDeck(PLAYER_TWO));
+            pickCards(sideBuilderMap.get(PLAYER_TWO).hand, sideBuilderMap.get(PLAYER_TWO).handstate
+                    , sideBuilderMap.get(PLAYER_TWO).deck, STARTING_HAND_CARDS);
+            return sendCards(sideBuilderMap.get(PLAYER_TWO).hand, sideBuilderMap.get(PLAYER_TWO).handstate);
         } else {
-            finalizeHand(handP2, handP2state, deckP2);
-            gameStateBuilder.setHandP2(handP2).setDeckCardsP2(deckP2);
+            finalizeHand(sideBuilderMap.get(PLAYER_TWO).hand, sideBuilderMap.get(PLAYER_TWO).handstate
+                    , sideBuilderMap.get(PLAYER_TWO).deck);
+            gameStateBuilder.setHand(PLAYER_TWO,sideBuilderMap.get(PLAYER_TWO).hand).setDeckCards(PLAYER_TWO
+                    ,sideBuilderMap.get(PLAYER_TWO).deck);
             build0();
             result.startGame();
             sendEvents(PLAYER_ONE);
