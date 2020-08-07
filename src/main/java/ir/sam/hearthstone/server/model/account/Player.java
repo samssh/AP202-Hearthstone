@@ -1,7 +1,6 @@
 package ir.sam.hearthstone.server.model.account;
 
 import ir.sam.hearthstone.server.model.main.Card;
-import ir.sam.hearthstone.server.model.main.CardDetails;
 import ir.sam.hearthstone.server.model.main.Hero;
 import ir.sam.hearthstone.server.util.hibernate.SaveAble;
 import lombok.EqualsAndHashCode;
@@ -25,12 +24,12 @@ public class Player implements SaveAble {
     @Setter
     @Getter
     @EqualsAndHashCode.Include
-    private String userName;
+    private String username;
     @Column
     @Setter
     @Getter
     private String password;
-    @Column
+    @Column(name = "creat_time")
     @Setter
     @Getter
     private long creatTime;
@@ -39,18 +38,22 @@ public class Player implements SaveAble {
     @Getter
     private int coin;
     @Column
+    @Setter
+    @Getter
+    private int cup;
+    @Column(name = "selected_deck_index")
     @Getter
     @Setter
     private int selectedDeckIndex;
     @ElementCollection
     @Setter
     @Getter
-    @JoinTable(name = "Player_Card")
+    @JoinTable(name = "player_card")
     private Map<Card, CardDetails> cards;
     @ManyToMany
     @Setter
     @Getter
-    @JoinTable(name = "Player_Hero")
+    @JoinTable(name = "player_hero")
     private List<Hero> heroes;
     @OneToMany
     @Cascade(CascadeType.ALL)
@@ -67,10 +70,10 @@ public class Player implements SaveAble {
     public Player() {
     }
 
-    public Player(String userName, String password, long creatTime,
+    public Player(String username, String password, long creatTime,
                   int coin, int selectedDeckIndex,
                   Map<Card, CardDetails> cards, List<Hero> heroes, List<Deck> decks) {
-        this.userName = userName;
+        this.username = username;
         this.password = password;
         this.creatTime = creatTime;
         this.coin = coin;

@@ -5,13 +5,12 @@ import lombok.Setter;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.ManyToOne;
+import javax.persistence.*;
 
 @Entity
 abstract public class Card extends Unit {
-    @ManyToOne
+    @ManyToOne()
+    @JoinColumn(name = "class_of_card_hero_name")
     @Cascade(CascadeType.ALL)
     @Setter
     @Getter
@@ -23,7 +22,7 @@ abstract public class Card extends Unit {
     @Column
     @Setter
     @Getter
-    protected int manaFrz;
+    protected int mana;
     @Column
     @Setter
     @Getter
@@ -34,11 +33,11 @@ abstract public class Card extends Unit {
 
     Card(String name, String description, int price,
          ClassOfCard classOfCard,
-         Rarity rarity, int manaFrz) {
+         Rarity rarity, int mana) {
         super(name, description);
         this.classOfCard = classOfCard;
         this.rarity = rarity;
-        this.manaFrz = manaFrz;
+        this.mana = mana;
         this.price = price;
     }
 

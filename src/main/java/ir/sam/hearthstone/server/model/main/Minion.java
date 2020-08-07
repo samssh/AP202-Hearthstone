@@ -11,11 +11,11 @@ public class Minion extends Card {
     @Column
     @Setter
     @Getter
-    private int attFrz;
+    private int attack;
     @Column
     @Setter
     @Getter
-    private int hpFrz;
+    private int hp;
 
     public Minion() {
     }
@@ -23,10 +23,10 @@ public class Minion extends Card {
 
     public Minion(String name, String description, int price,
                   ClassOfCard classOfCard, Rarity rarity,
-                  int manaFrz, int attFrz, int hpFrz) {
+                  int manaFrz, int attack, int hp) {
         super(name, description, price, classOfCard, rarity, manaFrz);
-        this.attFrz = attFrz;
-        this.hpFrz = hpFrz;
+        this.attack = attack;
+        this.hp = hp;
     }
 
     @Override
@@ -34,10 +34,10 @@ public class Minion extends Card {
         return "Minion{" +
                 "name='" + name + '\'' +
                 ", description='" + description + '\'' +
-                ", mana=" + manaFrz +
+                ", mana=" + mana +
                 ", price=" + price +
-                ", att=" + attFrz +
-                ", hp=" + hpFrz +
+                ", att=" + attack +
+                ", hp=" + hp +
                 ", classOfCard=" + classOfCard +
                 ", rarity=" + rarity +
                 '}';

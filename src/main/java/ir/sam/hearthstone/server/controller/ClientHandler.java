@@ -3,7 +3,7 @@ package ir.sam.hearthstone.server.controller;
 import ir.sam.hearthstone.server.controller.logic.Collection;
 import ir.sam.hearthstone.server.controller.logic.Shop;
 import ir.sam.hearthstone.server.controller.logic.Status;
-import ir.sam.hearthstone.server.controller.logic.game.MultiplayerGameBuilder;
+import ir.sam.hearthstone.server.controller.logic.game.parctice.PracticeGameBuilder;
 import ir.sam.hearthstone.server.controller.logic.game.Side;
 import ir.sam.hearthstone.server.controller.logic.game.api.Game;
 import ir.sam.hearthstone.server.controller.logic.game.api.GameBuilder;
@@ -13,6 +13,7 @@ import ir.sam.hearthstone.server.model.account.Player;
 import ir.sam.hearthstone.server.model.client.SmallDeckOverview;
 import ir.sam.hearthstone.server.model.log.AccountLog;
 import ir.sam.hearthstone.server.model.log.HeaderLog;
+import ir.sam.hearthstone.server.model.log.RequestLog;
 import ir.sam.hearthstone.server.model.log.ResponseLog;
 import ir.sam.hearthstone.server.model.main.Passive;
 import ir.sam.hearthstone.server.model.requests.Request;
@@ -65,6 +66,7 @@ public class ClientHandler implements RequestExecutor {
     private void executeRequests() {
         while (running) {
             Request request = responseSender.getRequest();
+            connector.save(new RequestLog(request, (player == null) ? null : player.getUsername()));
             request.execute(this);
             responseSender.sendResponse(responseList.toArray(new Response[0]));
             responseList.clear();
@@ -81,7 +83,7 @@ public class ClientHandler implements RequestExecutor {
             for (Response response : responses)
                 if (response != null) {
                     responseList.add(response);
-                    if (log) connector.save(new ResponseLog(response, player.getUserName()));
+                    if (log) connector.save(new ResponseLog(response, player.getUsername()));
                 }
         }
     }
@@ -99,13 +101,13 @@ public class ClientHandler implements RequestExecutor {
         if (fetched != null) {
             if (fetched.getPassword().equals(password)) {
                 this.player = fetched;
-                Response response = new LoginResponse(true, player.getUserName());
+                Response response = new LoginResponse(true, player.getUsername());
                 addToResponses(response);
-                connector.save(new AccountLog(player.getUserName(), "sign in"));
+                connector.save(new AccountLog(player.getUsername(), "sign in"));
             } else {
                 Response response = new LoginResponse(false, "wrong password");
                 addToResponses(false, response);
-                connector.save(new ResponseLog(response, fetched.getUserName()));
+                connector.save(new ResponseLog(response, fetched.getUsername()));
             }
         } else {
             Response response = new LoginResponse(false, "username not exist");
@@ -119,12 +121,12 @@ public class ClientHandler implements RequestExecutor {
         if (player == null) {
             player = new Player(username, password, System.currentTimeMillis(), Constants.STARTING_COINS, 0
                     , modelLoader.getFirstCards(), modelLoader.getFirstHeroes(), modelLoader.getFirstDecks());
-            connector.save(new HeaderLog(player.getCreatTime(), player.getUserName(), player.getPassword()));
+            connector.save(new HeaderLog(player.getCreatTime(), player.getUsername(), player.getPassword()));
             connector.save(player);
             this.player = player;
-            Response response = new LoginResponse(true, this.player.getUserName());
+            Response response = new LoginResponse(true, this.player.getUsername());
             addToResponses(response);
-            connector.save(new AccountLog(this.player.getUserName(), "sign up"));
+            connector.save(new AccountLog(this.player.getUsername(), "sign up"));
         } else {
             Response response = new LoginResponse(false, "username already exist");
             addToResponses(false, response);
@@ -136,7 +138,7 @@ public class ClientHandler implements RequestExecutor {
     public void logout() {
         if (this.player != null) {
             connector.save(player);
-            connector.save(new AccountLog(player.getUserName(), "logout"));
+            connector.save(new AccountLog(player.getUsername(), "logout"));
             addToResponses(new Logout());
             this.player = null;
         }
@@ -146,7 +148,7 @@ public class ClientHandler implements RequestExecutor {
     public void deleteAccount() {
         if (this.player != null) {
             connector.delete(player);
-            connector.save(new AccountLog(player.getUserName(), "delete account"));
+            connector.save(new AccountLog(player.getUsername(), "delete account"));
             HeaderLog header = connector.fetch(HeaderLog.class, player.getCreatTime());
             header.setDeletedAt(System.currentTimeMillis() + "");
             connector.save(header);
@@ -159,8 +161,8 @@ public class ClientHandler implements RequestExecutor {
     public void shutdown() {
         running = false;
         Response response = new ShutDown();
-        addToResponses(false,response);
-        connector.save(new ResponseLog(response,null));
+        addToResponses(false, response);
+        connector.save(new ResponseLog(response, null));
     }
 
     @Override
@@ -235,8 +237,8 @@ public class ClientHandler implements RequestExecutor {
             switch (mode) {
                 case "practice" -> {
                     this.side = PLAYER_ONE;
-                    gameBuilder = new MultiplayerGameBuilder(modelLoader);
-                    response = gameBuilder.setDeck(this.side,player.getSelectedDeck());
+                    gameBuilder = new PracticeGameBuilder(modelLoader);
+                    response = gameBuilder.setDeck(this.side, player.getSelectedDeck());
                 }
                 case "online" -> response = new ShowMessage("online add soon");
                 case "tavernBrawl" -> response = new ShowMessage("tavernBrawl add soon");
@@ -260,7 +262,7 @@ public class ClientHandler implements RequestExecutor {
     public void selectPassive(String passiveName) {
         if (gameBuilder != null) {
             Optional<Passive> optionalPassive = modelLoader.getPassive(passiveName);
-            optionalPassive.ifPresent(passive -> addToResponses(gameBuilder.setPassive(this.side,passive, this)));
+            optionalPassive.ifPresent(passive -> addToResponses(gameBuilder.setPassive(this.side, passive, this)));
         }
     }
 
@@ -275,7 +277,7 @@ public class ClientHandler implements RequestExecutor {
         if (gameBuilder != null) {
             Optional<Deck> optionalDeck = collection.getDeck(deckName, player);
             if (optionalDeck.isPresent() && canStartGame(optionalDeck.get())) {
-                addToResponses(gameBuilder.setDeck(this.side,optionalDeck.get()));
+                addToResponses(gameBuilder.setDeck(this.side, optionalDeck.get()));
             }
         }
     }
@@ -283,7 +285,7 @@ public class ClientHandler implements RequestExecutor {
     @Override
     public void selectCadOnPassive(int index) {
         if (gameBuilder != null)
-            addToResponses(gameBuilder.selectCard(this.side,index));
+            addToResponses(gameBuilder.selectCard(this.side, index));
     }
 
     @Override

@@ -10,7 +10,7 @@ public class WeaponOverview extends CardOverview {
     public WeaponOverview(WeaponLogic weaponLogic) {
         super(weaponLogic.getName(), weaponLogic.getName()
                 , "class of card: " + weaponLogic.getCard().getClassOfCard().getHeroName()
-                , 1, weaponLogic.getCard().getPrice(), weaponLogic.getCard().getManaFrz()
+                , 1, weaponLogic.getCard().getPrice(), weaponLogic.getCard().getMana()
                 , weaponLogic.getAttack(), weaponLogic.getUsage(), false);
         hasAttack = weaponLogic.isHasAttack();
     }

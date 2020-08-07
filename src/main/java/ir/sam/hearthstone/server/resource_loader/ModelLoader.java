@@ -1,5 +1,6 @@
 package ir.sam.hearthstone.server.resource_loader;
 
+import ir.sam.hearthstone.server.model.account.CardDetails;
 import ir.sam.hearthstone.server.model.account.Deck;
 import ir.sam.hearthstone.server.model.main.*;
 import ir.sam.hearthstone.server.util.hibernate.Connector;

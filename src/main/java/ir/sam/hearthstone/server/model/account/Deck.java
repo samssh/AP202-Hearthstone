@@ -1,7 +1,6 @@
 package ir.sam.hearthstone.server.model.account;
 
 import ir.sam.hearthstone.server.model.main.Card;
-import ir.sam.hearthstone.server.model.main.CardDetails;
 import ir.sam.hearthstone.server.model.main.Hero;
 import ir.sam.hearthstone.server.util.hibernate.SaveAble;
 import lombok.EqualsAndHashCode;
@@ -32,6 +31,10 @@ public class Deck implements SaveAble {
     @Setter
     @Getter
     private int games;
+    @Column(name = "cup_earned")
+    @Setter
+    @Getter
+    private int cupEarned;
     @ManyToOne
     @Setter
     @Getter
@@ -76,7 +79,7 @@ public class Deck implements SaveAble {
         double sum = 0, n = 0;
         for (Card card : cards.keySet()) {
             n++;
-            sum += card.getManaFrz();
+            sum += card.getMana();
         }
 
         return n != 0 ? (sum) / n : 1000;

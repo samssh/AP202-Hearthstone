@@ -4,7 +4,7 @@ import ir.sam.hearthstone.server.model.account.Deck;
 import ir.sam.hearthstone.server.model.account.Player;
 import ir.sam.hearthstone.server.model.client.BigDeckOverview;
 import ir.sam.hearthstone.server.model.main.Card;
-import ir.sam.hearthstone.server.model.main.CardDetails;
+import ir.sam.hearthstone.server.model.account.CardDetails;
 import ir.sam.hearthstone.server.model.response.Response;
 import ir.sam.hearthstone.server.model.response.StatusDetails;
 
@@ -42,7 +42,7 @@ public class Status {
                                         entry -> result.add(entry.getKey())
                                 )
                 );
-        return result.stream().max(Comparator.comparing(Card::getRarity).thenComparing(Card::getManaFrz)
+        return result.stream().max(Comparator.comparing(Card::getRarity).thenComparing(Card::getMana)
                 .thenComparing(Card::getInstanceValue).thenComparing(Card::getName));
     }
 

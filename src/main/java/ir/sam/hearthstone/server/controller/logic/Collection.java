@@ -7,7 +7,7 @@ import ir.sam.hearthstone.server.model.client.Overview;
 import ir.sam.hearthstone.server.model.client.SmallDeckOverview;
 import ir.sam.hearthstone.server.model.log.CollectionLog;
 import ir.sam.hearthstone.server.model.main.Card;
-import ir.sam.hearthstone.server.model.main.CardDetails;
+import ir.sam.hearthstone.server.model.account.CardDetails;
 import ir.sam.hearthstone.server.model.main.ClassOfCard;
 import ir.sam.hearthstone.server.model.main.Hero;
 import ir.sam.hearthstone.server.model.response.*;
@@ -72,7 +72,7 @@ public class Collection {
             if (player.getSelectedDeckIndex() != player.getDecks().indexOf(deck.get())) {
                 player.setSelectedDeckIndex(player.getDecks().indexOf(deck.get()));
                 connector.save(player);
-                connector.save(new CollectionLog(player.getUserName(), null, null, deckName,
+                connector.save(new CollectionLog(player.getUsername(), null, null, deckName,
                         "selected deck", null));
                 List<CardOverview> cards = makeCardsList(name, modelLoader.getClassOfCard(classOfCard).orElse(null),
                         mana, lockMode, player.getSelectedDeck(), player);
@@ -96,7 +96,7 @@ public class Collection {
         List<Card> result = new ArrayList<>(modelLoader.getCards());
         Stream<Card> cardStream = result.stream();
         if (name != null) cardStream = cardStream.filter(c -> c.getName().toLowerCase().contains(name));
-        if (mana != 0) cardStream = cardStream.filter(c -> c.getManaFrz() == mana);
+        if (mana != 0) cardStream = cardStream.filter(c -> c.getMana() == mana);
         if (classOfCard != null) cardStream = cardStream.filter(c -> c.getClassOfCard().equals(classOfCard));
         return cardStream.map(c -> filterLockMode(c, lockMode, deck, player))
                 .filter(Objects::nonNull).collect(Collectors.toList());
@@ -156,7 +156,7 @@ public class Collection {
             player.getDecks().add(newDeck);
             connector.save(player);
             responses[0] = new CollectionDeckEvent("new", new SmallDeckOverview(newDeck));
-            connector.save(new CollectionLog(player.getUserName(), null, heroName, deckName,
+            connector.save(new CollectionLog(player.getUsername(), null, heroName, deckName,
                     "create deck", null));
             responses[1] = new ShowMessage("deck created");
         } else {
@@ -182,7 +182,7 @@ public class Collection {
             connector.delete(optionalDeck.get());
             responses[0] = new CollectionDeckEvent("delete", null, deckName);
             responses[1] = new ShowMessage("deck deleted");
-            connector.save(new CollectionLog(player.getUserName(), null, null,
+            connector.save(new CollectionLog(player.getUsername(), null, null,
                     deckName, "delete deck", null));
         } else responses[1] = new ShowMessage("deck not deleted");
         return responses;
@@ -197,7 +197,7 @@ public class Collection {
             responses[0] = new CollectionDeckEvent("change", new SmallDeckOverview(optionalDeck.get())
                     , oldDeckName);
             responses[1] = new ShowMessage("deck name changed");
-            connector.save(new CollectionLog(player.getUserName(), null, null,
+            connector.save(new CollectionLog(player.getUsername(), null, null,
                     oldDeckName, "change deck name", newDeckName));
         } else responses[1] = new ShowMessage("deck name not changed");
         return responses;
@@ -212,7 +212,7 @@ public class Collection {
                 optionalDeck.get().setHero(h);
                 connector.save(player);
                 responses[0] = new CollectionDeckEvent("change", new SmallDeckOverview(optionalDeck.get()), deckName);
-                connector.save(new CollectionLog(player.getUserName(), null, heroName, deckName
+                connector.save(new CollectionLog(player.getUsername(), null, heroName, deckName
                         , "change hero", null));
                 responses[1] = new ShowMessage("hero deck changed");
             }
@@ -236,7 +236,7 @@ public class Collection {
             else response = new CollectionCardEvent("remove", cardName, canAddDeck(player)
                     , canChangeHero(optionalDeck.get()));
             connector.save(player);
-            connector.save(new CollectionLog(player.getUserName(), cardName, null
+            connector.save(new CollectionLog(player.getUsername(), cardName, null
                     , deckName, "remove Card", null));
         }
         return response;
@@ -256,7 +256,7 @@ public class Collection {
                             if (optionalDeck.get().getSize() < MAX_DECK_SIZE) {
                                 optionalDeck.get().addCard(optionalCard.get());
                                 connector.save(player);
-                                connector.save(new CollectionLog(player.getUserName(), cardName, null
+                                connector.save(new CollectionLog(player.getUsername(), cardName, null
                                         , deckName, "add Card", null));
                                 responses[0] = new CollectionCardEvent("add", cardName,
                                         canAddDeck(player), canChangeHero(optionalDeck.get()));

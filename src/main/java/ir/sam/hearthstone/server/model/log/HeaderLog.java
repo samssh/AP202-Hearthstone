@@ -9,7 +9,7 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 
-@Entity
+@Entity(name = "header_log")
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
 public class HeaderLog implements SaveAble {
     @Id
@@ -20,7 +20,7 @@ public class HeaderLog implements SaveAble {
     @Column
     @Setter
     @Getter
-    private String userName;
+    private String username;
     @Column
     @Setter
     @Getter
@@ -33,9 +33,9 @@ public class HeaderLog implements SaveAble {
     public HeaderLog() {
     }
 
-    public HeaderLog(Long id, String userName, String password) {
+    public HeaderLog(Long id, String username, String password) {
         this.id = id;
-        this.userName = userName;
+        this.username = username;
         this.password = password;
     }
 
@@ -43,7 +43,7 @@ public class HeaderLog implements SaveAble {
     public String toString() {
         return "HeaderLog{" +
                 "id=" + id +
-                ", userName='" + userName + '\'' +
+                ", userName='" + username + '\'' +
                 ", deletedAt='" + deletedAt + '\'' +
                 '}';
     }

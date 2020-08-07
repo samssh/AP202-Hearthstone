@@ -121,8 +121,8 @@ public class MinionLogic extends CardLogic implements LiveCharacter {
 
     public void gain(int attack, int hp, GameState gameState, boolean sendEvent, boolean onHand) {
         if (this.hp <= 0) {
-            minion.setAttFrz(minion.getAttFrz() + attack);
-            minion.setHpFrz(minion.getHpFrz() + hp);
+            minion.setAttack(minion.getAttack() + attack);
+            minion.setHp(minion.getHp() + hp);
         } else {
             this.attack += attack;
             this.hp += hp;
@@ -161,8 +161,8 @@ public class MinionLogic extends CardLogic implements LiveCharacter {
     }
 
     private void summon0(AbstractGame abstractGame, int indexOnGround) {
-        hp = minion.getHpFrz();
-        attack = minion.getAttFrz();
+        hp = minion.getHp();
+        attack = minion.getAttack();
         GameState gameState = abstractGame.getGameState();
         hasSleep = true;
         gameState.getGround(side).add(indexOnGround, this);
@@ -173,7 +173,7 @@ public class MinionLogic extends CardLogic implements LiveCharacter {
     }
 
     public void restore(int restore, GameState gameState) {
-        restore = Math.min(minion.getHpFrz() - hp, restore);
+        restore = Math.min(minion.getHp() - hp, restore);
         if (restore > 0) {
             hp += restore;
             addChangeEventOnGround(gameState);
@@ -201,8 +201,8 @@ public class MinionLogic extends CardLogic implements LiveCharacter {
     public void play(AbstractGame game, int indexOnGround) {
         GameState gameState = game.getGameState();
         int sideMana = gameState.getMana(side);
-        if (sideMana >= minion.getManaFrz()) {
-            gameState.setMana(side, sideMana - minion.getManaFrz());
+        if (sideMana >= minion.getMana()) {
+            gameState.setMana(side, sideMana - minion.getMana());
             int indexOnHand = gameState.getHand(side).indexOf(this);
             GameEvent gameEvent = new PlayCard(side, minion);
             gameState.getGameEvents().add(gameEvent);

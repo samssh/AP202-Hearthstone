@@ -1,4 +1,4 @@
-package ir.sam.hearthstone.server.model.main;
+package ir.sam.hearthstone.server.model.account;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -8,10 +8,14 @@ import javax.persistence.Embeddable;
 
 @Embeddable
 public class CardDetails {
+    @Column(name = "repeated_times")
+    @Getter
+    @Setter
+    private int repeatedTimes;
     @Column
     @Getter
     @Setter
-    private int repeatedTimes, usage;
+    private int usage;
 
     public CardDetails() {
     }

@@ -11,7 +11,7 @@ public class MinionOverview extends CardOverview {
     public MinionOverview(MinionLogic minionLogic) {
         super(minionLogic.getName(), minionLogic.getName()
                 , "class of card: " + minionLogic.getCard().getClassOfCard().getHeroName()
-                , 1, minionLogic.getCard().getPrice(), minionLogic.getCard().getManaFrz()
+                , 1, minionLogic.getCard().getPrice(), minionLogic.getCard().getMana()
                 , minionLogic.getAttack(), minionLogic.getHp(), false);
         hasTaunt = minionLogic.isHasTaunt();
         hasRush = minionLogic.isHasRush();

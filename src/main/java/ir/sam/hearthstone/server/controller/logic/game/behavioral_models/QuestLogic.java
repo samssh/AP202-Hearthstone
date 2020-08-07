@@ -39,9 +39,9 @@ public class QuestLogic extends CardLogic {
     public void play(AbstractGame game) {
         GameState gameState = game.getGameState();
         int sideMana = gameState.getMana(side);
-        if (sideMana >= quest.getManaFrz()) {
+        if (sideMana >= quest.getMana()) {
             int indexOnHand = gameState.getHand(side).indexOf(this);
-            gameState.setMana(side, sideMana - quest.getManaFrz());
+            gameState.setMana(side, sideMana - quest.getMana());
             gameState.setActiveQuest(side, this);
             GameEvent gameEvent = new PlayCard(side, quest);
             gameState.getHand(side).remove(indexOnHand);

@@ -47,8 +47,8 @@ public class PassiveImpl {
     private static void offCard(ComplexLogic complexLogic, CharacterLogic characterLogic, AbstractGame game) {
         if (characterLogic instanceof CardLogic) {
             CardLogic cardLogic = ((CardLogic) characterLogic);
-            if (cardLogic.getCard().getManaFrz() > 0)
-                cardLogic.getCard().setManaFrz(cardLogic.getCard().getManaFrz() - 1);
+            if (cardLogic.getCard().getMana() > 0)
+                cardLogic.getCard().setMana(cardLogic.getCard().getMana() - 1);
         }
     }
 

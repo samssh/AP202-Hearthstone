@@ -23,8 +23,8 @@ public class SpecialPowerImpl {
         if (characterLogic != null)
             if (characterLogic instanceof SpellLogic) {
                 Spell spell = ((SpellLogic) characterLogic).getSpell();
-                spell.setManaFrz(spell.getManaFrz() - 2);
-                if (spell.getManaFrz() < 0) spell.setManaFrz(0);
+                spell.setMana(spell.getMana() - 2);
+                if (spell.getMana() < 0) spell.setMana(0);
             }
     }
 
@@ -36,8 +36,8 @@ public class SpecialPowerImpl {
             Card card = ((CardLogic) characterLogic).getCard();
             if (!card.getClassOfCard().getHeroName().equals("Neutral")
                     && !card.getClassOfCard().getHeroName().equals("Rogue")) {
-                card.setManaFrz(card.getManaFrz() - 2);
-                if (card.getManaFrz() < 0) card.setManaFrz(0);
+                card.setMana(card.getMana() - 2);
+                if (card.getMana() < 0) card.setMana(0);
             }
         }
     }

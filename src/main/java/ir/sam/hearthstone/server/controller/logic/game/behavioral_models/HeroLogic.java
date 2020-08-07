@@ -21,7 +21,7 @@ public class HeroLogic extends CharacterLogic implements LiveCharacter {
     public HeroLogic(Side side, Hero hero) {
         super(side);
         this.hero = hero.clone();
-        hp = hero.getHpFrz();
+        hp = hero.getHp();
         defence = 0;
     }
 
@@ -53,7 +53,7 @@ public class HeroLogic extends CharacterLogic implements LiveCharacter {
     }
 
     public void restore(int restore, GameState gameState) {
-        restore = Math.min(hero.getHpFrz() - hp, restore);
+        restore = Math.min(hero.getHp() - hp, restore);
         if (restore > 0) {
             hp += restore;
             addChangeEvent(gameState);

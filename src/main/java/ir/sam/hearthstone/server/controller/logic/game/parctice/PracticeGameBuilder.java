@@ -1,6 +1,8 @@
-package ir.sam.hearthstone.server.controller.logic.game;
+package ir.sam.hearthstone.server.controller.logic.game.parctice;
 
 import ir.sam.hearthstone.server.controller.ClientHandler;
+import ir.sam.hearthstone.server.controller.logic.game.AbstractGameBuilder;
+import ir.sam.hearthstone.server.controller.logic.game.Side;
 import ir.sam.hearthstone.server.controller.logic.game.behavioral_models.CardLogic;
 import ir.sam.hearthstone.server.model.account.Deck;
 import ir.sam.hearthstone.server.model.client.CardOverview;
@@ -17,14 +19,14 @@ import static ir.sam.hearthstone.server.controller.Constants.STARTING_HAND_CARDS
 import static ir.sam.hearthstone.server.controller.logic.game.Side.PLAYER_ONE;
 import static ir.sam.hearthstone.server.controller.logic.game.Side.PLAYER_TWO;
 
-public class MultiplayerGameBuilder extends AbstractGameBuilder {
-    public MultiplayerGameBuilder(ModelLoader modelLoader) {
+public class PracticeGameBuilder extends AbstractGameBuilder {
+    public PracticeGameBuilder(ModelLoader modelLoader) {
         super(modelLoader);
     }
 
     @Override
     protected void build0() {
-        result = new MultiPlayerGame(gameStateBuilder.build(), modelLoader);
+        result = new PracticeGame(gameStateBuilder.build(), modelLoader);
     }
 
     @Override
@@ -52,10 +54,10 @@ public class MultiplayerGameBuilder extends AbstractGameBuilder {
             return sendPassives("select your passive");
         } else {
             gameStateBuilder.setDeck(PLAYER_TWO, deck);
-            deckToList(sideBuilderMap.get(PLAYER_ONE).deck, gameStateBuilder.getDeck(PLAYER_ONE));
-            pickCards(sideBuilderMap.get(PLAYER_ONE).hand, sideBuilderMap.get(PLAYER_ONE).handstate
-                    , sideBuilderMap.get(PLAYER_ONE).deck, STARTING_HAND_CARDS);
-            return sendCards(sideBuilderMap.get(PLAYER_ONE).hand, sideBuilderMap.get(PLAYER_ONE).handstate);
+            deckToList(sideBuilderMap.get(PLAYER_ONE).getDeck(), gameStateBuilder.getDeck(PLAYER_ONE));
+            pickCards(sideBuilderMap.get(PLAYER_ONE).getHand(), sideBuilderMap.get(PLAYER_ONE).getHandState()
+                    , sideBuilderMap.get(PLAYER_ONE).getDeck(), STARTING_HAND_CARDS);
+            return sendCards(sideBuilderMap.get(PLAYER_ONE).getHand(), sideBuilderMap.get(PLAYER_ONE).getHandState());
         }
 
     }
@@ -64,12 +66,12 @@ public class MultiplayerGameBuilder extends AbstractGameBuilder {
     public Response selectCard(Side client, int index) {
         if (client == PLAYER_TWO)
             throw new UnsupportedOperationException();
-        if (sideBuilderMap.get(PLAYER_TWO).hand.size() == 0) {
-            return new ChangeCardOnPassive(changeState(sideBuilderMap.get(PLAYER_ONE).hand
-                    , sideBuilderMap.get(PLAYER_ONE).handstate, index), index);
+        if (sideBuilderMap.get(PLAYER_TWO).getHand().size() == 0) {
+            return new ChangeCardOnPassive(changeState(sideBuilderMap.get(PLAYER_ONE).getHand()
+                    , sideBuilderMap.get(PLAYER_ONE).getHandState(), index), index);
         } else {
-            return new ChangeCardOnPassive(changeState(sideBuilderMap.get(PLAYER_TWO).hand
-                    , sideBuilderMap.get(PLAYER_TWO).handstate, index), index);
+            return new ChangeCardOnPassive(changeState(sideBuilderMap.get(PLAYER_TWO).getHand()
+                    , sideBuilderMap.get(PLAYER_TWO).getHandState(), index), index);
         }
     }
 
@@ -77,20 +79,20 @@ public class MultiplayerGameBuilder extends AbstractGameBuilder {
     public Response confirm(Side client) {
         if (client == PLAYER_TWO)
             throw new UnsupportedOperationException();
-        if (sideBuilderMap.get(PLAYER_TWO).hand.size() == 0) {
-            finalizeHand(sideBuilderMap.get(PLAYER_ONE).hand, sideBuilderMap.get(PLAYER_ONE).handstate
-                    , sideBuilderMap.get(PLAYER_ONE).deck);
-            gameStateBuilder.setHand(PLAYER_ONE, sideBuilderMap.get(PLAYER_ONE).hand)
-                    .setDeckCards(PLAYER_ONE, sideBuilderMap.get(PLAYER_ONE).deck);
-            deckToList(sideBuilderMap.get(PLAYER_TWO).deck, gameStateBuilder.getDeck(PLAYER_TWO));
-            pickCards(sideBuilderMap.get(PLAYER_TWO).hand, sideBuilderMap.get(PLAYER_TWO).handstate
-                    , sideBuilderMap.get(PLAYER_TWO).deck, STARTING_HAND_CARDS);
-            return sendCards(sideBuilderMap.get(PLAYER_TWO).hand, sideBuilderMap.get(PLAYER_TWO).handstate);
+        if (sideBuilderMap.get(PLAYER_TWO).getHand().size() == 0) {
+            finalizeHand(sideBuilderMap.get(PLAYER_ONE).getHand(), sideBuilderMap.get(PLAYER_ONE).getHandState()
+                    , sideBuilderMap.get(PLAYER_ONE).getDeck());
+            gameStateBuilder.setHand(PLAYER_ONE, sideBuilderMap.get(PLAYER_ONE).getHand())
+                    .setDeckCards(PLAYER_ONE, sideBuilderMap.get(PLAYER_ONE).getDeck());
+            deckToList(sideBuilderMap.get(PLAYER_TWO).getDeck(), gameStateBuilder.getDeck(PLAYER_TWO));
+            pickCards(sideBuilderMap.get(PLAYER_TWO).getHand(), sideBuilderMap.get(PLAYER_TWO).getHandState()
+                    , sideBuilderMap.get(PLAYER_TWO).getDeck(), STARTING_HAND_CARDS);
+            return sendCards(sideBuilderMap.get(PLAYER_TWO).getHand(), sideBuilderMap.get(PLAYER_TWO).getHandState());
         } else {
-            finalizeHand(sideBuilderMap.get(PLAYER_TWO).hand, sideBuilderMap.get(PLAYER_TWO).handstate
-                    , sideBuilderMap.get(PLAYER_TWO).deck);
-            gameStateBuilder.setHand(PLAYER_TWO,sideBuilderMap.get(PLAYER_TWO).hand).setDeckCards(PLAYER_TWO
-                    ,sideBuilderMap.get(PLAYER_TWO).deck);
+            finalizeHand(sideBuilderMap.get(PLAYER_TWO).getHand(), sideBuilderMap.get(PLAYER_TWO).getHandState()
+                    , sideBuilderMap.get(PLAYER_TWO).getDeck());
+            gameStateBuilder.setHand(PLAYER_TWO,sideBuilderMap.get(PLAYER_TWO).getHand()).setDeckCards(PLAYER_TWO
+                    ,sideBuilderMap.get(PLAYER_TWO).getDeck());
             build0();
             result.startGame();
             sendEvents(PLAYER_ONE);

@@ -20,7 +20,7 @@ public class ActionHolderBuilder {
         hasActionList.addAll(modelLoader.getHeroes());
         hasActionList.addAll(modelLoader.getCards());
         hasActionList.addAll(modelLoader.getFirstPassives());
-        hasActionList.addAll(modelLoader.getHeroes().stream().map(Hero::getPower).collect(Collectors.toList()));
+        hasActionList.addAll(modelLoader.getHeroes().stream().map(Hero::getHeroPower).collect(Collectors.toList()));
         Map<ActionType, ActionHolder> actionHolderMap = new EnumMap<>(ActionType.class);
         for (ActionType actionType : ActionType.values()) {
             actionHolderMap.put(actionType, new ActionHolderBuilder(actionType).insert(hasActionList).build());

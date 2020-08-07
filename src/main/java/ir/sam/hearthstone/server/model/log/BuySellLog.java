@@ -8,14 +8,22 @@ import javax.persistence.Entity;
 
 @Entity
 public class BuySellLog extends Log {
+    @Column(name = "last_coin")
+    @Getter
+    @Setter
+    private int lastCoin;
+    @Column(name = "new_coin")
+    @Getter
+    @Setter
+    private int newCoin;
+    @Column(name = "card_name")
+    @Getter
+    @Setter
+    private String cardName;
     @Column
     @Getter
     @Setter
-    private int lastCoin, newCoin;
-    @Column
-    @Getter
-    @Setter
-    private String cardName, type;
+    private String type;
 
     public BuySellLog() {
     }

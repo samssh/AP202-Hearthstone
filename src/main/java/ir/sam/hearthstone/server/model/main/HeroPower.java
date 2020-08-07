@@ -14,7 +14,7 @@ public class HeroPower extends HasAction implements SaveAble, Cloneable {
     @Column
     @Getter
     @Setter
-    private int manaFrz;
+    private int mana;
 
 
     public HeroPower() {
@@ -27,11 +27,6 @@ public class HeroPower extends HasAction implements SaveAble, Cloneable {
 
     @Override
     public HeroPower clone() {
-        try {
-            return (HeroPower) super.clone();
-        } catch (CloneNotSupportedException ignore) {
-            // this shouldn't happen, since we are Cloneable
-        }
-        return null;
+        return (HeroPower) super.clone();
     }
 }

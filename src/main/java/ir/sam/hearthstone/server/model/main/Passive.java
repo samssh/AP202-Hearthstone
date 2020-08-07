@@ -24,11 +24,6 @@ public class Passive extends HasAction implements SaveAble, Cloneable {
 
     @Override
     public Passive clone() {
-        try {
-            return (Passive) super.clone();
-        } catch (CloneNotSupportedException e) {
-            // this shouldn't happen, since we are Cloneable
-        }
-        return null;
+        return (Passive) super.clone();
     }
 }

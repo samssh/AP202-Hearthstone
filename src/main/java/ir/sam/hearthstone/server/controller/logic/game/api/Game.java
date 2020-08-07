@@ -14,7 +14,7 @@ public interface Game {
 
     void selectCardInHand(Side client, Side side, int index);
 
-    void endGame(Side Client);
+    void endGame(Side client);
 
     Response getResponse(Side client);
 }

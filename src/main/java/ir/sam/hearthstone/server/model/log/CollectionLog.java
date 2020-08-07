@@ -8,10 +8,26 @@ import javax.persistence.Entity;
 
 @Entity
 public class CollectionLog extends Log {
+    @Column(name = "card_name")
+    @Setter
+    @Getter
+    private String cardName;
+    @Column(name = "hero_name")
+    @Setter
+    @Getter
+    private String heroName;
+    @Column(name = "deck_name")
+    @Setter
+    @Getter
+    private String deckName;
     @Column
     @Setter
     @Getter
-    private String cardName, heroName, deckName, type, newDeckName;
+    private String type;
+    @Column(name = "new_deck_name")
+    @Setter
+    @Getter
+    private String newDeckName;
 
     public CollectionLog(String username, String cardName
             , String heroName, String deckName, String type, String newDeckName) {

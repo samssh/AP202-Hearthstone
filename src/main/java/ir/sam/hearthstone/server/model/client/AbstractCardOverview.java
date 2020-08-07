@@ -4,7 +4,6 @@ import ir.sam.hearthstone.server.model.main.Card;
 import ir.sam.hearthstone.server.model.main.Minion;
 import ir.sam.hearthstone.server.model.main.Weapon;
 import lombok.Getter;
-import lombok.Setter;
 
 public abstract class AbstractCardOverview extends UnitOverview {
     @Getter
@@ -25,12 +24,12 @@ public abstract class AbstractCardOverview extends UnitOverview {
         this.number = number;
         this.price = card.getPrice();
         this.showPrice = showPrice;
-        this.mana = card.getManaFrz();
+        this.mana = card.getMana();
         if (card instanceof Minion) {
-            this.att = ((Minion) card).getAttFrz();
-            this.hp = ((Minion) card).getHpFrz();
+            this.att = ((Minion) card).getAttack();
+            this.hp = ((Minion) card).getHp();
         } else if (card instanceof Weapon) {
-            this.att = ((Weapon) card).getAttFrz();
+            this.att = ((Weapon) card).getAttack();
             this.hp = ((Weapon) card).getUsage();
         } else {
             this.att = -1;

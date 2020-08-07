@@ -71,7 +71,7 @@ public class Shop {
                 player.setCoin(player.getCoin() + card.getPrice());
                 player.removeCard(card);
                 connector.save(player);
-                connector.save(new BuySellLog(player.getUserName()
+                connector.save(new BuySellLog(player.getUsername()
                         , player.getCoin() - card.getPrice(), player.getCoin(), cardName, "sell"));
                 return new ShopEvent(cardName, "sell", player.getCoin());
             }
@@ -91,7 +91,7 @@ public class Shop {
                 player.setCoin(player.getCoin() - card.getPrice());
                 player.addCard(card);
                 connector.save(player);
-                connector.save(new BuySellLog(player.getUserName()
+                connector.save(new BuySellLog(player.getUsername()
                         , player.getCoin() + card.getPrice(), player.getCoin(), cardName, "buy"));
                 return new ShopEvent(cardName, "buy", player.getCoin());
             }

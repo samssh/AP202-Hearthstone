@@ -60,9 +60,9 @@ public class WeaponLogic extends CardLogic {
     public void play(AbstractGame game) {
         GameState gameState = game.getGameState();
         int mana = gameState.getMana(side);
-        if (mana >= weapon.getManaFrz()) {
-            gameState.setMana(side, mana - weapon.getManaFrz());
-            attack = weapon.getAttFrz();
+        if (mana >= weapon.getMana()) {
+            gameState.setMana(side, mana - weapon.getMana());
+            attack = weapon.getAttack();
             usage = weapon.getUsage();
             hasAttack = false;
             int indexOnHand = gameState.getHand(side).indexOf(this);

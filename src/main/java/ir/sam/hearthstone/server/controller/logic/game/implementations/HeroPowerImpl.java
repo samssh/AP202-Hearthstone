@@ -26,12 +26,12 @@ public class HeroPowerImpl {
     private static void rubbery(ComplexLogic complexLogic, CharacterLogic characterLogic, AbstractGame game) {
         GameState gameState = game.getGameState();
         Side side = gameState.getSideTurn();
-        if (gameState.getHeroPower(side).getHeroPower().getManaFrz() > gameState.getMana(side))
+        if (gameState.getHeroPower(side).getHeroPower().getMana() > gameState.getMana(side))
             return;
         if (gameState.getHeroPower(side).getLastTurnUse() == gameState.getTurnNumber())
             return;
         gameState.setMana(side, gameState.getMana(side) -
-                gameState.getHeroPower(side).getHeroPower().getManaFrz());
+                gameState.getHeroPower(side).getHeroPower().getMana());
         gameState.getHeroPower(side).setLastTurnUse(gameState.getTurnNumber());
         if (gameState.getDeck(side.getOther()).size() > 0) {
             int randomIndex = (int) (gameState.getDeck(side.getOther()).size() * Math.random());
@@ -55,7 +55,7 @@ public class HeroPowerImpl {
         Side side = gameState.getSideTurn();
         if (characterLogic == null) {
             if (gameState.getMana(side) >= gameState
-                    .getHeroPower(side).getHeroPower().getManaFrz()
+                    .getHeroPower(side).getHeroPower().getMana()
                     && gameState.getTurnNumber() > gameState.getHeroPower(side).getLastTurnUse()) {
                 gameState.resetSelected(side);
                 gameState.setHeroPowerSelected(side, true);
@@ -64,7 +64,7 @@ public class HeroPowerImpl {
         }
         if (characterLogic.getSide() != gameState.getSideTurn()) {
             gameState.setMana(side, gameState.getMana(side) -
-                    gameState.getHeroPower(side).getHeroPower().getManaFrz());
+                    gameState.getHeroPower(side).getHeroPower().getMana());
             gameState.getHeroPower(side).setLastTurnUse(gameState.getTurnNumber());
             gameState.resetSelected(side);
             if (characterLogic instanceof MinionLogic) {
@@ -93,12 +93,12 @@ public class HeroPowerImpl {
         int mode = 0;
         GameState gameState = game.getGameState();
         Side side = gameState.getSideTurn();
-        if (gameState.getHeroPower(side).getHeroPower().getManaFrz() > gameState.getMana(side))
+        if (gameState.getHeroPower(side).getHeroPower().getMana() > gameState.getMana(side))
             return;
         if (gameState.getHeroPower(side).getLastTurnUse() == gameState.getTurnNumber())
             return;
         gameState.setMana(side, gameState.getMana(side) -
-                gameState.getHeroPower(side).getHeroPower().getManaFrz());
+                gameState.getHeroPower(side).getHeroPower().getMana());
         gameState.getHeroPower(side).setLastTurnUse(gameState.getTurnNumber());
         if (gameState.getGround(side).size() > 0) {
             mode = (int) (Math.random() * 2);
@@ -123,7 +123,7 @@ public class HeroPowerImpl {
         Side side = gameState.getSideTurn();
         if (characterLogic == null) {
             if (gameState.getMana(side) >= gameState
-                    .getHeroPower(side).getHeroPower().getManaFrz()
+                    .getHeroPower(side).getHeroPower().getMana()
                     && gameState.getTurnNumber() > gameState.getHeroPower(side).getLastTurnUse()) {
                 gameState.resetSelected(side);
                 gameState.setHeroPowerSelected(side, true);
@@ -132,7 +132,7 @@ public class HeroPowerImpl {
         }
         if (characterLogic.getSide() == side) {
             gameState.setMana(side, gameState.getMana(side) -
-                    gameState.getHeroPower(side).getHeroPower().getManaFrz());
+                    gameState.getHeroPower(side).getHeroPower().getMana());
             gameState.getHeroPower(side).setLastTurnUse(gameState.getTurnNumber());
             gameState.resetSelected(side);
             if (characterLogic instanceof MinionLogic) {

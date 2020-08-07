@@ -7,6 +7,7 @@ import org.hibernate.annotations.CascadeType;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
 
 @Entity
@@ -14,20 +15,15 @@ public class Hero extends Unit {
     @Column
     @Setter
     @Getter
-    private int hpFrz;
+    private int hp;
     @OneToOne
+    @JoinColumn(name = "hero_power_name")
     @Cascade({CascadeType.SAVE_UPDATE, CascadeType.DELETE})
     @Setter
     @Getter
-    private HeroPower power;
+    private HeroPower heroPower;
 
     public Hero() {
-    }
-
-    public Hero(String name, String description, int hpFrz, HeroPower power) {
-        super(name, description);
-        this.hpFrz = hpFrz;
-        this.power = power;
     }
 
     @Override
@@ -35,8 +31,8 @@ public class Hero extends Unit {
         return "Hero{" +
                 "name='" + name + '\'' +
                 ", description='" + description + '\'' +
-                ", hp=" + hpFrz +
-                ", power=" + power +
+                ", hp=" + hp +
+                ", power=" + heroPower +
                 '}';
     }
 

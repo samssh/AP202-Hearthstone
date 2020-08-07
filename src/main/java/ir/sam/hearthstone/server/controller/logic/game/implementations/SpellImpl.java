@@ -280,7 +280,7 @@ public class SpellImpl {
         GameState gameState = game.getGameState();
         Side side = gameState.getSideTurn();
         if (characterLogic instanceof SpellLogic && complexLogic instanceof QuestLogic) {
-            int progress = ((SpellLogic) characterLogic).getSpell().getManaFrz() * 100 / 8;
+            int progress = ((SpellLogic) characterLogic).getSpell().getMana() * 100 / 8;
             ((QuestLogic) complexLogic).setQuestProgress(((QuestLogic) complexLogic).getQuestProgress() + progress);
             if (((QuestLogic) complexLogic).getQuestProgress() >= 100) {
                 Minion wisp = new Minion("Wisp", "", 6, neutral
@@ -299,7 +299,7 @@ public class SpellImpl {
         GameState gameState = game.getGameState();
         Side side = gameState.getSideTurn();
         if (characterLogic instanceof MinionLogic && complexLogic instanceof QuestLogic) {
-            int progress = ((MinionLogic) characterLogic).getMinion().getManaFrz() * 10;
+            int progress = ((MinionLogic) characterLogic).getMinion().getMana() * 10;
             ((QuestLogic) complexLogic).setQuestProgress(((QuestLogic) complexLogic).getQuestProgress() + progress);
             if (((QuestLogic) complexLogic).getQuestProgress() >= 100) {
                 List<MinionLogic> deck = gameState.getDeck(side).stream().filter(cardLogic ->

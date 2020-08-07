@@ -7,9 +7,6 @@ import ir.sam.hearthstone.server.model.client.HeroOverview;
 import ir.sam.hearthstone.server.model.client.HeroPowerOverview;
 import ir.sam.hearthstone.server.model.main.*;
 import ir.sam.hearthstone.server.model.response.PlayDetails;
-import lombok.Getter;
-import lombok.Setter;
-import lombok.experimental.Accessors;
 
 import java.util.HashMap;
 import java.util.List;
@@ -83,9 +80,9 @@ public class GameStateBuilder {
         gameState.setHero(side, new HeroLogic(side, sideStateBuilder.deck.getHero()));
         gameState.getEvents().add(new PlayDetails.EventBuilder(PlayDetails.EventType.SET_HERO)
                 .setOverview(new HeroOverview(gameState.getHero(side))).setSide(side.getIndex()).build());
-        gameState.setHeroPower(side, new HeroPowerLogic(side, sideStateBuilder.deck.getHero().getPower()));
+        gameState.setHeroPower(side, new HeroPowerLogic(side, sideStateBuilder.deck.getHero().getHeroPower()));
         gameState.getEvents().add(new PlayDetails.EventBuilder(PlayDetails.EventType.SET_HERO_POWER)
-                .setOverview(new HeroPowerOverview(sideStateBuilder.deck.getHero().getPower()))
+                .setOverview(new HeroPowerOverview(sideStateBuilder.deck.getHero().getHeroPower()))
                 .setSide(side.getIndex()).build());
         gameState.setMana(side, 0);
         sideStateBuilder.deckCards.forEach(card -> gameState.getDeck(side).add(buildCardLogic(side, card)));

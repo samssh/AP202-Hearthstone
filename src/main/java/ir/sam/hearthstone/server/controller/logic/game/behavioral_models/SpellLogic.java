@@ -34,8 +34,8 @@ public class SpellLogic extends CardLogic {
     public void play(AbstractGame game) {
         GameState gameState = game.getGameState();
         int sideMana = gameState.getMana(side);
-        if (sideMana >= spell.getManaFrz()) {
-            gameState.setMana(side, sideMana - spell.getManaFrz());
+        if (sideMana >= spell.getMana()) {
+            gameState.setMana(side, sideMana - spell.getMana());
             int indexOnHand = gameState.getHand(side).indexOf(this);
             gameState.getHand(side).remove(indexOnHand);
             GameEvent gameEvent = new PlayCard(side, spell);

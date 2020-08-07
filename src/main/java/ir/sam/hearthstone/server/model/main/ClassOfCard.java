@@ -5,13 +5,15 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 
-@Entity
+@Entity(name = "class_of_card")
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
 public class ClassOfCard implements SaveAble {
-    @Id
+    @Id()
+    @Column(name = "hero_name")
     @Setter
     @Getter
     @EqualsAndHashCode.Include

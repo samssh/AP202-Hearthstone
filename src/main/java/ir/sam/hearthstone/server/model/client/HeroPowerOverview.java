@@ -2,7 +2,6 @@ package ir.sam.hearthstone.server.model.client;
 
 import ir.sam.hearthstone.server.model.main.HeroPower;
 import lombok.Getter;
-import lombok.ToString;
 
 public class HeroPowerOverview extends UnitOverview {
     @Getter
@@ -10,7 +9,7 @@ public class HeroPowerOverview extends UnitOverview {
 
     public HeroPowerOverview(HeroPower heroPower) {
         super(heroPower.getName(), heroPower.getName(), null);
-        mana = heroPower.getManaFrz();
+        mana = heroPower.getMana();
     }
 
     @Override

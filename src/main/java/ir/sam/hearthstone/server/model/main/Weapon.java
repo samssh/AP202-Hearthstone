@@ -11,7 +11,7 @@ public class Weapon extends Card {
     @Column
     @Setter
     @Getter
-    private int attFrz;
+    private int attack;
     @Column
     @Setter
     @Getter
@@ -20,25 +20,16 @@ public class Weapon extends Card {
     public Weapon() {
     }
 
-
-    public Weapon(String name, String description, int price,
-                  ClassOfCard classOfCard, Rarity rarity,
-                  int manaFrz, int attFrz, int usage) {
-        super(name, description, price, classOfCard, rarity, manaFrz);
-        this.attFrz = attFrz;
-        this.usage = usage;
-    }
-
     @Override
     public String toString() {
         return "Weapon{" +
                 "name='" + name + '\'' +
                 ", description='" + description + '\'' +
-                ", att=" + attFrz +
+                ", att=" + attack +
                 ", usage=" + usage +
                 ", classOfCard=" + classOfCard +
                 ", rarity=" + rarity +
-                ", manaFrz=" + manaFrz +
+                ", manaFrz=" + mana +
                 ", price=" + price +
                 '}';
     }

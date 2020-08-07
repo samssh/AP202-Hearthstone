@@ -6,11 +6,12 @@ import ir.sam.hearthstone.server.model.account.Deck;
 import ir.sam.hearthstone.server.model.client.CardOverview;
 import ir.sam.hearthstone.server.model.client.PassiveOverview;
 import ir.sam.hearthstone.server.model.main.Card;
-import ir.sam.hearthstone.server.model.main.CardDetails;
+import ir.sam.hearthstone.server.model.account.CardDetails;
 import ir.sam.hearthstone.server.model.main.Passive;
 import ir.sam.hearthstone.server.model.response.PassiveDetails;
 import ir.sam.hearthstone.server.model.response.Response;
 import ir.sam.hearthstone.server.resource_loader.ModelLoader;
+import lombok.Getter;
 
 import java.util.ArrayList;
 import java.util.EnumMap;
@@ -25,29 +26,29 @@ public abstract class AbstractGameBuilder implements GameBuilder {
     protected final GameStateBuilder gameStateBuilder;
     protected final List<Passive> allPassives;
     protected List<Passive> sentPassives;
-    protected final Map<Side,SideBilder> sideBuilderMap;
+    protected final Map<Side, SideBuilder> sideBuilderMap;
     protected final ModelLoader modelLoader;
 
-    protected static class SideBilder {
-        protected final List<Card> hand, deck;
-        protected final List<Boolean> handstate;
+    protected static class SideBuilder {
+        @Getter
+        private final List<Card> hand, deck;
+        @Getter
+        private final List<Boolean> handState;
 
-        public SideBilder() {
+        public SideBuilder() {
             deck = new ArrayList<>();
             hand = new ArrayList<>();
-            handstate = new ArrayList<>();
+            handState = new ArrayList<>();
         }
     }
-
-
 
     public AbstractGameBuilder(ModelLoader modelLoader) {
         this.modelLoader = modelLoader;
         this.allPassives = modelLoader.getFirstPassives();
         gameStateBuilder = new GameStateBuilder();
         sideBuilderMap = new EnumMap<>(Side.class);
-        sideBuilderMap.put(Side.PLAYER_ONE,new SideBilder());
-        sideBuilderMap.put(Side.PLAYER_TWO,new SideBilder());
+        sideBuilderMap.put(Side.PLAYER_ONE,new SideBuilder());
+        sideBuilderMap.put(Side.PLAYER_TWO,new SideBuilder());
     }
 
     public AbstractGame build() {
@@ -90,6 +91,7 @@ public abstract class AbstractGameBuilder implements GameBuilder {
         return new PassiveDetails(passives, null, null, message);
     }
 
+    @SuppressWarnings("SameParameterValue")
     protected void pickCards(List<Card> hand, List<Boolean> state, List<Card> deck, int init) {
         for (int i = 0; i < init; i++) {
             int randomIndex = (int) (Math.random() * deck.size());
