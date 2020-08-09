@@ -2,7 +2,6 @@ package ir.sam.hearthstone.server.model.client;
 
 import ir.sam.hearthstone.server.controller.logic.game.behavioral_models.HeroLogic;
 import lombok.Getter;
-import lombok.ToString;
 
 public class HeroOverview extends UnitOverview {
     @Getter

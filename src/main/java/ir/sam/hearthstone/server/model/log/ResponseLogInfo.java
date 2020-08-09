@@ -32,7 +32,7 @@ public class ResponseLogInfo implements SaveAble {
     @Column
     @Getter
     @Setter
-    private long time;
+    private double time;
     @Column
     @Getter
     @Setter
@@ -105,15 +105,15 @@ public class ResponseLogInfo implements SaveAble {
     @Getter
     @Setter
     private String decks;
-    @Column(name = "hero_name",length = 200000)
+    @Column(name = "hero_name", length = 200000)
     @Getter
     @Setter
     private String heroNames;
-    @Column(name = "class_of_card_names",length = 200000)
+    @Column(name = "class_of_card_names", length = 200000)
     @Getter
     @Setter
     private String classOfCardNames;
-    @Column(name = "event_log",length = 200000)
+    @Column(name = "event_log", length = 200000)
     @Getter
     @Setter
     private String eventLog;
@@ -121,11 +121,11 @@ public class ResponseLogInfo implements SaveAble {
     @Getter
     @Setter
     private String cards;
-    @Column(name = "big_deck_overviews",length = 200000)
+    @Column(name = "big_deck_overviews", length = 200000)
     @Getter
     @Setter
     private String bigDeckOverviews;
-    @Column(name = "deck_cards",length = 200000)
+    @Column(name = "deck_cards", length = 200000)
     @Getter
     @Setter
     private String deckCards;
@@ -133,7 +133,7 @@ public class ResponseLogInfo implements SaveAble {
     @Getter
     @Setter
     private String events;
-    @Column(name = "passive_list",length = 200000)
+    @Column(name = "passive_list", length = 200000)
     @Getter
     @Setter
     private String passiveList;
@@ -257,7 +257,7 @@ public class ResponseLogInfo implements SaveAble {
         }
 
         @Override
-        public void setPlayDetail(List<PlayDetails.Event> events, String eventLog, int[] mana, long time) {
+        public void setPlayDetail(List<PlayDetails.Event> events, String eventLog, int[] mana, double time) {
             setEvents(Objects.toString(events));
             setEventLog(eventLog);
             setManas(Arrays.toString(mana));

@@ -21,4 +21,11 @@ public class DrawCard extends GameEvent {
                 "card=" + card.getName() +
                 ')';
     }
+
+    @Override
+    public String toString(Side client) {
+        if (client == side)
+            return getSideWord(client) + ": DrawCard(" + "card=" + card.getName() + ')';
+        else return getSideWord(client) + ": DrawCard()";
+    }
 }

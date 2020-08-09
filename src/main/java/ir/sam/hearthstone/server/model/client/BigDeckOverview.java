@@ -2,13 +2,12 @@ package ir.sam.hearthstone.server.model.client;
 
 import ir.sam.hearthstone.server.model.account.Deck;
 import lombok.Getter;
-import lombok.ToString;
 
 public class BigDeckOverview extends Overview {
     @Getter
     private final String cardName;
     @Getter
-    private final int games, wins;
+    private final int games, wins, cupEarned;
     @Getter
     private final double winRate, manaAverage;
 
@@ -17,6 +16,7 @@ public class BigDeckOverview extends Overview {
         this.cardName = cardName;
         this.games = deck.getGames();
         this.wins = deck.getWins();
+        this.cupEarned = deck.getCupEarned();
         this.winRate = deck.getWinRate();
         this.manaAverage = deck.getManaAverage();
     }

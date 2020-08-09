@@ -2,21 +2,20 @@ package ir.sam.hearthstone.server.controller.logic.game;
 
 import ir.sam.hearthstone.server.controller.ClientHandler;
 import ir.sam.hearthstone.server.controller.logic.game.api.GameBuilder;
+import ir.sam.hearthstone.server.controller.logic.game.behavioral_models.CardLogic;
+import ir.sam.hearthstone.server.model.account.CardDetails;
 import ir.sam.hearthstone.server.model.account.Deck;
 import ir.sam.hearthstone.server.model.client.CardOverview;
 import ir.sam.hearthstone.server.model.client.PassiveOverview;
 import ir.sam.hearthstone.server.model.main.Card;
-import ir.sam.hearthstone.server.model.account.CardDetails;
 import ir.sam.hearthstone.server.model.main.Passive;
 import ir.sam.hearthstone.server.model.response.PassiveDetails;
+import ir.sam.hearthstone.server.model.response.PlayDetails;
 import ir.sam.hearthstone.server.model.response.Response;
 import ir.sam.hearthstone.server.resource_loader.ModelLoader;
 import lombok.Getter;
 
-import java.util.ArrayList;
-import java.util.EnumMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import static ir.sam.hearthstone.server.controller.Constants.STARTING_PASSIVES;
 
@@ -25,11 +24,12 @@ public abstract class AbstractGameBuilder implements GameBuilder {
     protected AbstractGame result;
     protected final GameStateBuilder gameStateBuilder;
     protected final List<Passive> allPassives;
-    protected List<Passive> sentPassives;
     protected final Map<Side, SideBuilder> sideBuilderMap;
     protected final ModelLoader modelLoader;
 
     protected static class SideBuilder {
+        @Getter
+        protected final List<Passive> sentPassives;
         @Getter
         private final List<Card> hand, deck;
         @Getter
@@ -39,6 +39,7 @@ public abstract class AbstractGameBuilder implements GameBuilder {
             deck = new ArrayList<>();
             hand = new ArrayList<>();
             handState = new ArrayList<>();
+            sentPassives = new ArrayList<>();
         }
     }
 
@@ -47,8 +48,8 @@ public abstract class AbstractGameBuilder implements GameBuilder {
         this.allPassives = modelLoader.getFirstPassives();
         gameStateBuilder = new GameStateBuilder();
         sideBuilderMap = new EnumMap<>(Side.class);
-        sideBuilderMap.put(Side.PLAYER_ONE,new SideBuilder());
-        sideBuilderMap.put(Side.PLAYER_TWO,new SideBuilder());
+        sideBuilderMap.put(Side.PLAYER_ONE, new SideBuilder());
+        sideBuilderMap.put(Side.PLAYER_TWO, new SideBuilder());
     }
 
     public AbstractGame build() {
@@ -58,13 +59,13 @@ public abstract class AbstractGameBuilder implements GameBuilder {
     protected abstract void build0();
 
     @Override
-    public abstract Response setPassive(Side client,Passive passive, ClientHandler clientHandler);
+    public abstract Response setPassive(Side client, Passive passive, ClientHandler clientHandler);
 
     @Override
-    public abstract Response setDeck(Side client,Deck deck);
+    public abstract Response setDeck(Side client, Deck deck);
 
     @Override
-    public abstract Response selectCard(Side client,int index);
+    public abstract Response selectCard(Side client, int index);
 
     @Override
     public abstract Response confirm(Side client);
@@ -85,9 +86,9 @@ public abstract class AbstractGameBuilder implements GameBuilder {
         return result;
     }
 
-    protected Response sendPassives(String message) {
-        sentPassives = chooseRandom(this.allPassives, STARTING_PASSIVES);
-        List<PassiveOverview> passives = turnToPassiveOverview(sentPassives);
+    protected Response sendPassives(Side client,String message) {
+        sideBuilderMap.get(client).sentPassives.addAll(chooseRandom(this.allPassives, STARTING_PASSIVES));
+        List<PassiveOverview> passives = turnToPassiveOverview(sideBuilderMap.get(client).sentPassives);
         return new PassiveDetails(passives, null, null, message);
     }
 
@@ -132,5 +133,14 @@ public abstract class AbstractGameBuilder implements GameBuilder {
     protected CardOverview changeState(List<Card> hand, List<Boolean> state, int index) {
         state.add(index, !state.remove(index));
         return new CardOverview(hand.get(index), state.get(index) ? 1 : 0, false);
+    }
+
+    protected void sendEvents(Side side) {
+        List<CardLogic> hand = result.getGameState().getHand(side);
+        Collections.reverse(hand);
+        hand.forEach(card -> result.getGameState().getEvents().add(
+                new PlayDetails.EventBuilder(PlayDetails.EventType.ADD_TO_HAND)
+                        .setOverview(new CardOverview(card.getCard())).setSide(side.getIndex()).build()));
+        Collections.reverse(hand);
     }
 }

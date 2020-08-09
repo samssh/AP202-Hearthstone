@@ -14,7 +14,14 @@ public class SummonMinion extends GameEvent {
     @Override
     public String toString() {
         return side + ": SummonMinion{" +
-                "minion=" + minion +
+                "minion=" + minion.getName() +
+                '}';
+    }
+
+    @Override
+    public String toString(Side client) {
+        return getSideWord(client) + ": SummonMinion{" +
+                "minion=" + minion.getName() +
                 '}';
     }
 }

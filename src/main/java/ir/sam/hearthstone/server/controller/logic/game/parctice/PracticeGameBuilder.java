@@ -27,18 +27,21 @@ public class PracticeGameBuilder extends AbstractGameBuilder {
     @Override
     protected void build0() {
         result = new PracticeGame(gameStateBuilder.build(), modelLoader);
+        result.startGame();
+        sendEvents(PLAYER_ONE);
+        sendEvents(PLAYER_TWO);
     }
 
     @Override
     public Response setPassive(Side client, Passive passive, ClientHandler clientHandler) {
         if (client == PLAYER_TWO)
             throw new UnsupportedOperationException();
-        if (sentPassives.contains(passive)) {
-            if (gameStateBuilder.getPassive(client) == null) {
-                gameStateBuilder.setPassive(client, passive);
-                return sendPassives("select opponent passive");
+        if (sideBuilderMap.get(PLAYER_ONE).getSentPassives().contains(passive)) {
+            if (gameStateBuilder.getPassive(PLAYER_ONE) == null) {
+                gameStateBuilder.setPassive(PLAYER_ONE, passive);
+                return sendPassives(PLAYER_TWO,"select opponent passive");
             } else {
-                gameStateBuilder.setPassive(client.getOther(), passive);
+                gameStateBuilder.setPassive(PLAYER_TWO, passive);
                 return clientHandler.sendDecksForSelection("select opponent deck");
             }
         }
@@ -51,7 +54,7 @@ public class PracticeGameBuilder extends AbstractGameBuilder {
             throw new UnsupportedOperationException();
         if (gameStateBuilder.getDeck(PLAYER_ONE) == null) {
             gameStateBuilder.setDeck(PLAYER_ONE, deck);
-            return sendPassives("select your passive");
+            return sendPassives(PLAYER_ONE,"select your passive");
         } else {
             gameStateBuilder.setDeck(PLAYER_TWO, deck);
             deckToList(sideBuilderMap.get(PLAYER_ONE).getDeck(), gameStateBuilder.getDeck(PLAYER_ONE));
@@ -91,25 +94,10 @@ public class PracticeGameBuilder extends AbstractGameBuilder {
         } else {
             finalizeHand(sideBuilderMap.get(PLAYER_TWO).getHand(), sideBuilderMap.get(PLAYER_TWO).getHandState()
                     , sideBuilderMap.get(PLAYER_TWO).getDeck());
-            gameStateBuilder.setHand(PLAYER_TWO,sideBuilderMap.get(PLAYER_TWO).getHand()).setDeckCards(PLAYER_TWO
-                    ,sideBuilderMap.get(PLAYER_TWO).getDeck());
+            gameStateBuilder.setHand(PLAYER_TWO, sideBuilderMap.get(PLAYER_TWO).getHand()).setDeckCards(PLAYER_TWO
+                    , sideBuilderMap.get(PLAYER_TWO).getDeck());
             build0();
-            result.startGame();
-            sendEvents(PLAYER_ONE);
-            sendEvents(PLAYER_TWO);
-            PlayDetails playDetails = new PlayDetails(result.getEventLog(PLAYER_ONE), result.getGameState().getMana()
-                    , result.getTurnStartTime());
-            playDetails.getEvents().addAll(result.getEvents(PLAYER_ONE));
-            return playDetails;
+            return result.getResponse(PLAYER_ONE);
         }
-    }
-
-    private void sendEvents(Side side) {
-        List<CardLogic> hand = result.getGameState().getHand(side);
-        Collections.reverse(hand);
-        hand.forEach(card -> result.getGameState().getEvents().add(
-                new PlayDetails.EventBuilder(PlayDetails.EventType.ADD_TO_HAND)
-                        .setOverview(new CardOverview(card.getCard())).setSide(side.getIndex()).build()));
-        Collections.reverse(hand);
     }
 }

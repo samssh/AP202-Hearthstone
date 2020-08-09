@@ -38,7 +38,7 @@ public abstract class AbstractCardOverview extends UnitOverview {
     }
 
     public AbstractCardOverview(String name, String imageName, String toolkit, int number, int price, int mana, int att,
-                        int hp, boolean showPrice) {
+                                int hp, boolean showPrice) {
         super(name, imageName, toolkit);
         this.number = number;
         this.price = price;

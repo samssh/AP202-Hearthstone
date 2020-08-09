@@ -1,7 +1,8 @@
 package ir.sam.hearthstone.server.model.main;
 
 
-import javax.persistence.*;
+import javax.persistence.Entity;
+import javax.persistence.PostLoad;
 import java.util.HashMap;
 
 @Entity

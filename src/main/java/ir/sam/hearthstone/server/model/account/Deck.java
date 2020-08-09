@@ -7,17 +7,23 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
 
-import javax.persistence.*;
+import javax.persistence.Column;
+import javax.persistence.ElementCollection;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.ManyToOne;
+import javax.persistence.PostLoad;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
 @Entity
-@EqualsAndHashCode(onlyExplicitlyIncluded = true)
 public class Deck implements SaveAble {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Setter
-    @EqualsAndHashCode.Include
     private long id;
     @Column
     @Getter
@@ -117,5 +123,18 @@ public class Deck implements SaveAble {
     @PostLoad
     void postLoad() {
         this.cards = new HashMap<>(this.cards);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Deck deck = (Deck) o;
+        return id == deck.id;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id);
     }
 }

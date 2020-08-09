@@ -19,7 +19,6 @@ import java.io.IOException;
 import java.io.PrintStream;
 import java.net.Socket;
 import java.security.SecureRandom;
-import java.util.Arrays;
 import java.util.Base64;
 import java.util.Optional;
 import java.util.Scanner;
@@ -37,7 +36,7 @@ public class SocketResponseSender implements ResponseSender {
     public SocketResponseSender(ServerSocketManager serverSocketManager, Socket socket) throws IOException {
         this.serverSocketManager = serverSocketManager;
         scanner = new Scanner(socket.getInputStream());
-        printStream = new PrintStream(socket.getOutputStream(),true);
+        printStream = new PrintStream(socket.getOutputStream(), true);
         gson = new GsonBuilder().registerTypeAdapter(Request.class
                 , new Deserializer<Request>(SerializerAndDeserializerConstants.REQUESTS_PACKAGE))
                 .registerTypeAdapter(Response.class, new Serializer<>())
@@ -78,7 +77,7 @@ public class SocketResponseSender implements ResponseSender {
 
     @Override
     public void sendResponse(Response... responses) {
-        Message message = new Message(token,responses);
+        Message message = new Message(token, responses);
         checkToken(message);
         String json = gson.toJson(message);
         String encode = encoder.encodeToString(json.getBytes());
@@ -95,7 +94,7 @@ public class SocketResponseSender implements ResponseSender {
     private void checkToken(Message message) {
         if (message.getResponses() != null && message.getResponses().length > 0) {
             if (message.getResponses()[0] instanceof LoginResponse
-                    && ((LoginResponse)message.getResponses()[0]).isSuccess()) {
+                    && ((LoginResponse) message.getResponses()[0]).isSuccess()) {
                 token = generateNewToken();
                 message.setToken(token);
             } else if (message.getResponses()[0] instanceof Logout) {

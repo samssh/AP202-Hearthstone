@@ -1,5 +1,6 @@
 package ir.sam.hearthstone.server.controller.logic;
 
+import ir.sam.hearthstone.server.model.account.CardDetails;
 import ir.sam.hearthstone.server.model.account.Deck;
 import ir.sam.hearthstone.server.model.account.Player;
 import ir.sam.hearthstone.server.model.client.CardOverview;
@@ -7,7 +8,6 @@ import ir.sam.hearthstone.server.model.client.Overview;
 import ir.sam.hearthstone.server.model.client.SmallDeckOverview;
 import ir.sam.hearthstone.server.model.log.CollectionLog;
 import ir.sam.hearthstone.server.model.main.Card;
-import ir.sam.hearthstone.server.model.account.CardDetails;
 import ir.sam.hearthstone.server.model.main.ClassOfCard;
 import ir.sam.hearthstone.server.model.main.Hero;
 import ir.sam.hearthstone.server.model.response.*;

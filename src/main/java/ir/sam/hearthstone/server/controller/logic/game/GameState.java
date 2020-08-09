@@ -160,6 +160,14 @@ public class GameState {
         sideStateMap.get(side).resetSelected();
     }
 
+    public int getEventIndex(Side side){
+        return sideStateMap.get(side).eventIndex;
+    }
+
+    public void setEventIndex(Side side,int eventIndex){
+        sideStateMap.get(side).eventIndex = eventIndex;
+    }
+
     protected static class SideState {
         protected int mana;
         protected HeroLogic hero;
@@ -174,6 +182,7 @@ public class GameState {
         protected ComplexLogic waitForTarget; // some thing special
         protected boolean heroSelected, heroPowerSelected;
         protected int taunts;
+        protected int eventIndex;
 
 
         protected SideState() {

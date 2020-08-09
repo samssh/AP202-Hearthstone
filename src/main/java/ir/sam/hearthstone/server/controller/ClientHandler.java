@@ -3,10 +3,11 @@ package ir.sam.hearthstone.server.controller;
 import ir.sam.hearthstone.server.controller.logic.Collection;
 import ir.sam.hearthstone.server.controller.logic.Shop;
 import ir.sam.hearthstone.server.controller.logic.Status;
-import ir.sam.hearthstone.server.controller.logic.game.parctice.PracticeGameBuilder;
 import ir.sam.hearthstone.server.controller.logic.game.Side;
 import ir.sam.hearthstone.server.controller.logic.game.api.Game;
 import ir.sam.hearthstone.server.controller.logic.game.api.GameBuilder;
+import ir.sam.hearthstone.server.controller.logic.game.api.OnlineGameBuilder;
+import ir.sam.hearthstone.server.controller.logic.game.parctice.PracticeGameBuilder;
 import ir.sam.hearthstone.server.controller.network.ResponseSender;
 import ir.sam.hearthstone.server.model.account.Deck;
 import ir.sam.hearthstone.server.model.account.Player;
@@ -22,6 +23,7 @@ import ir.sam.hearthstone.server.model.response.*;
 import ir.sam.hearthstone.server.resource_loader.ModelLoader;
 import ir.sam.hearthstone.server.util.hibernate.Connector;
 import lombok.Getter;
+import lombok.Setter;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -37,6 +39,7 @@ public class ClientHandler implements RequestExecutor {
     @Getter
     private final ModelLoader modelLoader;
     private Player player;
+    @Setter
     private Game game;
     private GameBuilder gameBuilder;
     private final Collection collection;
@@ -337,10 +340,26 @@ public class ClientHandler implements RequestExecutor {
     }
 
     @Override
+    public void sendGameEvents() {
+        if (game!=null){
+            addToResponses(game.getResponse(this.side));
+        }
+    }
+
+    @Override
+    public void checkForOpponent() {
+        if(gameBuilder instanceof OnlineGameBuilder){
+            addToResponses(((OnlineGameBuilder) gameBuilder).check(side));
+        }
+    }
+
+    @Override
     public void exitGame() {
-        game.endGame(this.side);
-        gameBuilder = null;
-        game = null;
-        addToResponses(new GoTo("MAIN_MENU", null));
+        if (game != null) {
+            game.endGame(this.side);
+            gameBuilder = null;
+            game = null;
+            addToResponses(new GoTo("MAIN_MENU", null));
+        }
     }
 }

@@ -5,6 +5,7 @@ import ir.sam.hearthstone.server.controller.logic.game.GameState;
 import ir.sam.hearthstone.server.controller.logic.game.Side;
 import ir.sam.hearthstone.server.controller.logic.game.events.GameEvent;
 import ir.sam.hearthstone.server.controller.logic.game.events.PlayCard;
+import ir.sam.hearthstone.server.model.client.CardOverview;
 import ir.sam.hearthstone.server.model.main.ActionType;
 import ir.sam.hearthstone.server.model.main.Card;
 import ir.sam.hearthstone.server.model.main.Spell;
@@ -41,7 +42,8 @@ public class SpellLogic extends CardLogic {
             GameEvent gameEvent = new PlayCard(side, spell);
             gameState.getGameEvents().add(gameEvent);
             PlayDetails.Event event = new PlayDetails.EventBuilder(PlayDetails.EventType.PLAY_SPELL)
-                    .setSide(side.getIndex()).setIndex(indexOnHand).build();
+                    .setOverview(new CardOverview(spell)).setSide(side.getIndex())
+                    .setIndex(indexOnHand).build();
             gameState.getEvents().add(event);
             game.getActionHolderMap().get(ActionType.DO_ACTION).doAction(this, this, game);
             AbstractGame.visitAll(game, ActionType.PLAY_SPELL, this, side);

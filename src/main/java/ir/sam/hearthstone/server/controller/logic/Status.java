@@ -1,10 +1,10 @@
 package ir.sam.hearthstone.server.controller.logic;
 
+import ir.sam.hearthstone.server.model.account.CardDetails;
 import ir.sam.hearthstone.server.model.account.Deck;
 import ir.sam.hearthstone.server.model.account.Player;
 import ir.sam.hearthstone.server.model.client.BigDeckOverview;
 import ir.sam.hearthstone.server.model.main.Card;
-import ir.sam.hearthstone.server.model.account.CardDetails;
 import ir.sam.hearthstone.server.model.response.Response;
 import ir.sam.hearthstone.server.model.response.StatusDetails;
 
@@ -21,8 +21,9 @@ public class Status {
     }
 
     private List<BigDeckOverview> makeStatusDetails(Player player) {
-        return player.getDecks().stream().sorted(Comparator.comparing(Deck::getWinRate)
-                .thenComparing(Deck::getWins).thenComparing(Deck::getManaAverage).thenComparing(Deck::getName))
+        return player.getDecks().stream().sorted(Comparator.comparing(Deck::getCupEarned)
+                .thenComparing(Deck::getWinRate).thenComparing(Deck::getWins)
+                .thenComparing(Deck::getManaAverage).thenComparing(Deck::getName))
                 .map(this::createBigDeckOverview).collect(Collectors.toList());
     }
 

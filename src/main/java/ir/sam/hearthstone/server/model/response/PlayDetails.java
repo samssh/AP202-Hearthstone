@@ -3,7 +3,6 @@ package ir.sam.hearthstone.server.model.response;
 import ir.sam.hearthstone.server.model.client.UnitOverview;
 import lombok.Getter;
 import lombok.Setter;
-import lombok.ToString;
 import lombok.experimental.Accessors;
 
 import java.util.ArrayList;
@@ -17,9 +16,9 @@ public class PlayDetails extends Response {
     @Getter
     private final int[] mana;
     @Getter
-    private final long time;
+    private final double time;
 
-    public PlayDetails(String eventLog, int[] mana, long time) {
+    public PlayDetails(String eventLog, int[] mana, double time) {
         this.eventLog = eventLog;
         this.mana = mana;
         this.time = time;
@@ -31,17 +30,22 @@ public class PlayDetails extends Response {
         responseExecutor.setPlayDetail(events, eventLog, mana, time);
     }
 
-    public static class Event {
+    public static class Event implements Cloneable {
         @Getter
-        private final EventType type;
+        @Setter
+        private EventType type;
         @Getter
-        private final UnitOverview overview, overview1;
+        @Setter
+        private UnitOverview overview, overview1;
         @Getter
-        private final int index, secondIndex;
+        @Setter
+        private int index, secondIndex;
         @Getter
-        private final int side;
+        @Setter
+        private int side;
         @Getter
-        private final String message;
+        @Setter
+        private String message;
 
         private Event(EventType type, UnitOverview overview, UnitOverview overview1
                 , int index, int side, int secondIndex, String message) {
@@ -52,6 +56,15 @@ public class PlayDetails extends Response {
             this.secondIndex = secondIndex;
             this.side = side;
             this.message = message;
+        }
+
+        @Override
+        public Event clone() {
+            try {
+                return (Event) super.clone();
+            } catch (CloneNotSupportedException ignore) {
+            }
+            return null;
         }
 
         @Override
@@ -105,6 +118,7 @@ public class PlayDetails extends Response {
         ADD_TO_GROUND,
         CHANGE_IN_GROUND,
         REMOVE_FROM_GROUND,
+        @SuppressWarnings("unused")
         MOVE_FROM_GROUND_TO_HAND,
         ATTACK_MINION_TO_HERO,
         ATTACK_MINION_TO_MINION,

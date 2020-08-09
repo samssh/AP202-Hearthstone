@@ -1,9 +1,6 @@
 package ir.sam.hearthstone.server.resource_loader;
 
-import java.awt.*;
 import java.io.File;
-import java.io.IOException;
-import java.util.Objects;
 
 public class ConfigFactory {
     private final static String defaultAddress = "./src/main/resources/configurations/MainConfig.properties";

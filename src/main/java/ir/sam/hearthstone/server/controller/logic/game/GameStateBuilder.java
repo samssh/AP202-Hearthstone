@@ -26,7 +26,7 @@ public class GameStateBuilder {
 
     public GameState build() {
         GameState gameState = new GameState();
-        gameState.setSideTurn(PLAYER_TWO);
+        gameState.setSideTurn(PLAYER_ONE);
         gameState.setTurnNumber(0);
         buildSideState(PLAYER_ONE, stateBuilderMap.get(PLAYER_ONE), gameState);
         buildSideState(PLAYER_TWO, stateBuilderMap.get(PLAYER_ONE), gameState);

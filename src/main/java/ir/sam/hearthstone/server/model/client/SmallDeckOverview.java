@@ -1,7 +1,6 @@
 package ir.sam.hearthstone.server.model.client;
 
 import ir.sam.hearthstone.server.model.account.Deck;
-import lombok.ToString;
 
 public class SmallDeckOverview extends Overview {
     public SmallDeckOverview(Deck deck) {

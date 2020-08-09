@@ -9,6 +9,11 @@ public class EndTurn extends GameEvent {
     }
 
     @Override
+    public String toString(Side client) {
+        return getSideWord(client) + ": NextTurn";
+    }
+
+    @Override
     public String toString() {
         return side.toString() + ": NextTurn";
     }

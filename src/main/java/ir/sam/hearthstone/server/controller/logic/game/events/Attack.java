@@ -19,4 +19,10 @@ public class Attack extends GameEvent {
         return side + ": attack(" + "attacker=" + attacker.getName()
                 + "defender=" + defender.getName() + ')';
     }
+
+    @Override
+    public String toString(Side client) {
+        return getSideWord(client) + ": attack(" + "attacker=" + attacker.getName()
+                + "defender=" + defender.getName() + ')';
+    }
 }

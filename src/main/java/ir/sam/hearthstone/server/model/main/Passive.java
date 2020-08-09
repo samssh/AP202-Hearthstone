@@ -1,14 +1,11 @@
 package ir.sam.hearthstone.server.model.main;
 
 import ir.sam.hearthstone.server.util.hibernate.SaveAble;
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.Setter;
 import lombok.ToString;
 
-import javax.persistence.*;
+import javax.persistence.Entity;
+import javax.persistence.PostLoad;
 import java.util.HashMap;
-import java.util.Map;
 
 
 @Entity

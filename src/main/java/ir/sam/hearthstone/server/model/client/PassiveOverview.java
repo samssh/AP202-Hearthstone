@@ -2,7 +2,6 @@ package ir.sam.hearthstone.server.model.client;
 
 
 import ir.sam.hearthstone.server.model.main.Passive;
-import lombok.ToString;
 
 public class PassiveOverview extends Overview {
     public PassiveOverview(Passive p) {

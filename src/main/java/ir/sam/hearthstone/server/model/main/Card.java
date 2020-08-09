@@ -5,7 +5,10 @@ import lombok.Setter;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
 
-import javax.persistence.*;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 
 @Entity
 abstract public class Card extends Unit {
@@ -43,7 +46,9 @@ abstract public class Card extends Unit {
 
     public static int getInstanceValue(Card card) {
         if (card instanceof Minion) return 4;
-        else if (card instanceof Spell) return 3;
+        else if (card instanceof Weapon) return 3;
+        else if (card instanceof Quest) return 1;
+        else if (card instanceof Spell) return 2;
         else return -1;
     }
 }

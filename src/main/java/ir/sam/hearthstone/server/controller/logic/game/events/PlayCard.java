@@ -22,4 +22,11 @@ public class PlayCard extends GameEvent {
                 "card=" + card.getName() +
                 ')';
     }
+
+    @Override
+    public String toString(Side client) {
+        return getSideWord(client) + ": PlayCard(" +
+                "card=" + card.getName() +
+                ')';
+    }
 }

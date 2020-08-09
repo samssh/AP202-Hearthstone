@@ -33,7 +33,7 @@ public class HeroLogic extends CharacterLogic implements LiveCharacter {
     }
 
     /**
-     * attack enemy to this minion
+     * attack enemy to this hero
      * this can be hero with weapon or minion
      *
      * @param damage damage that deals to this minion
@@ -46,9 +46,7 @@ public class HeroLogic extends CharacterLogic implements LiveCharacter {
         }
         if (sendEvent) addChangeEvent(game.getGameState());
         if (hp < 0) {
-            PlayDetails.Event event = new PlayDetails.EventBuilder(PlayDetails.EventType.END_GAME)
-                    .setMessage(side + " lose").build();
-            game.getGameState().getEvents().add(event);
+            game.endGame(side);
         }
     }
 

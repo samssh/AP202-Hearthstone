@@ -21,4 +21,11 @@ public class DeleteCard extends GameEvent {
     public String toString() {
         return side + ": Delete card(" + "card=" + card.getName() + ')';
     }
+
+    @Override
+    public String toString(Side client) {
+        if (client == side)
+            return getSideWord(client) + ": Delete card(" + "card=" + card.getName() + ')';
+        else return getSideWord(client) + ": Delete card()";
+    }
 }

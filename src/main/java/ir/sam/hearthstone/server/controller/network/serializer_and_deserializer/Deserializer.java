@@ -4,9 +4,8 @@ import com.google.gson.*;
 
 import java.lang.reflect.Type;
 
-
-import static ir.sam.hearthstone.server.controller.network.serializer_and_deserializer
-        .SerializerAndDeserializerConstants.*;
+import static ir.sam.hearthstone.server.controller.network.serializer_and_deserializer.SerializerAndDeserializerConstants.CLASSNAME;
+import static ir.sam.hearthstone.server.controller.network.serializer_and_deserializer.SerializerAndDeserializerConstants.INSTANCE;
 
 public class Deserializer<T> implements JsonDeserializer<T> {
     private final String packageName;
