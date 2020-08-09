@@ -39,12 +39,15 @@ public abstract class AbstractGame implements Game {
     protected long turnStartTime;
     @Getter
     protected final TaskTimer timer;
+    @Getter
+    protected boolean running;
 
     public AbstractGame(GameState gameState, ModelLoader modelLoader) {
         this.gameState = gameState;
         this.modelLoader = modelLoader;
         actionHolderMap = ActionHolderBuilder.getAllActionHolders(modelLoader);
         timer = new TaskTimer();
+        running = true;
     }
 
     @Override
@@ -169,7 +172,7 @@ public abstract class AbstractGame implements Game {
                 minionLogic -> minionLogic.removeRushAndGiveSleep(gameState));
         visitAll(this, ActionType.START_TURN, null, gameState.getSideTurn());
         turnStartTime = System.currentTimeMillis();
-        timer.setTask(() -> nextTurn(Side.PLAYER_ONE), Constants.TURN_TIME);
+        timer.setTask(this::nextTurn, Constants.TURN_TIME);
     }
 
     @Override
@@ -238,7 +241,7 @@ public abstract class AbstractGame implements Game {
         gameState.setMana(gameState.getSideTurn(), 1);
         visitAll(this, ActionType.START_TURN, null, gameState.getSideTurn());
         turnStartTime = System.currentTimeMillis();
-        timer.setTask(() -> nextTurn(Side.PLAYER_ONE), Constants.TURN_TIME);
+        timer.setTask(this::nextTurn, Constants.TURN_TIME);
     }
 
     private void init(Side side) {
@@ -308,8 +311,10 @@ public abstract class AbstractGame implements Game {
 
     @Override
     public Response getResponse(Side client) {
+        if (!isRunning() && gameState.getEventIndex(client) == gameState.getEvents().size())
+            return null;
         double time = (System.currentTimeMillis() - turnStartTime) / 60000d;
-        PlayDetails response = new PlayDetails(getEventLog(client), gameState.getMana(), time);
+        PlayDetails response = new PlayDetails(getEventLog(client), gameState.getManas(client), time);
         response.getEvents().addAll(getEvents(client));
         return response;
     }

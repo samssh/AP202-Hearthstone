@@ -1,5 +1,6 @@
 package ir.sam.hearthstone.server.controller.logic.game;
 
+import ir.sam.hearthstone.server.controller.ClientHandler;
 import ir.sam.hearthstone.server.controller.logic.game.behavioral_models.*;
 import ir.sam.hearthstone.server.controller.logic.game.events.DrawCard;
 import ir.sam.hearthstone.server.model.account.Deck;
@@ -29,7 +30,7 @@ public class GameStateBuilder {
         gameState.setSideTurn(PLAYER_ONE);
         gameState.setTurnNumber(0);
         buildSideState(PLAYER_ONE, stateBuilderMap.get(PLAYER_ONE), gameState);
-        buildSideState(PLAYER_TWO, stateBuilderMap.get(PLAYER_ONE), gameState);
+        buildSideState(PLAYER_TWO, stateBuilderMap.get(PLAYER_TWO), gameState);
         return gameState;
     }
 
@@ -69,15 +70,26 @@ public class GameStateBuilder {
         return this;
     }
 
+    public ClientHandler getClientHandler(Side side) {
+        return stateBuilderMap.get(side).clientHandler;
+    }
+
+    public GameStateBuilder setClientHandler(Side side, ClientHandler clientHandler) {
+        this.stateBuilderMap.get(side).clientHandler = clientHandler;
+        return this;
+    }
+
     private static class SideStateBuilder {
         private Passive passive;
         private Deck deck;
         private List<Card> deckCards, hand;
+        private ClientHandler clientHandler;
     }
 
     private void buildSideState(Side side, SideStateBuilder sideStateBuilder, GameState gameState) {
         gameState.setPassive(side, new PassiveLogic(sideStateBuilder.passive, side));
         gameState.setHero(side, new HeroLogic(side, sideStateBuilder.deck.getHero()));
+        gameState.setClientHandler(side,sideStateBuilder.clientHandler);
         gameState.getEvents().add(new PlayDetails.EventBuilder(PlayDetails.EventType.SET_HERO)
                 .setOverview(new HeroOverview(gameState.getHero(side))).setSide(side.getIndex()).build());
         gameState.setHeroPower(side, new HeroPowerLogic(side, sideStateBuilder.deck.getHero().getHeroPower()));

@@ -1,5 +1,7 @@
 package ir.sam.hearthstone.server.controller;
 
+import ir.sam.hearthstone.server.controller.logic.game.Side;
+import ir.sam.hearthstone.server.controller.logic.game.api.GameBuilder;
 import ir.sam.hearthstone.server.controller.logic.game.api.OnlineGameBuilder;
 import ir.sam.hearthstone.server.controller.logic.game.api.OnlineGameBuilderGenerator;
 import ir.sam.hearthstone.server.controller.logic.game.online.StandardOnlineGameBuilder;
@@ -21,12 +23,33 @@ public class GameLobby {
         waitingRoomMap.put("online",new WaitingRoom(StandardOnlineGameBuilder::new));
     }
 
-    private class WaitingRoom {
+    private static class WaitingRoom {
         private final OnlineGameBuilderGenerator generator;
         private OnlineGameBuilder gameBuilder;
+        private Side sideToSet;
 
         private WaitingRoom(OnlineGameBuilderGenerator generator) {
             this.generator = generator;
         }
+    }
+
+    public synchronized OnlineGameBuilder getGameBuilder(String gameName,ClientHandler clientHandler){
+        if (waitingRoomMap.containsKey(gameName)){
+            WaitingRoom waitingRoom = waitingRoomMap.get(gameName);
+            OnlineGameBuilder onlineGameBuilder;
+            if (waitingRoom.gameBuilder==null){
+                waitingRoom.gameBuilder = waitingRoom.generator.generate(modelLoader,connector);
+                onlineGameBuilder = waitingRoom.gameBuilder;
+                double random = Math.random();
+                waitingRoom.sideToSet = random<.5?Side.PLAYER_ONE:Side.PLAYER_TWO;
+            }else {
+                onlineGameBuilder = waitingRoom.gameBuilder;
+                waitingRoom.sideToSet = waitingRoom.sideToSet.getOther();
+                waitingRoom.gameBuilder = null;
+            }
+            onlineGameBuilder.setClientHandler(waitingRoom.sideToSet,clientHandler);
+            clientHandler.setSide(waitingRoom.sideToSet);
+            return onlineGameBuilder;
+        }else return null;
     }
 }

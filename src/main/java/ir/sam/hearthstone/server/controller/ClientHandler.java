@@ -38,20 +38,24 @@ public class ClientHandler implements RequestExecutor {
     private final Connector connector;
     @Getter
     private final ModelLoader modelLoader;
+    @Getter
     private Player player;
     @Setter
     private Game game;
     private GameBuilder gameBuilder;
+    private final GameLobby gameLobby;
     private final Collection collection;
     private final Shop shop;
     private final Status status;
     @Getter
     private final ResponseSender responseSender;
     private volatile boolean running;
+    @Setter
     private Side side;
 
-    public ClientHandler(ResponseSender responseSender, Connector connector, ModelLoader modelLoader) {
+    public ClientHandler(ResponseSender responseSender, Connector connector, ModelLoader modelLoader, GameLobby gameLobby) {
         this.responseSender = responseSender;
+        this.gameLobby = gameLobby;
         responseList = new ArrayList<>(100);
         this.connector = connector;
         this.modelLoader = modelLoader;
@@ -60,10 +64,9 @@ public class ClientHandler implements RequestExecutor {
         status = new Status();
     }
 
-    public ClientHandler start() {
+    public void start() {
         running = true;
         new Thread(this::executeRequests).start();
-        return this;
     }
 
     private void executeRequests() {
@@ -243,7 +246,10 @@ public class ClientHandler implements RequestExecutor {
                     gameBuilder = new PracticeGameBuilder(modelLoader);
                     response = gameBuilder.setDeck(this.side, player.getSelectedDeck());
                 }
-                case "online" -> response = new ShowMessage("online add soon");
+                case "online" -> {
+                    gameBuilder = gameLobby.getGameBuilder(mode,this);
+                    response = gameBuilder.setDeck(this.side,player.getSelectedDeck());
+                }
                 case "tavernBrawl" -> response = new ShowMessage("tavernBrawl add soon");
             }
         } else {

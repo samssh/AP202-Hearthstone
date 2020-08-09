@@ -34,7 +34,7 @@ public class Status {
     private Optional<Card> getMVC(Deck deck) {
         Map<Card, CardDetails> map = deck.getCards();
         List<Card> result = new ArrayList<>();
-        map.values().stream().map(CardDetails::getRepeatedTimes).max(Integer::compareTo)
+        map.values().stream().map(CardDetails::getUsage).max(Integer::compareTo)
                 .ifPresent(
                         integer ->
                                 map.entrySet().stream().filter(

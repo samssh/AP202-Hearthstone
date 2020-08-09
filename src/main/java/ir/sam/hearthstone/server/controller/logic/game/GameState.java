@@ -1,5 +1,6 @@
 package ir.sam.hearthstone.server.controller.logic.game;
 
+import ir.sam.hearthstone.server.controller.ClientHandler;
 import ir.sam.hearthstone.server.controller.logic.game.behavioral_models.*;
 import ir.sam.hearthstone.server.controller.logic.game.events.GameEvent;
 import ir.sam.hearthstone.server.model.response.PlayDetails;
@@ -89,10 +90,10 @@ public class GameState {
         return sideStateMap.get(side).getStream();
     }
 
-    public int[] getMana() {
+    public int[] getManas(Side client) {
         int[] mana = new int[2];
-        mana[0] = getMana(PLAYER_ONE);
-        mana[1] = getMana(PLAYER_TWO);
+        mana[0] = getMana(client);
+        mana[1] = getMana(client.getOther());
         return mana;
     }
 
@@ -168,7 +169,16 @@ public class GameState {
         sideStateMap.get(side).eventIndex = eventIndex;
     }
 
+    public ClientHandler getClientHandler(Side side){
+        return sideStateMap.get(side).clientHandler;
+    }
+
+    public void setClientHandler(Side side,ClientHandler clientHandler){
+        sideStateMap.get(side).clientHandler = clientHandler;
+    }
+
     protected static class SideState {
+        protected ClientHandler clientHandler;
         protected int mana;
         protected HeroLogic hero;
         protected HeroPowerLogic heroPower;

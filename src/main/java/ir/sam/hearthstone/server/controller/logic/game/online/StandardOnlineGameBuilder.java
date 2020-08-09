@@ -11,8 +11,7 @@ import ir.sam.hearthstone.server.model.response.PassiveDetails;
 import ir.sam.hearthstone.server.model.response.Response;
 import ir.sam.hearthstone.server.resource_loader.ModelLoader;
 import ir.sam.hearthstone.server.util.hibernate.Connector;
-import lombok.Getter;
-import lombok.Setter;
+
 
 import java.util.ArrayList;
 
@@ -21,22 +20,15 @@ import static ir.sam.hearthstone.server.controller.Constants.STARTING_HAND_CARDS
 public class StandardOnlineGameBuilder extends AbstractGameBuilder implements OnlineGameBuilder {
     private final Connector connector;
 
-    protected static class SideBuilder extends AbstractGameBuilder.SideBuilder {
-        @Getter
-        @Setter
-        protected ClientHandler clientHandler;
-    }
 
     public StandardOnlineGameBuilder(ModelLoader modelLoader, Connector connector) {
         super(modelLoader);
         this.connector = connector;
-        sideBuilderMap.put(Side.PLAYER_ONE, new SideBuilder());
-        sideBuilderMap.put(Side.PLAYER_TWO, new SideBuilder());
     }
 
     @Override
     protected synchronized void build0() {
-        result = new StandardOnlineGame(gameStateBuilder.build(),modelLoader,connector);
+        result = new StandardOnlineGame(gameStateBuilder.build(), modelLoader, connector);
         result.startGame();
         sendEvents(Side.PLAYER_ONE);
         sendEvents(Side.PLAYER_TWO);
@@ -73,22 +65,22 @@ public class StandardOnlineGameBuilder extends AbstractGameBuilder implements On
                 , sideBuilderMap.get(client).getDeck());
         gameStateBuilder.setHand(client, sideBuilderMap.get(client).getHand())
                 .setDeckCards(client, sideBuilderMap.get(client).getDeck());
-        if (sideBuilderMap.get(client.getOther()).getHand().size() != 0) {
+        if (gameStateBuilder.getHand(client.getOther()) != null) {
             build0();
             return result.getResponse(client);
-        }else return new PassiveDetails(new ArrayList<>(),null,null,
+        } else return new PassiveDetails(new ArrayList<>(), null, null,
                 "waiting for opponent");
     }
 
     @Override
     public synchronized void setClientHandler(Side client, ClientHandler clientHandler) {
-        ((SideBuilder) sideBuilderMap.get(client)).clientHandler = clientHandler;
+        gameStateBuilder.setClientHandler(client,clientHandler);
     }
 
     @Override
     public Response check(Side client) {
-        if (result!=null){
-            ((SideBuilder) sideBuilderMap.get(client)).clientHandler.setGame(result);
+        if (result != null) {
+            gameStateBuilder.getClientHandler(client).setGame(result);
             return result.getResponse(client);
         }
         return null;

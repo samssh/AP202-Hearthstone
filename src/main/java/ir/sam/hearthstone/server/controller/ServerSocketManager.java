@@ -19,8 +19,9 @@ public class ServerSocketManager {
     private final ServerSocket serverSocket;
     private final Connector connector;
     private final ModelLoader modelLoader;
-    private volatile boolean running;
     private final List<ClientHandler> clientHandlers;
+    private final GameLobby gameLobby;
+    private volatile boolean running;
 
     public ServerSocketManager() throws IOException {
         Config config = ConfigFactory.getInstance().getConfig("SERVER_CONFIG");
@@ -31,6 +32,7 @@ public class ServerSocketManager {
         modelLoader = new ModelLoader(connector);
         running = true;
         clientHandlers = Collections.synchronizedList(new ArrayList<>());
+        gameLobby = new GameLobby(connector,modelLoader);
     }
 
     public void start() {
@@ -43,7 +45,9 @@ public class ServerSocketManager {
             try {
                 Socket socket = serverSocket.accept();
                 ResponseSender responseSender = new SocketResponseSender(this, socket);
-                clientHandlers.add(new ClientHandler(responseSender, connector, modelLoader).start());
+                ClientHandler clientHandler = new ClientHandler(responseSender, connector, modelLoader, gameLobby);
+                clientHandlers.add(clientHandler);
+                clientHandler.start();
             } catch (IOException ignore) {
             }
         }
@@ -58,13 +62,15 @@ public class ServerSocketManager {
         while (running) {
             System.out.println("type exit to shutdown server. make sure no client connected");
             if ("exit".equals(scanner.nextLine())) {
+                System.out.println("try exit");
                 for (ClientHandler clientHandler : clientHandlers)
                     clientHandler.shutdown();
                 running = false;
                 connector.close();
                 try {
                     serverSocket.close();
-                } catch (IOException ignore) {
+                } catch (IOException e) {
+                    e.printStackTrace();
                 }
             }
         }
