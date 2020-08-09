@@ -117,9 +117,9 @@ public class PassivePanel extends JPanel {
         cardBox.changeModel(index, cardOverview);
     }
 
-    private <Model extends Overview> void setModels(Box<Model, ?> box, List<Model> mode, String message) {
-        if (mode != null) {
-            box.setModels(mode);
+    private <Model extends Overview> void setModels(Box<Model, ?> box, List<Model> models, String message) {
+        if (models != null) {
+            box.setModels(models);
             box.setTitle(message);
             this.add(box);
         } else {

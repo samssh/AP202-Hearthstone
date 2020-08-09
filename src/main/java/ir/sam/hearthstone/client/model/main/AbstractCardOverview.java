@@ -72,7 +72,8 @@ public abstract class AbstractCardOverview extends UnitOverview {
         g.setColor(Color.WHITE);
         g.setFont(g.getFont().deriveFont(Font.BOLD));
         g.setFont(g.getFont().deriveFont(21.0F));
-        g.drawString(mana + "", 10 * w / 120, 25 * h / 170);
+        if (mana != -1)
+            g.drawString(mana + "", 10 * w / 120, 25 * h / 170);
         if (att >= 0 && hp >= 0) {
             g.drawString(att + "", 13 * w / 120, 161 * h / 170);
             g.drawString(hp + "", 100 * w / 120, 161 * h / 170);
@@ -100,7 +101,8 @@ public abstract class AbstractCardOverview extends UnitOverview {
         g.setColor(Color.WHITE);
         g.setFont(g.getFont().deriveFont(Font.BOLD));
         g.setFont(g.getFont().deriveFont(40.0F));
-        g.drawString(mana + "", 25 * w / 250, 55 * h / 350);
+        if (mana != -1)
+            g.drawString(mana + "", 25 * w / 250, 55 * h / 350);
         if (att >= 0 && hp >= 0) {
             g.drawString(att + "", 25 * w / 250, 327 * h / 350);
             g.drawString(hp + "", 205 * w / 250, 327 * h / 350);

@@ -64,10 +64,12 @@ public interface RequestExecutor {
 
     void selectCardInHand(int side, int index);
 
-    default void sendGameEvents(){
-
+    default void sendGameEvents() {
     }
 
     default void exitGame() {
+    }
+
+    default void checkForOpponent() {
     }
 }

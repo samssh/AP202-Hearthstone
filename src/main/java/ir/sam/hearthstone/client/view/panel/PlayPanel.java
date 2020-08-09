@@ -219,7 +219,7 @@ public class PlayPanel extends JPanel {
     }
 
     public void exit() {
-        playAction.exit();
+        playAction.gotoMainMenu();
     }
 
     private void config() {

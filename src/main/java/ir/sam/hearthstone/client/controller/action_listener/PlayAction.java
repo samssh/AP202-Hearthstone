@@ -5,6 +5,7 @@ import ir.sam.hearthstone.client.model.log.ButtonLog;
 import ir.sam.hearthstone.client.model.requests.*;
 import ir.sam.hearthstone.client.util.hibernate.Connector;
 
+import static ir.sam.hearthstone.client.view.PanelType.MAIN_MENU;
 import static ir.sam.hearthstone.client.view.PanelType.PLAY;
 
 public class PlayAction {
@@ -14,6 +15,11 @@ public class PlayAction {
     public PlayAction(Connector connector, Client client) {
         this.connector = connector;
         this.client = client;
+    }
+
+
+    public void gotoMainMenu(){
+        client.goTo(MAIN_MENU.name(),null);
     }
 
     public void exit() {

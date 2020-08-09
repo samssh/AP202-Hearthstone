@@ -26,7 +26,8 @@ public class PlayEventExecutor {
             case PLAY_WEAPON -> AnimationManger.moveUnitToViewer(playPanel.getWeapon()[side], playPanel.getHand()[side],
                     event.getOverview(), event.getIndex(), playPanel.getAnimationManger());
             case PLAY_SPELL -> {
-                Overview spell = playPanel.getHand()[side].removeModel(index, false);
+                Overview spell = event.getOverview();
+                playPanel.getHand()[side].removeModel(index, false);
                 Point org = playPanel.getHand()[side].getPosition(index);
                 org.translate(playPanel.getHand()[side].getX(), playPanel.getGround()[side].getY());
                 Point dest = playPanel.getHero()[side ^ 1].getLocation();

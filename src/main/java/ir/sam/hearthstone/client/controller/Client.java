@@ -31,14 +31,11 @@ public class Client implements ResponseExecutor {
     private final JFrame frame;
     @Getter
     private final Map<PanelType, JPanel> panels;
-    @Getter
     private final Stack<PanelType> history;
-    @Getter
-    @Setter
     private PanelType now;
     private final Connector connector;
     private final List<Request> requestList;
-    private final Loop executor,updator;
+    private final Loop executor, updater;
     @Getter
     private String username;
     @Setter
@@ -62,20 +59,19 @@ public class Client implements ResponseExecutor {
         now = CONNECT;
         frame.setContentPane(panels.get(CONNECT));
         executor = new Loop(60, this::executeAnswers);
-        updator = new Loop(1,this::update);
+        updater = new Loop(1,this::update);
     }
 
-    @SuppressWarnings("SwitchStatementWithTooFewBranches")
     private void update() {
         switch (now){
             case PLAY -> addRequest(new GameEvent());
+            case PASSIVE -> addRequest(new CheckForOpponente());
         }
     }
 
-
     public void start() {
         executor.start();
-        updator.start();
+        updater.start();
     }
 
     public void setOnLogin() {
@@ -303,10 +299,10 @@ public class Client implements ResponseExecutor {
     @Override
     public void setPlayDetail(List<PlayDetails.Event> events, String eventLog
             , int[] mana, double time) {
-        ((PlayPanel) panels.get(PLAY)).setDetails(events, eventLog, mana, time);
         if (now != PLAY) {
             now = PLAY;
             updateFrame();
         }
+        ((PlayPanel) panels.get(PLAY)).setDetails(events, eventLog, mana, time);
     }
 }
