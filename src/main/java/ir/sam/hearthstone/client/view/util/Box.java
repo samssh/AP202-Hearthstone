@@ -228,7 +228,7 @@ public abstract class Box<Model extends Overview, T extends JPanel> extends JPan
         int destinationY = items[(t) % a][(t) / a].getY();
         PaintByTime ove = new OverviewPainter(showing.get(k));
         animationManger.addPainter(new LinearMotion(originX, originY, destinationX, destinationY,
-                ove, x -> Math.pow(x, 1 / 2.)));
+                ove, x -> Math.pow(x, 1)));
     }
 
     public Point getPosition(String name) {

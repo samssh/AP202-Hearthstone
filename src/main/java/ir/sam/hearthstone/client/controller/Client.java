@@ -268,16 +268,17 @@ public class Client implements ResponseExecutor {
     @Override
     public void goTo(String panel, String message) {
         try {
-            PanelType p = valueOf(panel);
             boolean flag = message == null || JOptionPane.showConfirmDialog(frame, message, "goto",
                     JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION;
+            PanelType p = valueOf(panel);
             if (flag) {
                 now = p;
                 updateFrame();
                 if (panels.get(now) instanceof Updatable)
                     ((Updatable) panels.get(now)).update();
             }
-        } catch (IllegalArgumentException ignored) {
+        } catch (IllegalArgumentException e) {
+            System.exit(0);
         }
     }
 

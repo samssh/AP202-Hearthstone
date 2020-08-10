@@ -72,4 +72,7 @@ public interface RequestExecutor {
 
     default void checkForOpponent() {
     }
+
+    default void cancelGame(){
+    }
 }

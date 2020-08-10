@@ -2,10 +2,7 @@ package ir.sam.hearthstone.client.controller.action_listener;
 
 import ir.sam.hearthstone.client.controller.Client;
 import ir.sam.hearthstone.client.model.log.ButtonLog;
-import ir.sam.hearthstone.client.model.requests.ConfirmOnPassive;
-import ir.sam.hearthstone.client.model.requests.SelectCardOnPassive;
-import ir.sam.hearthstone.client.model.requests.SelectOpponentDeck;
-import ir.sam.hearthstone.client.model.requests.SelectPassive;
+import ir.sam.hearthstone.client.model.requests.*;
 import ir.sam.hearthstone.client.util.hibernate.Connector;
 
 import static ir.sam.hearthstone.client.view.PanelType.PASSIVE;
@@ -21,17 +18,20 @@ public class PassiveAction {
 
     public void exit() {
         connector.save(new ButtonLog(client.getUsername(), "exit", PASSIVE.toString()));
+        client.addRequest(new CancelGame());
         client.sendLogoutRequest();
         client.exit();
     }
 
     public void back() {
         connector.save(new ButtonLog(client.getUsername(), "back", PASSIVE.toString()));
+        client.addRequest(new CancelGame());
         client.back();
     }
 
     public void backMainMenu() {
         connector.save(new ButtonLog(client.getUsername(), "backMainMenu", PASSIVE.toString()));
+        client.addRequest(new CancelGame());
         client.backMainMenu();
     }
 
