@@ -13,12 +13,14 @@ import ir.sam.hearthstone.server.model.client.CardOverview;
 import ir.sam.hearthstone.server.model.response.PlayDetails;
 import ir.sam.hearthstone.server.resource_loader.ModelLoader;
 import ir.sam.hearthstone.server.util.hibernate.Connector;
+import ir.sam.hearthstone.server.util.hibernate.DatabaseDisconnectException;
 
 import java.util.List;
 
 
 public class StandardOnlineGame extends AbstractGame implements Game {
     protected final Connector connector;
+
 
     public StandardOnlineGame(GameState gameState, ModelLoader modelLoader, Connector connector) {
         super(gameState, modelLoader);
@@ -52,6 +54,12 @@ public class StandardOnlineGame extends AbstractGame implements Game {
     @Override
     public synchronized void endGame(Side client) {
         applyStatistics(client);
+        try {
+            connector.save(gameState.getClientHandler(client).getPlayer());
+            connector.save(gameState.getClientHandler(client.getOther()).getPlayer());
+        } catch (DatabaseDisconnectException e) {
+            lastException = e;
+        }
         running = false;
         PlayDetails.Event event = new PlayDetails.EventBuilder(PlayDetails.EventType.END_GAME)
                 .setSide(client.getIndex()).build();
@@ -91,6 +99,9 @@ public class StandardOnlineGame extends AbstractGame implements Game {
     @Override
     protected String getEventLog(Side client) {
         StringBuilder builder = new StringBuilder();
+        if (gameState.getSideTurn() == client)
+            builder.append("your turn");
+        else builder.append("opponent turn");
         builder.append(String.format("number of your deck cards: %d\n"
                 , gameState.getDeck(client).size()));
         builder.append(String.format("number of opponent deck cards: %d\n"
@@ -113,6 +124,9 @@ public class StandardOnlineGame extends AbstractGame implements Game {
         PlayDetails.Event clone = event.clone();
         if (client == Side.PLAYER_TWO) {
             clone.setSide(clone.getSide() ^ 1);
+            if (clone.getType() == PlayDetails.EventType.ATTACK_HERO_POWER_TO_HERO
+                    || clone.getType() == PlayDetails.EventType.ATTACK_HERO_POWER_TO_MINION)
+                clone.setSecondIndex(clone.getSecondIndex() ^ 1);
         }
         if (clone.getSide() == 0) {
             if (clone.getType() == PlayDetails.EventType.END_GAME)

@@ -89,7 +89,7 @@ public class GameStateBuilder {
     private void buildSideState(Side side, SideStateBuilder sideStateBuilder, GameState gameState) {
         gameState.setPassive(side, new PassiveLogic(sideStateBuilder.passive, side));
         gameState.setHero(side, new HeroLogic(side, sideStateBuilder.deck.getHero()));
-        gameState.setClientHandler(side,sideStateBuilder.clientHandler);
+        gameState.setClientHandler(side, sideStateBuilder.clientHandler);
         gameState.getEvents().add(new PlayDetails.EventBuilder(PlayDetails.EventType.SET_HERO)
                 .setOverview(new HeroOverview(gameState.getHero(side))).setSide(side.getIndex()).build());
         gameState.setHeroPower(side, new HeroPowerLogic(side, sideStateBuilder.deck.getHero().getHeroPower()));

@@ -6,14 +6,12 @@ import ir.sam.hearthstone.server.resource_loader.Config;
 import ir.sam.hearthstone.server.resource_loader.ConfigFactory;
 import ir.sam.hearthstone.server.resource_loader.ModelLoader;
 import ir.sam.hearthstone.server.util.hibernate.Connector;
+import ir.sam.hearthstone.server.util.hibernate.DatabaseDisconnectException;
 
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Scanner;
+import java.util.*;
 
 public class ServerSocketManager {
     private final ServerSocket serverSocket;
@@ -23,7 +21,7 @@ public class ServerSocketManager {
     private final GameLobby gameLobby;
     private volatile boolean running;
 
-    public ServerSocketManager() throws IOException {
+    public ServerSocketManager() throws IOException, DatabaseDisconnectException {
         Config config = ConfigFactory.getInstance().getConfig("SERVER_CONFIG");
         int port = config.getProperty(Integer.class, "PORT");
         serverSocket = new ServerSocket(port);
@@ -32,7 +30,7 @@ public class ServerSocketManager {
         modelLoader = new ModelLoader(connector);
         running = true;
         clientHandlers = Collections.synchronizedList(new ArrayList<>());
-        gameLobby = new GameLobby(connector,modelLoader);
+        gameLobby = new GameLobby(connector, modelLoader);
     }
 
     public void start() {
@@ -48,9 +46,14 @@ public class ServerSocketManager {
                 ClientHandler clientHandler = new ClientHandler(responseSender, connector, modelLoader, gameLobby);
                 clientHandlers.add(clientHandler);
                 clientHandler.start();
-            } catch (IOException ignore) {
+            } catch (IOException e) {
+                e.printStackTrace();
             }
         }
+        System.out.println("exit");
+        Set<Thread> threadSet = Thread.getAllStackTraces().keySet();
+        for (Thread thread:threadSet)
+            System.out.println(thread.toString());
     }
 
     public void removeClientHandler(SocketResponseSender socketResponseSender) {
@@ -63,8 +66,13 @@ public class ServerSocketManager {
             System.out.println("type exit to shutdown server. make sure no client connected");
             if ("exit".equals(scanner.nextLine())) {
                 System.out.println("try exit");
-                for (ClientHandler clientHandler : clientHandlers)
-                    clientHandler.shutdown();
+                for (ClientHandler clientHandler : clientHandlers) {
+                    try {
+                        clientHandler.shutdown();
+                    } catch (DatabaseDisconnectException e) {
+                        e.printStackTrace();
+                    }
+                }
                 running = false;
                 connector.close();
                 try {
@@ -73,6 +81,7 @@ public class ServerSocketManager {
                     e.printStackTrace();
                 }
             }
+            System.out.println("exit");
         }
     }
 }

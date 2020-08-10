@@ -2,6 +2,7 @@ package ir.sam.hearthstone.server.controller.logic.game.api;
 
 import ir.sam.hearthstone.server.controller.logic.game.Side;
 import ir.sam.hearthstone.server.model.response.Response;
+import ir.sam.hearthstone.server.util.hibernate.DatabaseDisconnectException;
 
 public interface Game {
     void nextTurn(Side client);
@@ -16,5 +17,5 @@ public interface Game {
 
     void endGame(Side client);
 
-    Response getResponse(Side client);
+    Response getResponse(Side client) throws DatabaseDisconnectException;
 }

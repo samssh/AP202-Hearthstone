@@ -12,8 +12,8 @@ public abstract class GameEvent implements SaveAble {
         this.side = side;
     }
 
-    protected String getSideWord(Side client){
-        return client==side? "you":"opponent";
+    protected String getSideWord(Side client) {
+        return client == side ? "you" : "opponent";
     }
 
     public abstract String toString(Side client);

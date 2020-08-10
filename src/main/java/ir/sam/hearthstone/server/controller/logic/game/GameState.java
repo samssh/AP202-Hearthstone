@@ -161,19 +161,19 @@ public class GameState {
         sideStateMap.get(side).resetSelected();
     }
 
-    public int getEventIndex(Side side){
+    public int getEventIndex(Side side) {
         return sideStateMap.get(side).eventIndex;
     }
 
-    public void setEventIndex(Side side,int eventIndex){
+    public void setEventIndex(Side side, int eventIndex) {
         sideStateMap.get(side).eventIndex = eventIndex;
     }
 
-    public ClientHandler getClientHandler(Side side){
+    public ClientHandler getClientHandler(Side side) {
         return sideStateMap.get(side).clientHandler;
     }
 
-    public void setClientHandler(Side side,ClientHandler clientHandler){
+    public void setClientHandler(Side side, ClientHandler clientHandler) {
         sideStateMap.get(side).clientHandler = clientHandler;
     }
 

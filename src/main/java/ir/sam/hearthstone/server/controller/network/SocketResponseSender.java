@@ -47,11 +47,15 @@ public class SocketResponseSender implements ResponseSender {
     }
 
     @Override
-    public Request getRequest() {
-
+    public Request getRequest() throws CliectDisconnectException {
         Optional<Message> optionalMessage;
         do {
-            String encoded = scanner.nextLine();
+            String encoded;
+            try {
+                encoded = scanner.nextLine();
+            } catch (Throwable t) {
+                throw new CliectDisconnectException(t);
+            }
             String json = new String(decoder.decode(encoded));
             optionalMessage = getRequestMessage(json);
         } while (optionalMessage.isEmpty());
@@ -76,12 +80,16 @@ public class SocketResponseSender implements ResponseSender {
     }
 
     @Override
-    public void sendResponse(Response... responses) {
+    public void sendResponse(Response... responses) throws CliectDisconnectException {
         Message message = new Message(token, responses);
         checkToken(message);
         String json = gson.toJson(message);
         String encode = encoder.encodeToString(json.getBytes());
-        printStream.println(encode);
+        try {
+            printStream.println(encode);
+        } catch (Throwable t) {
+            throw new CliectDisconnectException(t);
+        }
     }
 
     @Override

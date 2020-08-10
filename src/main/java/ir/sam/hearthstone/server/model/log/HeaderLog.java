@@ -1,21 +1,21 @@
 package ir.sam.hearthstone.server.model.log;
 
 import ir.sam.hearthstone.server.util.hibernate.SaveAble;
-import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
+import javax.persistence.Table;
+import java.util.Objects;
 
-@Entity(name = "header_log")
-@EqualsAndHashCode(onlyExplicitlyIncluded = true)
+@Entity
+@Table(name = "header_log", schema = "log")
 public class HeaderLog implements SaveAble {
     @Id
     @Setter
     @Getter
-    @EqualsAndHashCode.Include
     private long id;
     @Column
     @Setter
@@ -46,5 +46,18 @@ public class HeaderLog implements SaveAble {
                 ", userName='" + username + '\'' +
                 ", deletedAt='" + deletedAt + '\'' +
                 '}';
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        HeaderLog headerLog = (HeaderLog) o;
+        return id == headerLog.id;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id);
     }
 }

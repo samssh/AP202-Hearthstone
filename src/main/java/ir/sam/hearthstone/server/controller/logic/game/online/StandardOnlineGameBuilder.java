@@ -7,11 +7,12 @@ import ir.sam.hearthstone.server.controller.logic.game.api.OnlineGameBuilder;
 import ir.sam.hearthstone.server.model.account.Deck;
 import ir.sam.hearthstone.server.model.main.Passive;
 import ir.sam.hearthstone.server.model.response.ChangeCardOnPassive;
+import ir.sam.hearthstone.server.model.response.GoTo;
 import ir.sam.hearthstone.server.model.response.PassiveDetails;
 import ir.sam.hearthstone.server.model.response.Response;
 import ir.sam.hearthstone.server.resource_loader.ModelLoader;
 import ir.sam.hearthstone.server.util.hibernate.Connector;
-
+import ir.sam.hearthstone.server.util.hibernate.DatabaseDisconnectException;
 
 import java.util.ArrayList;
 
@@ -60,7 +61,7 @@ public class StandardOnlineGameBuilder extends AbstractGameBuilder implements On
     }
 
     @Override
-    public synchronized Response confirm(Side client) {
+    public synchronized Response confirm(Side client) throws DatabaseDisconnectException {
         finalizeHand(sideBuilderMap.get(client).getHand(), sideBuilderMap.get(client).getHandState()
                 , sideBuilderMap.get(client).getDeck());
         gameStateBuilder.setHand(client, sideBuilderMap.get(client).getHand())
@@ -74,15 +75,23 @@ public class StandardOnlineGameBuilder extends AbstractGameBuilder implements On
 
     @Override
     public synchronized void setClientHandler(Side client, ClientHandler clientHandler) {
-        gameStateBuilder.setClientHandler(client,clientHandler);
+        gameStateBuilder.setClientHandler(client, clientHandler);
     }
 
     @Override
-    public Response check(Side client) {
+    public Response check(Side client) throws DatabaseDisconnectException {
+        if (cancled){
+            return new GoTo("MAIN_MENU",null);
+        }
         if (result != null) {
             gameStateBuilder.getClientHandler(client).setGame(result);
             return result.getResponse(client);
         }
         return null;
+    }
+
+    @Override
+    public void cancel() {
+        cancled = true;
     }
 }

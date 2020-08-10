@@ -3,8 +3,8 @@ package ir.sam.hearthstone.server.model.client;
 import ir.sam.hearthstone.server.model.main.Card;
 
 public class CardOverview extends AbstractCardOverview {
-    public static final CardOverview BACK = new CardOverview("back","back",null
-            ,1,-1,-1,-1,-1,false);
+    public static final CardOverview BACK = new CardOverview("back", "back", null
+            , 1, -1, -1, -1, -1, false);
 
     public CardOverview(Card card) {
         super(card);

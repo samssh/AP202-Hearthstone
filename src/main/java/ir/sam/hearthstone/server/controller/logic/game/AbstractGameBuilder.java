@@ -13,6 +13,7 @@ import ir.sam.hearthstone.server.model.response.PassiveDetails;
 import ir.sam.hearthstone.server.model.response.PlayDetails;
 import ir.sam.hearthstone.server.model.response.Response;
 import ir.sam.hearthstone.server.resource_loader.ModelLoader;
+import ir.sam.hearthstone.server.util.hibernate.DatabaseDisconnectException;
 import lombok.Getter;
 
 import java.util.*;
@@ -26,6 +27,7 @@ public abstract class AbstractGameBuilder implements GameBuilder {
     protected final List<Passive> allPassives;
     protected final Map<Side, SideBuilder> sideBuilderMap;
     protected final ModelLoader modelLoader;
+    protected boolean cancled;
 
     protected static class SideBuilder {
         @Getter
@@ -68,7 +70,7 @@ public abstract class AbstractGameBuilder implements GameBuilder {
     public abstract Response selectCard(Side client, int index);
 
     @Override
-    public abstract Response confirm(Side client);
+    public abstract Response confirm(Side client) throws DatabaseDisconnectException;
 
     @SuppressWarnings("SameParameterValue")
     private <T> List<T> chooseRandom(List<T> list, int n) {
@@ -86,7 +88,7 @@ public abstract class AbstractGameBuilder implements GameBuilder {
         return result;
     }
 
-    protected Response sendPassives(Side client,String message) {
+    protected Response sendPassives(Side client, String message) {
         sideBuilderMap.get(client).sentPassives.addAll(chooseRandom(this.allPassives, STARTING_PASSIVES));
         List<PassiveOverview> passives = turnToPassiveOverview(sideBuilderMap.get(client).sentPassives);
         return new PassiveDetails(passives, null, null, message);

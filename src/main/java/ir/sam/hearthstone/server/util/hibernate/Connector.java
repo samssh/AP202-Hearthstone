@@ -8,7 +8,6 @@ import org.hibernate.boot.MetadataSources;
 import org.hibernate.boot.registry.StandardServiceRegistry;
 import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
 
-import javax.persistence.PersistenceException;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.PrintStream;
@@ -20,6 +19,7 @@ import java.util.Set;
 public class Connector {
     private final static Object staticLock = new Object();
     private final static PrintStream logFilePrintStream;
+    private Throwable lastThrowable;
 
     static {
         PrintStream temp;
@@ -69,6 +69,11 @@ public class Connector {
         return registryBuilder;
     }
 
+    private void ensureOpen() throws DatabaseDisconnectException {
+        if (lastThrowable != null)
+            throw new DatabaseDisconnectException(lastThrowable);
+    }
+
     private void persist() {
         Set<SaveAble> tempDelete;
         Set<SaveAble> tempSave;
@@ -81,26 +86,37 @@ public class Connector {
         if (tempSave.size() > 0 || tempDelete.size() > 0)
             synchronized (staticLock) {
                 Session session = sessionFactory.openSession();
-                session.beginTransaction();
+                try {
+                    session.beginTransaction();
+                } catch (Throwable e) {
+                    lastThrowable = e;
+                    e.printStackTrace();
+                    return;
+                }
                 for (SaveAble saveAble : tempDelete) {
                     try {
                         session.delete(saveAble);
-                    } catch (PersistenceException e) {
+                    } catch (Throwable e) {
+                        lastThrowable = e;
                         e.printStackTrace();
                         System.err.println("instance not deleted: " + saveAble);
+                        return;
                     }
                 }
                 for (SaveAble saveAble : tempSave) {
                     try {
                         session.saveOrUpdate(saveAble);
-                    } catch (PersistenceException e) {
+                    } catch (Throwable e) {
+                        lastThrowable = e;
                         e.printStackTrace();
                         System.err.println("instance not saved :" + saveAble);
+                        return;
                     }
                 }
                 try {
                     session.getTransaction().commit();
-                } catch (PersistenceException e) {
+                } catch (Throwable e) {
+                    lastThrowable = e;
                     e.printStackTrace();
                     System.err.println("instances not saved :" + tempSave);
                     System.err.println("instances not deleted :" + tempDelete);
@@ -116,53 +132,79 @@ public class Connector {
         sessionFactory.close();
     }
 
-    public void save(SaveAble saveAble) {
+    public void save(SaveAble saveAble) throws DatabaseDisconnectException {
         if (saveAble != null)
             synchronized (lock) {
+                ensureOpen();
                 save.add(saveAble);
             }
     }
 
-    public void delete(SaveAble saveAble) {
+    public void delete(SaveAble saveAble) throws DatabaseDisconnectException {
         if (saveAble != null)
             synchronized (lock) {
+                ensureOpen();
                 delete.add(saveAble);
             }
     }
 
-    public <E extends SaveAble> E fetch(Class<E> entity, Serializable id) {
+    public <E extends SaveAble> E fetch(Class<E> entity, Serializable id) throws DatabaseDisconnectException {
         synchronized (staticLock) {
+            ensureOpen();
             Session session = sessionFactory.openSession();
-            E result = session.get(entity, id);
+            E result = null;
+            try {
+                result = session.get(entity, id);
+            } catch (Throwable e) {
+                lastThrowable = e;
+                e.printStackTrace();
+                throw new DatabaseDisconnectException(e);
+            }
             session.close();
             return result;
         }
     }
 
-    public <E extends SaveAble> List<E> fetchAll(Class<E> entity) {
+    public <E extends SaveAble> List<E> fetchAll(Class<E> entity) throws DatabaseDisconnectException {
         String hql = "FROM " + entity.getName();
         return executeHQL(hql, entity);
     }
 
-    public <E extends SaveAble> List<E> executeHQL(String hql, Class<E> entity) {
+    public <E extends SaveAble> List<E> executeHQL(String hql, Class<E> entity) throws DatabaseDisconnectException {
         synchronized (staticLock) {
+            ensureOpen();
             Session session = sessionFactory.openSession();
-            List<E> result = session.createQuery(hql, entity).getResultList();
+            List<E> result = null;
+            try {
+                result = session.createQuery(hql, entity).getResultList();
+            } catch (Throwable e) {
+                lastThrowable = e;
+                e.printStackTrace();
+                throw new DatabaseDisconnectException(e);
+            }
             session.close();
             return result;
         }
     }
 
-    public <E extends SaveAble> List<E> executeSQLQuery(String sql, Class<E> entity) {
+    public <E extends SaveAble> List<E> executeSQLQuery(String sql, Class<E> entity) throws DatabaseDisconnectException {
         synchronized (staticLock) {
+            ensureOpen();
             Session session = sessionFactory.openSession();
-            List<E> result = session.createNativeQuery(sql, entity).getResultList();
+            List<E> result = null;
+            try {
+                result = session.createNativeQuery(sql, entity).getResultList();
+            } catch (Exception e) {
+                lastThrowable = e;
+                e.printStackTrace();
+                throw new DatabaseDisconnectException(e);
+            }
             session.close();
             return result;
         }
     }
 
-    public <E extends SaveAble> List<E> fetchWithRestriction(Class<E> entity, String fieldName, Object value) {
+    public <E extends SaveAble> List<E> fetchWithRestriction(Class<E> entity, String fieldName, Object value) throws DatabaseDisconnectException {
         String hql = "from " + entity.getName() + " where " + fieldName + "=" + "'" + value + "'";
         return executeHQL(hql, entity);
     }

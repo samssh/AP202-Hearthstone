@@ -8,6 +8,7 @@ import ir.sam.hearthstone.server.controller.logic.game.api.Game;
 import ir.sam.hearthstone.server.controller.logic.game.api.GameBuilder;
 import ir.sam.hearthstone.server.controller.logic.game.api.OnlineGameBuilder;
 import ir.sam.hearthstone.server.controller.logic.game.parctice.PracticeGameBuilder;
+import ir.sam.hearthstone.server.controller.network.CliectDisconnectException;
 import ir.sam.hearthstone.server.controller.network.ResponseSender;
 import ir.sam.hearthstone.server.model.account.Deck;
 import ir.sam.hearthstone.server.model.account.Player;
@@ -22,6 +23,7 @@ import ir.sam.hearthstone.server.model.requests.RequestExecutor;
 import ir.sam.hearthstone.server.model.response.*;
 import ir.sam.hearthstone.server.resource_loader.ModelLoader;
 import ir.sam.hearthstone.server.util.hibernate.Connector;
+import ir.sam.hearthstone.server.util.hibernate.DatabaseDisconnectException;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -71,20 +73,32 @@ public class ClientHandler implements RequestExecutor {
 
     private void executeRequests() {
         while (running) {
-            Request request = responseSender.getRequest();
-            connector.save(new RequestLog(request, (player == null) ? null : player.getUsername()));
-            request.execute(this);
-            responseSender.sendResponse(responseList.toArray(new Response[0]));
-            responseList.clear();
+            Request request;
+            try {
+                request = responseSender.getRequest();
+                try {
+                    connector.save(new RequestLog(request, (player == null) ? null : player.getUsername()));
+                    request.execute(this);
+                } catch (DatabaseDisconnectException e) {
+                    responseSender.sendResponse(new GoTo("EXIT", "database disconnected"));
+                    break;
+                }
+                responseSender.sendResponse(responseList.toArray(new Response[0]));
+                responseList.clear();
+            } catch (CliectDisconnectException e) {
+                if (game != null) game.endGame(side);
+                if (gameBuilder != null && gameBuilder instanceof OnlineGameBuilder)
+                    ((OnlineGameBuilder) gameBuilder).cancel();
+            }
         }
         responseSender.close();
     }
 
-    private void addToResponses(Response... responses) {
+    private void addToResponses(Response... responses) throws DatabaseDisconnectException {
         addToResponses(true, responses);
     }
 
-    private void addToResponses(boolean log, Response... responses) {
+    private void addToResponses(boolean log, Response... responses) throws DatabaseDisconnectException {
         synchronized (responseList) {
             for (Response response : responses)
                 if (response != null) {
@@ -95,14 +109,14 @@ public class ClientHandler implements RequestExecutor {
     }
 
     @Override
-    public void login(String username, String password, int mode) {
+    public void login(String username, String password, int mode) throws DatabaseDisconnectException {
         if (mode == 1)
             signIn(username, password);
         if (mode == 2)
             signUp(username, password);
     }
 
-    private void signIn(String userName, String password) {
+    private void signIn(String userName, String password) throws DatabaseDisconnectException {
         Player fetched = connector.fetch(Player.class, userName);
         if (fetched != null) {
             if (fetched.getPassword().equals(password)) {
@@ -122,7 +136,7 @@ public class ClientHandler implements RequestExecutor {
         }
     }
 
-    private void signUp(String username, String password) {
+    private void signUp(String username, String password) throws DatabaseDisconnectException {
         Player player = connector.fetch(Player.class, username);
         if (player == null) {
             player = new Player(username, password, System.currentTimeMillis(), Constants.STARTING_COINS, 0
@@ -141,7 +155,7 @@ public class ClientHandler implements RequestExecutor {
     }
 
     @Override
-    public void logout() {
+    public void logout() throws DatabaseDisconnectException {
         if (this.player != null) {
             connector.save(player);
             connector.save(new AccountLog(player.getUsername(), "logout"));
@@ -151,7 +165,7 @@ public class ClientHandler implements RequestExecutor {
     }
 
     @Override
-    public void deleteAccount() {
+    public void deleteAccount() throws DatabaseDisconnectException {
         if (this.player != null) {
             connector.delete(player);
             connector.save(new AccountLog(player.getUsername(), "delete account"));
@@ -164,7 +178,7 @@ public class ClientHandler implements RequestExecutor {
     }
 
     @Override
-    public void shutdown() {
+    public void shutdown() throws DatabaseDisconnectException {
         running = false;
         Response response = new ShutDown();
         addToResponses(false, response);
@@ -172,72 +186,72 @@ public class ClientHandler implements RequestExecutor {
     }
 
     @Override
-    public void sendShop() {
+    public void sendShop() throws DatabaseDisconnectException {
         addToResponses(shop.sendShop(player));
     }
 
     @Override
-    public void sellCard(String cardName) {
+    public void sellCard(String cardName) throws DatabaseDisconnectException {
         addToResponses(shop.sellCard(cardName, player));
     }
 
     @Override
-    public void buyCard(String cardName) {
+    public void buyCard(String cardName) throws DatabaseDisconnectException {
         addToResponses(shop.buyCard(cardName, player));
     }
 
     @Override
-    public void sendStatus() {
+    public void sendStatus() throws DatabaseDisconnectException {
         addToResponses(status.sendStatus(player));
     }
 
     @Override
-    public void selectDeck(String deckName) {
+    public void selectDeck(String deckName) throws DatabaseDisconnectException {
         addToResponses(collection.selectDeck(player, deckName));
     }
 
     @Override
-    public void sendAllCollectionDetails(String name, String classOfCard, int mana, int lockMode) {
+    public void sendAllCollectionDetails(String name, String classOfCard, int mana, int lockMode) throws DatabaseDisconnectException {
         addToResponses(collection.sendAllCollectionDetails(name, classOfCard, mana, lockMode, player));
     }
 
     @Override
-    public void applyCollectionFilter(String name, String classOfCard, int mana, int lockMode) {
+    public void applyCollectionFilter(String name, String classOfCard, int mana, int lockMode) throws DatabaseDisconnectException {
         addToResponses(collection.applyCollectionFilter(name, classOfCard, mana, lockMode, player));
     }
 
     @Override
-    public void newDeck(String deckName, String heroName) {
+    public void newDeck(String deckName, String heroName) throws DatabaseDisconnectException {
         addToResponses(collection.newDeck(deckName, heroName, player));
     }
 
     @Override
-    public void deleteDeck(String deckName) {
+    public void deleteDeck(String deckName) throws DatabaseDisconnectException {
         addToResponses(collection.deleteDeck(deckName, player));
     }
 
     @Override
-    public void changeDeckName(String oldDeckName, String newDeckName) {
+    public void changeDeckName(String oldDeckName, String newDeckName) throws DatabaseDisconnectException {
         addToResponses(collection.changeDeckName(oldDeckName, newDeckName, player));
     }
 
     @Override
-    public void changeHeroDeck(String deckName, String heroName) {
+    public void changeHeroDeck(String deckName, String heroName) throws DatabaseDisconnectException {
         addToResponses(collection.changeHeroDeck(deckName, heroName, player));
     }
 
     @Override
-    public void removeCardFromDeck(String cardName, String deckName) {
+    public void removeCardFromDeck(String cardName, String deckName) throws DatabaseDisconnectException {
         addToResponses(collection.removeCardFromDeck(cardName, deckName, player));
     }
 
     @Override
-    public void addCardToDeck(String cardName, String deckName) {
+    public void addCardToDeck(String cardName, String deckName) throws DatabaseDisconnectException {
         addToResponses(collection.addCardToDeck(cardName, deckName, player, shop));
     }
 
     @Override
-    public void startPlay(String mode) {
+    public void startPlay(String mode) throws DatabaseDisconnectException {
         Response response = null;
         if (canStartGame(player.getSelectedDeck())) {
             switch (mode) {
@@ -247,8 +261,8 @@ public class ClientHandler implements RequestExecutor {
                     response = gameBuilder.setDeck(this.side, player.getSelectedDeck());
                 }
                 case "online" -> {
-                    gameBuilder = gameLobby.getGameBuilder(mode,this);
-                    response = gameBuilder.setDeck(this.side,player.getSelectedDeck());
+                    gameBuilder = gameLobby.getGameBuilder(mode, this);
+                    response = gameBuilder.setDeck(this.side, player.getSelectedDeck());
                 }
                 case "tavernBrawl" -> response = new ShowMessage("tavernBrawl add soon");
             }
@@ -268,10 +282,12 @@ public class ClientHandler implements RequestExecutor {
     }
 
     @Override
-    public void selectPassive(String passiveName) {
+    public void selectPassive(String passiveName) throws DatabaseDisconnectException {
         if (gameBuilder != null) {
             Optional<Passive> optionalPassive = modelLoader.getPassive(passiveName);
-            optionalPassive.ifPresent(passive -> addToResponses(gameBuilder.setPassive(this.side, passive, this)));
+            if (optionalPassive.isPresent()) {
+                addToResponses(gameBuilder.setPassive(this.side, optionalPassive.get(), this));
+            }
         }
     }
 
@@ -282,7 +298,7 @@ public class ClientHandler implements RequestExecutor {
     }
 
     @Override
-    public void selectOpponentDeck(String deckName) {
+    public void selectOpponentDeck(String deckName) throws DatabaseDisconnectException {
         if (gameBuilder != null) {
             Optional<Deck> optionalDeck = collection.getDeck(deckName, player);
             if (optionalDeck.isPresent() && canStartGame(optionalDeck.get())) {
@@ -292,13 +308,13 @@ public class ClientHandler implements RequestExecutor {
     }
 
     @Override
-    public void selectCadOnPassive(int index) {
+    public void selectCadOnPassive(int index) throws DatabaseDisconnectException {
         if (gameBuilder != null)
             addToResponses(gameBuilder.selectCard(this.side, index));
     }
 
     @Override
-    public void confirm() {
+    public void confirm() throws DatabaseDisconnectException {
         if (gameBuilder != null) {
             addToResponses(gameBuilder.confirm(this.side));
             game = gameBuilder.build();
@@ -306,7 +322,7 @@ public class ClientHandler implements RequestExecutor {
     }
 
     @Override
-    public void endTurn() {
+    public void endTurn() throws DatabaseDisconnectException {
         if (game != null) {
             game.nextTurn(this.side);
             addToResponses(game.getResponse(this.side));
@@ -314,7 +330,7 @@ public class ClientHandler implements RequestExecutor {
     }
 
     @Override
-    public void selectHero(int side) {
+    public void selectHero(int side) throws DatabaseDisconnectException {
         if (game != null) {
             game.selectHero(this.side, side == 0 ? PLAYER_ONE : PLAYER_TWO);
             addToResponses(game.getResponse(this.side));
@@ -322,7 +338,7 @@ public class ClientHandler implements RequestExecutor {
     }
 
     @Override
-    public void selectHeroPower(int side) {
+    public void selectHeroPower(int side) throws DatabaseDisconnectException {
         if (game != null) {
             game.selectHeroPower(this.side, side == 0 ? PLAYER_ONE : PLAYER_TWO);
             addToResponses(game.getResponse(this.side));
@@ -330,7 +346,7 @@ public class ClientHandler implements RequestExecutor {
     }
 
     @Override
-    public void selectMinion(int side, int index, int emptyIndex) {
+    public void selectMinion(int side, int index, int emptyIndex) throws DatabaseDisconnectException {
         if (game != null) {
             game.selectMinion(this.side, side == 0 ? PLAYER_ONE : PLAYER_TWO, index, emptyIndex);
             addToResponses(game.getResponse(this.side));
@@ -338,7 +354,7 @@ public class ClientHandler implements RequestExecutor {
     }
 
     @Override
-    public void selectCardInHand(int side, int index) {
+    public void selectCardInHand(int side, int index) throws DatabaseDisconnectException {
         if (game != null) {
             game.selectCardInHand(this.side, side == 0 ? PLAYER_ONE : PLAYER_TWO, index);
             addToResponses(game.getResponse(this.side));
@@ -346,26 +362,36 @@ public class ClientHandler implements RequestExecutor {
     }
 
     @Override
-    public void sendGameEvents() {
-        if (game!=null){
+    public void sendGameEvents() throws DatabaseDisconnectException {
+        if (game != null) {
             addToResponses(game.getResponse(this.side));
         }
     }
 
     @Override
-    public void checkForOpponent() {
-        if(gameBuilder instanceof OnlineGameBuilder){
+    public void checkForOpponent() throws DatabaseDisconnectException {
+        if (gameBuilder instanceof OnlineGameBuilder) {
             addToResponses(((OnlineGameBuilder) gameBuilder).check(side));
         }
     }
 
     @Override
-    public void exitGame() {
+    public void exitGame() throws DatabaseDisconnectException {
         if (game != null) {
             game.endGame(this.side);
             gameBuilder = null;
             game = null;
             addToResponses(new GoTo("MAIN_MENU", null));
+            connector.save(player);
+        }
+    }
+
+    @Override
+    public void cancelGame() {
+        if (gameBuilder!= null && gameBuilder instanceof OnlineGameBuilder){
+            ((OnlineGameBuilder) gameBuilder).cancel();
+            gameBuilder = null;
+            game = null;
         }
     }
 }

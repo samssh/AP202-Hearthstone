@@ -1,21 +1,20 @@
 package ir.sam.hearthstone.server.model.main;
 
 import ir.sam.hearthstone.server.util.hibernate.SaveAble;
-import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
 
 import javax.persistence.*;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
-@Entity(name = "has_action")
-@EqualsAndHashCode(onlyExplicitlyIncluded = true)
+@Entity
+@Table(name = "has_action")
 public abstract class HasAction implements SaveAble, Cloneable {
     @Id
     @Getter
     @Setter
-    @EqualsAndHashCode.Include
     protected String name;
     @Column
     @Getter
@@ -30,7 +29,7 @@ public abstract class HasAction implements SaveAble, Cloneable {
     @Column
     @ElementCollection
     @MapKeyEnumerated(EnumType.STRING)
-    @JoinTable(name = "has_action_methods")
+    @JoinTable(name = "has_action_methods", joinColumns = @JoinColumn(name = "has_action_name"))
     protected Map<ActionType, String> methods;
 
     public HasAction() {
@@ -49,5 +48,18 @@ public abstract class HasAction implements SaveAble, Cloneable {
             // this shouldn't happen, since we are Cloneable
         }
         return null;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        HasAction hasAction = (HasAction) o;
+        return Objects.equals(name, hasAction.name);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(name);
     }
 }

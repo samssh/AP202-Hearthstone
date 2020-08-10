@@ -3,17 +3,12 @@ package ir.sam.hearthstone.server.controller.logic.game.parctice;
 import ir.sam.hearthstone.server.controller.ClientHandler;
 import ir.sam.hearthstone.server.controller.logic.game.AbstractGameBuilder;
 import ir.sam.hearthstone.server.controller.logic.game.Side;
-import ir.sam.hearthstone.server.controller.logic.game.behavioral_models.CardLogic;
 import ir.sam.hearthstone.server.model.account.Deck;
-import ir.sam.hearthstone.server.model.client.CardOverview;
 import ir.sam.hearthstone.server.model.main.Passive;
 import ir.sam.hearthstone.server.model.response.ChangeCardOnPassive;
-import ir.sam.hearthstone.server.model.response.PlayDetails;
 import ir.sam.hearthstone.server.model.response.Response;
 import ir.sam.hearthstone.server.resource_loader.ModelLoader;
-
-import java.util.Collections;
-import java.util.List;
+import ir.sam.hearthstone.server.util.hibernate.DatabaseDisconnectException;
 
 import static ir.sam.hearthstone.server.controller.Constants.STARTING_HAND_CARDS;
 import static ir.sam.hearthstone.server.controller.logic.game.Side.PLAYER_ONE;
@@ -39,7 +34,7 @@ public class PracticeGameBuilder extends AbstractGameBuilder {
         if (sideBuilderMap.get(PLAYER_ONE).getSentPassives().contains(passive)) {
             if (gameStateBuilder.getPassive(PLAYER_ONE) == null) {
                 gameStateBuilder.setPassive(PLAYER_ONE, passive);
-                return sendPassives(PLAYER_TWO,"select opponent passive");
+                return sendPassives(PLAYER_TWO, "select opponent passive");
             } else {
                 gameStateBuilder.setPassive(PLAYER_TWO, passive);
                 return clientHandler.sendDecksForSelection("select opponent deck");
@@ -54,7 +49,7 @@ public class PracticeGameBuilder extends AbstractGameBuilder {
             throw new UnsupportedOperationException();
         if (gameStateBuilder.getDeck(PLAYER_ONE) == null) {
             gameStateBuilder.setDeck(PLAYER_ONE, deck);
-            return sendPassives(PLAYER_ONE,"select your passive");
+            return sendPassives(PLAYER_ONE, "select your passive");
         } else {
             gameStateBuilder.setDeck(PLAYER_TWO, deck);
             deckToList(sideBuilderMap.get(PLAYER_ONE).getDeck(), gameStateBuilder.getDeck(PLAYER_ONE));
@@ -79,7 +74,7 @@ public class PracticeGameBuilder extends AbstractGameBuilder {
     }
 
     @Override
-    public Response confirm(Side client) {
+    public Response confirm(Side client) throws DatabaseDisconnectException {
         if (client == PLAYER_TWO)
             throw new UnsupportedOperationException();
         if (sideBuilderMap.get(PLAYER_TWO).getHand().size() == 0) {

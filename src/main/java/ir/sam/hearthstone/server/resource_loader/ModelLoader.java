@@ -7,6 +7,7 @@ import ir.sam.hearthstone.server.model.main.ClassOfCard;
 import ir.sam.hearthstone.server.model.main.Hero;
 import ir.sam.hearthstone.server.model.main.Passive;
 import ir.sam.hearthstone.server.util.hibernate.Connector;
+import ir.sam.hearthstone.server.util.hibernate.DatabaseDisconnectException;
 import lombok.Getter;
 
 import java.util.*;
@@ -24,7 +25,7 @@ public class ModelLoader {
     private final List<Card> firstCards;
     private final List<Passive> firstPassives;
 
-    public ModelLoader(Connector connector) {
+    public ModelLoader(Connector connector) throws DatabaseDisconnectException {
         heroes = connector.fetchAll(Hero.class);
         cards = connector.fetchAll(Card.class);
         classOfCards = connector.fetchAll(ClassOfCard.class);

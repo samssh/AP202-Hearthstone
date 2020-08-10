@@ -62,7 +62,8 @@ public class PlayDetails extends Response {
         public Event clone() {
             try {
                 return (Event) super.clone();
-            } catch (CloneNotSupportedException ignore) {
+            } catch (CloneNotSupportedException e) {
+                // this shouldn't happen, since we are Cloneable
             }
             return null;
         }

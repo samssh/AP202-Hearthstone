@@ -8,26 +8,21 @@ import ir.sam.hearthstone.server.model.response.PlayDetails;
 import ir.sam.hearthstone.server.model.response.Response;
 import ir.sam.hearthstone.server.model.response.ResponseExecutor;
 import ir.sam.hearthstone.server.util.hibernate.SaveAble;
-import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
-import lombok.ToString;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
+import javax.persistence.*;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 
-@Entity(name = "response_log_info")
-@EqualsAndHashCode(onlyExplicitlyIncluded = true)
-@ToString(includeFieldNames = false)
+@Entity
+@Table(name = "response_log_info", schema = "log")
 public class ResponseLogInfo implements SaveAble {
     @Id
-    @Setter
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Getter
-    @EqualsAndHashCode.Include
+    @Setter
     private long id;
     @Column
     @Getter
@@ -169,12 +164,41 @@ public class ResponseLogInfo implements SaveAble {
     public ResponseLogInfo() {
     }
 
-    public ResponseLogInfo(Response response, long id) {
-        this.id = id;
+    public ResponseLogInfo(Response response) {
         type = response.getClass().getSimpleName();
         response.execute(new SetDetails());
     }
 
+    @Override
+    public String toString() {
+        return "ResponseLogInfo{" + "id=" + id + ", time=" + time + ", type='" + type + '\'' +
+                ", hand='" + hand + '\'' + ", ground='" + ground + '\'' + ", weapon='" + weapon + '\'' +
+                ", hero='" + hero + '\'' + ", heroPower='" + heroPower + '\'' + ", panel='" + panel + '\'' +
+                ", message='" + message + '\'' + ", deckName='" + deckName + '\'' + ", cardName='" + cardName + '\'' +
+                ", eventType='" + eventType + '\'' + ", deckOverview='" + deckOverview + '\'' +
+                ", cardOverview='" + cardOverview + '\'' + ", manas='" + manas + '\'' + ", sell='" + sell + '\'' +
+                ", buy='" + buy + '\'' + ", passives='" + passives + '\'' +
+                ", decks='" + decks + '\'' + ", heroNames='" + heroNames + '\'' +
+                ", classOfCardNames='" + classOfCardNames + '\'' + ", eventLog='" + eventLog + '\'' +
+                ", cards='" + cards + '\'' + ", bigDeckOverviews='" + bigDeckOverviews + '\'' +
+                ", deckCards='" + deckCards + '\'' + ", events='" + events + '\'' +
+                ", passiveList='" + passiveList + '\'' + ", success=" + success + ", canAddDeck=" + canAddDeck +
+                ", canChangeHero=" + canChangeHero + ", showButton=" + showButton + ", coins=" + coins +
+                ", mana=" + mana + ", index=" + index + '}';
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        ResponseLogInfo that = (ResponseLogInfo) o;
+        return id == that.id;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id);
+    }
 
     private class SetDetails implements ResponseExecutor {
         @Override

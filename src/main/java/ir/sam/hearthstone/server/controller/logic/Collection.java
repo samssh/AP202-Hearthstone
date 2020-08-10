@@ -13,6 +13,7 @@ import ir.sam.hearthstone.server.model.main.Hero;
 import ir.sam.hearthstone.server.model.response.*;
 import ir.sam.hearthstone.server.resource_loader.ModelLoader;
 import ir.sam.hearthstone.server.util.hibernate.Connector;
+import ir.sam.hearthstone.server.util.hibernate.DatabaseDisconnectException;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -66,7 +67,7 @@ public class Collection {
         return new CollectionAllCards(cards, deckCards, canAddDeck, canChangeHero, d.getName());
     }
 
-    public Response selectDeck(Player player, String deckName) {
+    public Response selectDeck(Player player, String deckName) throws DatabaseDisconnectException {
         Optional<Deck> deck = getDeck(deckName, player);
         if (deck.isPresent()) {
             if (player.getSelectedDeckIndex() != player.getDecks().indexOf(deck.get())) {
@@ -147,7 +148,7 @@ public class Collection {
                         .orElseThrow(() -> new NoSuchElementException("Neutral class not loaded"))));
     }
 
-    public Response[] newDeck(String deckName, String heroName, Player player) {
+    public Response[] newDeck(String deckName, String heroName, Player player) throws DatabaseDisconnectException {
         Response[] responses = new Response[2];
         if (notContainDeckName(deckName, player) && containHero(heroName, player)) {
             Hero hero = modelLoader.getHero(heroName)
@@ -173,7 +174,7 @@ public class Collection {
         return player.getDecks().stream().noneMatch(d -> d.getName().equals(deckName));
     }
 
-    public Response[] deleteDeck(String deckName, Player player) {
+    public Response[] deleteDeck(String deckName, Player player) throws DatabaseDisconnectException {
         Optional<Deck> optionalDeck = getDeck(deckName, player);
         Response[] responses = new Response[2];
         if (optionalDeck.isPresent()) {
@@ -188,7 +189,7 @@ public class Collection {
         return responses;
     }
 
-    public Response[] changeDeckName(String oldDeckName, String newDeckName, Player player) {
+    public Response[] changeDeckName(String oldDeckName, String newDeckName, Player player) throws DatabaseDisconnectException {
         Response[] responses = new Response[2];
         Optional<Deck> optionalDeck = getDeck(oldDeckName, player);
         if (optionalDeck.isPresent() && notContainDeckName(newDeckName, player)) {
@@ -203,7 +204,7 @@ public class Collection {
         return responses;
     }
 
-    public Response[] changeHeroDeck(String deckName, String heroName, Player player) {
+    public Response[] changeHeroDeck(String deckName, String heroName, Player player) throws DatabaseDisconnectException {
         Response[] responses = new Response[2];
         Optional<Deck> optionalDeck = getDeck(deckName, player);
         if (optionalDeck.isPresent() && containHero(heroName, player)) {
@@ -222,7 +223,7 @@ public class Collection {
         return responses;
     }
 
-    public Response removeCardFromDeck(String cardName, String deckName, Player player) {
+    public Response removeCardFromDeck(String cardName, String deckName, Player player) throws DatabaseDisconnectException {
         Optional<Card> optionalCard = modelLoader.getCard(cardName);
         Optional<Deck> optionalDeck = getDeck(deckName, player);
         Response response = null;
@@ -242,7 +243,7 @@ public class Collection {
         return response;
     }
 
-    public Response[] addCardToDeck(String cardName, String deckName, Player player, Shop shop) {
+    public Response[] addCardToDeck(String cardName, String deckName, Player player, Shop shop) throws DatabaseDisconnectException {
         Optional<Card> optionalCard = modelLoader.getCard(cardName);
         Response[] responses = new Response[2];
         if (optionalCard.isPresent()) {

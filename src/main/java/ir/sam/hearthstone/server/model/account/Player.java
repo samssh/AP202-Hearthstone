@@ -3,27 +3,19 @@ package ir.sam.hearthstone.server.model.account;
 import ir.sam.hearthstone.server.model.main.Card;
 import ir.sam.hearthstone.server.model.main.Hero;
 import ir.sam.hearthstone.server.util.hibernate.SaveAble;
-import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
-import lombok.ToString;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
 
 import javax.persistence.*;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Entity
-@ToString()
-@EqualsAndHashCode(onlyExplicitlyIncluded = true)
 public class Player implements SaveAble {
     @Id
     @Setter
     @Getter
-    @EqualsAndHashCode.Include
     private String username;
     @Column
     @Setter
@@ -110,5 +102,33 @@ public class Player implements SaveAble {
         this.cards = new HashMap<>(this.cards);
         this.decks = new ArrayList<>(this.decks);
         this.heroes = new ArrayList<>(this.heroes);
+    }
+
+    @Override
+    public String toString() {
+        return "Player{" +
+                "username='" + username + '\'' +
+                ", password='" + password + '\'' +
+                ", creatTime=" + creatTime +
+                ", coin=" + coin +
+                ", cup=" + cup +
+                ", selectedDeckIndex=" + selectedDeckIndex +
+                ", cards=" + cards +
+                ", heroes=" + heroes +
+                ", decks=" + decks +
+                '}';
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Player player = (Player) o;
+        return Objects.equals(username, player.username);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(username);
     }
 }

@@ -9,6 +9,7 @@ import ir.sam.hearthstone.server.model.response.ShopDetails;
 import ir.sam.hearthstone.server.model.response.ShopEvent;
 import ir.sam.hearthstone.server.resource_loader.ModelLoader;
 import ir.sam.hearthstone.server.util.hibernate.Connector;
+import ir.sam.hearthstone.server.util.hibernate.DatabaseDisconnectException;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -63,7 +64,7 @@ public class Shop {
         return player.getHeroes().contains(modelLoader.getHero(heroName).orElse(null));
     }
 
-    public Response sellCard(String cardName, Player player) {
+    public Response sellCard(String cardName, Player player) throws DatabaseDisconnectException {
         Optional<Card> optionalCard = modelLoader.getCard(cardName);
         if (optionalCard.isPresent()) {
             Card card = optionalCard.get();
@@ -83,7 +84,7 @@ public class Shop {
         return player.getCards().containsKey(card);
     }
 
-    public Response buyCard(String cardName, Player player) {
+    public Response buyCard(String cardName, Player player) throws DatabaseDisconnectException {
         Optional<Card> optionalCard = modelLoader.getCard(cardName);
         if (optionalCard.isPresent()) {
             Card card = optionalCard.get();

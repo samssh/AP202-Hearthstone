@@ -13,6 +13,7 @@ import ir.sam.hearthstone.server.model.response.PlayDetails;
 import ir.sam.hearthstone.server.model.response.Response;
 import ir.sam.hearthstone.server.resource_loader.ModelLoader;
 import ir.sam.hearthstone.server.util.TaskTimer;
+import ir.sam.hearthstone.server.util.hibernate.DatabaseDisconnectException;
 import lombok.Getter;
 
 import java.util.ArrayList;
@@ -41,6 +42,7 @@ public abstract class AbstractGame implements Game {
     protected final TaskTimer timer;
     @Getter
     protected boolean running;
+    protected DatabaseDisconnectException lastException;
 
     public AbstractGame(GameState gameState, ModelLoader modelLoader) {
         this.gameState = gameState;
@@ -310,7 +312,10 @@ public abstract class AbstractGame implements Game {
     }
 
     @Override
-    public Response getResponse(Side client) {
+    public Response getResponse(Side client) throws DatabaseDisconnectException {
+        if (lastException!=null) {
+            throw lastException;
+        }
         if (!isRunning() && gameState.getEventIndex(client) == gameState.getEvents().size())
             return null;
         double time = (System.currentTimeMillis() - turnStartTime) / 60000d;

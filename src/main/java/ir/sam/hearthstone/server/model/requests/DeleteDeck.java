@@ -1,5 +1,6 @@
 package ir.sam.hearthstone.server.model.requests;
 
+import ir.sam.hearthstone.server.util.hibernate.DatabaseDisconnectException;
 import lombok.Getter;
 
 public class DeleteDeck extends Request {
@@ -11,7 +12,7 @@ public class DeleteDeck extends Request {
     }
 
     @Override
-    public void execute(RequestExecutor requestExecutor) {
+    public void execute(RequestExecutor requestExecutor) throws DatabaseDisconnectException {
         requestExecutor.deleteDeck(deckName);
     }
 }

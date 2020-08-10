@@ -2,22 +2,21 @@ package ir.sam.hearthstone.server.model.log;
 
 import ir.sam.hearthstone.server.model.requests.Request;
 import ir.sam.hearthstone.server.model.requests.RequestExecutor;
+import ir.sam.hearthstone.server.util.hibernate.DatabaseDisconnectException;
 import ir.sam.hearthstone.server.util.hibernate.SaveAble;
-import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
+import javax.persistence.*;
+import java.util.Objects;
 
-@Entity(name = "request_log_info")
-@EqualsAndHashCode(onlyExplicitlyIncluded = true)
+@Entity
+@Table(name = "request_log_info", schema = "log")
 public class RequestLogInfo implements SaveAble {
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Getter
     @Setter
-    @EqualsAndHashCode.Include
     private long id;
     @Column
     @Getter
@@ -91,10 +90,37 @@ public class RequestLogInfo implements SaveAble {
     public RequestLogInfo() {
     }
 
-    public RequestLogInfo(Request request, long id) {
+    public RequestLogInfo(Request request) {
         type = request.getClass().getSimpleName();
-        this.id = id;
-        request.execute(new SetDetails());
+        try {
+            request.execute(new SetDetails());
+        } catch (DatabaseDisconnectException ignore) {
+        }
+    }
+
+    @Override
+    public String toString() {
+        return "RequestLogInfo{" +
+                "id=" + id + ", type='" + type + '\'' + ", username='" + username + '\'' +
+                ", password='" + password + '\'' + ", cardName='" + cardName + '\'' + ", name='" + name + '\'' +
+                ", modeName='" + modeName + '\'' + ", classOfCard='" + classOfCard + '\'' +
+                ", deckName='" + deckName + '\'' + ", passiveName='" + passiveName + '\'' +
+                ", heroName='" + heroName + '\'' + ", newDeckName='" + newDeckName + '\'' + ", mana=" + mana +
+                ", lockMode=" + lockMode + ", mode=" + mode + ", side=" + side + ", index=" + index +
+                ", emptyIndex=" + emptyIndex + '}';
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        RequestLogInfo that = (RequestLogInfo) o;
+        return id == that.id;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id);
     }
 
     private class SetDetails implements RequestExecutor {

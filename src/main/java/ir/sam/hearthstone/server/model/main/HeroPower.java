@@ -3,7 +3,6 @@ package ir.sam.hearthstone.server.model.main;
 import ir.sam.hearthstone.server.util.hibernate.SaveAble;
 import lombok.Getter;
 import lombok.Setter;
-import lombok.ToString;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -11,7 +10,6 @@ import javax.persistence.PostLoad;
 import java.util.HashMap;
 
 @Entity
-@ToString
 public class HeroPower extends HasAction implements SaveAble, Cloneable {
     @Column
     @Getter
@@ -30,5 +28,16 @@ public class HeroPower extends HasAction implements SaveAble, Cloneable {
     @Override
     public HeroPower clone() {
         return (HeroPower) super.clone();
+    }
+
+    @Override
+    public String toString() {
+        return "HeroPower{" +
+                "mana=" + mana +
+                ", name='" + name + '\'' +
+                ", description='" + description + '\'' +
+                ", className='" + className + '\'' +
+                ", methods=" + methods +
+                '}';
     }
 }
