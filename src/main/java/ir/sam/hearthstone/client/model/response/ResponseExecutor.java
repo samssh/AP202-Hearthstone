@@ -44,4 +44,6 @@ public interface ResponseExecutor {
 
     void setPlayDetail(List<PlayDetails.Event> events, String eventLog
             , int[] mana, double time);
+
+    void showGameNames(List<String> names);
 }

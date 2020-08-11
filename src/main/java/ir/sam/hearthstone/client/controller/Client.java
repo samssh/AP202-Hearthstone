@@ -306,4 +306,11 @@ public class Client implements ResponseExecutor {
         }
         ((PlayPanel) panels.get(PLAY)).setDetails(events, eventLog, mana, time);
     }
+
+    @Override
+    public void showGameNames(List<String> names) {
+        String selected = (String) JOptionPane.showInputDialog(frame,"select game mode","tavern brawl",
+                JOptionPane.INFORMATION_MESSAGE,null,names.toArray(),names.get(0));
+        addRequest(new SelectPlayMode(selected));
+    }
 }
