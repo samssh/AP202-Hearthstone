@@ -287,5 +287,10 @@ public class ResponseLogInfo implements SaveAble {
             setManas(Arrays.toString(mana));
             setTime(time);
         }
+
+        @Override
+        public void gameNames(List<String> names) {
+            setEvents(names.toString());
+        }
     }
 }

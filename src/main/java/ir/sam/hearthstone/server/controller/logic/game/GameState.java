@@ -210,8 +210,7 @@ public class GameState {
         }
 
         protected Stream<ComplexLogic> getStream() {
-            /*Array*/
-            List<ComplexLogic> complexLogicList = new Stack<>(/*hand.size() + 5*/);
+            List<ComplexLogic> complexLogicList = new Stack<>();
             complexLogicList.add(hero);
             complexLogicList.add(heroPower);
             complexLogicList.add(passive);

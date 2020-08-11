@@ -265,7 +265,12 @@ public class ClientHandler implements RequestExecutor {
                     gameBuilder = gameLobby.getGameBuilder(mode, this);
                     response = gameBuilder.setDeck(this.side, player.getSelectedDeck());
                 }
-                case "tavernBrawl" -> response = new ShowMessage("tavernBrawl add soon");
+                case "tavernBrawl" -> {
+                    List<String> names = gameLobby.getGames();
+                    if (names.size() == 0) {
+                        response = new GoTo("MAIN_MENU", "no game already");
+                    } else response = new GameNames(names);
+                }
             }
         } else {
             response = new GoTo("COLLECTION", "your deck is not ready\ngoto collection?");
@@ -274,8 +279,9 @@ public class ClientHandler implements RequestExecutor {
     }
 
     @Override
-    public void selectPlayMode(String modeName) {
-        //tavernBrawl
+    public void selectPlayMode(String modeName) throws DatabaseDisconnectException {
+        gameBuilder = gameLobby.getGameBuilder(modeName, this);
+        addToResponses(gameBuilder.setDeck(this.side,player.getSelectedDeck()));
     }
 
     private boolean canStartGame(Deck deck) {
@@ -389,7 +395,7 @@ public class ClientHandler implements RequestExecutor {
 
     @Override
     public void cancelGame() {
-        if (gameBuilder!= null && gameBuilder instanceof OnlineGameBuilder){
+        if (gameBuilder != null && gameBuilder instanceof OnlineGameBuilder) {
             ((OnlineGameBuilder) gameBuilder).cancel();
             gameBuilder = null;
             game = null;

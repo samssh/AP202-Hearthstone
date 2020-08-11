@@ -149,7 +149,7 @@ public class MinionLogic extends CardLogic implements LiveCharacter {
      */
     public void summon(AbstractGame game, int indexOnGround) {
         GameState gameState = game.getGameState();
-        if (gameState.getGround(side).size() == Constants.MAX_GROUND_SIZE)
+        if (gameState.getGround(side).size() == game.getMaxGroundSize())
             return;
         summon0(game, indexOnGround);
         PlayDetails.Event event = new PlayDetails.EventBuilder(PlayDetails.EventType.ADD_TO_GROUND)

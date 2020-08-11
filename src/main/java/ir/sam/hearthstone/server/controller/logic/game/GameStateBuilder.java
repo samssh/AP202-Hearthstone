@@ -79,14 +79,14 @@ public class GameStateBuilder {
         return this;
     }
 
-    private static class SideStateBuilder {
+    protected static class SideStateBuilder {
         private Passive passive;
         private Deck deck;
         private List<Card> deckCards, hand;
         private ClientHandler clientHandler;
     }
 
-    private void buildSideState(Side side, SideStateBuilder sideStateBuilder, GameState gameState) {
+    protected void buildSideState(Side side, SideStateBuilder sideStateBuilder, GameState gameState) {
         gameState.setPassive(side, new PassiveLogic(sideStateBuilder.passive, side));
         gameState.setHero(side, new HeroLogic(side, sideStateBuilder.deck.getHero()));
         gameState.setClientHandler(side, sideStateBuilder.clientHandler);
@@ -102,7 +102,7 @@ public class GameStateBuilder {
         sideStateBuilder.hand.forEach(card -> gameState.getGameEvents().add(new DrawCard(side, card)));
     }
 
-    private CardLogic buildCardLogic(Side side, Card card) {
+    protected CardLogic buildCardLogic(Side side, Card card) {
         if (card instanceof Minion) return new MinionLogic(side, (Minion) card);
         else if (card instanceof Weapon) return new WeaponLogic(side, (Weapon) card);
         else if (card instanceof Quest) return new QuestLogic(side, (Quest) card);

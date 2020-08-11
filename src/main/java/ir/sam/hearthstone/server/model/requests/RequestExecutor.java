@@ -44,7 +44,7 @@ public interface RequestExecutor {
 
     void startPlay(String mode) throws DatabaseDisconnectException;
 
-    void selectPlayMode(String modeName);
+    void selectPlayMode(String modeName) throws DatabaseDisconnectException;
 
     void selectPassive(String passiveName) throws DatabaseDisconnectException;
 

@@ -27,7 +27,7 @@ public abstract class AbstractGameBuilder implements GameBuilder {
     protected final List<Passive> allPassives;
     protected final Map<Side, SideBuilder> sideBuilderMap;
     protected final ModelLoader modelLoader;
-    protected boolean cancled;
+    protected boolean canceled;
 
     protected static class SideBuilder {
         @Getter
@@ -73,7 +73,7 @@ public abstract class AbstractGameBuilder implements GameBuilder {
     public abstract Response confirm(Side client) throws DatabaseDisconnectException;
 
     @SuppressWarnings("SameParameterValue")
-    private <T> List<T> chooseRandom(List<T> list, int n) {
+    protected  <T> List<T> chooseRandom(List<T> list, int n) {
         list = new ArrayList<>(list);
         int k = list.size() - n;
         for (int i = 0; i < k; i++) {
@@ -82,7 +82,7 @@ public abstract class AbstractGameBuilder implements GameBuilder {
         return list;
     }
 
-    private List<PassiveOverview> turnToPassiveOverview(List<Passive> passives) {
+    protected List<PassiveOverview> turnToPassiveOverview(List<Passive> passives) {
         List<PassiveOverview> result = new ArrayList<>();
         passives.forEach(p -> result.add(new PassiveOverview(p)));
         return result;

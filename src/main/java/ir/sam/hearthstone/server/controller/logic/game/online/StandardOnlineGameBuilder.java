@@ -19,7 +19,7 @@ import java.util.ArrayList;
 import static ir.sam.hearthstone.server.controller.Constants.STARTING_HAND_CARDS;
 
 public class StandardOnlineGameBuilder extends AbstractGameBuilder implements OnlineGameBuilder {
-    private final Connector connector;
+    protected final Connector connector;
 
 
     public StandardOnlineGameBuilder(ModelLoader modelLoader, Connector connector) {
@@ -80,7 +80,7 @@ public class StandardOnlineGameBuilder extends AbstractGameBuilder implements On
 
     @Override
     public Response check(Side client) throws DatabaseDisconnectException {
-        if (cancled){
+        if (canceled){
             return new GoTo("MAIN_MENU",null);
         }
         if (result != null) {
@@ -92,6 +92,6 @@ public class StandardOnlineGameBuilder extends AbstractGameBuilder implements On
 
     @Override
     public void cancel() {
-        cancled = true;
+        canceled = true;
     }
 }

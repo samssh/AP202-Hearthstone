@@ -9,6 +9,8 @@ import ir.sam.hearthstone.server.util.hibernate.Connector;
 import ir.sam.hearthstone.server.util.hibernate.DatabaseDisconnectException;
 
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
+import java.net.MalformedURLException;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.*;
@@ -19,6 +21,7 @@ public class ServerSocketManager {
     private final ModelLoader modelLoader;
     private final List<ClientHandler> clientHandlers;
     private final GameLobby gameLobby;
+    private final GameLoader gameLoader;
     private volatile boolean running;
 
     public ServerSocketManager() throws IOException, DatabaseDisconnectException {
@@ -31,6 +34,7 @@ public class ServerSocketManager {
         running = true;
         clientHandlers = Collections.synchronizedList(new ArrayList<>());
         gameLobby = new GameLobby(connector, modelLoader);
+        gameLoader = new GameLoader();
     }
 
     public void start() {
@@ -49,10 +53,6 @@ public class ServerSocketManager {
             } catch (IOException ignore) {
             }
         }
-        System.out.println("exit");
-        Set<Thread> threadSet = Thread.getAllStackTraces().keySet();
-        for (Thread thread:threadSet)
-            System.out.println(thread.toString()+thread.getState());
     }
 
     public void removeClientHandler(SocketResponseSender socketResponseSender) {
@@ -62,23 +62,42 @@ public class ServerSocketManager {
     private void getOrders() {
         Scanner scanner = new Scanner(System.in);
         while (running) {
+            System.out.println("type commands");
             System.out.println("type exit to shutdown server. make sure no client connected");
-            if ("exit".equals(scanner.nextLine())) {
-                System.out.println("try exit");
-                for (ClientHandler clientHandler : clientHandlers) {
+            System.out.println("type add game to add game");
+            switch (scanner.nextLine().strip()) {
+                case "exit" -> {
+                    System.out.println("try exit");
+                    for (ClientHandler clientHandler : clientHandlers) {
+                        try {
+                            clientHandler.shutdown();
+                        } catch (DatabaseDisconnectException ignored) {
+                        }
+                    }
+                    running = false;
+                    connector.close();
                     try {
-                        clientHandler.shutdown();
-                    } catch (DatabaseDisconnectException ignored) {
+                        serverSocket.close();
+                    } catch (IOException ignored) {
+                    }
+                    System.exit(0);
+                }
+                case "add game" -> {
+                    try {
+                        System.out.println("enter game name");
+                        String gameName = scanner.nextLine().strip();
+                        System.out.println("enter jar url");
+                        String jarUrl = scanner.nextLine().strip();
+                        System.out.println("enter main class name");
+                        String className = scanner.nextLine().strip();
+                        gameLoader.loadGame(gameName, jarUrl, className, gameLobby);
+                    } catch (MalformedURLException | ClassNotFoundException
+                            | NoSuchMethodException | InvocationTargetException | IllegalAccessException e) {
+                        System.out.println("cant load game");
+                        e.printStackTrace(System.out);
                     }
                 }
-                running = false;
-                connector.close();
-                try {
-                    serverSocket.close();
-                } catch (IOException ignored) {
-                }
             }
-            System.out.println("exit");
         }
     }
 }

@@ -163,7 +163,7 @@ public abstract class AbstractGame implements Game {
         GameEvent gameEvent = new EndTurn(gameState.getSideTurn());
         gameState.getGameEvents().add(gameEvent);
         if (gameState.getSideTurn() == Side.PLAYER_TWO) gameState.setTurnNumber(gameState.getTurnNumber() + 1);
-        int mana = Math.min(gameState.getTurnNumber(), Constants.MAX_MANA);
+        int mana = Math.min(gameState.getTurnNumber(), getMaxMana());
         if (gameState.getActiveWeapon(gameState.getSideTurn()) != null)
             gameState.getActiveWeapon(gameState.getSideTurn()).setHasAttack(false, gameState);
         gameState.setSideTurn(gameState.getSideTurn().getOther());
@@ -174,7 +174,7 @@ public abstract class AbstractGame implements Game {
                 minionLogic -> minionLogic.removeRushAndGiveSleep(gameState));
         visitAll(this, ActionType.START_TURN, null, gameState.getSideTurn());
         turnStartTime = System.currentTimeMillis();
-        timer.setTask(this::nextTurn, Constants.TURN_TIME);
+        timer.setTask(this::nextTurn, getTurnTime());
     }
 
     @Override
@@ -243,10 +243,10 @@ public abstract class AbstractGame implements Game {
         gameState.setMana(gameState.getSideTurn(), 1);
         visitAll(this, ActionType.START_TURN, null, gameState.getSideTurn());
         turnStartTime = System.currentTimeMillis();
-        timer.setTask(this::nextTurn, Constants.TURN_TIME);
+        timer.setTask(this::nextTurn, getTurnTime());
     }
 
-    private void init(Side side) {
+    protected void init(Side side) {
         for (CardLogic cardLogic : gameState.getHand(side)) {
             visitAll(this, ActionType.DRAW_CARD, cardLogic, side);
         }
@@ -280,7 +280,7 @@ public abstract class AbstractGame implements Game {
     }
 
     public void drawCard(Side side, CardLogic cardLogic) {
-        if (gameState.getHand(side).size() < Constants.MAX_HAND_SIZE) {
+        if (gameState.getHand(side).size() < getMaxHandSize()) {
             gameState.getHand(side).add(0, cardLogic);
             visitAll(this, ActionType.DRAW_CARD, cardLogic, side);
             PlayDetails.Event event = new PlayDetails.EventBuilder(ADD_TO_HAND)
@@ -300,7 +300,7 @@ public abstract class AbstractGame implements Game {
     public void playMinion(MinionLogic minionLogic) {
         Side side = minionLogic.getSide();
         Minion minion = minionLogic.getMinion();
-        if (gameState.getGround(side).size() < Constants.MAX_GROUND_SIZE) {
+        if (gameState.getGround(side).size() < getMaxGroundSize()) {
             if (minion.getMana() <= gameState.getMana(side)) {
                 gameState.setSelectedMinionOnHand(side, minionLogic);
             }
@@ -313,7 +313,7 @@ public abstract class AbstractGame implements Game {
 
     @Override
     public Response getResponse(Side client) throws DatabaseDisconnectException {
-        if (lastException!=null) {
+        if (lastException != null) {
             throw lastException;
         }
         if (!isRunning() && gameState.getEventIndex(client) == gameState.getEvents().size())
@@ -322,5 +322,21 @@ public abstract class AbstractGame implements Game {
         PlayDetails response = new PlayDetails(getEventLog(client), gameState.getManas(client), time);
         response.getEvents().addAll(getEvents(client));
         return response;
+    }
+
+    public int getMaxMana() {
+        return Constants.MAX_MANA;
+    }
+
+    public long getTurnTime() {
+        return Constants.TURN_TIME;
+    }
+
+    public int getMaxGroundSize() {
+        return Constants.MAX_GROUND_SIZE;
+    }
+
+    public int getMaxHandSize() {
+        return Constants.MAX_HAND_SIZE;
     }
 }

@@ -43,4 +43,6 @@ public interface ResponseExecutor {
 
     default void doShutDown() {
     }
+
+    void gameNames(List<String> names);
 }

@@ -7,7 +7,9 @@ import ir.sam.hearthstone.server.controller.logic.game.online.StandardOnlineGame
 import ir.sam.hearthstone.server.resource_loader.ModelLoader;
 import ir.sam.hearthstone.server.util.hibernate.Connector;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class GameLobby {
@@ -30,6 +32,16 @@ public class GameLobby {
         private WaitingRoom(OnlineGameBuilderGenerator generator) {
             this.generator = generator;
         }
+    }
+
+    public synchronized void addGame(String gameName,OnlineGameBuilderGenerator generator){
+        waitingRoomMap.put(gameName,new WaitingRoom(generator));
+    }
+
+    public synchronized List<String> getGames(){
+        List<String> result = new ArrayList<>(waitingRoomMap.keySet());
+        result.remove("online");
+        return result;
     }
 
     public synchronized OnlineGameBuilder getGameBuilder(String gameName, ClientHandler clientHandler) {

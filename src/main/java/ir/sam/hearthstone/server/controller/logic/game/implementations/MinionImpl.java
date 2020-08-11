@@ -1,6 +1,5 @@
 package ir.sam.hearthstone.server.controller.logic.game.implementations;
 
-import ir.sam.hearthstone.server.controller.Constants;
 import ir.sam.hearthstone.server.controller.logic.game.AbstractGame;
 import ir.sam.hearthstone.server.controller.logic.game.GameState;
 import ir.sam.hearthstone.server.controller.logic.game.Side;
@@ -50,9 +49,7 @@ public class MinionImpl {
             MinionLogic neW = new MinionLogic(dead.getSide(), dead.getMinion());
             GameState gameState = game.getGameState();
             Side side = dead.getSide();
-            if (gameState.getGround(side).size() < Constants.MAX_GROUND_SIZE) {
-                neW.summon(game, gameState.getGround(side).size());
-            }
+            neW.summon(game, gameState.getGround(side).size());
         }
     }
 
