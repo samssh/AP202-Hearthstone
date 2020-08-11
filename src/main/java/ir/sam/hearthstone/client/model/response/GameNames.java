@@ -15,6 +15,6 @@ public class GameNames extends Response {
 
     @Override
     public void execute(ResponseExecutor responseExecutor) {
-        
+        responseExecutor.showGameNames(names);
     }
 }
