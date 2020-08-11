@@ -81,12 +81,16 @@ public class StandardOnlineGame extends AbstractGame implements Game {
     }
 
     private void applyStatisticsOnDeck(Deck... decks) {
-        gameState.getGameEvents().stream().filter(gameEvent -> gameEvent instanceof PlayCard)
-                .map(gameEvent -> (PlayCard) gameEvent).forEach(playCard -> {
-            CardDetails details = decks[playCard.getSide().getIndex()].getCards().get(playCard.getCard());
-            if (details != null)
-                details.setUsage(details.getUsage() + 1);
-        });
+        List<GameEvent> gameEvents = gameState.getGameEvents();
+        for (int i = 0; i < gameEvents.size(); i++) {
+            GameEvent gameEvent = gameEvents.get(i);
+            if (gameEvent instanceof PlayCard) {
+                PlayCard playCard = (PlayCard) gameEvent;
+                CardDetails details = decks[playCard.getSide().getIndex()].getCards().get(playCard.getCard());
+                if (details != null)
+                    details.setUsage(details.getUsage() + 1);
+            }
+        }
     }
 
 
@@ -100,8 +104,8 @@ public class StandardOnlineGame extends AbstractGame implements Game {
     protected String getEventLog(Side client) {
         StringBuilder builder = new StringBuilder();
         if (gameState.getSideTurn() == client)
-            builder.append("your turn");
-        else builder.append("opponent turn");
+            builder.append("your turn\n");
+        else builder.append("opponent turn\n");
         builder.append(String.format("number of your deck cards: %d\n"
                 , gameState.getDeck(client).size()));
         builder.append(String.format("number of opponent deck cards: %d\n"

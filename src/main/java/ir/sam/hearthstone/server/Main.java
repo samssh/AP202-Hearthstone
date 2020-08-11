@@ -10,6 +10,11 @@ import java.io.IOException;
 public class Main {
     public static void main(String[] args) throws IOException, DatabaseDisconnectException {
         ConfigFactory.setArgs(args);
-        new ServerSocketManager().start();
+        try {
+            new ServerSocketManager().start();
+        } catch (DatabaseDisconnectException e) {
+            System.out.println("cant connect to database");
+            e.printStackTrace();
+        }
     }
 }

@@ -1,7 +1,6 @@
 package ir.sam.hearthstone.server.util.hibernate;
 
 import ir.sam.hearthstone.server.util.Loop;
-import lombok.SneakyThrows;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.boot.MetadataSources;
@@ -37,8 +36,8 @@ public class Connector {
     private final Object lock;
     private final Loop worker;
 
-    @SneakyThrows
-    public Connector(File configFile, String password) {
+
+    public Connector(File configFile, String password) throws DatabaseDisconnectException {
         sessionFactory = buildSessionFactory(addPassword(getServiceRegistryBuilder(configFile), password).build());
         save = new HashSet<>();
         delete = new HashSet<>();
@@ -47,8 +46,12 @@ public class Connector {
         worker.start();
     }
 
-    private SessionFactory buildSessionFactory(StandardServiceRegistry registry) {
+    private SessionFactory buildSessionFactory(StandardServiceRegistry registry) throws DatabaseDisconnectException {
+        try {
         return new MetadataSources(registry).buildMetadata().buildSessionFactory();
+        }catch (Throwable throwable){
+            throw new DatabaseDisconnectException(throwable);
+        }
     }
 
     private StandardServiceRegistryBuilder getServiceRegistryBuilder(File file) {
@@ -152,7 +155,7 @@ public class Connector {
         synchronized (staticLock) {
             ensureOpen();
             Session session = sessionFactory.openSession();
-            E result = null;
+            E result;
             try {
                 result = session.get(entity, id);
             } catch (Throwable e) {
@@ -174,7 +177,7 @@ public class Connector {
         synchronized (staticLock) {
             ensureOpen();
             Session session = sessionFactory.openSession();
-            List<E> result = null;
+            List<E> result;
             try {
                 result = session.createQuery(hql, entity).getResultList();
             } catch (Throwable e) {
@@ -191,7 +194,7 @@ public class Connector {
         synchronized (staticLock) {
             ensureOpen();
             Session session = sessionFactory.openSession();
-            List<E> result = null;
+            List<E> result;
             try {
                 result = session.createNativeQuery(sql, entity).getResultList();
             } catch (Exception e) {

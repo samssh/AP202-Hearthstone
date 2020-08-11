@@ -24,10 +24,10 @@ public class ServerSocketManager {
     public ServerSocketManager() throws IOException, DatabaseDisconnectException {
         Config config = ConfigFactory.getInstance().getConfig("SERVER_CONFIG");
         int port = config.getProperty(Integer.class, "PORT");
-        serverSocket = new ServerSocket(port);
         connector = new Connector(ConfigFactory.getInstance().getConfigFile("SERVER_HIBERNATE_CONFIG")
                 , System.getenv("HearthStone password"));
         modelLoader = new ModelLoader(connector);
+        serverSocket = new ServerSocket(port);
         running = true;
         clientHandlers = Collections.synchronizedList(new ArrayList<>());
         gameLobby = new GameLobby(connector, modelLoader);
@@ -46,14 +46,13 @@ public class ServerSocketManager {
                 ClientHandler clientHandler = new ClientHandler(responseSender, connector, modelLoader, gameLobby);
                 clientHandlers.add(clientHandler);
                 clientHandler.start();
-            } catch (IOException e) {
-                e.printStackTrace();
+            } catch (IOException ignore) {
             }
         }
         System.out.println("exit");
         Set<Thread> threadSet = Thread.getAllStackTraces().keySet();
         for (Thread thread:threadSet)
-            System.out.println(thread.toString());
+            System.out.println(thread.toString()+thread.getState());
     }
 
     public void removeClientHandler(SocketResponseSender socketResponseSender) {
@@ -69,16 +68,14 @@ public class ServerSocketManager {
                 for (ClientHandler clientHandler : clientHandlers) {
                     try {
                         clientHandler.shutdown();
-                    } catch (DatabaseDisconnectException e) {
-                        e.printStackTrace();
+                    } catch (DatabaseDisconnectException ignored) {
                     }
                 }
                 running = false;
                 connector.close();
                 try {
                     serverSocket.close();
-                } catch (IOException e) {
-                    e.printStackTrace();
+                } catch (IOException ignored) {
                 }
             }
             System.out.println("exit");

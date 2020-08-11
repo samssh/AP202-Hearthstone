@@ -89,6 +89,7 @@ public class ClientHandler implements RequestExecutor {
                 if (game != null) game.endGame(side);
                 if (gameBuilder != null && gameBuilder instanceof OnlineGameBuilder)
                     ((OnlineGameBuilder) gameBuilder).cancel();
+                break;
             }
         }
         responseSender.close();
