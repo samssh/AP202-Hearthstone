@@ -23,19 +23,20 @@ import static ir.sam.hearthstone.server.controller.Constants.STARTING_PASSIVES;
 
 public abstract class AbstractGameBuilder implements GameBuilder {
     protected AbstractGame result;
-    protected final GameStateBuilder gameStateBuilder;
-    protected final List<Passive> allPassives;
-    protected final Map<Side, SideBuilder> sideBuilderMap;
-    protected final ModelLoader modelLoader;
+    protected GameStateBuilder gameStateBuilder;
+    protected List<Passive> allPassives;
+    protected Map<Side, SideBuilder> sideBuilderMap;
+    protected ModelLoader modelLoader;
+    @Getter
     protected boolean canceled;
 
     protected static class SideBuilder {
         @Getter
         protected final List<Passive> sentPassives;
         @Getter
-        private final List<Card> hand, deck;
+        protected final List<Card> hand, deck;
         @Getter
-        private final List<Boolean> handState;
+        protected final List<Boolean> handState;
 
         public SideBuilder() {
             deck = new ArrayList<>();

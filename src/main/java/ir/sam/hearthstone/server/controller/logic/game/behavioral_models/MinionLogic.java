@@ -1,6 +1,5 @@
 package ir.sam.hearthstone.server.controller.logic.game.behavioral_models;
 
-import ir.sam.hearthstone.server.controller.Constants;
 import ir.sam.hearthstone.server.controller.logic.game.AbstractGame;
 import ir.sam.hearthstone.server.controller.logic.game.GameState;
 import ir.sam.hearthstone.server.controller.logic.game.Side;
@@ -19,13 +18,13 @@ import lombok.Setter;
 public class MinionLogic extends CardLogic implements LiveCharacter {
     @Getter
     @Setter
-    private Minion minion;
+    protected Minion minion;
     @Getter
     @Setter
-    private int hp, attack;
+    protected int hp, attack;
     @Getter
     @Setter
-    private boolean hasRush, hasTaunt, hasDivineShield, hasSleep;
+    protected boolean hasRush, hasTaunt, hasDivineShield, hasSleep;
 
     public MinionLogic(Side side, Minion minion) {
         super(side);
@@ -105,14 +104,14 @@ public class MinionLogic extends CardLogic implements LiveCharacter {
         game.getActionHolderMap().get(ActionType.OVERKILL).doAction(this, this, game);
     }
 
-    private void addChangeEventOnGround(GameState gameState) {
+    protected void addChangeEventOnGround(GameState gameState) {
         int indexOnGround = gameState.getGround(side).indexOf(this);
         PlayDetails.Event event = new PlayDetails.EventBuilder(PlayDetails.EventType.CHANGE_IN_GROUND)
                 .setOverview(getMinionOverview()).setSide(side.getIndex()).setIndex(indexOnGround).build();
         gameState.getEvents().add(event);
     }
 
-    private void addChangeEventOnHand(GameState gameState) {
+    protected void addChangeEventOnHand(GameState gameState) {
         int indexOnHand = gameState.getHand(side).indexOf(this);
         PlayDetails.Event event = new PlayDetails.EventBuilder(PlayDetails.EventType.CHANGE_IN_HAND)
                 .setOverview(new CardOverview(minion)).setSide(side.getIndex()).setIndex(indexOnHand).build();
@@ -160,7 +159,7 @@ public class MinionLogic extends CardLogic implements LiveCharacter {
         AbstractGame.visitAll(game, ActionType.SUMMON_MINION, this, side);
     }
 
-    private void summon0(AbstractGame abstractGame, int indexOnGround) {
+    protected void summon0(AbstractGame abstractGame, int indexOnGround) {
         hp = minion.getHp();
         attack = minion.getAttack();
         GameState gameState = abstractGame.getGameState();

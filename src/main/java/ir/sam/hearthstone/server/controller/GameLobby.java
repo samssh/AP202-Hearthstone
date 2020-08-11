@@ -48,6 +48,9 @@ public class GameLobby {
         if (waitingRoomMap.containsKey(gameName)) {
             WaitingRoom waitingRoom = waitingRoomMap.get(gameName);
             OnlineGameBuilder onlineGameBuilder;
+            if (waitingRoom.gameBuilder!=null&& waitingRoom.gameBuilder.isCanceled()){
+                waitingRoom.gameBuilder = null;
+            }
             if (waitingRoom.gameBuilder == null) {
                 waitingRoom.gameBuilder = waitingRoom.generator.generate(modelLoader, connector);
                 onlineGameBuilder = waitingRoom.gameBuilder;

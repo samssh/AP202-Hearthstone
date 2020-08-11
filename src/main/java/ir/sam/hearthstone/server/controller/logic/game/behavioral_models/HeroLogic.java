@@ -12,7 +12,7 @@ import lombok.Setter;
 public class HeroLogic extends CharacterLogic implements LiveCharacter {
     @Getter
     @Setter
-    private Hero hero;
+    protected Hero hero;
     @Getter
     @Setter
     protected int hp, defence;
@@ -58,7 +58,7 @@ public class HeroLogic extends CharacterLogic implements LiveCharacter {
         }
     }
 
-    private void addChangeEvent(GameState gameState) {
+    protected void addChangeEvent(GameState gameState) {
         PlayDetails.Event event = new PlayDetails.EventBuilder(PlayDetails.EventType.SET_HERO)
                 .setOverview(getHeroOverview()).setSide(side.getIndex()).build();
         gameState.getEvents().add(event);

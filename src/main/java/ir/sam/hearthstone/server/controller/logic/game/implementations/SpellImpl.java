@@ -156,7 +156,7 @@ public class SpellImpl {
             Minion wisp = new Minion("Wisp", "", 6, neutral
                     , Rarity.Common, 0, 1, 1);
             gameState.getGround(side).remove(index);
-            MinionLogic minionLogic = new MinionLogic(side, wisp);
+            MinionLogic minionLogic = game.creatMinionLogic(side, wisp);
             PlayDetails.Event event = new PlayDetails.EventBuilder(PlayDetails.EventType.REMOVE_FROM_GROUND)
                     .setSide(side.getIndex()).setIndex(index).build();
             gameState.getEvents().add(event);
@@ -184,7 +184,7 @@ public class SpellImpl {
                 && complexLogic instanceof SpellLogic) {
             ((SpellLogic) complexLogic).setValue(10);
             AbstractGame.visitAll(game, ActionType.SPELL_DAMAGE, (CharacterLogic) complexLogic, side);
-            ((LiveCharacter) characterLogic).dealDamage(10, game, true);
+            ((LiveCharacter) characterLogic).dealDamage(((SpellLogic) complexLogic).getValue(), game, true);
             game.getGameState().setWaitForTarget(game.getGameState().getSideTurn(), null);
         }
     }
@@ -248,7 +248,7 @@ public class SpellImpl {
         for (int i = 0; i < 7; i++) {
             Minion wisp = new Minion("Wisp", "", 6, neutral
                     , Rarity.Common, 0, 1, 1);
-            MinionLogic minionLogic = new MinionLogic(side, wisp);
+            MinionLogic minionLogic = game.creatMinionLogic(side, wisp);
             minionLogic.summon(game, gameState.getGround(side).size());
         }
     }
@@ -285,7 +285,7 @@ public class SpellImpl {
             if (((QuestLogic) complexLogic).getQuestProgress() >= 100) {
                 Minion wisp = new Minion("Wisp", "", 6, neutral
                         , Rarity.Common, 0, 6, 6);
-                MinionLogic minionLogic = new MinionLogic(side, wisp);
+                MinionLogic minionLogic = game.creatMinionLogic(side, wisp);
                 minionLogic.summon(game, gameState.getGround(side).size());
                 gameState.setActiveQuest(side, null);
             }

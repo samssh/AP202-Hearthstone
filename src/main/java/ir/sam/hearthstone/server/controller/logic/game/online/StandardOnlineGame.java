@@ -19,7 +19,7 @@ import java.util.List;
 
 
 public class StandardOnlineGame extends AbstractGame implements Game {
-    protected final Connector connector;
+    protected Connector connector;
 
 
     public StandardOnlineGame(GameState gameState, ModelLoader modelLoader, Connector connector) {
@@ -73,14 +73,14 @@ public class StandardOnlineGame extends AbstractGame implements Game {
                 gameState.getClientHandler(Side.PLAYER_TWO).getPlayer().getSelectedDeck());
     }
 
-    private void applyStatisticsOnPlayer(Player player, int state) {
+    protected void applyStatisticsOnPlayer(Player player, int state) {
         player.setCup(Math.max(player.getCup() + state * 10, 0));
         player.getSelectedDeck().setCupEarned(player.getSelectedDeck().getCupEarned() + state * 10);
         player.getSelectedDeck().setGames(player.getSelectedDeck().getGames() + 1);
         player.getSelectedDeck().setWins(player.getSelectedDeck().getWins() + (state + 1) / 2);
     }
 
-    private void applyStatisticsOnDeck(Deck... decks) {
+    protected void applyStatisticsOnDeck(Deck... decks) {
         List<GameEvent> gameEvents = gameState.getGameEvents();
         for (int i = 0; i < gameEvents.size(); i++) {
             GameEvent gameEvent = gameEvents.get(i);

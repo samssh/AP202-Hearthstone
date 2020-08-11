@@ -17,7 +17,7 @@ import static ir.sam.hearthstone.server.controller.logic.game.Side.PLAYER_ONE;
 import static ir.sam.hearthstone.server.controller.logic.game.Side.PLAYER_TWO;
 
 public class GameStateBuilder {
-    private final Map<Side, SideStateBuilder> stateBuilderMap;
+    protected final Map<Side, SideStateBuilder> stateBuilderMap;
 
     public GameStateBuilder() {
         stateBuilderMap = new HashMap<>();
@@ -80,10 +80,10 @@ public class GameStateBuilder {
     }
 
     protected static class SideStateBuilder {
-        private Passive passive;
-        private Deck deck;
-        private List<Card> deckCards, hand;
-        private ClientHandler clientHandler;
+        protected Passive passive;
+        protected Deck deck;
+        protected List<Card> deckCards, hand;
+        protected ClientHandler clientHandler;
     }
 
     protected void buildSideState(Side side, SideStateBuilder sideStateBuilder, GameState gameState) {

@@ -46,7 +46,7 @@ public class MinionImpl {
     private static void arenaPatron(ComplexLogic complexLogic, CharacterLogic characterLogic, AbstractGame game) {
         if (characterLogic instanceof MinionLogic) {
             MinionLogic dead = ((MinionLogic) characterLogic);
-            MinionLogic neW = new MinionLogic(dead.getSide(), dead.getMinion());
+            MinionLogic neW = game.creatMinionLogic(dead.getSide(), dead.getMinion());
             GameState gameState = game.getGameState();
             Side side = dead.getSide();
             neW.summon(game, gameState.getGround(side).size());
@@ -212,9 +212,9 @@ public class MinionImpl {
             GameState gameState = game.getGameState();
             Side side = gameState.getSideTurn();
             MinionLogic main = ((MinionLogic) characterLogic);
-            MinionLogic forGround = new MinionLogic(side, main.getMinion());
-            MinionLogic forHand = new MinionLogic(side, main.getMinion());
-            MinionLogic forDeck = new MinionLogic(side, main.getMinion());
+            MinionLogic forGround = game.creatMinionLogic(side, main.getMinion());
+            MinionLogic forHand = game.creatMinionLogic(side, main.getMinion());
+            MinionLogic forDeck = game.creatMinionLogic(side, main.getMinion());
             forGround.summon(game, gameState.getGround(side).size());
             gameState.getDeck(side).add(forDeck);
             gameState.getHand(side).add(forHand);
@@ -236,7 +236,7 @@ public class MinionImpl {
     private static void security(ComplexLogic complexLogic, CharacterLogic characterLogic, AbstractGame game) {
         Minion wisp = new Minion("Wisp", "", 6, neutral
                 , Rarity.Common, 0, 2, 3);
-        MinionLogic mech = new MinionLogic(complexLogic.getSide(), wisp);
+        MinionLogic mech = game.creatMinionLogic(complexLogic.getSide(), wisp);
         mech.giveTaunt(game);
         mech.summon(game, game.getGameState().getGround(complexLogic.getSide()).size());
     }
@@ -271,7 +271,7 @@ public class MinionImpl {
      */
     private static void tomb(ComplexLogic complexLogic, CharacterLogic characterLogic, AbstractGame game) {
         if (complexLogic instanceof MinionLogic) {
-            MinionLogic clone = new MinionLogic(complexLogic.getSide(), ((MinionLogic) complexLogic).getMinion());
+            MinionLogic clone = game.creatMinionLogic(complexLogic.getSide(), ((MinionLogic) complexLogic).getMinion());
             ((MinionLogic) complexLogic).giveTaunt(game);
             clone.giveTaunt(game);
             clone.summon(game, game.getGameState().getGround(complexLogic.getSide()).size());
@@ -284,7 +284,7 @@ public class MinionImpl {
     private static void pinata(ComplexLogic complexLogic, CharacterLogic characterLogic, AbstractGame game) {
         pickRandom(legendaryList).ifPresent(minion -> {
             Side side = characterLogic.getSide();
-            MinionLogic minionLogic = new MinionLogic(side, minion);
+            MinionLogic minionLogic = game.creatMinionLogic(side, minion);
             game.getGameState().getHand(side).add(minionLogic);
             PlayDetails.Event event = new PlayDetails.EventBuilder(PlayDetails.EventType.ADD_TO_HAND)
                     .setSide(side.getIndex()).setIndex(game.getGameState().getHand(side).size())

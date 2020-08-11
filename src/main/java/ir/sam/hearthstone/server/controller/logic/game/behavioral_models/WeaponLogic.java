@@ -19,10 +19,10 @@ public class WeaponLogic extends CardLogic {
     protected Weapon weapon;
     @Getter
     @Setter
-    private int attack, usage;
+    protected int attack, usage;
     @Getter
     @Setter
-    private boolean hasAttack;
+    protected boolean hasAttack;
 
     public WeaponLogic(Side side, Weapon weapon) {
         super(side);
@@ -36,7 +36,7 @@ public class WeaponLogic extends CardLogic {
             addChangeEvent(gameState);
     }
 
-    private void addChangeEvent(GameState gameState) {
+    protected void addChangeEvent(GameState gameState) {
         PlayDetails.Event event = new PlayDetails.EventBuilder(PlayDetails.EventType.CHANGE_WEAPON)
                 .setOverview(getOverview()).setSide(side.getIndex()).build();
         gameState.getEvents().add(event);

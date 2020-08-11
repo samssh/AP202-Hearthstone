@@ -31,15 +31,15 @@ public abstract class AbstractGame implements Game {
     }
 
     @Getter
-    protected final GameState gameState;
+    protected GameState gameState;
     @Getter
-    protected final ModelLoader modelLoader;
+    protected ModelLoader modelLoader;
     @Getter
-    protected final Map<ActionType, ActionHolder> actionHolderMap;
+    protected Map<ActionType, ActionHolder> actionHolderMap;
     @Getter
     protected long turnStartTime;
     @Getter
-    protected final TaskTimer timer;
+    protected TaskTimer timer;
     @Getter
     protected boolean running;
     protected DatabaseDisconnectException lastException;
@@ -338,5 +338,9 @@ public abstract class AbstractGame implements Game {
 
     public int getMaxHandSize() {
         return Constants.MAX_HAND_SIZE;
+    }
+
+    public MinionLogic creatMinionLogic(Side side,Minion minion){
+        return new MinionLogic(side,minion);
     }
 }

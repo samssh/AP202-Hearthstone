@@ -11,4 +11,6 @@ public interface OnlineGameBuilder extends GameBuilder {
     Response check(Side client) throws DatabaseDisconnectException;
 
     void cancel();
+
+    boolean isCanceled();
 }

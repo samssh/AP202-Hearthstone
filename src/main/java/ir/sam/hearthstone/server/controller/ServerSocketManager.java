@@ -67,7 +67,6 @@ public class ServerSocketManager {
             System.out.println("type add game to add game");
             switch (scanner.nextLine().strip()) {
                 case "exit" -> {
-                    System.out.println("try exit");
                     for (ClientHandler clientHandler : clientHandlers) {
                         try {
                             clientHandler.shutdown();
@@ -91,12 +90,13 @@ public class ServerSocketManager {
                         System.out.println("enter main class name");
                         String className = scanner.nextLine().strip();
                         gameLoader.loadGame(gameName, jarUrl, className, gameLobby);
-                    } catch (MalformedURLException | ClassNotFoundException
-                            | NoSuchMethodException | InvocationTargetException | IllegalAccessException e) {
+                        System.out.println("successfully added");
+                    } catch (Throwable e) {
                         System.out.println("cant load game");
                         e.printStackTrace(System.out);
                     }
                 }
+                default -> System.out.println("unknown command");
             }
         }
     }
